@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 5: Kết Nối Máy Tính Với Thiết Bị Số</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Replacing Nunito with Quicksand to match the requested image font style -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f7f9fc;
+            color: #4a5568; /* Slightly lighter text color to match image */
+            font-size: 1.05rem; /* Slightly larger base font size */
+            font-weight: 500; /* Medium weight base for better readability with Quicksand */
+        }
+        
+        /* Pastel Color Palette */
+        .bg-pastel-blue { background-color: #dceafe; }
+        .bg-pastel-pink { background-color: #fee2e2; }
+        .bg-pastel-green { background-color: #d1fae5; }
+        .bg-pastel-purple { background-color: #f3e8ff; }
+        .bg-pastel-yellow { background-color: #fef3c7; }
+        
+        .text-pastel-blue { color: #2563eb; }
+        .text-pastel-pink { color: #e11d48; }
+        .text-pastel-green { color: #059669; }
+        .text-pastel-purple { color: #7c3aed; }
+        .text-pastel-yellow { color: #d97706; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Interactive Elements */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border-radius: 1.25rem;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        .tab-content { display: none; animation: fadeIn 0.5s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mouse Simulation Area */
+        #sim-screen { position: relative; overflow: hidden; background: #1e293b; border-radius: 0.5rem; }
+        #sim-cursor {
+            position: absolute; width: 20px; height: 20px;
+            transition: all var(--mouse-speed, 0.5s) ease-out;
+        }
+
+        /* Bluetooth Toggle */
+        .toggle-checkbox:checked { right: 0; border-color: #68D391; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #68D391; }
+
+        /* Port Card Flip */
+        .port-card { perspective: 1000px; }
+        .port-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .port-card.flipped .port-card-inner { transform: rotateY(180deg); }
+        .port-front, .port-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;}
+        .port-back { transform: rotateY(180deg); background-color: #fff; border: 2px solid #e2e8f0; }
+        .port-back img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 0.5rem; }
+
+        /* Image Zoom Effect */
+        .zoom-img { transition: transform 0.3s ease; cursor: zoom-in;}
+        .port-front:hover .zoom-img { transform: scale(3.5); } /* Adjust scale as needed */
+        
+        .flip-trigger { cursor: pointer; }
+
+        .btn-active { background-color: #6366f1 !important; color: white !important; }
+        
+        /* Override specific font weights to match the requested style */
+        h1, h2, h3, h4, .font-bold { font-weight: 700 !important; }
+        .text-sm { font-size: 1rem !important; } /* Adjusting text-sm for better readability with this font */
+        .text-xs { font-size: 0.9rem !important; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-indigo-800 mb-2 drop-shadow-sm tracking-tight">
+                <i class="fa-solid fa-network-wired text-indigo-500 mr-3"></i>Bài 5: Kết Nối Thiết Bị Số
+            </h1>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap justify-center gap-3 mb-8">
+            <button onclick="openTab('tab-tongquan')" class="tab-btn btn-active bg-white text-indigo-600 font-bold py-2 px-6 rounded-full shadow-sm hover:shadow-md transition">
+                <i class="fa-solid fa-map mr-2"></i>Tổng quan
+            </button>
+            <button onclick="openTab('tab-thietbi')" class="tab-btn bg-white text-indigo-600 font-bold py-2 px-6 rounded-full shadow-sm hover:shadow-md transition">
+                <i class="fa-solid fa-laptop-code mr-2"></i>Thiết bị & Thông số
+            </button>
+            <button onclick="openTab('tab-tuongtac')" class="tab-btn bg-white text-indigo-600 font-bold py-2 px-6 rounded-full shadow-sm hover:shadow-md transition">
+                <i class="fa-solid fa-plug mr-2"></i>Mô phỏng Kết nối
+            </button>
+            <button onclick="openTab('tab-on-tap')" class="tab-btn bg-white text-indigo-600 font-bold py-2 px-6 rounded-full shadow-sm hover:shadow-md transition">
+                <i class="fa-solid fa-check-double mr-2"></i>Trắc nghiệm
+            </button>
+        </nav>
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <div id="tab-tongquan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Mục tiêu -->
+                <div class="glass-card p-6 bg-pastel-blue">
+                    <h2 class="text-xl font-bold text-pastel-blue flex items-center mb-4">
+                        <i class="fa-solid fa-bullseye text-2xl mr-2"></i> Mục Tiêu Bài Học
+                    </h2>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start"><i class="fa-solid fa-check-circle text-green-500 mt-1 mr-2"></i> Biết thông số cơ bản thiết bị vào - ra.</li>
+                        <li class="flex items-start"><i class="fa-solid fa-check-circle text-green-500 mt-1 mr-2"></i> Hiểu cách kết nối với máy tính.</li>
+                        <li class="flex items-start"><i class="fa-solid fa-check-circle text-green-500 mt-1 mr-2"></i> Tuỳ chỉnh chức năng cơ bản.</li>
+                        <li class="flex items-start"><i class="fa-solid fa-check-circle text-green-500 mt-1 mr-2"></i> Đọc hiểu tài liệu kĩ thuật để kết nối.</li>
+                    </ul>
+                </div>
+
+                <!-- Sơ đồ tư duy (Mối quan hệ) -->
+                <div class="glass-card p-6 md:col-span-2">
+                    <h2 class="text-xl font-bold text-indigo-600 flex items-center mb-4">
+                        <i class="fa-solid fa-diagram-project text-2xl mr-2"></i> Mối Quan Hệ Cốt Lõi
+                    </h2>
+                    <div class="flex flex-col md:flex-row items-center justify-between bg-gray-50 rounded-xl p-4 border border-dashed border-indigo-200">
+                        <div class="text-center p-3">
+                            <div class="bg-indigo-100 p-4 rounded-full inline-block mb-2"><i class="fa-solid fa-computer text-3xl text-indigo-600"></i></div>
+                            <p class="font-bold">Máy Tính</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right-arrow-left text-gray-400 text-2xl my-2 md:my-0"></i>
+                        <div class="text-center p-3 relative">
+                            <div class="bg-pink-100 p-4 rounded-full inline-block mb-2"><i class="fa-solid fa-plug text-3xl text-pink-500"></i></div>
+                            <p class="font-bold">Cổng & Cáp</p>
+                            <span class="absolute -top-2 -right-4 bg-yellow-200 text-xs px-2 py-1 rounded-md text-gray-800">VGA, HDMI, USB</span>
+                        </div>
+                        <i class="fa-solid fa-arrow-right-arrow-left text-gray-400 text-2xl my-2 md:my-0"></i>
+                        <div class="text-center p-3">
+                            <div class="bg-green-100 p-4 rounded-full inline-block mb-2"><i class="fa-solid fa-print text-3xl text-green-500"></i></div>
+                            <p class="font-bold">Thiết Bị Số</p>
+                            <p class="text-xs text-gray-500 font-medium">Vào / Ra</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 bg-pastel-yellow p-4 rounded-xl">
+                        <h3 class="font-bold text-pastel-yellow flex items-center"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Chú ý dễ nhầm lẫn!</h3>
+                        <p class="text-sm mt-1">Cổng <b>VGA</b> chỉ truyền <u>hình ảnh</u>. Cổng <b>HDMI</b> truyền được cả <u>hình ảnh và âm thanh</u>.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 2: THIẾT BỊ & THÔNG SỐ -->
+        <div id="tab-thietbi" class="tab-content">
+            <!-- Tương tác Chuột -->
+            <div class="glass-card p-6 mb-6">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-4"><i class="fa-solid fa-computer-mouse mr-2"></i>1. Chuột máy tính (Thiết bị vào)</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <p class="mb-2"><b>Hai thông số quan trọng:</b> Phương thức kết nối & Độ phân giải (<b>dpi</b> - dots per inch).</p>
+                        <p class="mb-4 text-sm text-gray-600 font-medium">Khi sử dụng, <b>tốc độ chuột (Cursor speed)</b> rất quan trọng. Tốc độ cao gây khó khăn khi chỉnh sửa ảnh chi tiết.</p>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <label class="font-bold text-sm text-indigo-600 mb-2 block">Mô phỏng tuỳ chỉnh Cursor Speed (Setting > Devices > Mouse):</label>
+                            <input type="range" id="mouseSpeed" min="1" max="10" value="5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-xs text-gray-400 mt-1 font-medium">
+                                <span>Chậm (Slow)</span><span>Nhanh (Fast)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Khung mô phỏng tốc độ -->
+                    <div id="sim-screen" class="h-48 w-full cursor-crosshair relative border-4 border-gray-800" onmousemove="moveSimCursor(event)">
+                        <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm opacity-50 z-0 pointer-events-none font-medium">Di chuột trong vùng này</div>
+                        <i id="sim-cursor" class="fa-solid fa-arrow-pointer text-white text-xl z-10" style="filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Infographic Màn hình -->
+            <div class="glass-card p-6 mb-6 bg-pastel-purple">
+                <h2 class="text-2xl font-bold text-pastel-purple mb-4"><i class="fa-solid fa-desktop mr-2"></i>2. Màn hình (Thiết bị ra)</h2>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center mb-4">
+                    
+                    <!-- Kích thước -->
+                    <div class="port-card h-52 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white shadow-sm hover:shadow-md transition border border-transparent">
+                                <i class="fa-solid fa-ruler-combined text-3xl text-pink-400 mb-2"></i>
+                                <h4 class="font-bold text-sm text-gray-800">Kích thước</h4>
+                                <p class="text-xs text-gray-500 font-medium mt-1">Đo bằng đường chéo màn hình (inch).</p>
+                                <span class="text-[10px] text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-full border"><i class="fa-solid fa-rotate mr-1"></i>Xem VD</span>
+                            </div>
+                            <div class="port-back bg-pink-50 border border-pink-200">
+                                <h4 class="font-bold text-sm text-pink-700 mb-2"><i class="fa-solid fa-magnifying-glass mr-1"></i>Thực tế</h4>
+                                <p class="text-xs text-gray-700 font-medium">Màn PC văn phòng thường <b>24 inch</b>. Laptop phổ biến <b>14 - 15.6 inch</b>.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Độ phân giải -->
+                    <div class="port-card h-52 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white shadow-sm hover:shadow-md transition border border-transparent">
+                                <i class="fa-solid fa-border-all text-3xl text-blue-400 mb-2"></i>
+                                <h4 class="font-bold text-sm text-gray-800">Độ phân giải</h4>
+                                <p class="text-xs text-gray-500 font-medium mt-1">Số điểm ảnh ngang x dọc. Càng lớn càng nét.</p>
+                                <span class="text-[10px] text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-full border"><i class="fa-solid fa-rotate mr-1"></i>Xem VD</span>
+                            </div>
+                            <div class="port-back bg-blue-50 border border-blue-200">
+                                <h4 class="font-bold text-sm text-blue-700 mb-2"><i class="fa-solid fa-magnifying-glass mr-1"></i>Thực tế</h4>
+                                <p class="text-xs text-gray-700 font-medium">Chuẩn <b>Full HD</b> (1920x1080) rất phổ biến. Cao cấp hơn có <b>2K</b> hoặc <b>4K</b>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Màu sắc -->
+                    <div class="port-card h-52 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white shadow-sm hover:shadow-md transition border border-transparent">
+                                <i class="fa-solid fa-palette text-3xl text-purple-400 mb-2"></i>
+                                <h4 class="font-bold text-sm text-gray-800">Màu sắc</h4>
+                                <p class="text-xs text-gray-500 font-medium mt-1">Đơn sắc hoặc 24 bit (16,7 triệu màu).</p>
+                                <span class="text-[10px] text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-full border"><i class="fa-solid fa-rotate mr-1"></i>Xem VD</span>
+                            </div>
+                            <div class="port-back bg-purple-50 border border-purple-200">
+                                <h4 class="font-bold text-sm text-purple-700 mb-2"><i class="fa-solid fa-magnifying-glass mr-1"></i>Thực tế</h4>
+                                <p class="text-xs text-gray-700 font-medium">Màn hình chuyên đồ hoạ có độ phủ <b>sRGB 100%</b> giúp in ấn không sai màu.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tần số quét -->
+                    <div class="port-card h-52 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                        <div class="port-card-inner relative">
+                            <div class="port-front bg-white shadow-sm hover:shadow-md transition border border-transparent overflow-hidden">
+                                <div class="absolute -right-2 -top-2 text-6xl opacity-10 text-green-500 pointer-events-none z-0"><i class="fa-solid fa-bolt"></i></div>
+                                <i class="fa-solid fa-wave-square text-3xl text-green-400 mb-2 relative z-10"></i>
+                                <h4 class="font-bold text-sm text-gray-800 relative z-10">Tần số quét</h4>
+                                <p class="text-xs text-gray-500 font-medium mt-1 relative z-10">Số ảnh/giây (Hz). Cao thì đỡ mỏi mắt.</p>
+                                <span class="text-[10px] text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-full border relative z-10"><i class="fa-solid fa-rotate mr-1"></i>Xem VD</span>
+                            </div>
+                            <div class="port-back bg-green-50 border border-green-200">
+                                <h4 class="font-bold text-sm text-green-700 mb-2"><i class="fa-solid fa-magnifying-glass mr-1"></i>Thực tế</h4>
+                                <p class="text-xs text-gray-700 font-medium">Tiêu chuẩn <b>60Hz</b>. Màn Gaming thường <b>144Hz</b> để chơi game, rê chuột mượt.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TG phản hồi -->
+                    <div class="port-card h-52 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white shadow-sm hover:shadow-md transition border border-transparent">
+                                <i class="fa-solid fa-stopwatch text-3xl text-orange-400 mb-2"></i>
+                                <h4 class="font-bold text-sm text-gray-800">TG phản hồi</h4>
+                                <p class="text-xs text-gray-500 font-medium mt-1">Thời gian đổi màu 1 điểm ảnh (ms).</p>
+                                <span class="text-[10px] text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-full border"><i class="fa-solid fa-rotate mr-1"></i>Xem VD</span>
+                            </div>
+                            <div class="port-back bg-orange-50 border border-orange-200">
+                                <h4 class="font-bold text-sm text-orange-700 mb-2"><i class="fa-solid fa-magnifying-glass mr-1"></i>Thực tế</h4>
+                                <p class="text-xs text-gray-700 font-medium">Màn thường <b>5ms</b>. Màn eSports đạt <b>1ms</b> giúp chuyển động nhanh không bóng mờ.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="bg-white/60 p-3 rounded-lg border border-purple-200 text-sm flex items-center">
+                    <i class="fa-regular fa-lightbulb text-yellow-500 mr-2 text-lg"></i>
+                    <span><b>Tuỳ chỉnh độ sáng:</b> Màn hình rời thường có nút cứng. Trên laptop, có thể dùng phím tắt trên bàn phím (VD: <kbd class="bg-gray-200 px-1 rounded text-xs text-gray-700">F11</kbd> giảm sáng, <kbd class="bg-gray-200 px-1 rounded text-xs text-gray-700">F12</kbd> tăng sáng).</span>
+                </div>
+            </div>
+
+            <!-- Phân loại máy in -->
+            <div class="glass-card p-6">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-4"><i class="fa-solid fa-print mr-2"></i>3. Máy in (Thiết bị ra)</h2>
+                
+                <!-- Thông số chung máy in -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fa-solid fa-border-none mr-1"></i>Độ phân giải: dpi (dots per inch)</span>
+                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fa-solid fa-file-lines mr-1"></i>Kích thước giấy: A4, A3...</span>
+                    <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fa-solid fa-gauge-high mr-1"></i>Tốc độ in: trang/phút</span>
+                    <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full"><i class="fa-solid fa-network-wired mr-1"></i>Kết nối: Cáp, Mạng (LAN/Wi-Fi)</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-white rounded-xl border border-gray-100 hover:shadow-lg transition">
+                        <div class="h-28 bg-gray-50 rounded mb-3 flex items-center justify-center p-2">
+                            <img src="images/inkim.jpg" 
+                                 onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                 onerror="this.onerror=null; this.src='https://img.icons8.com/color/96/print.png';"
+                                 class="object-contain h-full mix-blend-multiply cursor-zoom-in" alt="Máy in kim">
+                        </div>
+                        <h4 class="font-bold text-sm mb-1 text-gray-800">Máy in kim</h4>
+                        <p class="text-xs text-gray-500 font-medium">Dùng kim gõ vào băng mực tạo điểm. Độ phân giải thấp. Thích hợp in hoá đơn nhiều liên.</p>
+                    </div>
+                    <div class="text-center p-4 bg-white rounded-xl border-2 border-indigo-300 shadow-md transform md:scale-105 relative z-10">
+                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-indigo-900 text-xs font-bold px-3 py-1 rounded-full shadow-sm whitespace-nowrap">Phổ biến in tài liệu</div>
+                        <div class="h-28 bg-gray-50 rounded mb-3 flex items-center justify-center p-2 mt-2">
+                            <img src="images/inlaser.jpg" 
+                                 onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                 onerror="this.onerror=null; this.src='https://img.icons8.com/color/96/laser-printer.png';"
+                                 class="object-contain h-full mix-blend-multiply cursor-zoom-in" alt="Máy in laser">
+                        </div>
+                        <h4 class="font-bold text-sm text-indigo-700 mb-1">Máy in laser</h4>
+                        <p class="text-xs text-gray-500 font-medium">Dùng tia laser, hút mực siêu nhỏ. Tốc độ rất nhanh. Độ phân giải cao (300 - 600 dpi hoặc hơn).</p>
+                    </div>
+                    <div class="text-center p-4 bg-white rounded-xl border border-gray-100 hover:shadow-lg transition">
+                        <div class="h-28 bg-gray-50 rounded mb-3 flex items-center justify-center p-2">
+                            <img src="images/inphun.jpg" 
+                                 onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                 onerror="this.onerror=null; this.src='https://img.icons8.com/color/96/printer-door-open.png';"
+                                 class="object-contain h-full mix-blend-multiply cursor-zoom-in" alt="Máy in phun">
+                        </div>
+                        <h4 class="font-bold text-sm mb-1 text-gray-800">Máy in phun</h4>
+                        <p class="text-xs text-gray-500 font-medium">Phun hạt mực màu nước siêu nhỏ. Phù hợp in ảnh màu, banner quảng cáo. Có thể đạt 300 - 600 dpi.</p>
+                    </div>
+                    <div class="text-center p-4 bg-white rounded-xl border border-gray-100 hover:shadow-lg transition">
+                        <div class="h-28 bg-gray-50 rounded mb-3 flex items-center justify-center p-2">
+                            <img src="images/innhiet.jpg" 
+                                 onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                 onerror="this.onerror=null; this.src='https://img.icons8.com/color/96/receipt-printer.png';"
+                                 class="object-contain h-full mix-blend-multiply cursor-zoom-in" alt="Máy in nhiệt">
+                        </div>
+                        <h4 class="font-bold text-sm mb-1 text-gray-800">Máy in nhiệt</h4>
+                        <p class="text-xs text-gray-500 font-medium">Làm nóng giấy cảm ứng nhiệt thành màu đen. Kích thước gọn. Dùng in hoá đơn bán hàng.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: MÔ PHỎNG KẾT NỐI -->
+        <div id="tab-tuongtac" class="tab-content">
+            
+            <!-- HĐ2: Nhận diện cổng (Click to flip) -->
+            <div class="glass-card p-6 mb-6">
+                <h2 class="text-xl font-bold text-indigo-700 mb-2"><i class="fa-solid fa-magnifying-glass mr-2"></i>Hoạt động: Nhận diện cổng kết nối (Hình 5.4)</h2>
+                <p class="text-sm text-gray-600 mb-4 font-medium">Click vào các ô tương ứng A, B, C, D, E, F để xem chức năng chi tiết của cổng kết nối!</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+                    <!-- Cổng A -->
+                    <div class="port-card h-60">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white border border-gray-200 flex flex-col justify-between py-4 overflow-hidden">
+                                <div class="h-40 w-full flex items-center justify-center">
+                                    <img src="images/vga.jpg" 
+                                         onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                         onerror="this.onerror=null; this.src='https://img.icons8.com/fluency/96/vga.png';" 
+                                         class="h-full w-full object-contain scale-[3] transform origin-center mix-blend-multiply drop-shadow-md cursor-zoom-in" alt="Hình cổng A">
+                                </div>
+                                <span class="font-bold text-xl text-gray-700 mt-2 relative z-10 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm cursor-pointer hover:bg-indigo-50 transition shadow-sm" onclick="this.closest('.port-card').classList.toggle('flipped')">Cổng A</span>
+                            </div>
+                            <div class="port-back bg-blue-50 border border-blue-200 p-3 text-center flex flex-col justify-center cursor-pointer" onclick="this.closest('.port-card').classList.remove('flipped')">
+                                <span class="font-bold text-base text-blue-700 block mb-2">Cổng VGA</span>
+                                <p class="text-xs text-gray-600 font-medium">Truyền tín hiệu <b>hình ảnh</b> (tương tự), không truyền âm thanh.</p>
+                                <span class="text-[10px] text-gray-400 mt-2"><i class="fa-solid fa-rotate-left mr-1"></i>Click để lật lại</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Cổng B -->
+                    <div class="port-card h-60">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white border border-gray-200 flex flex-col justify-between py-4 overflow-hidden">
+                                <div class="h-40 w-full flex items-center justify-center">
+                                    <img src="images/hdmi.jpg" 
+                                         onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                         onerror="this.onerror=null; this.src='https://img.icons8.com/fluency/96/hdmi-cable.png';" 
+                                         class="h-full w-full object-contain scale-[3] transform origin-center mix-blend-multiply drop-shadow-md cursor-zoom-in" alt="Hình cổng B">
+                                </div>
+                                <span class="font-bold text-xl text-gray-700 mt-2 relative z-10 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm cursor-pointer hover:bg-indigo-50 transition shadow-sm" onclick="this.closest('.port-card').classList.toggle('flipped')">Cổng B</span>
+                            </div>
+                            <div class="port-back bg-blue-50 border border-blue-200 p-3 text-center flex flex-col justify-center cursor-pointer" onclick="this.closest('.port-card').classList.remove('flipped')">
+                                <span class="font-bold text-base text-blue-700 block mb-2">Cổng HDMI</span>
+                                <p class="text-xs text-gray-600 font-medium">Truyền đồng thời cả <b>âm thanh</b> và <b>hình ảnh</b> độ phân giải cao.</p>
+                                <span class="text-[10px] text-gray-400 mt-2"><i class="fa-solid fa-rotate-left mr-1"></i>Click để lật lại</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Cổng C -->
+                    <div class="port-card h-60">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white border border-gray-200 flex flex-col justify-between py-4 overflow-hidden">
+                                <div class="h-40 w-full flex items-center justify-center">
+                                    <img src="images/usb.jpg" 
+                                         onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                         onerror="this.onerror=null; this.src='https://img.icons8.com/fluency/96/usb-2.png';" 
+                                         class="h-full w-full object-contain scale-[3] transform origin-center mix-blend-multiply drop-shadow-md cursor-zoom-in" alt="Hình cổng C">
+                                </div>
+                                <span class="font-bold text-xl text-gray-700 mt-2 relative z-10 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm cursor-pointer hover:bg-indigo-50 transition shadow-sm" onclick="this.closest('.port-card').classList.toggle('flipped')">Cổng C</span>
+                            </div>
+                            <div class="port-back bg-pink-50 border border-pink-200 p-3 text-center flex flex-col justify-center cursor-pointer" onclick="this.closest('.port-card').classList.remove('flipped')">
+                                <span class="font-bold text-base text-pink-700 block mb-2">Cổng USB</span>
+                                <p class="text-xs text-gray-600 font-medium">(USB Type-A). Truyền dữ liệu đa năng, hỗ trợ Plug & Play.</p>
+                                <span class="text-[10px] text-gray-400 mt-2"><i class="fa-solid fa-rotate-left mr-1"></i>Click để lật lại</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Cổng D -->
+                    <div class="port-card h-60">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white border border-gray-200 flex flex-col justify-between py-4 overflow-hidden">
+                                <div class="h-40 w-full flex items-center justify-center">
+                                    <img src="images/typec.jpg" 
+                                         onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                         onerror="this.onerror=null; this.src='https://img.icons8.com/fluency/96/usb-type-c.png';" 
+                                         class="h-full w-full object-contain scale-[3] transform origin-center mix-blend-multiply drop-shadow-md cursor-zoom-in" alt="Hình cổng D">
+                                </div>
+                                <span class="font-bold text-xl text-gray-700 mt-2 relative z-10 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm cursor-pointer hover:bg-indigo-50 transition shadow-sm" onclick="this.closest('.port-card').classList.toggle('flipped')">Cổng D</span>
+                            </div>
+                            <div class="port-back bg-pink-50 border border-pink-200 p-3 text-center flex flex-col justify-center cursor-pointer" onclick="this.closest('.port-card').classList.remove('flipped')">
+                                <span class="font-bold text-base text-pink-700 block mb-2">USB Type-C</span>
+                                <p class="text-xs text-gray-600 font-medium">Chuẩn USB mới, tốc độ cực nhanh, thiết kế đối xứng (cắm 2 chiều).</p>
+                                <span class="text-[10px] text-gray-400 mt-2"><i class="fa-solid fa-rotate-left mr-1"></i>Click để lật lại</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Cổng E -->
+                    <div class="port-card h-60">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white border border-gray-200 flex flex-col justify-between py-4 overflow-hidden">
+                                <div class="h-40 w-full flex items-center justify-center">
+                                    <img src="images/microusb.jpg" 
+                                         onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                         onerror="this.onerror=null; this.src='https://img.icons8.com/fluency/96/micro-usb.png';" 
+                                         class="h-full w-full object-contain scale-[3] transform origin-center mix-blend-multiply drop-shadow-md cursor-zoom-in" alt="Hình cổng E">
+                                </div>
+                                <span class="font-bold text-xl text-gray-700 mt-2 relative z-10 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm cursor-pointer hover:bg-indigo-50 transition shadow-sm" onclick="this.closest('.port-card').classList.toggle('flipped')">Cổng E</span>
+                            </div>
+                            <div class="port-back bg-pink-50 border border-pink-200 p-3 text-center flex flex-col justify-center cursor-pointer" onclick="this.closest('.port-card').classList.remove('flipped')">
+                                <span class="font-bold text-base text-pink-700 block mb-2">USB (Micro)</span>
+                                <p class="text-xs text-gray-600 font-medium">Phổ biến trên các thiết bị di động, điện thoại, máy ảnh đời cũ.</p>
+                                <span class="text-[10px] text-gray-400 mt-2"><i class="fa-solid fa-rotate-left mr-1"></i>Click để lật lại</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Cổng F -->
+                    <div class="port-card h-60">
+                        <div class="port-card-inner">
+                            <div class="port-front bg-white border border-gray-200 flex flex-col justify-between py-4 overflow-hidden">
+                                <div class="h-40 w-full flex items-center justify-center">
+                                    <img src="images/lan.jpg" 
+                                         onmouseenter="showZoom(this.src)" onmouseleave="hideZoom()"
+                                         onerror="this.onerror=null; this.src='https://img.icons8.com/fluency/96/rj45.png';" 
+                                         class="h-full w-full object-contain scale-[3] transform origin-center mix-blend-multiply drop-shadow-md cursor-zoom-in" alt="Hình cổng F">
+                                </div>
+                                <span class="font-bold text-xl text-gray-700 mt-2 relative z-10 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm cursor-pointer hover:bg-indigo-50 transition shadow-sm" onclick="this.closest('.port-card').classList.toggle('flipped')">Cổng F</span>
+                            </div>
+                            <div class="port-back bg-green-50 border border-green-200 p-3 text-center flex flex-col justify-center cursor-pointer" onclick="this.closest('.port-card').classList.remove('flipped')">
+                                <span class="font-bold text-base text-green-700 block mb-2">Cổng Mạng</span>
+                                <p class="text-xs text-gray-600 font-medium">(Cổng LAN/RJ45). Kết nối thiết bị với mạng có dây.</p>
+                                <span class="text-[10px] text-gray-400 mt-2"><i class="fa-solid fa-rotate-left mr-1"></i>Click để lật lại</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cơ chế kết nối -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Plug & Play -->
+                <div class="glass-card p-6 bg-pastel-blue">
+                    <h3 class="font-bold text-pastel-blue mb-3"><i class="fa-brands fa-usb mr-2"></i>VD1: Cáp USB & Plug & Play</h3>
+                    <p class="text-sm mb-4 font-medium">Cắm thiết bị vào có thể sử dụng ngay (ví dụ: máy ảnh). Máy ảnh sẽ được hiểu như một bộ nhớ ngoài.</p>
+                    
+                    <button onclick="plugUSB()" id="btn-usb" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition mb-4">
+                        <i class="fa-solid fa-plug mr-2"></i>Cắm cáp USB nối Máy ảnh
+                    </button>
+                    
+                    <div id="usb-result" class="hidden bg-white border-2 border-blue-200 rounded-lg p-3">
+                        <div class="flex items-center text-xs text-gray-500 border-b pb-2 mb-2 font-medium">
+                            <i class="fa-solid fa-folder-open mr-2"></i> File Explorer > This PC > USB Drive (H:)
+                        </div>
+                        <div class="flex items-center text-indigo-800 font-bold text-sm">
+                            <i class="fa-solid fa-folder text-yellow-400 text-2xl mr-3"></i> DCIM (Mass Storage)
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2 italic font-medium">* Đã có thể sao chép, xoá tệp ảnh.</p>
+                    </div>
+                </div>
+
+                <!-- Bluetooth Pairing -->
+                <div class="glass-card p-6 bg-pastel-green">
+                    <h3 class="font-bold text-pastel-green mb-3"><i class="fa-brands fa-bluetooth-b mr-2"></i>VD2: Ghép đôi (Pairing) Bluetooth</h3>
+                    <p class="text-sm mb-4 font-medium">Kết nối không dây (< 10m). Yêu cầu ghép đôi trước khi trao đổi tham số kết nối.</p>
+                    
+                    <div class="bg-white rounded-lg p-4 border border-green-200">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-bold text-sm text-gray-700">Bluetooth</span>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="bt-toggle" onchange="toggleBluetooth()" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                <label for="bt-toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        
+                        <div id="bt-scanning" class="hidden text-xs text-gray-500 italic mb-2 font-medium"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Đang dò thiết bị...</div>
+                        
+                        <div id="bt-device" class="hidden flex justify-between items-center bg-gray-50 p-2 rounded cursor-pointer hover:bg-green-50 transition" onclick="pairBluetooth()">
+                            <div class="flex items-center">
+                                <i class="fa-solid fa-headphones text-gray-600 mr-2"></i>
+                                <span class="text-sm font-bold text-gray-700">BKSound DSP-9000</span>
+                            </div>
+                            <span id="bt-status" class="text-xs font-bold text-gray-400">Click để ghép đôi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: TRẮC NGHIỆM -->
+        <div id="tab-on-tap" class="tab-content">
+            <div class="glass-card p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-2"><i class="fa-solid fa-list-check mr-2"></i>Ôn tập Kiến thức (5 Câu hỏi)</h2>
+                <p class="text-sm text-gray-500 mb-6 font-medium">Trắc nghiệm bám sát 100% tài liệu sách giáo khoa. Chọn đáp án đúng nhất.</p>
+
+                <form id="quiz-form">
+                    <!-- Q1 -->
+                    <div class="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <p class="font-bold mb-3 text-gray-800">Câu 1: Hai thông số quan trọng nhất của chuột máy tính là gì?</p>
+                        <div class="space-y-2 text-sm font-medium text-gray-600">
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q1" value="wrong" class="mr-3"> Kích thước và Trọng lượng.</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q1" value="correct" class="mr-3"> Phương thức kết nối (có dây/không dây) và Độ phân giải (dpi).</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q1" value="wrong" class="mr-3"> Tần số quét (Hz) và Thời gian phản hồi (ms).</label>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <p class="font-bold mb-3 text-gray-800">Câu 2: Tần số quét của màn hình (tính bằng Hz) có ý nghĩa như thế nào đối với người dùng?</p>
+                        <div class="space-y-2 text-sm font-medium text-gray-600">
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q2" value="wrong" class="mr-3"> Thể hiện khả năng hiển thị nhiều màu sắc khác nhau.</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q2" value="wrong" class="mr-3"> Quyết định độ sắc nét (độ phân giải) của hình ảnh.</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q2" value="correct" class="mr-3"> Tần số quét cao giúp thời gian tái hiện ảnh ngắn hơn, ảnh không bị giật, đỡ mỏi mắt.</label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <p class="font-bold mb-3 text-gray-800">Câu 3: Sự khác biệt cơ bản về chức năng truyền tín hiệu giữa cổng VGA và cổng HDMI là gì?</p>
+                        <div class="space-y-2 text-sm font-medium text-gray-600">
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q3" value="correct" class="mr-3"> Cổng VGA không truyền âm thanh (chỉ truyền hình ảnh), còn cổng HDMI truyền đồng thời cả âm thanh và hình ảnh.</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q3" value="wrong" class="mr-3"> Cổng VGA truyền được âm thanh, còn cổng HDMI thì không.</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q3" value="wrong" class="mr-3"> Cả hai cổng đều truyền được hình ảnh và âm thanh giống nhau.</label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <p class="font-bold mb-3 text-gray-800">Câu 4: Loại máy in nào sử dụng tia laser để tạo sự thay đổi điện áp, hút các hạt mực siêu nhỏ và nung nóng tạo thành bản in, thường dùng phổ biến để in tài liệu?</p>
+                        <div class="space-y-2 text-sm font-medium text-gray-600">
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q4" value="wrong" class="mr-3"> Máy in kim.</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q4" value="wrong" class="mr-3"> Máy in phun.</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q4" value="correct" class="mr-3"> Máy in laser.</label>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <p class="font-bold mb-3 text-gray-800">Câu 5: Nhờ cơ chế nào mà việc kết nối máy tính với thiết bị số qua các cổng (như USB) ngày nay trở nên dễ dàng, chỉ cần cắm cáp là có thể sử dụng được ngay?</p>
+                        <div class="space-y-2 text-sm font-medium text-gray-600">
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q5" value="wrong" class="mr-3"> Cơ chế Pairing (ghép đôi).</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q5" value="correct" class="mr-3"> Cơ chế Plug & play.</label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer"><input type="radio" name="q5" value="wrong" class="mr-3"> Cơ chế Mass Storage.</label>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="button" onclick="checkQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition transform hover:scale-105">
+                            Nộp bài & Chấm điểm
+                        </button>
+                    </div>
+                    <div id="quiz-result" class="mt-6 text-center text-xl font-bold hidden"></div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Overlay Phóng to hình ảnh -->
+    <div id="global-zoom" class="fixed inset-0 z-[9999] bg-black/70 hidden items-center justify-center pointer-events-none transition-opacity duration-300 opacity-0">
+        <img id="global-zoom-img" src="" class="max-w-[90%] max-h-[90%] object-contain bg-white p-4 rounded-xl shadow-2xl transform scale-75 transition-transform duration-300">
+    </div>
+
+    <script>
+        // Tab switching logic
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('btn-active', 'bg-indigo-600', 'text-white');
+                el.classList.add('bg-white', 'text-indigo-600');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            
+            let btn = event.currentTarget;
+            btn.classList.remove('bg-white', 'text-indigo-600');
+            btn.classList.add('btn-active');
+        }
+
+        // Mouse Speed Simulation logic
+        const speedInput = document.getElementById('mouseSpeed');
+        const simCursor = document.getElementById('sim-cursor');
+        
+        speedInput.addEventListener('input', function() {
+            // value from 1 to 10. We want css transition to go from slow (0.8s) to fast (0.05s)
+            let val = parseInt(this.value);
+            let transitionTime = 1.0 - (val * 0.09); // formula to convert slider to seconds
+            simCursor.style.setProperty('--mouse-speed', transitionTime + 's');
+        });
+
+        function moveSimCursor(e) {
+            let rect = document.getElementById('sim-screen').getBoundingClientRect();
+            let x = e.clientX - rect.left - 10; // offset for cursor center
+            let y = e.clientY - rect.top - 10;
+            simCursor.style.left = x + 'px';
+            simCursor.style.top = y + 'px';
+        }
+
+        // USB Plug Simulation
+        function plugUSB() {
+            let btn = document.getElementById('btn-usb');
+            let res = document.getElementById('usb-result');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang nhận diện...';
+            setTimeout(() => {
+                btn.classList.add('hidden');
+                res.classList.remove('hidden');
+                res.classList.add('animate-pulse');
+                setTimeout(() => res.classList.remove('animate-pulse'), 1000);
+            }, 800);
+        }
+
+        // Bluetooth Simulation
+        function toggleBluetooth() {
+            let isChecked = document.getElementById('bt-toggle').checked;
+            let scanning = document.getElementById('bt-scanning');
+            let device = document.getElementById('bt-device');
+            let status = document.getElementById('bt-status');
+            
+            if(isChecked) {
+                scanning.classList.remove('hidden');
+                setTimeout(() => {
+                    scanning.classList.add('hidden');
+                    device.classList.remove('hidden');
+                    // Reset status
+                    device.classList.remove('bg-green-100');
+                    status.innerHTML = "Click để ghép đôi";
+                    status.className = "text-xs font-bold text-gray-400";
+                }, 1500);
+            } else {
+                scanning.classList.add('hidden');
+                device.classList.add('hidden');
+            }
+        }
+
+        function pairBluetooth() {
+            let device = document.getElementById('bt-device');
+            let status = document.getElementById('bt-status');
+            
+            status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            
+            setTimeout(() => {
+                device.classList.add('bg-green-100');
+                status.innerHTML = '<i class="fa-solid fa-check text-green-600 mr-1"></i> Đã kết nối';
+                status.className = "text-xs font-bold text-green-700";
+            }, 1000);
+        }
+
+        // Quiz Logic
+        function checkQuiz() {
+            let score = 0;
+            let total = 5;
+            
+            for(let i=1; i<=total; i++) {
+                let options = document.getElementsByName('q'+i);
+                let answered = false;
+                options.forEach(opt => {
+                    let parent = opt.parentElement;
+                    parent.classList.remove('bg-red-100', 'bg-green-100', 'border-red-400', 'border-green-400', 'border');
+                    
+                    if(opt.checked) {
+                        answered = true;
+                        if(opt.value === 'correct') {
+                            score++;
+                            parent.classList.add('bg-green-100', 'border', 'border-green-400');
+                        } else {
+                            parent.classList.add('bg-red-100', 'border', 'border-red-400');
+                        }
+                    }
+                    // Highlight correct answer anyway
+                    if(opt.value === 'correct') {
+                        parent.innerHTML += ' <i class="fa-solid fa-check text-green-500 float-right mt-1"></i>';
+                    }
+                });
+                
+                // if(!answered) {
+                //     alert("Bạn chưa trả lời câu " + i);
+                //     return;
+                // }
+            }
+            
+            let resDiv = document.getElementById('quiz-result');
+            resDiv.classList.remove('hidden');
+            if(score === 5) {
+                resDiv.innerHTML = `🎉 Xuất sắc! Bạn đạt ${score}/${total} điểm. Nắm kiến thức rất chắc!`;
+                resDiv.className = "mt-6 text-center text-xl font-bold text-green-600";
+            } else {
+                resDiv.innerHTML = `💪 Bạn đạt ${score}/${total} điểm. Hãy ôn tập lại phần làm sai nhé!`;
+                resDiv.className = "mt-6 text-center text-xl font-bold text-orange-500";
+            }
+        }
+
+        // Image Zoom Logic
+        function showZoom(src) {
+            const zoomDiv = document.getElementById('global-zoom');
+            const zoomImg = document.getElementById('global-zoom-img');
+            zoomImg.src = src;
+            zoomDiv.classList.remove('hidden');
+            zoomDiv.classList.add('flex');
+            // Timeout nhỏ giúp CSS transition hoạt động mượt mà khi đổi display block -> flex
+            setTimeout(() => {
+                zoomDiv.classList.remove('opacity-0');
+                zoomImg.classList.remove('scale-75');
+                zoomImg.classList.add('scale-100');
+            }, 10);
+        }
+
+        function hideZoom() {
+            const zoomDiv = document.getElementById('global-zoom');
+            const zoomImg = document.getElementById('global-zoom-img');
+            zoomDiv.classList.add('opacity-0');
+            zoomImg.classList.remove('scale-100');
+            zoomImg.classList.add('scale-75');
+            setTimeout(() => {
+                zoomDiv.classList.add('hidden');
+                zoomDiv.classList.remove('flex');
+            }, 300);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thực Hành Hệ Điều Hành - Studygram 2.0</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === BẢNG MÀU PASTEL & BIẾN CSS === */
+        :root {
+            --bg-page: #f8f9fc;
+            --primary: #4e73df;
+            --pastel-pink: #ffdde1;
+            --pastel-pink-dark: #ff9a9e;
+            --pastel-blue: #d4fc79;
+            --pastel-blue-dark: #96e6a1;
+            --pastel-purple: #e2d1c3;
+            --pastel-purple-dark: #fdfcfb;
+            --pastel-yellow: #f6d365;
+            --pastel-yellow-dark: #fda085;
+            --pastel-green: #e0c3fc;
+            --pastel-green-dark: #8ec5fc;
+            
+            --text-main: #2c3e50;
+            --text-light: #7f8c8d;
+            --white-glass: rgba(255, 255, 255, 0.85);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* === HEADER === */
+        header { text-align: center; margin-bottom: 40px; padding: 20px; }
+        h1 { font-family: 'Quicksand', sans-serif; font-size: 2.8rem; color: #2c3e50; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .subtitle { font-size: 1.2rem; color: var(--text-light); font-weight: 600; margin-top: 10px; }
+
+        /* === TABS NAVIGATION === */
+        .tabs { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; }
+        .tab-btn {
+            background: var(--white-glass);
+            border: 2px solid transparent;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tab-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4);
+        }
+
+        .tab-content { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* === BỐ CỤC & THẺ (CARDS) === */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;}
+        
+        .card {
+            background: var(--white-glass);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; }
+        .c-pink::before { background: linear-gradient(90deg, var(--pastel-pink), var(--pastel-pink-dark)); }
+        .c-blue::before { background: linear-gradient(90deg, var(--pastel-blue), var(--pastel-blue-dark)); }
+        .c-yellow::before { background: linear-gradient(90deg, var(--pastel-yellow), var(--pastel-yellow-dark)); }
+        .c-purple::before { background: linear-gradient(90deg, var(--pastel-purple), var(--pastel-purple-dark)); }
+        .c-green::before { background: linear-gradient(90deg, var(--pastel-green), var(--pastel-green-dark)); }
+
+        .card h2 { font-family: 'Quicksand', sans-serif; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .icon-box { display: inline-flex; justify-content: center; align-items: center; width: 40px; height: 40px; border-radius: 12px; font-size: 1.2rem; }
+        .c-pink .icon-box { background: #ffe5e5; color: #ff5252; }
+        .c-blue .icon-box { background: #e3f2fd; color: #2196f3; }
+        .c-yellow .icon-box { background: #fff8e1; color: #ffb300; }
+        .c-purple .icon-box { background: #f3e5f5; color: #9c27b0; }
+        .c-green .icon-box { background: #e8f5e9; color: #4caf50; }
+
+        ul.cute-list { list-style: none; }
+        ul.cute-list li { margin-bottom: 15px; padding-left: 35px; position: relative; font-weight: 600; font-size: 1.05rem;}
+        ul.cute-list li::before { content: '✨'; position: absolute; left: 0; top: 0; font-size: 1.2rem;}
+        .hl { background: #ffeaa7; padding: 3px 8px; border-radius: 8px; color: #d63031; }
+
+        .btn-action { background: #2d3436; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-family: 'Nunito'; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .btn-action:hover { background: #000; transform: scale(1.05); }
+
+        /* === MODULE: CẤU TRÚC ĐĨA SVG TƯƠNG TÁC === */
+        .svg-disk-wrapper { text-align: center; margin: 20px 0; position: relative; }
+        .disk-svg { max-width: 250px; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15)); border-radius: 50%; background: #2f3640; border: 8px solid #dcdde1;}
+        .svg-layer { transition: all 0.3s ease; cursor: crosshair; }
+        .svg-layer:hover { stroke-width: 20 !important; filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); }
+        
+        .info-panel { background: #f8f9fa; border-radius: 15px; padding: 20px; text-align: left; border-left: 5px solid #bdc3c7; transition: 0.3s; min-height: 120px; margin-top: 15px;}
+        .info-panel h4 { font-family: 'Quicksand'; font-size: 1.2rem; margin-bottom: 8px; }
+
+        /* === MODULE: FILE EXPLORER === */
+        .explorer-ui { background: #fff; border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; }
+        .exp-toolbar { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px dashed #eee; padding-bottom: 15px;}
+        .exp-btn { background: #f1f2f6; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;}
+        .exp-btn:hover { background: #dfe4ea; }
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; min-height: 120px; }
+        .folder-item { text-align: center; padding: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s; border: 2px solid transparent; user-select: none; }
+        .folder-item:hover { background: #f1f2f6; }
+        .folder-item.selected { background: #e3f2fd; border-color: #90caf9; }
+        .f-icon { font-size: 3rem; color: #f6e58d; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .f-name { font-size: 0.85rem; font-weight: 700; display: block; margin-top: 5px; word-break: break-all; }
+
+        /* === MODULE: DEFRAGMENT (HỢP MẢNH) === */
+        .defrag-container { background: #2d3436; padding: 20px; border-radius: 15px; margin-top: 20px; }
+        .defrag-track { display: flex; gap: 5px; background: #636e72; padding: 10px; border-radius: 8px; }
+        .d-block { height: 40px; flex: 1; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.8rem; transition: all 1s ease-in-out; }
+        .db-file1 { background: #ff7675; }
+        .db-file2 { background: #74b9ff; }
+        .db-empty { background: #dfe6e9; color: #b2bec3; }
+        
+        .flow-box { text-align: center; font-weight: bold; padding: 15px; border-radius: 15px; background: white; border: 2px dashed #b2bec3; }
+        .flow-arrow { text-align: center; font-size: 1.5rem; color: #b2bec3; padding: 10px 0; }
+
+        /* === MODULE: SMARTPHONE UTILITIES === */
+        /* Stopwatch */
+        .stopwatch-app { background: #000; color: #fff; padding: 20px; border-radius: 20px; text-align: center; box-shadow: inset 0 0 20px rgba(255,255,255,0.1); }
+        .sw-time { font-family: 'Courier New', monospace; font-size: 3.5rem; font-weight: bold; letter-spacing: 2px; color: #00d2d3; text-shadow: 0 0 10px rgba(0, 210, 211, 0.5); }
+        .sw-ms { font-size: 1.5rem; color: #8395a7; }
+        .sw-controls { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+        .sw-btn { border: none; width: 60px; height: 60px; border-radius: 50%; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s;}
+        .sw-start { background: #10ac84; } .sw-start:hover { background: #1dd1a1; }
+        .sw-stop { background: #ee5253; } .sw-stop:hover { background: #ff6b6b; }
+        .sw-reset { background: #576574; } .sw-reset:hover { background: #8395a7; }
+
+        /* Lock Screen */
+        .lock-screen { background: #2f3542; color: white; padding: 30px 20px; border-radius: 20px; text-align: center; transition: background 0.4s; position: relative; overflow: hidden; }
+        .lock-icon { font-size: 3.5rem; color: #ff4757; margin-bottom: 10px; transition: transform 0.3s; }
+        .lock-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; margin: 5px; font-weight: bold; transition: 0.2s; }
+        .lock-btn:hover { background: rgba(255,255,255,0.3); }
+
+        /* === QUIZ SECTION === */
+        .quiz-item { background: white; padding: 25px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #eee; }
+        .q-text { font-family: 'Quicksand'; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; color: #2d3436; }
+        .q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .q-opt { background: #f8f9fa; border: 2px solid #dfe6e9; padding: 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .q-opt:hover { background: #e3f2fd; border-color: #74b9ff; }
+        .q-opt.correct { background: #dff9fb; border-color: #badc58; color: #218c74; }
+        .q-opt.wrong { background: #ffefef; border-color: #ff7979; color: #eb4d4b; }
+        .q-feedback { margin-top: 15px; padding: 15px; border-radius: 10px; font-weight: bold; display: none; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .q-options { grid-template-columns: 1fr; }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1><i class="fa-brands fa-windows" style="color: #00a8ff;"></i> Bài 2: Hệ Điều Hành <i class="fa-brands fa-apple" style="color: #7f8fa6;"></i></h1>
+        <p class="subtitle">Thực hành Giao diện, Quản lí Đĩa & Tiện ích Di động ✨</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(this, 'tab1')"><i class="fa-solid fa-layer-group"></i> Mục Tiêu & Giao Diện</button>
+        <button class="tab-btn" onclick="openTab(this, 'tab2')"><i class="fa-solid fa-hard-drive"></i> Cấu Trúc Đĩa</button>
+        <button class="tab-btn" onclick="openTab(this, 'tab3')"><i class="fa-solid fa-puzzle-piece"></i> Tối Ưu Hóa Đĩa</button>
+        <button class="tab-btn" onclick="openTab(this, 'tab4')"><i class="fa-solid fa-mobile-screen"></i> Tiện Ích Smartphone</button>
+        <button class="tab-btn" onclick="openTab(this, 'tab5')"><i class="fa-solid fa-gamepad"></i> Luyện Tập</button>
+    </div>
+
+    <!-- TAB 1: MỤC TIÊU & GIAO DIỆN -->
+    <div id="tab1" class="tab-content active">
+        <div class="grid-2">
+            <div class="card c-pink">
+                <h2><span class="icon-box"><i class="fa-solid fa-bullseye"></i></span> Mục tiêu cốt lõi</h2>
+                <ul class="cute-list">
+                    <li>Sử dụng các <strong>chức năng cơ bản</strong> của HĐH máy tính cá nhân (Giao tiếp qua cửa sổ, biểu tượng).</li>
+                    <li>Sử dụng <strong>tiện ích HĐH</strong> để nâng cao hiệu quả (Nén Zip, Unikey, File Explorer).</li>
+                    <li>Sử dụng các <strong>tiện ích cơ bản</strong> trên thiết bị di động (Danh bạ, Đồng hồ...).</li>
+                </ul>
+                <div style="text-align: center; margin-top: 20px;">
+                    <span class="hl">Windows</span> &nbsp;•&nbsp; <span class="hl">macOS</span> &nbsp;•&nbsp; <span class="hl">Ubuntu (Mã nguồn mở)</span>
+                </div>
+            </div>
+
+            <div class="card c-blue">
+                <h2><span class="icon-box"><i class="fa-regular fa-folder-open"></i></span> Quản lí Tệp (File Explorer)</h2>
+                <p style="margin-bottom: 15px;">Môi trường giao tiếp đồ họa cho phép dùng chuột để <strong>Tạo mới, Đổi tên, Xóa, Di chuyển</strong> thư mục.</p>
+                
+                <div class="explorer-ui">
+                    <div class="exp-toolbar">
+                        <button class="exp-btn" onclick="createNewFolder()"><i class="fa-solid fa-folder-plus" style="color: #4cd137;"></i> Tạo Thư mục</button>
+                        <button class="exp-btn" onclick="deleteSelectedFolder()"><i class="fa-solid fa-trash-can" style="color: #e84118;"></i> Xóa</button>
+                    </div>
+                    <div class="folder-grid" id="fGrid">
+                        <div class="folder-item" onclick="selectFolder(this)">
+                            <i class="fa-solid fa-folder f-icon"></i>
+                            <span class="f-name">HocTap</span>
+                        </div>
+                        <div class="folder-item" onclick="selectFolder(this)">
+                            <i class="fa-solid fa-folder f-icon"></i>
+                            <span class="f-name">GiaiTri</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: CẤU TRÚC ĐĨA & TRỰC QUAN -->
+    <div id="tab2" class="tab-content">
+        <div class="grid-2">
+            <div class="card c-yellow">
+                <h2><span class="icon-box"><i class="fa-solid fa-compact-disc"></i></span> Cấu trúc Đĩa cứng</h2>
+                <p><em>Hãy di chuột vào các vùng màu trên đĩa để xem chi tiết tổ chức ghi dữ liệu!</em></p>
+                
+                <div class="svg-disk-wrapper">
+                    <svg class="disk-svg" viewBox="0 0 200 200">
+                        <!-- Đường kẻ chia Sector (Trục) -->
+                        <line x1="100" y1="0" x2="100" y2="200" stroke="#4a5568" stroke-width="2"/>
+                        <line x1="0" y1="100" x2="200" y2="100" stroke="#4a5568" stroke-width="2"/>
+                        <line x1="29" y1="29" x2="171" y2="171" stroke="#4a5568" stroke-width="2"/>
+                        <line x1="29" y1="171" x2="171" y2="29" stroke="#4a5568" stroke-width="2"/>
+
+                        <!-- Track Backgrounds -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#718096" stroke-width="12" opacity="0.3" />
+                        <circle cx="100" cy="100" r="60" fill="none" stroke="#718096" stroke-width="12" opacity="0.3" />
+                        <circle cx="100" cy="100" r="40" fill="none" stroke="#718096" stroke-width="12" opacity="0.3" />
+
+                        <!-- Tương tác: Track (Đường ghi - Xanh lam) -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#3498db" stroke-width="12" opacity="0.8" class="svg-layer" onmouseover="showDiskInfo('track')" onmouseout="resetDiskInfo()"/>
+
+                        <!-- Tương tác: Sector (Cung - Đỏ/Hồng) -->
+                        <!-- Chu vi r=60 là ~377. 1/8 là ~47 -->
+                        <circle cx="100" cy="100" r="60" fill="none" stroke="#e74c3c" stroke-width="12" stroke-dasharray="47 330" stroke-dashoffset="0" class="svg-layer" onmouseover="showDiskInfo('sector')" onmouseout="resetDiskInfo()"/>
+
+                        <!-- Tương tác: Cluster (Liên cung - Xanh lá) -->
+                        <!-- Gom 3 sector. 47 * 3 = 141 -->
+                        <circle cx="100" cy="100" r="40" fill="none" stroke="#2ecc71" stroke-width="12" stroke-dasharray="141 236" stroke-dashoffset="-47" class="svg-layer" onmouseover="showDiskInfo('cluster')" onmouseout="resetDiskInfo()"/>
+
+                        <!-- Tâm đĩa -->
+                        <circle cx="100" cy="100" r="12" fill="#dcdde1" stroke="#2f3640" stroke-width="3"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="card c-purple">
+                <div class="info-panel" id="diskInfoBox">
+                    <h4 id="d-title"><i class="fa-solid fa-circle-info"></i> Khám phá Đĩa từ</h4>
+                    <p id="d-desc">Đĩa cứng ghi dữ liệu theo các đường tròn đồng tâm và chia nhỏ thành các cung. Việc tổ chức này giúp hệ điều hành quản lý dữ liệu hiệu quả.</p>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h3 style="font-family: 'Quicksand'; margin-bottom: 10px;">⚠️ Lỗi dễ nhầm lẫn:</h3>
+                    <div style="background: #fff0f1; padding: 10px; border-left: 4px solid #ff4757; margin-bottom: 10px; border-radius: 5px;">
+                        <strong>Bad Sector (Cung hỏng):</strong> Lỗi vật lí trên đĩa, vùng đĩa bị hỏng không thể đọc/ghi.
+                    </div>
+                    <div style="background: #f1f2f6; padding: 10px; border-left: 4px solid #747d8c; border-radius: 5px;">
+                        <strong>Dữ liệu "mồ côi":</strong> Lỗi phần mềm do liên cung mất liên kết với tệp (tình trạng chồng chéo), không khai thác được.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: TỐI ƯU HÓA -->
+    <div id="tab3" class="tab-content">
+        <div class="grid-2">
+            <div class="card c-green">
+                <h2><span class="icon-box"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Sửa lỗi & Hợp mảnh</h2>
+                <p>Trong <strong>File Explorer</strong> > Nháy chuột phải vào ổ đĩa > <strong>Properties</strong> > Tab <strong>Tools</strong>:</p>
+                <ul class="cute-list" style="margin-top: 15px;">
+                    <li><span class="hl" style="background:#55efc4; color:#000">Check:</span> Tiện ích kiểm tra và khử lỗi đĩa (Check disk).</li>
+                    <li><span class="hl" style="background:#81ecec; color:#000">Optimize:</span> Tiện ích Hợp mảnh (Defragment).</li>
+                </ul>
+                <p style="color: #d63031; font-weight: bold; margin-top: 10px;"><i class="fa-solid fa-circle-exclamation"></i> Chú ý: Chức năng hợp mảnh chỉ có tác dụng đối với ĐĨA TỪ.</p>
+            </div>
+
+            <div class="card c-yellow">
+                <h2><span class="icon-box"><i class="fa-solid fa-broom"></i></span> Dọn đĩa (Disk Cleanup)</h2>
+                <p>Nằm ở Tab <strong>General</strong>, giúp giải phóng không gian bằng cách xóa tệp thừa.</p>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; margin-top: 15px; border: 1px solid #ddd;">
+                    <div><input type="checkbox" checked> Recycle Bin (Thùng rác) - 2.5 GB</div>
+                    <div><input type="checkbox" checked> Temporary Files (Tệp tạm) - 500 MB</div>
+                    <button class="btn-action" onclick="alert('Đã dọn dẹp thành công! Giải phóng 3.0 GB không gian đĩa.')" style="background: #f39c12; padding: 8px 15px; width: 100%;"><i class="fa-solid fa-trash-can-arrow-up"></i> Chạy Disk Cleanup</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card c-blue" style="margin-top: 20px;">
+            <h2><span class="icon-box"><i class="fa-solid fa-arrow-right-arrow-left"></i></span> Mô phỏng Cơ chế Hợp mảnh</h2>
+            <div class="grid-3">
+                <div class="flow-box"><strong>Ghi tệp</strong><br><small>HĐH tìm vùng trống ngẫu nhiên.</small></div>
+                <div class="flow-box" style="border-color:#ff7675;"><strong>Phân mảnh</strong><br><small>Tệp rải rác -> Đầu từ di chuyển nhiều -> Đọc chậm.</small></div>
+                <div class="flow-box" style="border-color:#55efc4;"><strong>Optimize (Hợp mảnh)</strong><br><small>Tổ chức liên cung liên tục -> Tăng tốc độ.</small></div>
+            </div>
+
+            <div class="defrag-container">
+                <p style="color: white; margin-bottom: 10px;">Trạng thái đĩa: <strong>Bị phân mảnh</strong></p>
+                <div class="defrag-track" id="dTrack">
+                    <div class="d-block db-file1" data-id="1">Tệp A</div>
+                    <div class="d-block db-empty" data-id="0"></div>
+                    <div class="d-block db-file2" data-id="2">Tệp B</div>
+                    <div class="d-block db-file1" data-id="1">Tệp A</div>
+                    <div class="d-block db-file2" data-id="2">Tệp B</div>
+                    <div class="d-block db-empty" data-id="0"></div>
+                </div>
+                <div style="text-align: center;">
+                    <button class="btn-action" style="background: #00b894;" onclick="runDefragSim()"><i class="fa-solid fa-hammer"></i> Thực hiện Optimize</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: TIỆN ÍCH SMARTPHONE -->
+    <div id="tab4" class="tab-content">
+        <div class="grid-2">
+            <div class="card c-pink">
+                <h2><span class="icon-box"><i class="fa-solid fa-stopwatch"></i></span> Đồng hồ đếm thời gian</h2>
+                <p>Tiện ích đồng hồ trên di động có khả năng đếm tiến/lùi chính xác đến <strong>1% giây</strong> (0.01s), rất hữu ích để đo kỉ lục thể thao.</p>
+                
+                <div class="stopwatch-app" style="margin-top: 15px;">
+                    <div class="sw-time" id="swDisplay">00:00<span class="sw-ms">.00</span></div>
+                    <div class="sw-controls">
+                        <button class="sw-btn sw-start" onclick="swStart()"><i class="fa-solid fa-play"></i></button>
+                        <button class="sw-btn sw-stop" onclick="swStop()"><i class="fa-solid fa-pause"></i></button>
+                        <button class="sw-btn sw-reset" onclick="swReset()"><i class="fa-solid fa-rotate-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card c-purple">
+                <h2><span class="icon-box"><i class="fa-solid fa-shield-halved"></i></span> Phương thức Đăng nhập</h2>
+                <p>Mật khẩu an toàn nhưng mất thời gian gõ. Vân tay/Khuôn mặt (sinh trắc học) nhanh, tiện lợi nhưng có thể bị ảnh hưởng bởi tay ướt, khẩu trang.</p>
+                
+                <div class="lock-screen" id="lockUI" style="margin-top: 15px;">
+                    <div class="lock-icon" id="lIcon"><i class="fa-solid fa-lock"></i></div>
+                    <p id="lText" style="font-weight: bold; margin-bottom: 15px;">Thiết bị đang khóa</p>
+                    <div>
+                        <button class="lock-btn" onclick="checkPin()"><i class="fa-solid fa-keyboard"></i> Nhập PIN (1234)</button>
+                        <button class="lock-btn" onclick="unlockDevice()"><i class="fa-solid fa-fingerprint"></i> Quét Vân tay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: TRẮC NGHIỆM -->
+    <div id="tab5" class="tab-content">
+        <div class="card c-blue">
+            <h2><span class="icon-box"><i class="fa-solid fa-list-check"></i></span> Trắc Nghiệm Ôn Tập (5 Câu Lõi)</h2>
+            
+            <!-- Câu 1 -->
+            <div class="quiz-item">
+                <div class="q-text">Câu 1: Việc đọc, ghi dữ liệu trên đĩa cứng được thực hiện theo đơn vị nào?</div>
+                <div class="q-options">
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai. Đường ghi (Track) chứa các cung.')">A. Đường ghi (Track)</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai. Cung (Sector) thường ghi 512 byte, chưa phải đơn vị đọc ghi chung.')">B. Cung (Sector)</div>
+                    <div class="q-opt" onclick="evalQuiz(this, true, 'Chính xác! Đơn vị đọc/ghi là liên cung (Cluster).')">C. Liên cung (Cluster)</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai. Tệp không phải là đơn vị phân bổ vật lí.')">D. Tệp (File)</div>
+                </div>
+                <div class="q-feedback"></div>
+            </div>
+
+            <!-- Câu 2 -->
+            <div class="quiz-item">
+                <div class="q-text">Câu 2: Tiện ích hợp mảnh (Defragment / Optimize) CÓ tác dụng đối với loại đĩa nào?</div>
+                <div class="q-options">
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai.')">A. Mọi loại đĩa</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai.')">B. Thẻ nhớ di động</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai.')">C. Đĩa quang (CD/DVD)</div>
+                    <div class="q-opt" onclick="evalQuiz(this, true, 'Chính xác! Chức năng hợp mảnh chỉ có tác dụng đối với đĩa từ do cấu tạo cơ học của nó.')">D. Đĩa từ</div>
+                </div>
+                <div class="q-feedback"></div>
+            </div>
+
+            <!-- Câu 3 -->
+            <div class="quiz-item">
+                <div class="q-text">Câu 3: Thuật ngữ nào chỉ tình trạng lỗi do một liên cung mất liên kết với tệp, không khai thác được?</div>
+                <div class="q-options">
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai. Bad sector là hỏng về mặt vật lí.')">A. Bad sector</div>
+                    <div class="q-opt" onclick="evalQuiz(this, true, 'Chính xác! Đây là đoạn dữ liệu mồ côi.')">B. Đoạn dữ liệu "mồ côi"</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai. Phân mảnh là tệp nằm rải rác.')">C. Phân mảnh đĩa</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai.')">D. Sector</div>
+                </div>
+                <div class="q-feedback"></div>
+            </div>
+
+            <!-- Câu 4 -->
+            <div class="quiz-item">
+                <div class="q-text">Câu 4: Để kiểm tra và khử các lỗi trên đĩa trong cửa sổ Properties (Tab Tools), ta chọn nút lệnh nào?</div>
+                <div class="q-options">
+                    <div class="q-opt" onclick="evalQuiz(this, true, 'Chính xác! Check (Check disk) dùng để khử lỗi đĩa.')">A. Check</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai. Optimize dùng để hợp mảnh.')">B. Optimize</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai.')">C. Format</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai. Disk Cleanup nằm ở Tab General.')">D. Disk Cleanup</div>
+                </div>
+                <div class="q-feedback"></div>
+            </div>
+
+            <!-- Câu 5 -->
+            <div class="quiz-item">
+                <div class="q-text">Câu 5: Tiện ích đồng hồ trên hệ điều hành di động có khả năng đếm thời gian tiến/lùi chính xác đến mức nào?</div>
+                <div class="q-options">
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai.')">A. 1 giây</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai.')">B. 1/10 giây</div>
+                    <div class="q-opt" onclick="evalQuiz(this, true, 'Chính xác! 1% giây (0.01s) rất cần cho các hoạt động đo thể thao.')">C. 1% giây</div>
+                    <div class="q-opt" onclick="evalQuiz(this, false, 'Sai.')">D. 1 phút</div>
+                </div>
+                <div class="q-feedback"></div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /* === LOGIC: CHUYỂN TAB === */
+    function openTab(btnElement, tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        const target = document.getElementById(tabId);
+        if (target) target.classList.add('active');
+        if (btnElement) btnElement.classList.add('active');
+    }
+
+    /* === LOGIC: FILE EXPLORER === */
+    let fCount = 1;
+    function selectFolder(el) {
+        document.querySelectorAll('.folder-item').forEach(item => item.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+    function createNewFolder() {
+        const grid = document.getElementById('fGrid');
+        const div = document.createElement('div');
+        div.className = 'folder-item';
+        div.onclick = function() { selectFolder(this); };
+        div.innerHTML = `<i class="fa-solid fa-folder f-icon"></i><span class="f-name">Thư mục mới ${fCount++}</span>`;
+        grid.appendChild(div);
+    }
+    function deleteSelectedFolder() {
+        const selected = document.querySelector('.folder-item.selected');
+        if (selected) {
+            selected.style.transform = 'scale(0)';
+            setTimeout(() => selected.remove(), 200);
+        } else {
+            alert("Vui lòng chọn một thư mục bằng cách click vào nó trước khi xoá!");
+        }
+    }
+
+    /* === LOGIC: CẤU TRÚC ĐĨA SVG === */
+    const diskInfo = {
+        track: { title: "Đường ghi (Track)", desc: "Đĩa cứng ghi dữ liệu theo các đường tròn đồng tâm. <strong>Mỗi đường gọi là một Track.</strong>", color: "#3498db", icon: "fa-bullseye" },
+        sector: { title: "Cung (Sector)", desc: "Mỗi đường ghi gồm nhiều cung (1 phần rẽ quạt). <strong>Mỗi cung ghi 512 byte dữ liệu.</strong>", color: "#e74c3c", icon: "fa-chart-pie" },
+        cluster: { title: "Liên cung (Cluster)", desc: "Là đơn vị thực hiện việc đọc/ghi dữ liệu, <strong>thường gồm 8 cung gộp lại.</strong>", color: "#2ecc71", icon: "fa-link" }
+    };
+
+    function showDiskInfo(type) {
+        const panel = document.getElementById('diskInfoBox');
+        const title = document.getElementById('d-title');
+        const desc = document.getElementById('d-desc');
+        
+        const data = diskInfo[type];
+        title.innerHTML = `<i class="fa-solid ${data.icon}" style="color:${data.color}"></i> ${data.title}`;
+        desc.innerHTML = data.desc;
+        panel.style.borderLeftColor = data.color;
+    }
+
+    function resetDiskInfo() {
+        const panel = document.getElementById('diskInfoBox');
+        const title = document.getElementById('d-title');
+        const desc = document.getElementById('d-desc');
+        
+        title.innerHTML = `<i class="fa-solid fa-circle-info"></i> Khám phá Đĩa từ`;
+        desc.innerHTML = "Đĩa cứng ghi dữ liệu theo các đường tròn đồng tâm và chia nhỏ thành các cung. Việc tổ chức này giúp hệ điều hành quản lý dữ liệu hiệu quả.";
+        panel.style.borderLeftColor = "#bdc3c7";
+    }
+
+    /* === LOGIC: HỢP MẢNH (DEFRAG) === */
+    function runDefragSim() {
+        const track = document.getElementById('dTrack');
+        const blocks = Array.from(track.children);
+        
+        // Sắp xếp: ID 1 (Tệp A), ID 2 (Tệp B), ID 0 (Trống)
+        blocks.sort((a, b) => {
+            const vA = parseInt(a.getAttribute('data-id'));
+            const vB = parseInt(b.getAttribute('data-id'));
+            if(vA === 0) return 1;
+            if(vB === 0) return -1;
+            return vA - vB;
+        });
+
+        // Xóa cũ, thêm mới để tạo hiệu ứng
+        track.innerHTML = '';
+        blocks.forEach(b => track.appendChild(b));
+        
+        track.style.boxShadow = "0 0 20px #55efc4";
+        track.previousElementSibling.innerHTML = 'Trạng thái đĩa: <strong style="color:#00b894">Đã tối ưu (Liên tục)</strong>';
+        setTimeout(() => { track.style.boxShadow = "none"; }, 1000);
+    }
+
+    /* === LOGIC: STOPWATCH === */
+    let swTimer = null;
+    let ms = 0, s = 0, m = 0; // ms ở đây đếm theo 1/100 giây
+
+    function displayTime() {
+        const dM = m < 10 ? "0"+m : m;
+        const dS = s < 10 ? "0"+s : s;
+        const dMs = ms < 10 ? "0"+ms : ms;
+        document.getElementById('swDisplay').innerHTML = `${dM}:${dS}<span class="sw-ms">.${dMs}</span>`;
+    }
+
+    function swStart() {
+        if(swTimer) return;
+        swTimer = setInterval(() => {
+            ms++;
+            if(ms >= 100) { ms = 0; s++; } // 100 * 10ms = 1s
+            if(s >= 60) { s = 0; m++; }
+            displayTime();
+        }, 10); // Interval 10ms = 1% giây
+    }
+
+    function swStop() {
+        clearInterval(swTimer);
+        swTimer = null;
+    }
+
+    function swReset() {
+        swStop();
+        ms = 0; s = 0; m = 0;
+        displayTime();
+    }
+
+    /* === LOGIC: BẢO MẬT ĐĂNG NHẬP === */
+    function checkPin() {
+        const pin = prompt("Nhập mã PIN (1234):");
+        if(pin === "1234") unlockDevice();
+        else if(pin !== null) alert("Sai mã PIN!");
+    }
+
+    function unlockDevice() {
+        const ui = document.getElementById('lockUI');
+        const icon = document.getElementById('lIcon');
+        const text = document.getElementById('lText');
+        
+        ui.style.background = "#2ed573";
+        icon.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
+        icon.style.color = "#fff";
+        icon.style.transform = "scale(1.2)";
+        text.innerText = "Đã mở khóa thành công!";
+        
+        setTimeout(() => {
+            ui.style.background = "#2f3542";
+            icon.innerHTML = '<i class="fa-solid fa-lock"></i>';
+            icon.style.color = "#ff4757";
+            icon.style.transform = "scale(1)";
+            text.innerText = "Thiết bị đang khóa";
+        }, 2500);
+    }
+
+    /* === LOGIC: TRẮC NGHIỆM === */
+    function evalQuiz(optElement, isCorrect, msg) {
+        const parent = optElement.parentElement;
+        Array.from(parent.children).forEach(child => child.classList.remove('correct', 'wrong'));
+        
+        optElement.classList.add(isCorrect ? 'correct' : 'wrong');
+        
+        const feedback = parent.nextElementSibling;
+        feedback.style.display = 'block';
+        feedback.innerText = msg;
+        feedback.style.backgroundColor = isCorrect ? '#dff9fb' : '#ffefef';
+        feedback.style.color = isCorrect ? '#218c74' : '#eb4d4b';
+        feedback.style.border = `2px solid ${isCorrect ? '#badc58' : '#ff7979'}`;
+    }
+</script>
+
+</body>
+</html>

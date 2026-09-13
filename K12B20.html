@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 20: Nhóm Nghề Quản Trị Thuộc Ngành Công Nghệ Thông Tin</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#E0F2FE',
+                            purple: '#F3E8FF',
+                            pink: '#FCE7F3',
+                            green: '#DCFCE7',
+                            yellow: '#FEF9C3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #F8FAFC;
+        }
+        
+        /* Custom Title Style per requirements */
+        .custom-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3B82F6, #A855F7); /* Blue to Purple */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize; /* Title Case */
+        }
+
+        /* Tab Transitions */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* NEW CSS: Hiệu ứng và Mô phỏng */
+        /* Menu Cuộn Ngang */
+        .menu-container {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .menu-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        /* Terminal Console Simulation */
+        .terminal-box {
+            background-color: #1e293b;
+            color: #4ade80;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: left;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), inset 0 2px 4px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .terminal-header {
+            background-color: #334155;
+            padding: 0.5rem 1rem;
+            margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .mac-btn { width: 12px; height: 12px; border-radius: 50%; }
+        .mac-red { background-color: #ef4444; }
+        .mac-yellow { background-color: #f59e0b; }
+        .mac-green { background-color: #10b981; }
+        
+        .typing-effect {
+            border-right: 2px solid #4ade80;
+            white-space: pre-wrap;
+            animation: blink 0.75s step-end infinite;
+        }
+        @keyframes blink { 50% { border-color: transparent; } }
+
+        /* Alert Animation */
+        .alert-box {
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Tooltip Tương tác */
+        .concept-btn {
+            position: relative;
+            cursor: pointer;
+            border-bottom: 2px dashed #a855f7;
+            color: #7e22ce;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .concept-btn:hover { color: #9333ea; background-color: #f3e8ff; border-radius: 4px; }
+        
+        .concept-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1e293b;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            width: 280px;
+            z-index: 50;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            font-size: 0.875rem;
+            font-weight: normal;
+        }
+        .concept-btn:hover .concept-tooltip {
+            display: block;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        .concept-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        /* NEW CSS: Flip Card for Soft Skills */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+            height: 140px; /* Fixed height for smooth flip */
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.is-flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .flip-card-front {
+            background-color: white;
+        }
+        .flip-card-back {
+            background-color: #f8fafc;
+            transform: rotateY(180deg);
+            border: 2px solid #e2e8f0;
+        }
+
+        /* NEW CSS: Floating Animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 4s ease-in-out infinite 2s; }
+
+        /* NEW CSS: Vertical Flip Card cho Ví dụ minh họa */
+        .flip-card-vertical {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+            height: 280px;
+        }
+        .flip-card-vertical-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card-vertical.is-flipped .flip-card-vertical-inner {
+            transform: rotateX(-180deg);
+        }
+        .flip-card-vertical-front, .flip-card-vertical-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .flip-card-vertical-front {
+            background-color: white;
+        }
+        .flip-card-vertical-back {
+            transform: rotateX(180deg);
+            background-color: #f8fafc;
+        }
+
+        /* NEW CSS: Flip Card Up (Lật từ dưới lên cho Kiến thức chuyên môn) */
+        .flip-card-up {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+            height: 150px;
+        }
+        .flip-card-up-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card-up.is-flipped .flip-card-up-inner {
+            transform: rotateX(180deg); /* Lật lên trên */
+        }
+        .flip-card-up-front, .flip-card-up-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .flip-card-up-front {
+            background-color: white;
+            display: flex;
+            align-items: center;
+        }
+        .flip-card-up-back {
+            transform: rotateX(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+        }
+
+        /* Hiệu ứng Shine cho phần Kết luận */
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .animate-shine {
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        /* Quiz Styles */
+        .quiz-option.correct { background-color: #DCFCE7; border-color: #22C55E; color: #166534; pointer-events: none;}
+        .quiz-option.wrong { background-color: #FEE2E2; border-color: #EF4444; color: #991B1B; pointer-events: none;}
+        .quiz-option.disabled { pointer-events: none; opacity: 0.6; }
+    </style>
+</head>
+<body class="text-slate-700 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <h1 class="custom-title text-center md:text-left">
+                Bài 20: Nhóm Nghề Quản Trị Thuộc Ngành Công Nghệ Thông Tin
+            </h1>
+            <div class="flex items-center gap-2 text-sm font-semibold text-slate-500 bg-slate-100 px-4 py-2 rounded-full shadow-inner">
+                <i class="fa-solid fa-bullseye text-pink-500 animate-pulse"></i> Mục Tiêu: Hướng Nghiệp CNTT
+            </div>
+        </div>
+        
+        <!-- Tab Navigation (Đã sửa theo UI chuẩn) -->
+        <div class="max-w-5xl mx-auto px-4 pb-4">
+            <div class="bg-slate-100 p-1.5 rounded-full inline-flex w-full md:w-auto overflow-x-auto menu-container shadow-inner items-center gap-1">
+                <button onclick="switchTab('tab-tongquan')" class="tab-btn active px-4 py-2 rounded-full font-bold text-sm bg-blue-500 text-white shadow-md transition-all whitespace-nowrap" data-tab="tab-tongquan">
+                    <i class="fa-solid fa-map-location-dot mr-2"></i>Tổng Quan & Bối Cảnh
+                </button>
+                <button onclick="switchTab('tab-nghenghiep')" class="tab-btn px-4 py-2 rounded-full font-bold text-sm bg-transparent text-slate-600 hover:bg-white transition-all whitespace-nowrap" data-tab="tab-nghenghiep">
+                    <i class="fa-solid fa-network-wired mr-2"></i>3 Nhóm Nghề Cốt Lõi
+                </button>
+                <button onclick="switchTab('tab-kynang')" class="tab-btn px-4 py-2 rounded-full font-bold text-sm bg-transparent text-slate-600 hover:bg-white transition-all whitespace-nowrap" data-tab="tab-kynang">
+                    <i class="fa-solid fa-brain mr-2"></i>Kiến Thức & Kỹ Năng
+                </button>
+                <button onclick="switchTab('tab-xuhuong')" class="tab-btn px-4 py-2 rounded-full font-bold text-sm bg-transparent text-slate-600 hover:bg-white transition-all whitespace-nowrap" data-tab="tab-xuhuong">
+                    <i class="fa-solid fa-chart-line mr-2"></i>Xu Hướng & Đào Tạo
+                </button>
+                <button onclick="switchTab('tab-thuchanh')" class="tab-btn px-4 py-2 rounded-full font-bold text-sm bg-transparent text-slate-600 hover:bg-white transition-all whitespace-nowrap" data-tab="tab-thuchanh">
+                    <i class="fa-solid fa-gamepad mr-2"></i>Luyện Tập
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 mt-6">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tab-tongquan" class="tab-content active">
+            
+            <!-- Alert Simulation -->
+            <div class="alert-box bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl mb-8 flex items-start gap-4 shadow-sm">
+                <div class="bg-red-500 text-white p-2 rounded-full flex-shrink-0 mt-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h4 class="text-red-700 font-bold text-lg">Mô phỏng Hệ thống: Nguy cơ an ninh mạng</h4>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Thế giới số hóa giúp doanh nghiệp phát triển, nhưng nếu <b>không có người quản trị</b>, hệ thống sẽ trở thành "miếng mồi ngon" cho hacker, virus và các sự cố hỏng hóc vật lý.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bối cảnh thế giới số: Flip Card -->
+            <div class="flip-card w-full h-[220px] md:h-[180px] mb-10" onclick="toggleFlip(this)">
+                <div class="flip-card-inner">
+                    <!-- Mặt trước -->
+                    <div class="flip-card-front border border-slate-200 hover:border-blue-300 transition-colors bg-gradient-to-r from-white to-blue-50">
+                        <div class="absolute top-4 right-4 text-slate-400 animate-pulse flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-hand-pointer"></i> Click để xoay
+                        </div>
+                        <div class="flex flex-col md:flex-row items-center gap-6 w-full px-4">
+                            <div class="bg-gradient-to-br from-blue-400 to-indigo-500 p-5 rounded-3xl flex-shrink-0 text-center shadow-lg shadow-blue-200">
+                                <i class="fa-solid fa-globe text-5xl text-white"></i>
+                            </div>
+                            <div class="text-center md:text-left">
+                                <h2 class="text-2xl font-bold text-slate-800 mb-2">Bối cảnh thế giới số & Sự phụ thuộc</h2>
+                                <p class="text-slate-600 font-medium">Cuộc cách mạng số hóa mang lại lợi ích khổng lồ nhưng cũng tạo ra những <span class="text-red-500 font-bold">rủi ro chí mạng</span>.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Mặt sau -->
+                    <div class="flip-card-back border border-blue-200 bg-gradient-to-br from-slate-800 to-indigo-900 text-white p-6">
+                        <h2 class="text-xl font-bold text-blue-300 mb-3 border-b border-slate-600 pb-2 w-full text-left">Góc khuất của Công nghệ</h2>
+                        <p class="text-slate-300 text-left text-sm md:text-base leading-relaxed">
+                            Sự phát triển mạnh mẽ của CNTT khiến các tổ chức, doanh nghiệp ngày càng phụ thuộc sâu sắc vào hệ thống máy tính, cơ sở dữ liệu và các ứng dụng. 
+                            <br><br>
+                            Sự phụ thuộc này đồng nghĩa với việc họ phải đối mặt với các <b>nguy cơ sự cố bảo mật cực kỳ nghiêm trọng</b>. Bất kỳ một đứt gãy nào cũng có thể gây thiệt hại khổng lồ về tài chính và uy tín.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold text-slate-700 mb-6 flex items-center gap-2 border-b-2 border-slate-100 pb-2">
+                <i class="fa-solid fa-fire text-orange-500"></i> Các ví dụ minh họa điển hình (Click để xem hậu quả)
+            </h3>
+            
+            <!-- Cards Ví dụ (Lật dọc từ trên xuống) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                
+                <!-- Ví dụ 1 -->
+                <div class="flip-card-vertical group" onclick="toggleFlip(this)">
+                    <div class="flip-card-vertical-inner">
+                        <div class="flip-card-vertical-front border border-slate-200 hover:border-red-300 p-6">
+                            <div class="absolute top-0 right-0 bg-red-100 text-red-600 px-3 py-1 rounded-bl-xl font-bold text-xs">Tháng 5/2017</div>
+                            <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mb-4 text-red-500 text-3xl mx-auto md:mx-0 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-bug"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-xl mb-2 text-center md:text-left">Mã độc WannaCry</h4>
+                            <p class="text-sm text-slate-500 text-center md:text-left">Phần mềm độc hại tống tiền gây chấn động toàn cầu.</p>
+                            <div class="mt-auto text-center text-xs text-slate-400 pt-4"><i class="fa-solid fa-chevron-down animate-bounce"></i> Click lật thẻ</div>
+                        </div>
+                        <div class="flip-card-vertical-back border-2 border-red-400 bg-red-50 p-6 flex flex-col justify-center">
+                            <h4 class="font-bold text-red-700 text-lg mb-2"><i class="fa-solid fa-skull-crossbones mr-2"></i>Hậu quả toàn cầu</h4>
+                            <p class="text-sm text-red-900 leading-relaxed text-justify">
+                                Mã độc này đã lây nhiễm và <b>mã hóa dữ liệu</b> của hàng trăm nghìn hệ thống máy tính trên toàn thế giới để đòi tiền chuộc. Các bệnh viện, ngân hàng, viễn thông bị tê liệt, minh chứng cho sức tàn phá khủng khiếp của lỗ hổng bảo mật.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ví dụ 2 -->
+                <div class="flip-card-vertical group" onclick="toggleFlip(this)">
+                    <div class="flip-card-vertical-inner">
+                        <div class="flip-card-vertical-front border border-slate-200 hover:border-blue-300 p-6">
+                            <div class="absolute top-0 right-0 bg-blue-100 text-blue-600 px-3 py-1 rounded-bl-xl font-bold text-xs">Vương Quốc Anh</div>
+                            <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-4 text-blue-500 text-3xl mx-auto md:mx-0 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-plane-circle-xmark"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-xl mb-2 text-center md:text-left">British Airways</h4>
+                            <p class="text-sm text-slate-500 text-center md:text-left">Sự cố hạ tầng mạng của hãng hàng không nổi tiếng.</p>
+                            <div class="mt-auto text-center text-xs text-slate-400 pt-4"><i class="fa-solid fa-chevron-down animate-bounce"></i> Click lật thẻ</div>
+                        </div>
+                        <div class="flip-card-vertical-back border-2 border-blue-400 bg-blue-50 p-6 flex flex-col justify-center">
+                            <h4 class="font-bold text-blue-700 text-lg mb-2"><i class="fa-solid fa-chart-line-down mr-2"></i>Tê liệt vận hành</h4>
+                            <p class="text-sm text-blue-900 leading-relaxed text-justify">
+                                Một sự cố hệ thống máy tính nội bộ đã khiến toàn bộ hoạt động của hãng <b>ngừng trệ trong nhiều ngày</b>. Hàng nghìn chuyến bay bị hủy bỏ, dẫn đến thiệt hại tài chính lên tới hàng triệu đô la Mỹ.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ví dụ 3 -->
+                <div class="flip-card-vertical group" onclick="toggleFlip(this)">
+                    <div class="flip-card-vertical-inner">
+                        <div class="flip-card-vertical-front border border-slate-200 hover:border-purple-300 p-6">
+                            <div class="absolute top-0 right-0 bg-purple-100 text-purple-600 px-3 py-1 rounded-bl-xl font-bold text-xs">Năm 2014</div>
+                            <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-4 text-purple-500 text-3xl mx-auto md:mx-0 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-building-shield"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-xl mb-2 text-center md:text-left">Hãng Sony (Nhật)</h4>
+                            <p class="text-sm text-slate-500 text-center md:text-left">Cuộc tấn công quy mô lớn nhắm vào Tập đoàn Sony.</p>
+                            <div class="mt-auto text-center text-xs text-slate-400 pt-4"><i class="fa-solid fa-chevron-down animate-bounce"></i> Click lật thẻ</div>
+                        </div>
+                        <div class="flip-card-vertical-back border-2 border-purple-400 bg-purple-50 p-6 flex flex-col justify-center">
+                            <h4 class="font-bold text-purple-700 text-lg mb-2"><i class="fa-solid fa-user-ninja mr-2"></i>Khủng hoảng rò rỉ</h4>
+                            <p class="text-sm text-purple-900 leading-relaxed text-justify">
+                                Bị một nhóm tin tặc thâm nhập, các <b>thông tin tuyệt mật bị rò rỉ ồ ạt</b> lên Internet. Hãng phải chi trả hàng triệu đô la để khắc phục sự cố kĩ thuật, bồi thường, đối mặt với sự suy giảm uy tín cực kì nghiêm trọng.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kết luận Nổi bật -->
+            <div class="relative overflow-hidden rounded-3xl p-1 bg-gradient-to-r from-amber-400 via-yellow-200 to-orange-400 animate-shine shadow-xl">
+                <div class="bg-white/90 backdrop-blur-md px-6 py-8 rounded-[1.4rem] text-center flex flex-col items-center relative z-10 border border-white/50">
+                    <div class="absolute -top-6 -right-6 text-yellow-200 opacity-30 text-9xl pointer-events-none"><i class="fa-solid fa-lightbulb"></i></div>
+                    
+                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-300 to-orange-400 text-white rounded-full flex items-center justify-center text-3xl mb-4 shadow-lg shadow-orange-200 animate-bounce">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-slate-800 mb-2 uppercase tracking-wide">Kết Luận Quan Trọng</h3>
+                    <p class="text-slate-700 text-lg font-medium max-w-2xl">
+                        Tất cả những sự kiện trên là minh chứng đắt giá khẳng định: Các tổ chức <b>bắt buộc phải có</b> những chuyên gia <span class="text-blue-600 font-bold border-b-2 border-blue-400">quản trị hệ thống</span>, <span class="text-red-600 font-bold border-b-2 border-red-400">bảo mật</span> và <span class="text-green-600 font-bold border-b-2 border-green-400">quản trị mạng</span> để bảo vệ sự sống còn của doanh nghiệp!
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 2: NHÓM NGHỀ -->
+        <section id="tab-nghenghiep" class="tab-content">
+            
+            <!-- Interactive Mindmap/Concept Select -->
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">3 Trụ Cột Quản Trị CNTT</h2>
+                <p class="text-slate-500 text-sm">Click vào từng thẻ để trải nghiệm công việc mô phỏng trên Terminal</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <button onclick="showRole('mang')" class="bg-white border-2 border-blue-200 rounded-3xl p-6 flex flex-col items-center hover:bg-pastel-blue transition-colors focus:ring-4 focus:ring-blue-200 focus:outline-none transform hover:-translate-y-1">
+                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-4 shadow-inner"><i class="fa-solid fa-network-wired"></i></div>
+                    <h3 class="font-bold text-lg text-slate-800">Quản trị mạng</h3>
+                    <span class="text-xs text-blue-500 font-semibold mt-2 bg-blue-50 px-3 py-1 rounded-full"><i class="fa-solid fa-play"></i> Chạy mô phỏng</span>
+                </button>
+                
+                <button onclick="showRole('baomat')" class="bg-white border-2 border-red-200 rounded-3xl p-6 flex flex-col items-center hover:bg-pastel-pink transition-colors focus:ring-4 focus:ring-red-200 focus:outline-none transform hover:-translate-y-1">
+                    <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-3xl mb-4 shadow-inner"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="font-bold text-lg text-slate-800">Bảo mật HTTT</h3>
+                    <span class="text-xs text-red-500 font-semibold mt-2 bg-red-50 px-3 py-1 rounded-full"><i class="fa-solid fa-play"></i> Chạy mô phỏng</span>
+                </button>
+
+                <button onclick="showRole('hethong')" class="bg-white border-2 border-green-200 rounded-3xl p-6 flex flex-col items-center hover:bg-pastel-green transition-colors focus:ring-4 focus:ring-green-200 focus:outline-none transform hover:-translate-y-1">
+                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mb-4 shadow-inner"><i class="fa-solid fa-server"></i></div>
+                    <h3 class="font-bold text-lg text-slate-800">Quản trị & Bảo trì HT</h3>
+                    <span class="text-xs text-green-500 font-semibold mt-2 bg-green-50 px-3 py-1 rounded-full"><i class="fa-solid fa-play"></i> Chạy mô phỏng</span>
+                </button>
+            </div>
+
+            <!-- Dynamic Content Area with Terminal Simulator -->
+            <div id="role-display" class="bg-slate-50 rounded-3xl p-6 md:p-8 border-2 border-dashed border-slate-200 text-center min-h-[300px] flex items-center justify-center">
+                <div class="text-slate-400">
+                    <i class="fa-solid fa-arrow-pointer text-4xl mb-3 block animate-bounce"></i>
+                    <p class="font-medium italic">Hãy chọn một nhóm nghề ở trên để xem chi tiết và chạy trình mô phỏng.</p>
+                </div>
+            </div>
+
+            <!-- Phân biệt nhầm lẫn -->
+            <div class="mt-14 relative">
+                <!-- Background decoration -->
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 rounded-3xl -z-10 transform scale-105 opacity-50 blur-xl"></div>
+                
+                <div class="flex items-center gap-3 mb-8 border-b-2 border-indigo-100 pb-4">
+                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl shadow-sm">
+                        <i class="fa-solid fa-code-compare"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Phân biệt các khái niệm</h3>
+                        <p class="text-sm text-slate-500 font-medium">Bí kíp tránh nhầm lẫn 3 nhóm nghề cốt lõi</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                    <!-- Card 1: Quản trị mạng -->
+                    <div class="relative group bg-white rounded-3xl p-6 shadow-sm border border-blue-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-[100px] -z-10 group-hover:scale-125 transition-transform duration-500"></div>
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-blue-400 to-cyan-400"></div>
+                        
+                        <div class="flex justify-between items-start mb-5">
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider border border-blue-200 shadow-sm"><i class="fa-solid fa-bullseye mr-1"></i> Hạ tầng kết nối</span>
+                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md text-blue-400 group-hover:text-blue-600 transition-colors">
+                                <i class="fa-solid fa-network-wired text-xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-xl mb-3">
+                            Quản trị mạng
+                        </h4>
+                        <p class="text-sm text-slate-600 leading-relaxed bg-blue-50/50 p-4 rounded-2xl border border-blue-50">Tập trung vào <b>thiết bị (router, switch) và đường truyền</b>. Đảm bảo hệ thống luôn "thông đường", dữ liệu chạy mượt mà không bị rớt mạng.</p>
+                    </div>
+
+                    <!-- Card 2: Bảo mật -->
+                    <div class="relative group bg-white rounded-3xl p-6 shadow-sm border border-red-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-[100px] -z-10 group-hover:scale-125 transition-transform duration-500"></div>
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-red-400 to-rose-500"></div>
+                        
+                        <div class="flex justify-between items-start mb-5">
+                            <span class="bg-red-100 text-red-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider border border-red-200 shadow-sm"><i class="fa-solid fa-bullseye mr-1"></i> Dữ liệu & Xâm nhập</span>
+                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md text-red-400 group-hover:text-red-600 transition-colors">
+                                <i class="fa-solid fa-user-shield text-xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-xl mb-3">
+                            Bảo mật HTTT
+                        </h4>
+                        <p class="text-sm text-slate-600 leading-relaxed bg-red-50/50 p-4 rounded-2xl border border-red-50">Không lo máy tính hư hỏng, mà lo "kẻ trộm". Tập trung <b>giám sát, chống hacker</b>, thiết lập "hàng rào" bảo vệ thông tin mật.</p>
+                    </div>
+
+                    <!-- Card 3: Hệ thống -->
+                    <div class="relative group bg-white rounded-3xl p-6 shadow-sm border border-green-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-bl-[100px] -z-10 group-hover:scale-125 transition-transform duration-500"></div>
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-green-400 to-emerald-500"></div>
+                        
+                        <div class="flex justify-between items-start mb-5">
+                            <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider border border-green-200 shadow-sm"><i class="fa-solid fa-bullseye mr-1"></i> Phần cứng & Mềm</span>
+                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md text-green-400 group-hover:text-green-600 transition-colors">
+                                <i class="fa-solid fa-server text-xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-xl mb-3">
+                            Quản trị hệ thống
+                        </h4>
+                        <p class="text-sm text-slate-600 leading-relaxed bg-green-50/50 p-4 rounded-2xl border border-green-50">Giống như bác sĩ đa khoa. Cài đặt <b>hệ điều hành, máy chủ, xử lý lỗi phần mềm/phần cứng</b> để máy luôn chạy ổn định, nhanh chóng.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: KIẾN THỨC & KỸ NĂNG -->
+        <section id="tab-kynang" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Hard Skills -->
+                <div class="bg-white rounded-3xl shadow-md border border-slate-100 p-6 md:p-8 overflow-hidden relative">
+                    <!-- Background Decoration -->
+                    <div class="absolute -right-10 -top-10 text-9xl text-slate-50 opacity-40 pointer-events-none transform rotate-12">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <div class="absolute w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 bottom-0 left-0"></div>
+
+                    <h3 class="text-2xl font-bold text-slate-800 mb-8 flex items-center gap-3 relative z-10">
+                        <span class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg"><i class="fa-solid fa-gears"></i></span>
+                        Kiến Thức Chuyên Môn
+                    </h3>
+                    
+                    <div class="space-y-4 relative z-10">
+                        <!-- Skill Item 1: Lật từ dưới lên -->
+                        <div class="flip-card-up w-full group" onclick="toggleFlip(this)">
+                            <div class="flip-card-up-inner">
+                                <div class="flip-card-up-front border border-slate-100 hover:border-blue-300">
+                                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-400 to-blue-600"></div>
+                                    <div class="flex items-start gap-4 pl-6 pr-4 py-4 w-full">
+                                        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0 shadow-inner text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-wifi"></i></div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold text-slate-800 text-lg mb-1">Mạng Máy Tính</h4>
+                                            <p class="text-sm text-slate-500">Cấu trúc, giao thức, thiết bị định tuyến (Router), Tường lửa (Firewall).</p>
+                                        </div>
+                                        <div class="text-xs text-slate-300 flex flex-col items-center justify-center h-full">
+                                            <i class="fa-solid fa-arrow-up animate-bounce"></i>
+                                            <span class="mt-1">Lật</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-up-back border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white text-left">
+                                    <div>
+                                        <h4 class="font-bold text-blue-700 mb-2 flex items-center gap-2 border-b border-blue-200 pb-1"><i class="fa-solid fa-circle-info"></i> Giải thích chi tiết</h4>
+                                        <p class="text-sm text-slate-700 leading-relaxed">Đảm bảo các máy tính trong công ty kết nối được với nhau và với Internet. Bạn phải biết cấu hình <b>Router</b> để chỉ đường cho dữ liệu, và thiết lập <b>Firewall</b> làm rào chắn lọc các luồng dữ liệu độc hại muốn xâm nhập vào mạng nội bộ.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skill Item 2: Lật từ dưới lên -->
+                        <div class="flip-card-up w-full group" onclick="toggleFlip(this)">
+                            <div class="flip-card-up-inner">
+                                <div class="flip-card-up-front border border-slate-100 hover:border-red-300">
+                                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-red-400 to-red-600"></div>
+                                    <div class="flex items-start gap-4 pl-6 pr-4 py-4 w-full">
+                                        <div class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0 shadow-inner text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-user-secret"></i></div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold text-slate-800 text-lg mb-1">Bảo Mật Thông Tin</h4>
+                                            <p class="text-sm text-slate-500">Phương thức tấn công (DoS, dò lỗ hổng). Hệ thống cảnh báo xâm nhập (IDS).</p>
+                                        </div>
+                                        <div class="text-xs text-slate-300 flex flex-col items-center justify-center h-full">
+                                            <i class="fa-solid fa-arrow-up animate-bounce"></i>
+                                            <span class="mt-1">Lật</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-up-back border-2 border-red-200 bg-gradient-to-br from-red-50 to-white text-left">
+                                    <div>
+                                        <h4 class="font-bold text-red-700 mb-2 flex items-center gap-2 border-b border-red-200 pb-1"><i class="fa-solid fa-circle-info"></i> Giải thích chi tiết</h4>
+                                        <p class="text-sm text-slate-700 leading-relaxed">Hiểu rõ cách Hacker tấn công (ví dụ: dùng <b>DoS</b> gửi triệu yêu cầu giả để đánh sập web). Cài đặt <b>IDS</b> đóng vai trò như "camera an ninh", liên tục quét các tệp tin và lưu lượng để phát hiện sớm mã độc hoặc hành vi truy cập trái phép.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skill Item 3: Lật từ dưới lên -->
+                        <div class="flip-card-up w-full group" onclick="toggleFlip(this)">
+                            <div class="flip-card-up-inner">
+                                <div class="flip-card-up-front border border-slate-100 hover:border-green-300">
+                                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-green-600"></div>
+                                    <div class="flex items-start gap-4 pl-6 pr-4 py-4 w-full">
+                                        <div class="w-12 h-12 rounded-full bg-green-50 text-green-500 flex items-center justify-center flex-shrink-0 shadow-inner text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-laptop-medical"></i></div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold text-slate-800 text-lg mb-1">Quản Lý Hệ Thống</h4>
+                                            <p class="text-sm text-slate-500">Cài đặt hệ điều hành máy chủ, bảo trì phần cứng, sao lưu dữ liệu.</p>
+                                        </div>
+                                        <div class="text-xs text-slate-300 flex flex-col items-center justify-center h-full">
+                                            <i class="fa-solid fa-arrow-up animate-bounce"></i>
+                                            <span class="mt-1">Lật</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-up-back border-2 border-green-200 bg-gradient-to-br from-green-50 to-white text-left">
+                                    <div>
+                                        <h4 class="font-bold text-green-700 mb-2 flex items-center gap-2 border-b border-green-200 pb-1"><i class="fa-solid fa-circle-info"></i> Giải thích chi tiết</h4>
+                                        <p class="text-sm text-slate-700 leading-relaxed">Quản trị các máy chủ vật lý hoặc đám mây (Windows Server, Linux). Thực hiện các bản vá lỗi (update) định kỳ, thiết lập lịch <b>Backup (sao lưu)</b> dữ liệu mỗi ngày để đảm bảo công ty có thể phục hồi nếu ổ cứng bị hỏng.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skill Item 4: Lật từ dưới lên -->
+                        <div class="flip-card-up w-full group" onclick="toggleFlip(this)">
+                            <div class="flip-card-up-inner">
+                                <div class="flip-card-up-front border border-slate-100 hover:border-amber-300">
+                                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-amber-400 to-amber-600"></div>
+                                    <div class="flex items-start gap-4 pl-6 pr-4 py-4 w-full">
+                                        <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 shadow-inner text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-scale-balanced"></i></div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold text-slate-800 text-lg mb-1">Luật & Tuân Thủ</h4>
+                                            <p class="text-sm text-slate-500">Quy định pháp luật an ninh mạng, tiêu chuẩn quốc tế về bảo vệ dữ liệu.</p>
+                                        </div>
+                                        <div class="text-xs text-slate-300 flex flex-col items-center justify-center h-full">
+                                            <i class="fa-solid fa-arrow-up animate-bounce"></i>
+                                            <span class="mt-1">Lật</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-up-back border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-white text-left">
+                                    <div>
+                                        <h4 class="font-bold text-amber-700 mb-2 flex items-center gap-2 border-b border-amber-200 pb-1"><i class="fa-solid fa-circle-info"></i> Giải thích chi tiết</h4>
+                                        <p class="text-sm text-slate-700 leading-relaxed">Hiểu rõ <b>Luật An ninh mạng</b> của Việt Nam và các tiêu chuẩn bảo mật quốc tế (như ISO 27001). Đảm bảo công ty thu thập, lưu trữ thông tin khách hàng đúng pháp luật, không bị phạt và tránh bị kiện cáo liên quan đến quyền riêng tư.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Soft Skills with Interactive Flip Cards -->
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-100 rounded-3xl shadow-md border border-purple-200 p-6 md:p-8 overflow-hidden relative">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-purple-900 flex items-center justify-center gap-3">
+                            <span class="w-12 h-12 bg-white text-purple-600 rounded-xl flex items-center justify-center shadow-md text-xl"><i class="fa-solid fa-users-gear"></i></span>
+                            Kỹ Năng Mềm
+                        </h3>
+                        <p class="text-purple-600 text-sm mt-2 font-medium animate-pulse"><i class="fa-solid fa-hand-pointer mr-1"></i> Click vào các thẻ để xem chi tiết</p>
+                    </div>
+
+                    <div class="flex flex-col gap-5 items-center justify-center w-full relative z-10">
+                        
+                        <!-- Flip Card 1 -->
+                        <div class="flip-card w-full max-w-sm transform rotate-1 hover:rotate-0 transition-transform" onclick="toggleFlip(this)">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front border border-purple-100 flex-row gap-4">
+                                    <div class="w-14 h-14 rounded-full bg-purple-50 flex items-center justify-center text-3xl text-purple-500 shadow-inner flex-shrink-0"><i class="fa-regular fa-comments"></i></div>
+                                    <h4 class="font-bold text-xl text-slate-700">Giao tiếp hiệu quả</h4>
+                                    <div class="absolute top-2 right-3 text-slate-300 text-xs"><i class="fa-solid fa-arrow-rotate-right"></i></div>
+                                </div>
+                                <div class="flip-card-back bg-gradient-to-br from-white to-purple-50 text-left">
+                                    <h4 class="font-bold text-purple-700 mb-2 border-b border-purple-200 pb-1 w-full text-center">Giao tiếp hiệu quả</h4>
+                                    <p class="text-sm text-slate-600">Giúp truyền đạt thông tin kỹ thuật phức tạp cho các bộ phận khác hiểu rõ, phối hợp làm việc nhóm trơn tru khi giải quyết sự cố.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flip Card 2 -->
+                        <div class="flip-card w-full max-w-sm transform -rotate-1 hover:rotate-0 transition-transform" onclick="toggleFlip(this)">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front border border-pink-100 flex-row gap-4">
+                                    <div class="w-14 h-14 rounded-full bg-pink-50 flex items-center justify-center text-3xl text-pink-500 shadow-inner flex-shrink-0"><i class="fa-regular fa-clock"></i></div>
+                                    <h4 class="font-bold text-xl text-slate-700">Quản lý thời gian</h4>
+                                    <div class="absolute top-2 right-3 text-slate-300 text-xs"><i class="fa-solid fa-arrow-rotate-right"></i></div>
+                                </div>
+                                <div class="flip-card-back bg-gradient-to-br from-white to-pink-50 text-left">
+                                    <h4 class="font-bold text-pink-700 mb-2 border-b border-pink-200 pb-1 w-full text-center">Quản lý thời gian</h4>
+                                    <p class="text-sm text-slate-600">Đảm bảo khả năng xử lý đa nhiệm, biết ưu tiên giải quyết các sự cố khẩn cấp để giảm thiểu thời gian "chết" của hệ thống.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flip Card 3 (Core Skill) -->
+                        <div class="flip-card w-full max-w-sm" onclick="toggleFlip(this)">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none flex-row gap-4 shadow-lg shadow-purple-200">
+                                    <div class="absolute -top-3 -right-3 text-3xl animate-bounce"><i class="fa-solid fa-star text-yellow-300 drop-shadow-md"></i></div>
+                                    <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-3xl text-white shadow-inner flex-shrink-0 backdrop-blur-sm"><i class="fa-solid fa-book-open-reader"></i></div>
+                                    <div class="text-left">
+                                        <h4 class="font-bold text-xl">Tự nghiên cứu</h4>
+                                        <p class="text-xs text-purple-100 mt-1 uppercase tracking-wider font-semibold">Kỹ năng cốt lõi</p>
+                                    </div>
+                                    <div class="absolute top-2 right-3 text-white/50 text-xs"><i class="fa-solid fa-arrow-rotate-right"></i></div>
+                                </div>
+                                <div class="flip-card-back bg-gradient-to-r from-purple-600 to-pink-600 text-white border-none text-left shadow-lg">
+                                    <h4 class="font-bold text-white mb-2 border-b border-white/30 pb-1 w-full text-center">Tự học & Cập nhật</h4>
+                                    <p class="text-sm text-purple-50">Công nghệ thay đổi mỗi ngày. Đây là yếu tố <b>sống còn</b> giúp bạn bắt kịp xu hướng mới và đối phó với các chiêu thức tấn công ngày càng tinh vi của hacker.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 4: XU HƯỚNG & NHU CẦU -->
+        <section id="tab-xuhuong" class="tab-content">
+            
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-slate-800 mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Bùng nổ nhu cầu nhân lực</h2>
+                <p class="text-slate-500 font-medium">Các động lực chính thúc đẩy sự phát triển cực thịnh của ngành</p>
+            </div>
+
+            <!-- Enhanced Infographic Drivers -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 relative">
+                <!-- Decorative background line -->
+                <div class="hidden md:block absolute top-1/2 left-10 right-10 h-1 bg-gradient-to-r from-blue-200 via-purple-200 to-teal-200 -z-10 transform -translate-y-1/2"></div>
+
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border border-sky-100 shadow-lg shadow-sky-100/50 text-center animate-float group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-sky-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl flex items-center justify-center text-white text-3xl mb-4 shadow-inner transform group-hover:rotate-6 transition-transform">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-sm relative z-10">Điện toán đám mây</h4>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border border-orange-100 shadow-lg shadow-orange-100/50 text-center animate-float-delayed group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-orange-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center text-white text-3xl mb-4 shadow-inner transform group-hover:-rotate-6 transition-transform">
+                        <i class="fa-solid fa-house-laptop"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-sm relative z-10">Làm việc từ xa</h4>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border border-purple-100 shadow-lg shadow-purple-100/50 text-center animate-float group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-3xl mb-4 shadow-inner transform group-hover:rotate-6 transition-transform">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-sm relative z-10">Trí tuệ nhân tạo (AI)</h4>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border border-teal-100 shadow-lg shadow-teal-100/50 text-center animate-float-delayed group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-teal-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-teal-400 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-3xl mb-4 shadow-inner transform group-hover:-rotate-6 transition-transform">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-700 text-sm relative z-10">Thiết bị kết nối (IoT)</h4>
+                </div>
+            </div>
+
+            <!-- Enhanced Education: Roadmap Style -->
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+                <!-- Background decor -->
+                <div class="absolute right-0 top-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/4"></div>
+                
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl shadow-sm"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h3 class="text-2xl font-bold text-slate-800">Định hướng Ngành học</h3>
+                </div>
+
+                <!-- Timeline/Roadmap -->
+                <div class="relative pl-6 md:pl-0">
+                    <!-- Vertical line for mobile, horizontal for desktop -->
+                    <div class="absolute left-6 top-4 bottom-4 w-1 bg-indigo-100 rounded md:hidden"></div>
+                    
+                    <div class="flex flex-col md:flex-row flex-wrap gap-y-6 gap-x-4">
+                        
+                        <!-- Timeline Node -->
+                        <div class="relative flex items-center md:flex-col md:items-start group md:w-[calc(33%-1rem)]">
+                            <div class="absolute -left-8 md:static md:mb-3 w-5 h-5 bg-white border-4 border-indigo-500 rounded-full z-10 group-hover:scale-125 transition-transform shadow-md"></div>
+                            <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 w-full hover:bg-indigo-50 transition-colors">
+                                <h4 class="font-bold text-indigo-900 text-sm mb-1"><i class="fa-solid fa-server text-indigo-400 mr-1"></i> Quản trị mạng & Hệ thống</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">Đào sâu về hạ tầng, thiết bị và duy trì hệ thống máy chủ doanh nghiệp.</p>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Node -->
+                        <div class="relative flex items-center md:flex-col md:items-start group md:w-[calc(33%-1rem)]">
+                            <div class="absolute -left-8 md:static md:mb-3 w-5 h-5 bg-white border-4 border-pink-500 rounded-full z-10 group-hover:scale-125 transition-transform shadow-md"></div>
+                            <div class="bg-pink-50/50 p-4 rounded-xl border border-pink-100 w-full hover:bg-pink-50 transition-colors">
+                                <h4 class="font-bold text-pink-900 text-sm mb-1"><i class="fa-solid fa-shield-cat text-pink-400 mr-1"></i> An ninh mạng</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">Nghiên cứu về mã hóa, phòng chống hacker và bảo vệ dữ liệu số.</p>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Node -->
+                        <div class="relative flex items-center md:flex-col md:items-start group md:w-[calc(33%-1rem)]">
+                            <div class="absolute -left-8 md:static md:mb-3 w-5 h-5 bg-white border-4 border-blue-500 rounded-full z-10 group-hover:scale-125 transition-transform shadow-md"></div>
+                            <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 w-full hover:bg-blue-50 transition-colors">
+                                <h4 class="font-bold text-blue-900 text-sm mb-1"><i class="fa-solid fa-sitemap text-blue-400 mr-1"></i> Hệ thống thông tin</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">Kết nối giữa công nghệ và quản trị quy trình kinh doanh tổng thể.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline Node -->
+                        <div class="relative flex items-center md:flex-col md:items-start group md:w-[calc(50%-0.5rem)] mt-2">
+                            <div class="absolute -left-8 md:static md:mb-3 w-5 h-5 bg-white border-4 border-teal-500 rounded-full z-10 group-hover:scale-125 transition-transform shadow-md"></div>
+                            <div class="bg-teal-50/50 p-4 rounded-xl border border-teal-100 w-full hover:bg-teal-50 transition-colors">
+                                <h4 class="font-bold text-teal-900 text-sm mb-1"><i class="fa-solid fa-satellite-dish text-teal-400 mr-1"></i> Mạng máy tính & Truyền thông</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">Tập trung vào giao thức truyền tải, công nghệ viễn thông và kết nối dữ liệu.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 5: THỰC HÀNH & TRẮC NGHIỆM -->
+        <section id="tab-thuchanh" class="tab-content">
+            
+            <!-- Vận dụng thực tế: Giao diện Ticket IT -->
+            <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden mb-10 shadow-lg">
+                <div class="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-white font-bold"><i class="fa-solid fa-ticket text-amber-400 mr-2"></i> Hệ Thống Phân Công IT (Giả lập)</h3>
+                    <span class="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold animate-pulse">URGENT</span>
+                </div>
+                
+                <div class="p-6 md:p-8 bg-slate-50">
+                    <div class="bg-white border-l-4 border-red-500 p-5 rounded-lg shadow-sm mb-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-lg text-slate-800">Mã lỗi: #ERR-992 - Sự cố toàn hệ thống</h4>
+                            <span class="text-xs text-slate-400">Vừa gửi</span>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-4">
+                            <b>Mô tả từ cửa hàng trực tuyến:</b> "Web sập liên tục, khách không thanh toán được. Mạng công ty rớt liên tục. Hệ thống cảnh báo có dấu hiệu bị lộ mật khẩu cơ sở dữ liệu."
+                        </p>
+                        <p class="font-bold text-indigo-600 text-sm mb-3">Là IT Manager, bạn cần điều động 2 bộ phận nào khẩn cấp nhất?</p>
+                        
+                        <div class="flex flex-wrap gap-3" id="scenario-buttons">
+                            <button onclick="checkScenario(this, true, 'mang')" class="flex-1 min-w-[200px] px-4 py-3 bg-white hover:bg-blue-50 border-2 border-slate-200 rounded-xl text-left transition-all flex items-center gap-3">
+                                <i class="fa-solid fa-network-wired text-blue-500 text-xl"></i>
+                                <div><b class="block text-slate-700">Team Mạng</b><span class="text-xs text-slate-500">Fix lỗi rớt mạng</span></div>
+                            </button>
+                            
+                            <button onclick="checkScenario(this, false, 'dev')" class="flex-1 min-w-[200px] px-4 py-3 bg-white hover:bg-slate-50 border-2 border-slate-200 rounded-xl text-left transition-all flex items-center gap-3 opacity-80">
+                                <i class="fa-solid fa-code text-slate-500 text-xl"></i>
+                                <div><b class="block text-slate-700">Team Web Dev</b><span class="text-xs text-slate-500">Đổi màu nút bấm</span></div>
+                            </button>
+                            
+                            <button onclick="checkScenario(this, true, 'baomat')" class="flex-1 min-w-[200px] px-4 py-3 bg-white hover:bg-red-50 border-2 border-slate-200 rounded-xl text-left transition-all flex items-center gap-3">
+                                <i class="fa-solid fa-shield-halved text-red-500 text-xl"></i>
+                                <div><b class="block text-slate-700">Team Bảo Mật</b><span class="text-xs text-slate-500">Chặn Hacker</span></div>
+                            </button>
+                            
+                            <button onclick="checkScenario(this, false, 'design')" class="flex-1 min-w-[200px] px-4 py-3 bg-white hover:bg-slate-50 border-2 border-slate-200 rounded-xl text-left transition-all flex items-center gap-3 opacity-80">
+                                <i class="fa-solid fa-pen-nib text-slate-500 text-xl"></i>
+                                <div><b class="block text-slate-700">Team Design</b><span class="text-xs text-slate-500">Thiết kế banner</span></div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="scenario-result" class="p-4 rounded-xl text-sm font-bold hidden border"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Section -->
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+                <h3 class="text-2xl font-bold text-slate-800 mb-6 text-center">
+                    <i class="fa-solid fa-clipboard-question text-blue-500 mr-2"></i> Trắc nghiệm Ôn tập (5 câu)
+                </h3>
+                
+                <div class="space-y-8" id="quiz-container">
+                    <!-- Q1 -->
+                    <div class="quiz-question" data-answer="B">
+                        <p class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu 1:</span> Vai trò chính của chuyên gia "Quản trị mạng" là gì?</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button onclick="selectAnswer(this, 'A')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">A. Thiết kế giao diện phần mềm</button>
+                            <button onclick="selectAnswer(this, 'B')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">B. Cài đặt, cấu hình, duy trì và xử lý sự cố hệ thống mạng</button>
+                            <button onclick="selectAnswer(this, 'C')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">C. Lắp ráp các linh kiện máy tính</button>
+                            <button onclick="selectAnswer(this, 'D')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">D. Nhập liệu vào cơ sở dữ liệu</button>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="quiz-question" data-answer="C">
+                        <p class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu 2:</span> Sự kiện tấn công mã độc WannaCry gây chấn động toàn cầu xảy ra vào năm nào?</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button onclick="selectAnswer(this, 'A')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">A. 2014</button>
+                            <button onclick="selectAnswer(this, 'B')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">B. 2015</button>
+                            <button onclick="selectAnswer(this, 'C')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">C. 2017</button>
+                            <button onclick="selectAnswer(this, 'D')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">D. 2020</button>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="quiz-question" data-answer="A">
+                        <p class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu 3:</span> Để phát hiện sự xâm nhập trái phép và xử lý các cuộc tấn công mạng, doanh nghiệp cần vị trí nào?</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button onclick="selectAnswer(this, 'A')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">A. Bảo mật hệ thống thông tin</button>
+                            <button onclick="selectAnswer(this, 'B')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">B. Lập trình trí tuệ nhân tạo</button>
+                            <button onclick="selectAnswer(this, 'C')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">C. Chuyên gia Marketing số</button>
+                            <button onclick="selectAnswer(this, 'D')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">D. Quản lý nhân sự</button>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="quiz-question" data-answer="D">
+                        <p class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu 4:</span> Kỹ năng mềm nào được coi là "rất cần thiết để bắt kịp các xu hướng mới" đối với nhóm nghề quản trị CNTT?</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button onclick="selectAnswer(this, 'A')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">A. Thuyết trình trước đám đông</button>
+                            <button onclick="selectAnswer(this, 'B')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">B. Viết bài PR (Quan hệ công chúng)</button>
+                            <button onclick="selectAnswer(this, 'C')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">C. Thiết kế hình ảnh cơ bản</button>
+                            <button onclick="selectAnswer(this, 'D')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">D. Nghiên cứu, học hỏi, cập nhật kiến thức</button>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="quiz-question" data-answer="B">
+                        <p class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu 5:</span> Yếu tố nào KHÔNG phải là nguyên nhân chính làm tăng nhu cầu nhân lực nhóm nghề quản trị CNTT?</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button onclick="selectAnswer(this, 'A')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">A. Sự phổ biến của các thiết bị kết nối IoT</button>
+                            <button onclick="selectAnswer(this, 'B')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">B. Sự sụt giảm của các cuộc tấn công mạng toàn cầu</button>
+                            <button onclick="selectAnswer(this, 'C')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">C. Quá trình chuyển đổi số của các doanh nghiệp</button>
+                            <button onclick="selectAnswer(this, 'D')" class="quiz-option text-left p-3 rounded-xl border-2 border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-colors text-sm">D. Nhu cầu lưu trữ và sử dụng dịch vụ đám mây</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        // Tab switching logic
+        function switchTab(tabId) {
+            // Remove active from all tabs & buttons
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-blue-500', 'text-white', 'shadow-md');
+                el.classList.add('bg-transparent', 'text-slate-600');
+            });
+            
+            // Add active to selected
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+            activeBtn.classList.remove('bg-transparent', 'text-slate-600');
+            activeBtn.classList.add('bg-blue-500', 'text-white', 'shadow-md');
+        }
+
+        // Interactive Roles Content with Terminal Simulation
+        const rolesData = {
+            mang: {
+                title: "Chuyên gia Quản trị mạng",
+                icon: "fa-network-wired",
+                color: "blue",
+                desc: "<b>Nhiệm vụ:</b> Quản lý và duy trì hệ thống mạng máy tính.<br><b>Công việc:</b> Cài đặt, cấu hình, bảo mật mạng (router, firewall), theo dõi lưu lượng và xử lý sự cố.",
+                cmd: [
+                    "root@server:~# ping 192.168.1.254",
+                    "Pinging 192.168.1.254 with 32 bytes of data...",
+                    "Reply from 192.168.1.254: bytes=32 time=14ms TTL=64",
+                    "Reply from 192.168.1.254: bytes=32 time=12ms TTL=64",
+                    "root@server:~# check_traffic --interface eth0",
+                    "[OK] Traffic flow is stable. 0% packet loss."
+                ]
+            },
+            baomat: {
+                title: "Chuyên gia Bảo mật HTTT",
+                icon: "fa-shield-halved",
+                color: "red",
+                desc: "<b>Nhiệm vụ:</b> Đảm nhận vai trò bảo vệ dữ liệu và hệ thống.<br><b>Công việc:</b> Giám sát mạng để phát hiện xâm nhập (IDS), triển khai tường lửa, chặn các vụ tấn công mạng.",
+                cmd: [
+                    "root@sec-center:~# start IDS_monitoring",
+                    "[WARNING] Scanning network traffic...",
+                    "[ALERT] Suspicious activity detected on Port 22! (Possible Brute-force)",
+                    "root@sec-center:~# firewall-cmd --add-rich-rule='rule family=\"ipv4\" source address=\"103.11.x.x\" drop'",
+                    "[SUCCESS] Threat neutralized. IP has been blocked."
+                ]
+            },
+            hethong: {
+                title: "Chuyên gia Quản trị hệ thống",
+                icon: "fa-server",
+                color: "green",
+                desc: "<b>Nhiệm vụ:</b> Quản lý duy trì toàn bộ hệ thống (phần cứng & phần mềm).<br><b>Công việc:</b> Cài đặt hệ điều hành, cập nhật, xử lý sự cố máy chủ để đảm bảo sự ổn định.",
+                cmd: [
+                    "root@main-db:~# apt-get update && apt-get upgrade -y",
+                    "Reading package lists... Done",
+                    "Building dependency tree... Done",
+                    "Installing system patches... 100%",
+                    "root@main-db:~# service mysql status",
+                    "[ACTIVE] Database service is running smoothly. Memory optimal."
+                ]
+            }
+        };
+
+        let typeInterval;
+
+        function showRole(roleKey) {
+            const display = document.getElementById('role-display');
+            const data = rolesData[roleKey];
+            
+            // Clear previous interval if running
+            if(typeInterval) clearInterval(typeInterval);
+
+            display.innerHTML = `
+                <div class="w-full max-w-4xl text-left flex flex-col md:flex-row gap-6 animate-[fadeIn_0.3s_ease-in-out]">
+                    <!-- Info Side -->
+                    <div class="flex-1">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-14 h-14 bg-${data.color}-100 text-${data.color}-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                                <i class="fa-solid ${data.icon}"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-800">${data.title}</h3>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed text-sm md:text-base border-l-4 border-${data.color}-400 pl-4 bg-white p-4 rounded-r-xl shadow-sm mb-4">
+                            ${data.desc}
+                        </p>
+                    </div>
+
+                    <!-- Terminal Side -->
+                    <div class="flex-1 terminal-box h-[220px]">
+                        <div class="terminal-header">
+                            <div class="mac-btn mac-red"></div>
+                            <div class="mac-btn mac-yellow"></div>
+                            <div class="mac-btn mac-green"></div>
+                            <span class="text-slate-400 text-xs ml-2 font-sans">Simulated_Terminal_v2.0</span>
+                        </div>
+                        <div id="terminal-text" class="typing-effect text-sm"></div>
+                    </div>
+                </div>
+            `;
+
+            // Run typing effect
+            const terminalEl = document.getElementById('terminal-text');
+            const lines = data.cmd;
+            let currentLine = 0;
+            let currentChar = 0;
+            terminalEl.innerHTML = '';
+
+            typeInterval = setInterval(() => {
+                if (currentLine < lines.length) {
+                    if (currentChar < lines[currentLine].length) {
+                        terminalEl.innerHTML += lines[currentLine].charAt(currentChar);
+                        currentChar++;
+                    } else {
+                        terminalEl.innerHTML += '<br>';
+                        currentLine++;
+                        currentChar = 0;
+                    }
+                } else {
+                    clearInterval(typeInterval);
+                }
+            }, 30); // Typing speed
+        }
+
+        // Scenario Logic (Helpdesk)
+        let selectedExperts = 0;
+        function checkScenario(btn, isCorrect, type) {
+            const resDiv = document.getElementById('scenario-result');
+            resDiv.classList.remove('hidden');
+            
+            if(isCorrect) {
+                // Style for selected correct button
+                btn.classList.replace('bg-white', 'bg-green-50');
+                btn.classList.replace('border-slate-200', 'border-green-500');
+                btn.querySelector('i').classList.replace(`text-${type === 'mang' ? 'blue' : 'red'}-500`, 'text-green-600');
+                btn.querySelector('b').classList.replace('text-slate-700', 'text-green-700');
+                btn.style.pointerEvents = 'none';
+
+                selectedExperts++;
+                if(selectedExperts === 1) {
+                    resDiv.className = 'p-4 rounded-xl text-sm font-bold border mt-4 bg-yellow-50 border-yellow-200 text-yellow-700';
+                    resDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đã điều động 1 bộ phận. Cần 1 bộ phận nữa để giải quyết triệt để sự cố kép (Mạng & Xâm nhập)!`;
+                } else {
+                    resDiv.className = 'p-4 rounded-xl text-sm font-bold border mt-4 bg-green-50 border-green-200 text-green-700';
+                    resDiv.innerHTML = `<i class="fa-solid fa-check-double text-green-600 text-lg"></i> Xử lý thành công! Team Mạng khắc phục đường truyền, Team Bảo Mật chặn đứng hacker. Công ty đã an toàn.`;
+                    // Disable wrong buttons
+                    document.querySelectorAll('#scenario-buttons button').forEach(b => b.style.pointerEvents = 'none');
+                }
+            } else {
+                // Style for wrong button
+                btn.classList.replace('bg-white', 'bg-red-50');
+                btn.classList.replace('border-slate-200', 'border-red-300');
+                btn.classList.add('opacity-50');
+                
+                resDiv.className = 'p-4 rounded-xl text-sm font-bold border mt-4 bg-red-50 border-red-200 text-red-600 animate-pulse';
+                resDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Lỗi điều phối! Web Dev hay Design không thể chống hacker hay sửa rớt mạng lúc này. Hãy chọn lại!`;
+                
+                setTimeout(() => {
+                     btn.classList.replace('bg-red-50', 'bg-white');
+                     btn.classList.replace('border-red-300', 'border-slate-200');
+                     btn.classList.remove('opacity-50');
+                     if(selectedExperts === 0) resDiv.classList.add('hidden');
+                }, 2000);
+            }
+        }
+
+        // Quiz Logic
+        function selectAnswer(btn, choice) {
+            const questionContainer = btn.closest('.quiz-question');
+            const correctAnswer = questionContainer.getAttribute('data-answer');
+            const allBtns = questionContainer.querySelectorAll('button');
+
+            // Disable all buttons in this question
+            allBtns.forEach(b => {
+                b.classList.add('disabled');
+                // Highlight correct answer anyway
+                if(b.getAttribute('onclick').includes(`'${correctAnswer}'`)) {
+                    b.classList.add('correct');
+                    b.classList.remove('disabled');
+                }
+            });
+
+            // Handle user choice
+            if (choice === correctAnswer) {
+                btn.classList.add('correct');
+                btn.innerHTML += ' <i class="fa-solid fa-check-circle float-right mt-1"></i>';
+            } else {
+                btn.classList.add('wrong');
+                btn.innerHTML += ' <i class="fa-solid fa-times-circle float-right mt-1"></i>';
+            }
+        }
+
+        // Flip Card Logic
+        function toggleFlip(element) {
+            element.classList.toggle('is-flipped');
+        }
+    </script>
+</body>
+</html>

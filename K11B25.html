@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 25: Phần Mềm Chỉnh Sửa Ảnh</title>
+    <!-- Tailwind CSS for layout and styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc; /* Very light pastel blue/gray */
+            color: #334155;
+        }
+
+        /* Specific Title Style as Requested */
+        .gradient-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: bold;
+            font-size: 28px;
+            text-transform: capitalize;
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Blue to Purple */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        /* Sub-heading gradients for aesthetic */
+        .sub-gradient {
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Tab Transitions */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pastel Cards */
+        .card-pink { background-color: #fce7f3; border-left: 4px solid #f472b6; }
+        .card-blue { background-color: #e0f2fe; border-left: 4px solid #38bdf8; }
+        .card-purple { background-color: #f3e8ff; border-left: 4px solid #a855f7; }
+        .card-green { background-color: #dcfce7; border-left: 4px solid #4ade80; }
+        .card-yellow { background-color: #fef9c3; border-left: 4px solid #facc15; }
+
+        /* Interactive Grid for DPI simulation */
+        .dpi-grid {
+            display: grid;
+            gap: 1px;
+            background-color: #cbd5e1;
+            border: 2px solid #94a3b8;
+            width: 150px;
+            height: 150px;
+        }
+        .dpi-cell { background-color: white; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8">
+
+    <!-- Header / Navigation -->
+    <header class="w-full max-w-5xl px-4 mb-8">
+        <div class="text-center mb-6">
+            <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full mb-2 inline-block">Tin học 11 - Chủ đề 7</span><br>
+            <h1 class="gradient-title mt-2">Bài 25: Phần Mềm Chỉnh Sửa Ảnh</h1>
+        </div>
+        
+        <!-- Tabs -->
+        <nav class="flex flex-wrap justify-center gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+            <button onclick="openTab('tong-quan')" class="tab-btn active px-6 py-2 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 transition-all bg-blue-50 text-blue-600" data-target="tong-quan">
+                <i class="fa-solid fa-map w-5"></i> Tổng Quan
+            </button>
+            <button onclick="openTab('kien-thuc')" class="tab-btn px-6 py-2 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 transition-all" data-target="kien-thuc">
+                <i class="fa-solid fa-brain w-5"></i> Khái Niệm
+            </button>
+            <button onclick="openTab('thuc-hanh')" class="tab-btn px-6 py-2 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 transition-all" data-target="thuc-hanh">
+                <i class="fa-solid fa-laptop-code w-5"></i> GIMP & Thao Tác
+            </button>
+            <button onclick="openTab('luyen-tap')" class="tab-btn px-6 py-2 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 transition-all" data-target="luyen-tap">
+                <i class="fa-solid fa-gamepad w-5"></i> Luyện Tập
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="w-full max-w-5xl px-4 flex-grow">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tong-quan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Mục tiêu -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-blue-50 opacity-50"><i class="fa-solid fa-bullseye fa-10x"></i></div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center relative z-10"><i class="fa-solid fa-flag text-red-400 mr-2"></i> Mục Tiêu Bài Học</h2>
+                    <ul class="space-y-4 relative z-10">
+                        <li class="flex items-start">
+                            <div class="bg-blue-100 p-2 rounded-lg text-blue-600 mr-3 mt-1"><i class="fa-solid fa-handshake"></i></div>
+                            <div>
+                                <span class="font-semibold text-slate-700">Làm quen</span>
+                                <p class="text-sm text-slate-500">với phần mềm chỉnh sửa ảnh cơ bản.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-green-100 p-2 rounded-lg text-green-600 mr-3 mt-1"><i class="fa-solid fa-tools"></i></div>
+                            <div>
+                                <span class="font-semibold text-slate-700">Thực hiện thao tác</span>
+                                <p class="text-sm text-slate-500">Phóng to, thu nhỏ, xoay, cắt ảnh.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Sơ đồ tư duy thu gọn -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center"><i class="fa-solid fa-project-diagram text-purple-400 mr-2"></i> Trọng Tâm</h2>
+                    <div class="flex flex-col gap-3">
+                        <div class="card-blue p-3 rounded-xl flex items-center shadow-sm">
+                            <i class="fa-solid fa-image text-2xl text-blue-500 w-12 text-center"></i>
+                            <div>
+                                <p class="font-bold text-sm">Ảnh Số & Bitmap</p>
+                                <p class="text-xs text-slate-500">Tập hợp các điểm ảnh (pixel).</p>
+                            </div>
+                        </div>
+                        <div class="card-pink p-3 rounded-xl flex items-center shadow-sm">
+                            <i class="fa-solid fa-expand text-2xl text-pink-500 w-12 text-center"></i>
+                            <div>
+                                <p class="font-bold text-sm">Độ Phân Giải (dpi)</p>
+                                <p class="text-xs text-slate-500">Quyết định độ rõ nét & dung lượng.</p>
+                            </div>
+                        </div>
+                        <div class="card-yellow p-3 rounded-xl flex items-center shadow-sm">
+                            <i class="fa-brands fa-kickstarter text-2xl text-yellow-500 w-12 text-center"></i>
+                            <div>
+                                <p class="font-bold text-sm">GIMP</p>
+                                <p class="text-xs text-slate-500">Phần mềm mã nguồn mở (.xcf).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suy nghĩ tương tác -->
+                <div class="col-span-1 md:col-span-2 card-purple p-6 rounded-3xl">
+                    <h2 class="text-lg font-bold text-purple-800 mb-2"><i class="fa-regular fa-lightbulb"></i> Góc Suy Nghĩ</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white/60 p-4 rounded-xl">
+                            <p class="text-sm font-semibold mb-2">❓ Nếu chỉ muốn lấy dãy nhà từ một bức ảnh rộng và nghiêng?</p>
+                            <img src="https://placehold.co/400x200/e2e8f0/475569?text=[Image+of+Hình+25.1+Một+ảnh+bị+nghiêng]" alt="Hình 25.1 Một ảnh bị nghiêng" class="w-full rounded-lg mb-3 shadow-sm border border-slate-200">
+                            <p class="text-sm text-slate-600"><i class="fa-solid fa-arrow-right text-purple-500 mr-1"></i> Dùng <b>phần mềm chỉnh sửa ảnh</b> với chức năng <b>Xoay (Rotate)</b> cho thẳng và <b>Cắt (Crop)</b> bỏ phần thừa.</p>
+                        </div>
+                        <div class="bg-white/60 p-4 rounded-xl">
+                            <p class="text-sm font-semibold mb-2">❓ Camera nhiều Megapixel có ý nghĩa gì?</p>
+                            <p class="text-sm text-slate-600"><i class="fa-solid fa-arrow-right text-purple-500 mr-1"></i> Số điểm ảnh nhiều hơn ➔ Ảnh in ra được kích thước lớn hơn mà không bị vỡ nét.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: KHÁI NIỆM CỐT LÕI -->
+        <section id="kien-thuc" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                
+                <!-- Cột trái: Định nghĩa -->
+                <div class="md:col-span-5 flex flex-col gap-4">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-lg mb-3 sub-gradient"><i class="fa-solid fa-cubes"></i> Ảnh Số & Điểm Ảnh</h3>
+                        <div class="text-sm text-slate-600 space-y-3">
+                            <p><b>Ảnh số (Digital Image):</b> Biểu diễn số của hình ảnh. <b>Ảnh bitmap</b> phổ biến với định dạng: bmp, jpeg, png, gif, psd...</p>
+                            <p><b>Điểm ảnh (Pixel):</b> Là tập hợp các điểm hình vuông nhỏ. Xác định bởi tọa độ (x, y), mang giá trị màu sắc, cường độ.</p>
+                            <div class="bg-slate-100 p-3 rounded-lg text-center font-mono text-xs">
+                                1 Megapixel ≈ 1.000.000 điểm ảnh
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-lg mb-3 sub-gradient"><i class="fa-solid fa-eye"></i> Độ Phân Giải</h3>
+                        <div class="text-sm text-slate-600 space-y-3">
+                            <p><b>dpi (dots per inch)</b> hoặc <b>ppi (pixels per inch):</b> Số điểm ảnh trên 1 inch.</p>
+                            <div class="flex items-center gap-2 p-2 bg-pink-50 rounded-lg">
+                                <i class="fa-solid fa-arrow-up-right-dots text-pink-500 text-xl"></i>
+                                <p class="text-xs">Độ phân giải <b>CÀNG CAO</b> ➔ Ảnh <b>CÀNG RÕ NÉT</b> ➔ Dung lượng <b>CÀNG LỚN</b>.</p>
+                            </div>
+                            <p class="italic text-xs text-slate-400">* Ảnh dùng để in thường cần ít nhất 300 dpi.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Mô phỏng tương tác (70% Visual) -->
+                <div class="md:col-span-7 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-lg mb-4 text-center"><i class="fa-solid fa-calculator text-blue-500"></i> Mô phỏng: Kích thước & Độ Phân Giải</h3>
+                    
+                    <div class="flex flex-col items-center">
+                        <!-- Trực quan hóa Grid -->
+                        <div class="flex gap-8 mb-6">
+                            <div class="text-center">
+                                <p class="text-xs font-bold text-slate-500 mb-1">Mật độ thấp (VD: 72 dpi)</p>
+                                <div class="dpi-grid" style="grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);">
+                                    <div class="dpi-cell"></div><div class="dpi-cell"></div><div class="dpi-cell"></div>
+                                    <div class="dpi-cell"></div><div class="dpi-cell bg-blue-300"></div><div class="dpi-cell"></div>
+                                    <div class="dpi-cell"></div><div class="dpi-cell"></div><div class="dpi-cell"></div>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Điểm ảnh to, ít chi tiết</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-xs font-bold text-slate-500 mb-1">Mật độ cao (VD: 300 dpi)</p>
+                                <div class="dpi-grid" style="grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr);">
+                                    <!-- Generating many cells visually using simple CSS grid -->
+                                    <script>
+                                        for(let i=0; i<144; i++) {
+                                            let color = (i>50 && i<90) ? 'bg-blue-500' : 'bg-white';
+                                            document.write(`<div class="dpi-cell ${color}"></div>`);
+                                        }
+                                    </script>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Điểm ảnh nhỏ, mịn màng</p>
+                            </div>
+                        </div>
+
+                        <!-- Hình ảnh minh hoạ DPI từ SGK -->
+                        <div class="mb-6 w-full flex flex-col items-center">
+                            <img src="https://placehold.co/600x200/e2e8f0/475569?text=[Image+of+Hình+25.5+In+ảnh+với+các+độ+phân+giải+khác+nhau]" alt="Hình 25.5" class="w-full max-w-md rounded-xl shadow-sm border border-slate-200">
+                            <p class="text-[10px] text-center text-slate-500 mt-2 italic">Hình 25.5: In cùng một ảnh với các độ phân giải khác nhau trên cùng cỡ giấy ảnh.</p>
+                        </div>
+
+                        <!-- Công cụ tính toán -->
+                        <div class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                            <!-- Mini Tabs -->
+                            <div class="flex justify-center gap-2 mb-4">
+                                <button onclick="switchCalc('forward')" id="btn-calc-forward" class="text-xs px-3 py-1 rounded-full bg-blue-500 text-white font-bold transition-colors">Tính Pixel</button>
+                                <button onclick="switchCalc('reverse')" id="btn-calc-reverse" class="text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600 font-bold hover:bg-slate-300 transition-colors">Tính Kích thước In</button>
+                            </div>
+
+                            <!-- Forward Calculator (Inch -> Pixel) -->
+                            <div id="calc-forward">
+                                <p class="text-sm font-bold text-slate-700 mb-3 text-center">Từ Kích thước in ➔ Điểm ảnh</p>
+                                <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 uppercase font-bold">Rộng</label>
+                                        <input type="number" id="calcW" value="4" class="w-full text-center border p-1 rounded font-mono text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 uppercase font-bold">Cao</label>
+                                        <input type="number" id="calcH" value="6" class="w-full text-center border p-1 rounded font-mono text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 uppercase font-bold">Đơn vị</label>
+                                        <select id="calcUnit" class="w-full text-center border p-1 rounded font-mono text-sm bg-white">
+                                            <option value="inch">Inch</option>
+                                            <option value="cm">Centimet (cm)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 uppercase font-bold">Độ phân giải</label>
+                                        <input type="number" id="calcDpi" value="300" class="w-full text-center border p-1 rounded font-mono text-sm bg-pink-50" placeholder="dpi">
+                                    </div>
+                                </div>
+                                <div id="calcFwdError" class="hidden text-xs text-red-500 text-center mb-2 font-bold">Vui lòng nhập số dương hợp lệ!</div>
+                                <button onclick="calculatePixels()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-xl text-sm transition-colors mb-3">Tính Số Pixel</button>
+                                
+                                <div class="grid grid-cols-2 gap-2 text-center">
+                                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                                        <p class="text-[10px] text-slate-400 uppercase">Kích thước Pixel</p>
+                                        <p id="resPixel" class="font-bold text-blue-600 font-mono text-sm">1200 x 1800 px</p>
+                                    </div>
+                                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                                        <p class="text-[10px] text-slate-400 uppercase">Tổng Điểm Ảnh</p>
+                                        <p id="resTotal" class="font-bold text-purple-600 font-mono text-sm">2.16 Megapixel</p>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-center text-slate-400 mt-2 italic">Ví dụ lấy trực tiếp từ SGK</p>
+                            </div>
+
+                            <!-- Reverse Calculator (Pixel -> Inch) -->
+                            <div id="calc-reverse" class="hidden">
+                                <p class="text-sm font-bold text-slate-700 mb-3 text-center">Từ Điểm ảnh ➔ Kích thước in</p>
+                                <div class="grid grid-cols-3 gap-2 mb-3">
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 uppercase font-bold">Rộng (px)</label>
+                                        <input type="number" id="calcPxW" value="3000" class="w-full text-center border p-1 rounded font-mono text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 uppercase font-bold">Cao (px)</label>
+                                        <input type="number" id="calcPxH" value="2000" class="w-full text-center border p-1 rounded font-mono text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 uppercase font-bold">Độ phân giải</label>
+                                        <input type="number" id="calcRevDpi" value="300" class="w-full text-center border p-1 rounded font-mono text-sm bg-pink-50" placeholder="dpi">
+                                    </div>
+                                </div>
+                                <div id="calcRevError" class="hidden text-xs text-red-500 text-center mb-2 font-bold">Vui lòng nhập số dương hợp lệ!</div>
+                                <button onclick="calculateInches()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 rounded-xl text-sm transition-colors mb-3">Tính Kích thước In</button>
+                                
+                                <div class="grid grid-cols-2 gap-2 text-center">
+                                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                                        <p class="text-[10px] text-slate-400 uppercase">Kích thước (Inch)</p>
+                                        <p id="resInch" class="font-bold text-purple-600 font-mono text-sm">10 x 6.67 in</p>
+                                    </div>
+                                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                                        <p class="text-[10px] text-slate-400 uppercase">Kích thước (cm)</p>
+                                        <p id="resCm" class="font-bold text-pink-600 font-mono text-sm">25.4 x 16.94 cm</p>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-center text-slate-400 mt-2 italic">Áp dụng cho phần Luyện tập 1</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: THỰC HÀNH GIMP -->
+        <section id="thuc-hanh" class="tab-content">
+            <div class="flex flex-col gap-6">
+                <!-- Giới thiệu GIMP -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/The_GIMP_icon_-_gnome.svg" alt="GIMP Icon" class="w-12 h-12">
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800">Phần mềm GIMP</h3>
+                            <p class="text-sm text-slate-500">GNU Image Manipulation Program - Miễn phí, mạnh mẽ.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card-pink p-4 rounded-xl flex items-start gap-3 mb-4">
+                        <i class="fa-solid fa-triangle-exclamation text-pink-500 mt-1"></i>
+                        <div class="w-full">
+                            <p class="font-bold text-sm text-pink-800">Kiến thức dễ nhầm lẫn: Lưu vs Xuất File</p>
+                            <p class="text-xs text-pink-700 mt-1 mb-3"><b>Tệp nguồn GIMP:</b> <code>.xcf</code> (Lưu lớp, độ trong suốt). Dùng lệnh <b>Save</b>.<br>
+                            Để có tệp ảnh thông thường (bmp, jpeg, png...), phải dùng lệnh <b>File ➔ Export</b>.</p>
+                            <img src="https://placehold.co/500x250/fce7f3/be185d?text=[Image+of+Hình+25.10+Hộp+thoại+Export+Image]" alt="Hình 25.10 Hộp thoại Export" class="w-full max-w-sm rounded-lg shadow-sm border border-pink-200">
+                        </div>
+                    </div>
+
+                    <!-- Layout Sơ đồ Giao diện -->
+                    <h4 class="font-bold text-sm text-slate-700 mb-2">Chế độ 1 cửa sổ (Windows ➔ Single-window Mode) bao gồm 5 vùng chính:</h4>
+                    
+                    <div class="relative w-full rounded-xl overflow-hidden border border-slate-200 shadow-sm mb-4 bg-slate-100 flex justify-center p-2">
+                        <img src="https://lh3.googleusercontent.com/d/1210604ObwgKBADNv99VVyL9M-RQcvBMo" alt="Giao diện phần mềm GIMP" class="w-full h-auto rounded shadow-sm border border-slate-200">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 mb-2">
+                        <p><span class="bg-slate-700 text-white font-mono px-2 py-0.5 rounded mr-1">1</span> <b>Thanh bảng chọn:</b> Chứa các lệnh (File, Edit, Image...)</p>
+                        <p><span class="bg-slate-700 text-white font-mono px-2 py-0.5 rounded mr-1">2</span> <b>Bảng công cụ:</b> Các nút lệnh (Zoom, Crop, Rotate...)</p>
+                        <p><span class="bg-slate-700 text-white font-mono px-2 py-0.5 rounded mr-1">3</span> <b>Hộp tuỳ chọn:</b> Thuộc tính công cụ đang chọn</p>
+                        <p><span class="bg-slate-700 text-white font-mono px-2 py-0.5 rounded mr-1">4</span> <b>Vùng hiển thị:</b> Chứa ảnh đang chỉnh sửa</p>
+                        <p><span class="bg-slate-700 text-white font-mono px-2 py-0.5 rounded mr-1">5</span> <b>Hộp chức năng:</b> Quản lí lớp (Layers), Kênh màu...</p>
+                    </div>
+                </div>
+
+                <!-- Thao tác cơ bản -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center text-center">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-3 text-xl"><i class="fa-solid fa-magnifying-glass-plus"></i></div>
+                        <h4 class="font-bold text-sm">Phóng to/Thu nhỏ</h4>
+                        <img src="https://placehold.co/200x150/e0f2fe/0369a1?text=[Image+of+Hình+25.3+Tuỳ+chọn+công+cụ+Zoom]" alt="Hình 25.3" class="w-full rounded mt-3 mb-3 shadow-sm border border-slate-100">
+                        <p class="text-[11px] text-slate-500 mt-auto">Công cụ <b>Zoom</b><br>Hoặc: Giữ <code>Ctrl</code> + lăn chuột</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center text-center">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-3 text-xl"><i class="fa-solid fa-crop-simple"></i></div>
+                        <h4 class="font-bold text-sm">Cắt ảnh (Crop)</h4>
+                        <img src="https://placehold.co/200x150/dcfce7/15803d?text=[Image+of+Hình+25.9+Thao+tác+cắt+ảnh]" alt="Hình 25.9" class="w-full rounded mt-3 mb-3 shadow-sm border border-slate-100">
+                        <p class="text-[11px] text-slate-500 mt-auto">Phím tắt: <code>Shift + C</code><br>Kéo thả chọn vùng giữ lại ➔ Enter. Esc để huỷ.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center text-center">
+                        <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-3 text-xl"><i class="fa-solid fa-rotate-right"></i></div>
+                        <h4 class="font-bold text-sm">Xoay ảnh (Rotate)</h4>
+                        <img src="https://placehold.co/200x150/ffedd5/c2410c?text=[Image+of+Hình+25.7+Hộp+Rotate]" alt="Hình 25.7" class="w-full rounded mt-3 mb-3 shadow-sm border border-slate-100">
+                        <p class="text-[11px] text-slate-500 mt-auto">Phím tắt: <code>Shift + R</code><br>Nhập góc xoay hoặc kéo thả trực tiếp trên ảnh.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center text-center">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-3 text-xl"><i class="fa-solid fa-expand"></i></div>
+                        <h4 class="font-bold text-sm">Đổi kích thước/DPI</h4>
+                        <img src="https://placehold.co/200x150/f3e8ff/7e22ce?text=[Image+of+Hình+25.4+Thiết+lập+kích+thước]" alt="Hình 25.4" class="w-full rounded mt-3 mb-3 shadow-sm border border-slate-100">
+                        <p class="text-[11px] text-slate-500 mt-auto"><code>Image ➔ Scale Image</code><br><i>Lưu ý: Thay đổi độ phân giải (X/Y resolution), số điểm ảnh giữ nguyên.</i></p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: LUYỆN TẬP -->
+        <section id="luyen-tap" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Cột trái: Vận dụng tư duy -->
+                <div class="lg:col-span-1 flex flex-col gap-4">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-lg mb-3 flex items-center"><i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i> Bài Tập Vận Dụng</h3>
+                        <div class="text-sm text-slate-700 bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+                            <p class="font-bold mb-2">Bài toán từ SGK:</p>
+                            <p>Ảnh 600 x 600 pixel.</p>
+                            <p>Nếu in độ phân giải 100 dpi thì kích thước in ra gấp mấy lần so với in ở độ phân giải 200 dpi?</p>
+                            <hr class="my-3 border-yellow-300">
+                            <button onclick="document.getElementById('sol1').classList.toggle('hidden')" class="text-xs bg-yellow-200 hover:bg-yellow-300 px-3 py-1 rounded-full font-bold text-yellow-800 transition-colors">Xem gợi ý <i class="fa-solid fa-eye"></i></button>
+                            <div id="sol1" class="hidden mt-3 text-[11px] bg-white p-2 rounded">
+                                - Kích thước ở 100dpi: 600/100 = 6 inch.<br>
+                                - Kích thước ở 200dpi: 600/200 = 3 inch.<br>
+                                ➔ Gấp <b>2 lần</b> (chiều dài/rộng) hoặc <b>4 lần</b> (diện tích).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Quiz Trắc nghiệm -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-lg mb-4 text-center sub-gradient">Trắc nghiệm Ôn Tập Nhanh</h3>
+                    
+                    <div id="quiz-container" class="space-y-6">
+                        <!-- Câu hỏi được render từ JS -->
+                    </div>
+
+                    <button onclick="checkQuiz()" class="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 rounded-xl shadow-md transition-all">Kiểm Tra Kết Quả</button>
+                    
+                    <div id="quiz-result" class="mt-4 text-center font-bold text-lg hidden"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 mb-4 text-center text-xs text-slate-400">
+        <p>Thiết kế dạng Studygram trực quan | Nội dung bám sát SGK Tin học 11 - Bài 25</p>
+    </footer>
+
+    <!-- Scripts for Interactivity -->
+    <script>
+        // --- 1. Tabs Logic ---
+        function openTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active style from buttons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-blue-50', 'text-blue-600');
+                el.classList.add('text-slate-600');
+            });
+            
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            // Add active style to clicked button
+            const activeBtn = document.querySelector(`button[data-target="${tabId}"]`);
+            activeBtn.classList.remove('text-slate-600');
+            activeBtn.classList.add('bg-blue-50', 'text-blue-600');
+        }
+
+        // --- 2. Calculator Logic ---
+        function switchCalc(mode) {
+            const btnFwd = document.getElementById('btn-calc-forward');
+            const btnRev = document.getElementById('btn-calc-reverse');
+            const divFwd = document.getElementById('calc-forward');
+            const divRev = document.getElementById('calc-reverse');
+
+            if (mode === 'forward') {
+                btnFwd.className = "text-xs px-3 py-1 rounded-full bg-blue-500 text-white font-bold transition-colors";
+                btnRev.className = "text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600 font-bold hover:bg-slate-300 transition-colors";
+                divFwd.classList.remove('hidden');
+                divRev.classList.add('hidden');
+            } else {
+                btnRev.className = "text-xs px-3 py-1 rounded-full bg-purple-500 text-white font-bold transition-colors";
+                btnFwd.className = "text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600 font-bold hover:bg-slate-300 transition-colors";
+                divRev.classList.remove('hidden');
+                divFwd.classList.add('hidden');
+            }
+        }
+
+        function calculatePixels() {
+            const w_val = parseFloat(document.getElementById('calcW').value);
+            const h_val = parseFloat(document.getElementById('calcH').value);
+            const dpi = parseFloat(document.getElementById('calcDpi').value);
+            const unit = document.getElementById('calcUnit').value;
+            const errorMsg = document.getElementById('calcFwdError');
+
+            if(isNaN(w_val) || isNaN(h_val) || isNaN(dpi) || w_val<=0 || h_val<=0 || dpi<=0) {
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            errorMsg.classList.add('hidden');
+
+            const w = unit === 'cm' ? w_val / 2.54 : w_val;
+            const h = unit === 'cm' ? h_val / 2.54 : h_val;
+
+            const pxW = Math.round(w * dpi);
+            const pxH = Math.round(h * dpi);
+            const totalPx = pxW * pxH;
+            const megaPx = (totalPx / 1000000).toFixed(2);
+
+            document.getElementById('resPixel').innerText = `${pxW} x ${pxH} px`;
+            document.getElementById('resTotal').innerText = `${megaPx} MP`;
+            
+            // Highlight animation
+            const cards = [document.getElementById('resPixel').parentElement, document.getElementById('resTotal').parentElement];
+            cards.forEach(c => {
+                c.style.backgroundColor = '#dcfce7'; // green-100
+                setTimeout(() => c.style.backgroundColor = 'white', 500);
+            });
+        }
+
+        function calculateInches() {
+            const pxW = parseFloat(document.getElementById('calcPxW').value);
+            const pxH = parseFloat(document.getElementById('calcPxH').value);
+            const dpi = parseFloat(document.getElementById('calcRevDpi').value);
+            const errorMsg = document.getElementById('calcRevError');
+
+            if(isNaN(pxW) || isNaN(pxH) || isNaN(dpi) || pxW<=0 || pxH<=0 || dpi<=0) {
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            errorMsg.classList.add('hidden');
+
+            // Làm tròn 2 chữ số thập phân
+            let inchW = (pxW / dpi).toFixed(2);
+            let inchH = (pxH / dpi).toFixed(2);
+            
+            // Tính ra cm (1 inch = 2.54 cm)
+            let cmW = ((pxW / dpi) * 2.54).toFixed(2);
+            let cmH = ((pxH / dpi) * 2.54).toFixed(2);
+            
+            // Xoá các số 0 thừa ở cuối nếu là số nguyên
+            inchW = parseFloat(inchW);
+            inchH = parseFloat(inchH);
+            cmW = parseFloat(cmW);
+            cmH = parseFloat(cmH);
+
+            document.getElementById('resInch').innerText = `${inchW} x ${inchH} in`;
+            document.getElementById('resCm').innerText = `${cmW} x ${cmH} cm`;
+            
+            // Highlight animation
+            const cards = [document.getElementById('resInch').parentElement, document.getElementById('resCm').parentElement];
+            cards.forEach(c => {
+                c.style.backgroundColor = '#f3e8ff'; // purple-100
+                setTimeout(() => c.style.backgroundColor = 'white', 500);
+            });
+        }
+
+        // --- 3. Quiz Logic ---
+        const quizData = [
+            {
+                q: "1. Ảnh bitmap là gì?",
+                options: ["Tập hợp các đường vector toán học.", "Tập hợp các điểm ảnh (pixel) xếp thành lưới.", "Là tên gọi khác của phần mềm GIMP.", "Là một loại máy ảnh kĩ thuật số."],
+                ans: 1
+            },
+            {
+                q: "2. Một camera được giới thiệu là '5 megapixel' nghĩa là gì?",
+                options: ["Camera đó nặng 5MB.", "Camera chụp được ảnh chứa khoảng 5 triệu điểm ảnh.", "Camera có độ phân giải 5 dpi.", "Kích thước màn hình camera là 5 inch."],
+                ans: 1
+            },
+            {
+                q: "3. Trong phần mềm GIMP, khi thay đổi thông số X/Y resolution (Độ phân giải) trong lệnh Scale Image thì điều gì xảy ra?",
+                options: ["Số lượng điểm ảnh (pixel) thay đổi theo.", "Ảnh bị cắt nhỏ đi.", "Số lượng điểm ảnh giữ nguyên, kích thước in thay đổi.", "Màu sắc ảnh thay đổi."],
+                ans: 2
+            },
+            {
+                q: "4. Để xuất ảnh ra định dạng JPG hoặc PNG trong GIMP, em dùng lệnh nào?",
+                options: ["File -> Save", "File -> Save As", "Edit -> Copy", "File -> Export"],
+                ans: 3
+            },
+            {
+                q: "5. Phím tắt để sử dụng công cụ Cắt ảnh (Crop) trong GIMP là gì?",
+                options: ["Shift + C", "Shift + R", "Ctrl + C", "Esc"],
+                ans: 0
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            let html = '';
+            quizData.forEach((item, index) => {
+                html += `
+                <div class="quiz-item bg-slate-50 p-4 rounded-xl border border-slate-100" data-ans="${item.ans}">
+                    <p class="font-bold text-sm text-slate-800 mb-3">${item.q}</p>
+                    <div class="space-y-2">
+                        ${item.options.map((opt, i) => `
+                            <label class="flex items-center space-x-2 text-sm cursor-pointer p-2 rounded hover:bg-slate-200 transition-colors">
+                                <input type="radio" name="q${index}" value="${i}" class="text-blue-500 focus:ring-blue-400">
+                                <span class="text-slate-700">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function checkQuiz() {
+            let score = 0;
+            const items = document.querySelectorAll('.quiz-item');
+            
+            items.forEach((item, index) => {
+                const correctAns = item.getAttribute('data-ans');
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                
+                // Reset styles
+                item.classList.remove('bg-green-50', 'border-green-300', 'bg-red-50', 'border-red-300');
+                
+                if (selected) {
+                    if (selected.value === correctAns) {
+                        score++;
+                        item.classList.add('bg-green-50', 'border-green-300');
+                    } else {
+                        item.classList.add('bg-red-50', 'border-red-300');
+                    }
+                } else {
+                    item.classList.add('bg-red-50', 'border-red-300');
+                }
+            });
+
+            const resDiv = document.getElementById('quiz-result');
+            resDiv.classList.remove('hidden', 'text-green-600', 'text-red-500', 'text-orange-500');
+            
+            if(score === 5) {
+                resDiv.innerHTML = `🎉 Xuất sắc! Bạn đạt 5/5 điểm.`;
+                resDiv.classList.add('text-green-600');
+            } else if (score >= 3) {
+                resDiv.innerHTML = `👍 Khá lắm! Bạn đạt ${score}/5 điểm. Cần xem lại các câu sai nhé.`;
+                resDiv.classList.add('text-orange-500');
+            } else {
+                resDiv.innerHTML = `📚 Bạn đạt ${score}/5 điểm. Hãy xem lại phần Lý thuyết và GIMP nha!`;
+                resDiv.classList.add('text-red-500');
+            }
+        }
+
+        // Initialize quiz on load
+        window.onload = renderQuiz;
+    </script>
+</body>
+</html>

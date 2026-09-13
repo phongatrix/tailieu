@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 16: Công việc Quản trị CSDL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Import Google Fonts: Inter cho font chữ hiện đại, rõ ràng -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Import Phosphor Icons cho icon nét thanh, hiện đại -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#E0F2FE',
+                            purple: '#F3E8FF',
+                            green: '#D1FAE5',
+                            pink: '#FCE7F3',
+                            yellow: '#FEF3C7',
+                            gray: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Tùy chỉnh thanh cuộn */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hiệu ứng pulse cho mô phỏng */
+        .alert-pulse { animation: alertPulse 1.5s infinite; }
+        @keyframes alertPulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-pastel-blue rounded-xl flex items-center justify-center text-blue-600 text-2xl">
+                    <i class="ph-duotone ph-database"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Chủ đề 5 - Hướng nghiệp với Tin học</p>
+                    <h1 class="text-2xl font-bold text-slate-800">BÀI 16: CÔNG VIỆC QUẢN TRỊ CƠ SỞ DỮ LIỆU</h1>
+                </div>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <nav class="flex overflow-x-auto gap-2 mt-6 pb-2 scrollbar-hide">
+                <button onclick="switchTab('tongquan')" id="btn-tongquan" class="tab-btn active px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-blue-600 text-white shadow-md flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph-fill ph-target"></i> Mục tiêu & Khái niệm
+                </button>
+                <button onclick="switchTab('nhiemvu')" id="btn-nhiemvu" class="tab-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-white text-slate-600 hover:bg-slate-100 flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph-fill ph-tree-structure"></i> Sơ đồ Nhiệm vụ & Năng lực
+                </button>
+                <button onclick="switchTab('phantich')" id="btn-phantich" class="tab-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-white text-slate-600 hover:bg-slate-100 flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph-fill ph-magnifying-glass-plus"></i> Phân tích & Mối quan hệ
+                </button>
+                <button onclick="switchTab('thuchanh')" id="btn-thuchanh" class="tab-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-white text-slate-600 hover:bg-slate-100 flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph-fill ph-game-controller"></i> Tương tác & Trắc nghiệm
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tongquan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Mục tiêu -->
+                <div class="col-span-1 bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-2 mb-4 text-emerald-600">
+                        <i class="ph-duotone ph-flag-checkered text-2xl"></i>
+                        <h2 class="font-bold text-lg">Mục tiêu bài học</h2>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3 bg-pastel-green p-3 rounded-xl text-sm">
+                            <i class="ph-fill ph-check-circle text-emerald-500 mt-0.5"></i>
+                            <span>Hiểu được <strong>công việc, kiến thức, kĩ năng</strong> cần thiết để quản trị CSDL.</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-pastel-green p-3 rounded-xl text-sm">
+                            <i class="ph-fill ph-check-circle text-emerald-500 mt-0.5"></i>
+                            <span>Biết các <strong>ngành học liên quan</strong> & <strong>nhu cầu xã hội</strong>.</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-pastel-green p-3 rounded-xl text-sm">
+                            <i class="ph-fill ph-check-circle text-emerald-500 mt-0.5"></i>
+                            <span>Tìm kiếm, khai thác thông tin <strong>hướng nghiệp</strong>.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Khái niệm quan trọng -->
+                <div class="col-span-1 md:col-span-2 space-y-6">
+                    <h2 class="font-bold text-lg flex items-center gap-2 text-purple-600">
+                        <i class="ph-duotone ph-book-bookmark text-2xl"></i> Khái niệm cốt lõi
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Card 1 -->
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 bg-pastel-purple rounded-full opacity-50"></div>
+                            <div class="w-10 h-10 bg-pastel-purple rounded-lg flex items-center justify-center text-purple-600 mb-3 text-xl">
+                                <i class="ph-fill ph-gear"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-800 mb-2">Quản trị CSDL là gì?</h3>
+                            <p class="text-sm text-slate-600">Hoạt động nhằm đảm bảo cho việc sử dụng CSDL <strong>thông suốt, an toàn</strong> và <strong>hiệu quả</strong> cao.</p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 bg-pastel-blue rounded-full opacity-50"></div>
+                            <div class="w-10 h-10 bg-pastel-blue rounded-lg flex items-center justify-center text-blue-600 mb-3 text-xl">
+                                <i class="ph-fill ph-user-gear"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-800 mb-2">Nhà quản trị CSDL (DBA)</h3>
+                            <p class="text-sm text-slate-600">Người thực thi hoạt động quản trị CSDL, giám sát định kì, xử lí sự cố, đảm bảo CSDL luôn <strong>sẵn sàng khi cần</strong>.</p>
+                        </div>
+                    </div>
+
+                    <!-- Ví dụ minh họa -->
+                    <div class="bg-pastel-yellow p-5 rounded-2xl border border-yellow-200">
+                        <h3 class="font-bold text-amber-700 flex items-center gap-2 mb-2">
+                            <i class="ph-fill ph-lightbulb"></i> Ví dụ so sánh tương đồng
+                        </h3>
+                        <div class="flex items-center gap-4 text-sm text-slate-700">
+                            <div class="flex-1 text-center bg-white p-3 rounded-lg shadow-sm">
+                                <i class="ph-duotone ph-codesandbox-logo text-3xl text-slate-400 mb-2"></i>
+                                <p><strong>Phần mềm</strong></p>
+                                <p class="text-xs mt-1">Quản trị dự án: Điều phối nhân lực, tài chính, tiến độ.</p>
+                            </div>
+                            <i class="ph-bold ph-arrows-left-right text-slate-400 text-xl"></i>
+                            <div class="flex-1 text-center bg-white p-3 rounded-lg shadow-sm border-2 border-amber-300">
+                                <i class="ph-duotone ph-database text-3xl text-amber-500 mb-2"></i>
+                                <p><strong>Cơ sở dữ liệu</strong></p>
+                                <p class="text-xs mt-1">Quản trị CSDL: Đảm bảo thông suốt, cấp quyền, an toàn.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: SƠ ĐỒ NHIỆM VỤ & NĂNG LỰC -->
+        <section id="nhiemvu" class="tab-content">
+            <div class="space-y-8">
+                <!-- Infographic Nhiệm vụ -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <h2 class="font-bold text-xl text-center mb-8 flex items-center justify-center gap-2 text-blue-700">
+                        <i class="ph-fill ph-briefcase"></i> 4 Nhiệm vụ chính của Nhà quản trị CSDL
+                    </h2>
+                    
+                    <!-- Sơ đồ Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Nhiệm vụ 1 -->
+                        <div class="bg-pastel-blue p-5 rounded-2xl flex flex-col items-center text-center group hover:-translate-y-1 transition-transform">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-blue-500 text-2xl group-hover:scale-110 transition-transform">
+                                <i class="ph-duotone ph-download-simple"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-sm mb-2">Cài đặt & Cập nhật</h3>
+                            <p class="text-xs text-slate-600">Cài đặt các hệ QTCSDL, bổ sung tính năng, vá lỗi, chuyển đổi dữ liệu khi nâng cấp.</p>
+                        </div>
+                        <!-- Nhiệm vụ 2 -->
+                        <div class="bg-pastel-green p-5 rounded-2xl flex flex-col items-center text-center group hover:-translate-y-1 transition-transform">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-emerald-500 text-2xl group-hover:scale-110 transition-transform">
+                                <i class="ph-duotone ph-wrench"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-sm mb-2">Tạo lập & Điều chỉnh</h3>
+                            <p class="text-xs text-slate-600">Tham gia tạo lập, điều chỉnh cấu trúc CSDL; lập hồ sơ CSDL phục vụ bảo trì.</p>
+                        </div>
+                        <!-- Nhiệm vụ 3 -->
+                        <div class="bg-pastel-purple p-5 rounded-2xl flex flex-col items-center text-center group hover:-translate-y-1 transition-transform">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-purple-500 text-2xl group-hover:scale-110 transition-transform">
+                                <i class="ph-duotone ph-cpu"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-sm mb-2">Đảm bảo tài nguyên</h3>
+                            <p class="text-xs text-slate-600">Cung cấp máy tính công suất cao, bộ nhớ đủ lớn, theo sát mức tăng trưởng của CSDL.</p>
+                        </div>
+                        <!-- Nhiệm vụ 4 -->
+                        <div class="bg-pastel-pink p-5 rounded-2xl flex flex-col items-center text-center group hover:-translate-y-1 transition-transform">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-rose-500 text-2xl group-hover:scale-110 transition-transform">
+                                <i class="ph-duotone ph-shield-check"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-sm mb-2">Đảm bảo an toàn, bảo mật</h3>
+                            <p class="text-xs text-slate-600">Phân quyền sử dụng, tạo bản sao lưu dự phòng (backup), khôi phục dữ liệu khi có sự cố.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Năng lực & Cơ hội -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Phẩm chất & Năng lực -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-lg mb-4 text-slate-800 border-b pb-2">Hồ sơ năng lực</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xs uppercase font-bold text-slate-400 mb-2">Kiến thức chuyên môn</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium"><i class="ph-bold ph-database mr-1"></i>Nền tảng CSDL</span>
+                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"><i class="ph-bold ph-code mr-1"></i>SQL</span>
+                                    <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Hệ QTCSDL</span>
+                                    <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Hệ điều hành & Mạng</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-xs uppercase font-bold text-slate-400 mb-2">Phẩm chất cá nhân</h4>
+                                <div class="flex items-center justify-between bg-pastel-gray p-3 rounded-lg text-sm">
+                                    <span class="flex items-center gap-2"><i class="ph-fill ph-magnifying-glass text-blue-500"></i> Cẩn thận, tỉ mỉ</span>
+                                    <span class="flex items-center gap-2"><i class="ph-fill ph-hourglass-high text-amber-500"></i> Kiên trì</span>
+                                    <span class="flex items-center gap-2"><i class="ph-fill ph-books text-purple-500"></i> Ham học hỏi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ngành học & Việc làm -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 bg-gradient-to-br from-white to-pastel-blue/30">
+                        <h3 class="font-bold text-lg mb-4 text-slate-800 border-b pb-2">Cơ hội & Định hướng</h3>
+                        
+                        <div class="mb-4">
+                            <span class="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded uppercase">Ngành học ở Đại học</span>
+                            <p class="text-sm mt-2 font-medium">Hệ thống thông tin, Công nghệ phần mềm, Khoa học máy tính, Khoa học dữ liệu.</p>
+                        </div>
+                        
+                        <div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-1 rounded uppercase">Nhu cầu xã hội (CMCN 4.0)</span>
+                            <ul class="text-sm mt-2 space-y-1 text-slate-600 list-disc list-inside">
+                                <li>Tổ chức tài chính, ngân hàng, bảo hiểm.</li>
+                                <li>Cơ quan nhà nước (Dịch vụ công).</li>
+                                <li>Sàn thương mại điện tử, mạng xã hội, giải trí.</li>
+                                <li class="font-semibold text-slate-800 mt-2">Nhu cầu tăng nhanh cùng quá trình chuyển đổi số.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: PHÂN TÍCH & MỐI QUAN HỆ -->
+        <section id="phantich" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Dễ nhầm lẫn -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border-2 border-rose-100 relative">
+                    <div class="absolute -top-3 left-6 bg-rose-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm">
+                        <i class="ph-bold ph-warning"></i> Chú ý dễ nhầm lẫn
+                    </div>
+                    
+                    <h3 class="font-bold text-slate-800 mt-2 mb-4 text-center">Thiết kế CSDL vs Quản trị CSDL</h3>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1 bg-slate-50 p-4 rounded-xl text-center opacity-70">
+                            <i class="ph-duotone ph-pen-nib text-3xl text-slate-500 mb-2"></i>
+                            <h4 class="font-bold text-sm">Nghề Thiết kế CSDL</h4>
+                            <p class="text-xs mt-2 text-slate-600">Là một nghề khác. Xây dựng cấu trúc CSDL từ ban đầu.</p>
+                        </div>
+                        <div class="flex items-center justify-center text-slate-300 font-bold hidden sm:block">KHÁC NHAU</div>
+                        <div class="flex-1 bg-pastel-blue p-4 rounded-xl text-center border border-blue-200">
+                            <i class="ph-duotone ph-hard-drives text-3xl text-blue-500 mb-2"></i>
+                            <h4 class="font-bold text-sm">Nhà Quản trị CSDL</h4>
+                            <p class="text-xs mt-2 text-slate-700">Duy trì, vận hành, bảo vệ. <strong>Không nhất thiết</strong> phải tham gia thiết kế, nhưng <strong>biết thiết kế là điểm cộng</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mối quan hệ -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="ph-fill ph-users-three text-purple-500"></i> Mối quan hệ trong công việc
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Nhà quản trị CSDL không làm việc độc lập. Họ đóng vai trò trung tâm trong việc phân quyền:</p>
+                    
+                    <!-- Sơ đồ quan hệ -->
+                    <div class="relative bg-slate-50 p-4 rounded-xl flex items-center justify-between">
+                        
+                        <div class="text-center w-1/3">
+                            <div class="w-12 h-12 bg-white rounded-full mx-auto flex items-center justify-center shadow text-slate-600 z-10 relative">
+                                <i class="ph-fill ph-paint-brush"></i>
+                            </div>
+                            <p class="text-[10px] font-bold mt-2">Người thiết kế hệ thống</p>
+                        </div>
+
+                        <div class="flex-1 border-t-2 border-dashed border-blue-300 absolute left-1/6 right-1/6 top-10 z-0"></div>
+
+                        <div class="text-center w-1/3 relative z-10">
+                            <div class="w-16 h-16 bg-blue-500 text-white rounded-full mx-auto flex items-center justify-center shadow-lg ring-4 ring-blue-100">
+                                <i class="ph-fill ph-user-gear text-2xl"></i>
+                            </div>
+                            <p class="text-xs font-bold text-blue-700 mt-2">Nhà quản trị CSDL</p>
+                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap">Thiết lập quyền</span>
+                        </div>
+
+                        <div class="text-center w-1/3 z-10 relative">
+                            <div class="w-12 h-12 bg-white rounded-full mx-auto flex items-center justify-center shadow text-slate-600">
+                                <i class="ph-fill ph-users"></i>
+                            </div>
+                            <p class="text-[10px] font-bold mt-2">Bộ phận nghiệp vụ (Người dùng)</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-center mt-6 text-slate-600 italic">"Phối hợp để phân quyền sử dụng dữ liệu đến từng nhóm người dùng, điều chỉnh khi có biến động nhân sự."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: TƯƠNG TÁC & TRẮC NGHIỆM -->
+        <section id="thuchanh" class="tab-content">
+            
+            <!-- Trình mô phỏng trực quan -->
+            <div class="bg-slate-800 text-white rounded-2xl p-6 shadow-xl mb-8">
+                <h3 class="font-bold text-lg mb-2 flex items-center gap-2 text-blue-300">
+                    <i class="ph-fill ph-terminal-window"></i> Trình mô phỏng: Nhiệm vụ khôi phục dữ liệu
+                </h3>
+                <p class="text-sm text-slate-300 mb-6">Mô phỏng tình huống sự cố phần cứng. Hãy đóng vai Nhà quản trị CSDL để xử lý!</p>
+
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <!-- Trạng thái Server -->
+                    <div class="flex-1 bg-slate-900 p-6 rounded-xl border border-slate-700 flex flex-col items-center">
+                        <div id="server-icon" class="text-6xl text-emerald-400 transition-all duration-300">
+                            <i class="ph-duotone ph-hard-drives"></i>
+                        </div>
+                        <div id="server-status" class="mt-4 font-bold text-emerald-400 tracking-wider">HỆ THỐNG HOẠT ĐỘNG BÌNH THƯỜNG</div>
+                        
+                        <!-- Thanh tiến trình dữ liệu -->
+                        <div class="w-full bg-slate-700 h-2 mt-4 rounded-full overflow-hidden">
+                            <div id="data-bar" class="bg-emerald-500 h-full w-full transition-all duration-500"></div>
+                        </div>
+                        <p class="text-xs mt-2 text-slate-400">Dữ liệu hiện tại</p>
+                    </div>
+
+                    <!-- Bảng điều khiển -->
+                    <div class="flex-1 w-full space-y-3">
+                        <button onclick="simBreak()" id="btn-break" class="w-full bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2">
+                            <i class="ph-bold ph-lightning"></i> 1. Giả lập: Hỏng ổ cứng!
+                        </button>
+                        <button onclick="simBackup()" id="btn-backup" disabled class="w-full bg-slate-600 text-slate-400 cursor-not-allowed py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2">
+                            <i class="ph-bold ph-copy"></i> 2. Lấy bản Sao lưu dự phòng
+                        </button>
+                        <button onclick="simRestore()" id="btn-restore" disabled class="w-full bg-slate-600 text-slate-400 cursor-not-allowed py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2">
+                            <i class="ph-bold ph-arrow-counter-clockwise"></i> 3. Khôi phục dữ liệu
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Trắc nghiệm -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-lg mb-6 flex items-center gap-2 border-b pb-4">
+                    <i class="ph-fill ph-exam text-purple-600"></i> Ôn tập nhanh (5 câu hỏi)
+                </h3>
+                
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Câu hỏi sẽ được render bằng JS -->
+                </div>
+
+                <div class="mt-8 flex justify-between items-center border-t pt-4">
+                    <div id="quiz-result" class="font-bold text-lg text-blue-600"></div>
+                    <button onclick="submitQuiz()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full font-medium transition-colors shadow-md">
+                        Nộp bài & Kiểm tra
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        // --- LOGIC CHUYỂN TAB ---
+        function switchTab(tabId) {
+            // Ẩn tất cả nội dung tab
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Reset style tất cả nút tab
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+                el.classList.add('bg-white', 'text-slate-600');
+            });
+
+            // Hiển thị tab được chọn
+            document.getElementById(tabId).classList.add('active');
+            
+            // Đổi style nút được chọn
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('bg-white', 'text-slate-600');
+            activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+        }
+
+        // --- LOGIC MÔ PHỎNG SỰ CỐ ---
+        const srvIcon = document.getElementById('server-icon');
+        const srvStatus = document.getElementById('server-status');
+        const dataBar = document.getElementById('data-bar');
+        const btnBreak = document.getElementById('btn-break');
+        const btnBackup = document.getElementById('btn-backup');
+        const btnRestore = document.getElementById('btn-restore');
+
+        function simBreak() {
+            // UI Update
+            srvIcon.className = "text-6xl text-rose-500 alert-pulse transition-all duration-300";
+            srvIcon.innerHTML = '<i class="ph-duotone ph-warning-octagon"></i>';
+            srvStatus.textContent = "CẢNH BÁO: HỎNG PHẦN CỨNG! MẤT DỮ LIỆU!";
+            srvStatus.className = "mt-4 font-bold text-rose-500 tracking-wider";
+            dataBar.style.width = "5%";
+            dataBar.className = "bg-rose-600 h-full transition-all duration-500";
+
+            // Button states
+            btnBreak.disabled = true;
+            btnBreak.className = "w-full bg-slate-600 text-slate-400 cursor-not-allowed py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2";
+            
+            btnBackup.disabled = false;
+            btnBackup.className = "w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2 animate-pulse";
+        }
+
+        function simBackup() {
+            srvStatus.textContent = "ĐANG TẢI BẢN SAO LƯU DỰ PHÒNG...";
+            srvStatus.className = "mt-4 font-bold text-blue-400 tracking-wider";
+            
+            btnBackup.disabled = true;
+            btnBackup.className = "w-full bg-slate-600 text-slate-400 cursor-not-allowed py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2";
+            btnBackup.classList.remove('animate-pulse');
+            
+            btnRestore.disabled = false;
+            btnRestore.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2 animate-pulse";
+        }
+
+        function simRestore() {
+            srvIcon.className = "text-6xl text-emerald-400 transition-all duration-300";
+            srvIcon.innerHTML = '<i class="ph-duotone ph-hard-drives"></i>';
+            srvStatus.textContent = "KHÔI PHỤC THÀNH CÔNG! HỆ THỐNG TRỰC TUYẾN.";
+            srvStatus.className = "mt-4 font-bold text-emerald-400 tracking-wider";
+            dataBar.style.width = "100%";
+            dataBar.className = "bg-emerald-500 h-full transition-all duration-500";
+
+            btnRestore.disabled = true;
+            btnRestore.className = "w-full bg-slate-600 text-slate-400 cursor-not-allowed py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2";
+            btnRestore.classList.remove('animate-pulse');
+
+            // Reset break button after a delay
+            setTimeout(() => {
+                btnBreak.disabled = false;
+                btnBreak.className = "w-full bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2";
+                srvStatus.textContent = "HỆ THỐNG HOẠT ĐỘNG BÌNH THƯỜNG";
+            }, 3000);
+        }
+
+        // --- LOGIC TRẮC NGHIỆM ---
+        const quizData = [
+            {
+                q: "1. Quản trị CSDL có mục đích chính là gì?",
+                options: [
+                    "A. Lập trình ra các phần mềm ứng dụng CSDL.",
+                    "B. Đảm bảo cho việc sử dụng CSDL thông suốt, an toàn và hiệu quả cao.",
+                    "C. Thu thập dữ liệu thô từ Internet.",
+                    "D. Thiết kế giao diện cho người dùng."
+                ],
+                ans: 1 // Index of correct option (B)
+            },
+            {
+                q: "2. Đâu KHÔNG phải là nhiệm vụ chính của nhà quản trị CSDL được nêu trong bài học?",
+                options: [
+                    "A. Đảm bảo an toàn, bảo mật cho dữ liệu.",
+                    "B. Đảm bảo tài nguyên cho các hoạt động CSDL.",
+                    "C. Cài đặt và cập nhật các hệ QTCSDL.",
+                    "D. Lập trình chức năng web thương mại điện tử."
+                ],
+                ans: 3
+            },
+            {
+                q: "3. Trong thực tế, kỹ năng nào được xem là điểm cộng đối với nhà quản trị CSDL dù họ không bắt buộc phải làm?",
+                options: [
+                    "A. Biết cài đặt mạng máy tính.",
+                    "B. Biết lập trình game 3D.",
+                    "C. Biết thiết kế hệ thống CSDL ban đầu.",
+                    "D. Biết sửa chữa màn hình máy tính."
+                ],
+                ans: 2
+            },
+            {
+                q: "4. Theo sách giáo khoa, phẩm chất nào giúp nhà quản trị CSDL phát hiện và xử lí sự cố tốt hơn?",
+                options: [
+                    "A. Nhanh nhẹn, linh hoạt.",
+                    "B. Tính cẩn thận, tỉ mỉ, kiên trì.",
+                    "C. Khả năng giao tiếp, thuyết trình.",
+                    "D. Tính sáng tạo nghệ thuật."
+                ],
+                ans: 1
+            },
+            {
+                q: "5. Vì sao nhu cầu nhân lực quản trị CSDL ngày một tăng?",
+                options: [
+                    "A. Do sinh viên ít đăng ký học ngành này.",
+                    "B. Do CSDL ngày càng nhỏ gọn dễ quản lý.",
+                    "C. Do nhu cầu phát triển các ứng dụng tin học sử dụng CSDL (chuyển đổi số, Internet).",
+                    "D. Do máy tính ngày càng rẻ."
+                ],
+                ans: 2
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        // Render câu hỏi
+        quizData.forEach((item, qIndex) => {
+            let html = `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200" id="q-block-${qIndex}">
+                    <p class="font-semibold text-slate-800 mb-3">${item.q}</p>
+                    <div class="space-y-2">
+            `;
+            item.options.forEach((opt, oIndex) => {
+                html += `
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-white hover:bg-blue-50 cursor-pointer transition-colors has-[:checked]:bg-blue-100 has-[:checked]:border-blue-500">
+                        <input type="radio" name="q${qIndex}" value="${oIndex}" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-slate-700">${opt}</span>
+                    </label>
+                `;
+            });
+            html += `</div></div>`;
+            quizContainer.innerHTML += html;
+        });
+
+        function submitQuiz() {
+            let score = 0;
+            quizData.forEach((item, qIndex) => {
+                const selected = document.querySelector(`input[name="q${qIndex}"]:checked`);
+                const block = document.getElementById(`q-block-${qIndex}`);
+                
+                // Reset styling
+                block.classList.remove('border-emerald-400', 'bg-emerald-50', 'border-rose-400', 'bg-rose-50');
+
+                if (selected) {
+                    if (parseInt(selected.value) === item.ans) {
+                        score++;
+                        block.classList.add('border-emerald-400', 'bg-emerald-50');
+                    } else {
+                        block.classList.add('border-rose-400', 'bg-rose-50');
+                    }
+                } else {
+                     block.classList.add('border-rose-400', 'bg-rose-50'); // Không chọn cũng tính sai
+                }
+            });
+
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.innerHTML = `Kết quả: <span class="${score === 5 ? 'text-emerald-600' : 'text-rose-600'}">${score}/5</span> câu đúng!`;
+        }
+
+    </script>
+</body>
+</html>

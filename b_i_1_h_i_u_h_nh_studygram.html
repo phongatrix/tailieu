@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trí Tuệ Nhân Tạo Trong Khoa Học Và Đời Sống</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand for title, Nunito for body -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            /* Changed main font to Nunito to match the image style */
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom Header Style */
+        .title-custom {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        @keyframes drive {
+            0% { left: -10%; }
+            100% { left: 100%; }
+        }
+        
+        @keyframes driveStop {
+            0% { left: -10%; }
+            100% { left: 40%; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .sim-module { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .sim-module.active { display: block; }
+        
+        /* Typing effect for ChatGPT sim */
+        .typing-text {
+            border-right: 2px solid #a855f7;
+            white-space: pre-wrap;
+            overflow: hidden;
+            animation: blink 0.75s step-end infinite;
+        }
+        @keyframes blink { 50% { border-color: transparent; } }
+
+        /* Style cho nội dung văn bản giống hình ảnh */
+        .content-text {
+            font-size: 1.125rem; /* ~18px, tương đương text-lg */
+            font-weight: 500;     /* font-medium */
+            color: #64748b;       /* text-slate-500, màu xám xanh nhạt */
+            line-height: 1.75;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen pb-12">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="title-custom">
+                <i class="fa-solid fa-brain mr-2 text-blue-500"></i>
+                Bài 2: Trí Tuệ Nhân Tạo Trong Khoa Học Và Đời Sống
+            </h1>
+            <nav class="flex gap-2 bg-slate-100 p-1 rounded-full overflow-x-auto w-full md:w-auto shrink-0">
+                <button onclick="openTab('tab-tongquan')" id="btn-tongquan" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold transition-all bg-white shadow text-blue-600">Mục Tiêu & Cốt Lõi</button>
+                <button onclick="openTab('tab-sodo')" id="btn-sodo" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold transition-all text-slate-500 hover:text-blue-500">Sơ Đồ Ứng Dụng</button>
+                <button onclick="openTab('tab-phantich')" id="btn-phantich" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold transition-all text-slate-500 hover:text-blue-500">Khái Niệm & Phân Tích</button>
+                <button onclick="openTab('tab-luyentap')" id="btn-luyentap" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold transition-all text-slate-500 hover:text-blue-500">Tương Tác & Luyện Tập</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 mt-8">
+        
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tab-tongquan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card rounded-3xl p-6 border-l-4 border-l-blue-400">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-xl">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-700">Mục Tiêu Bài Học</h2>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex gap-2">
+                            <i class="fa-solid fa-check text-green-400 mt-1"></i>
+                            <span class="content-text"><strong>Chỉ ra</strong> một số lĩnh vực khoa học công nghệ & đời sống phát triển mạnh nhờ AI.</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <i class="fa-solid fa-check text-green-400 mt-1"></i>
+                            <span class="content-text"><strong>Nêu ví dụ</strong> thấy hệ thống AI có tri thức, suy luận và học.</span>
+                        </li>
+                        <li class="flex gap-2">
+                            <i class="fa-solid fa-check text-green-400 mt-1"></i>
+                            <span class="content-text"><strong>Nêu cảnh báo</strong> về sự phát triển của AI trong tương lai.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="glass-card rounded-3xl p-6 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-500 text-xl">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-700">Kiến Thức Cốt Lõi Cần Nhớ</h2>
+                    </div>
+                    <div class="text-center mt-6">
+                        <i class="fa-solid fa-quote-left text-3xl text-purple-200 mb-2"></i>
+                        <p class="content-text !text-slate-600 font-semibold leading-relaxed">
+                            "Nhiều lĩnh vực của khoa học công nghệ và đời sống đã và đang phát triển mạnh mẽ dựa trên những thành tựu to lớn của AI. AI đã trở thành một phần <span class="text-purple-600">không thể thiếu</span> của cuộc sống hiện đại."
+                        </p>
+                        <i class="fa-solid fa-quote-right text-3xl text-purple-200 mt-2"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 relative rounded-3xl overflow-hidden h-64 bg-slate-900 group">
+                <img src="https://images.unsplash.com/photo-1546776310-eef45dd6d63cb?auto=format&fit=crop&w=1200&q=80" alt="Robot tự động hóa" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500">
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
+                    <i class="fa-solid fa-robot text-5xl mb-4 animate-bounce"></i>
+                    <h3 class="text-2xl font-bold mb-2">Ví dụ Minh Họa Cốt Lõi</h3>
+                    <p class="max-w-2xl content-text !text-slate-200">Robot và hệ thống tự động hoá được tích hợp AI có khả năng thực hiện nhiều công việc lặp đi lặp lại một cách hiệu quả trong công nghiệp.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: SƠ ĐỒ TƯ DUY & TRỰC QUAN -->
+        <section id="tab-sodo" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-2 text-slate-700">Sơ Đồ Ứng Dụng Của AI</h2>
+            <p class="text-center text-slate-500 mb-8 italic">Click vào từng thẻ để trải nghiệm mô phỏng chi tiết các ví dụ trong SGK</p>
+            
+            <!-- Grid Sơ đồ (Mô phỏng chính xác giao diện từ ảnh) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Y tế -->
+                <div onclick="showSim('sim-yte')" class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer border border-slate-100 group">
+                    <div class="h-32 bg-red-50 flex items-center justify-center transition-colors group-hover:bg-red-100">
+                        <i class="fa-solid fa-stethoscope text-6xl text-red-400"></i>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Y học & Chăm sóc</h3>
+                        <p class="content-text !text-sm mb-4">Cải thiện ảnh y tế, đo đạc lâm sàng, chẩn đoán.</p>
+                        <span class="inline-block px-4 py-1.5 bg-white text-red-500 rounded-full text-xs font-bold border border-red-200 shadow-sm">VD: IBM Watson for Oncology</span>
+                    </div>
+                </div>
+
+                <!-- Giao thông -->
+                <div onclick="showSim('sim-giaothong')" class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer border border-slate-100 group">
+                    <div class="h-32 bg-blue-50 flex items-center justify-center transition-colors group-hover:bg-blue-100">
+                        <i class="fa-solid fa-car-side text-6xl text-blue-400"></i>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Giao thông vận tải</h3>
+                        <p class="content-text !text-sm mb-4">Quản lí giao thông thông minh, định tuyến, tự lái.</p>
+                        <span class="inline-block px-4 py-1.5 bg-white text-blue-500 rounded-full text-xs font-bold border border-blue-200 shadow-sm">VD: Ô tô tự lái, Máy bay UAV</span>
+                    </div>
+                </div>
+
+                <!-- Sản xuất (Nông nghiệp) -->
+                <div onclick="showSim('sim-nongnghiep')" class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer border border-slate-100 group">
+                    <div class="h-32 bg-green-50 flex items-center justify-center transition-colors group-hover:bg-green-100">
+                        <i class="fa-solid fa-leaf text-6xl text-green-400"></i>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Sản xuất (Nông nghiệp)</h3>
+                        <p class="content-text !text-sm mb-4">Trang trại thông minh, dự đoán mùa vụ, tưới tiêu.</p>
+                        <span class="inline-block px-4 py-1.5 bg-green-50 text-green-600 rounded-full text-xs font-bold border border-green-200 shadow-sm animate-pulse">Tương tác trực quan <i class="fa-solid fa-arrow-down ml-1"></i></span>
+                    </div>
+                </div>
+
+                <!-- Tài chính -->
+                <div onclick="showSim('sim-taichinh')" class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer border border-slate-100 group">
+                    <div class="h-32 bg-[#fff9cc] flex items-center justify-center transition-colors group-hover:bg-[#ffed80]">
+                        <i class="fa-solid fa-coins text-6xl text-yellow-500"></i>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Tài chính, Ngân hàng</h3>
+                        <p class="content-text !text-sm">Tự động hoá cập nhật, phát hiện gian lận, quyết định đầu tư.</p>
+                    </div>
+                </div>
+
+                <!-- Giáo dục -->
+                <div onclick="showSim('sim-giaoduc')" class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer border border-slate-100 group">
+                    <div class="h-32 bg-[#f3e8ff] flex items-center justify-center transition-colors group-hover:bg-[#e9d5ff]">
+                        <i class="fa-solid fa-graduation-cap text-6xl text-purple-500"></i>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Giáo dục</h3>
+                        <p class="content-text !text-sm mb-4">Cá nhân hoá học tập, đánh giá kết quả, trả lời câu hỏi.</p>
+                        <span class="inline-block px-4 py-1.5 bg-white text-purple-500 rounded-full text-xs font-bold border border-purple-200 shadow-sm">VD: Trợ lí học tập ảo</span>
+                    </div>
+                </div>
+
+                <!-- Lĩnh vực khác -->
+                <div onclick="showSim('sim-khac')" class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer border border-slate-100 group">
+                    <div class="h-32 bg-[#fce7f3] flex items-center justify-center transition-colors group-hover:bg-[#fbcfe8]">
+                        <i class="fa-solid fa-network-wired text-6xl text-pink-500"></i>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-xl text-slate-800 mb-3">Khoa học & Đời sống khác</h3>
+                        <p class="content-text !text-sm">Mô phỏng xã hội, sáng tạo nghệ thuật, giám sát môi trường (AIoT), dịch thuật.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTAINER CÁC MÔ PHỎNG CHI TIẾT -->
+            <div id="simulation-container" class="mt-12 bg-white rounded-3xl shadow-xl p-2 border border-slate-100 hidden">
+                
+                <!-- 1. Mô phỏng Y Tế -->
+                <div id="sim-yte" class="sim-module p-6 md:p-8 bg-red-50/30 rounded-2xl">
+                    <div class="flex items-center justify-between mb-6 border-b border-red-100 pb-4">
+                        <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-stethoscope text-red-500 mr-2"></i> Hệ thống: IBM Watson for Oncology</h3>
+                        <button onclick="closeSim()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1">
+                            <p class="content-text !text-sm mb-4">AI làm nổi bật cấu trúc bất thường trong ảnh y tế để hỗ trợ bác sĩ chẩn đoán ung thư.</p>
+                            <button onclick="runMedicalSim()" class="w-full py-3 px-6 bg-gradient-to-r from-red-400 to-rose-500 text-white font-bold rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-file-medical"></i> Nạp ảnh & Quét AI
+                            </button>
+                        </div>
+                        <div class="flex-1 bg-slate-900 rounded-2xl p-6 relative overflow-hidden min-h-[200px] flex items-center justify-center">
+                            <div class="w-32 h-32 bg-slate-800 rounded-xl border-2 border-slate-600 relative overflow-hidden flex items-center justify-center">
+                                <i class="fa-solid fa-lungs text-6xl text-slate-500"></i>
+                                <div id="med-scanner" class="absolute inset-0 border-b-2 border-red-500 bg-gradient-to-b from-transparent to-red-500/20 hidden" style="animation: scan 1.5s linear infinite;"></div>
+                                <div id="med-spot" class="absolute top-8 right-6 w-6 h-6 rounded-full border-2 border-red-500 bg-red-500/40 hidden animate-pulse flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.8)]">
+                                    <span class="absolute -top-6 -right-8 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded whitespace-nowrap">Khối u 95%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Mô phỏng Giao Thông -->
+                <div id="sim-giaothong" class="sim-module p-6 md:p-8 bg-blue-50/30 rounded-2xl">
+                    <div class="flex items-center justify-between mb-6 border-b border-blue-100 pb-4">
+                        <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-car-side text-blue-500 mr-2"></i> Xe Tự Lái (Thị giác máy tính)</h3>
+                        <button onclick="closeSim()" class="text-slate-400 hover:text-blue-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                    </div>
+                    <p class="content-text !text-sm mb-4">Mô phỏng khả năng xe tự lái nhận diện vật cản và dừng khẩn cấp.</p>
+                    
+                    <div class="bg-slate-700 h-32 rounded-xl relative overflow-hidden border-4 border-slate-800 flex items-center mt-4">
+                        <!-- Đường line -->
+                        <div class="absolute inset-x-0 top-1/2 border-t-4 border-dashed border-white/30"></div>
+                        <!-- Xe -->
+                        <div id="car-sim" class="absolute left-[-10%] text-5xl z-10 transition-all duration-100" style="transform: scaleX(-1);">🚙</div>
+                        <!-- Vật cản -->
+                        <div id="obstacle-sim" class="absolute left-[60%] text-5xl z-0">🚶‍♂️</div>
+                        <!-- Cảnh báo AI -->
+                        <div id="ai-vision-box" class="absolute left-[58%] top-2 w-16 h-28 border-2 border-red-500 bg-red-500/20 hidden z-20 rounded shadow-[0_0_10px_red]">
+                            <span class="absolute -top-6 left-0 bg-red-500 text-white text-xs font-bold px-1 rounded">Người đi bộ</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-6 justify-center">
+                        <button onclick="runTrafficSim(false)" class="px-6 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-300">Chạy không có AI</button>
+                        <button onclick="runTrafficSim(true)" class="px-6 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 flex items-center gap-2"><i class="fa-solid fa-microchip"></i> Bật chế độ tự lái (AI)</button>
+                    </div>
+                    <p id="traffic-log" class="text-center font-bold mt-4 h-6 text-blue-600"></p>
+                </div>
+
+                <!-- 3. Mô phỏng Nông nghiệp -->
+                <div id="sim-nongnghiep" class="sim-module p-6 md:p-8 bg-green-50/30 rounded-2xl">
+                    <div class="flex items-center justify-between mb-6 border-b border-green-100 pb-4">
+                        <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-leaf text-green-500 mr-2"></i> Trang Trại Thông Minh</h3>
+                        <button onclick="closeSim()" class="text-slate-400 hover:text-green-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                            <label class="text-xs font-bold text-slate-500 uppercase">Độ ẩm đất hiện tại</label>
+                            <input type="range" id="sim-moisture" min="0" max="100" value="30" class="w-full accent-green-500 my-2" oninput="updateSimUI()">
+                            <div class="flex justify-between text-xs font-bold text-slate-400 mb-4"><span>Khô</span> <span id="moisture-val" class="text-green-600">30%</span> <span>Ngập</span></div>
+                            
+                            <label class="text-xs font-bold text-slate-500 uppercase">Dự báo thời tiết (AI dự báo)</label>
+                            <select id="sim-weather" class="w-full p-2 mt-1 mb-4 rounded-lg border border-slate-300 bg-white" onchange="updateSimUI()">
+                                <option value="sunny">Trời nắng gắt</option>
+                                <option value="rain">Sắp mưa to</option>
+                            </select>
+
+                            <button onclick="runAISimulation()" class="w-full py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600">AI Phân Tích Tưới Tiêu</button>
+                        </div>
+                        <div class="flex-1 bg-slate-800 rounded-xl p-4 text-white flex flex-col justify-center items-center text-center h-48">
+                            <div id="ai-result" class="text-slate-400"><i class="fa-solid fa-robot text-4xl mb-2"></i><br>Chờ dữ liệu...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Mô phỏng Tài chính -->
+                <div id="sim-taichinh" class="sim-module p-6 md:p-8 bg-yellow-50/30 rounded-2xl">
+                    <div class="flex items-center justify-between mb-6 border-b border-yellow-200 pb-4">
+                        <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-shield-halved text-yellow-500 mr-2"></i> Hệ Thống Cảnh Báo Gian Lận Ngân Hàng</h3>
+                        <button onclick="closeSim()" class="text-slate-400 hover:text-yellow-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500">
+                                <tr>
+                                    <th class="px-4 py-3">Thời gian</th>
+                                    <th class="px-4 py-3">Giao dịch</th>
+                                    <th class="px-4 py-3">Địa điểm</th>
+                                    <th class="px-4 py-3">Số tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="px-4 py-3 content-text !text-sm">10:00</td>
+                                    <td class="px-4 py-3 content-text !text-sm">Mua Cafe</td>
+                                    <td class="px-4 py-3 content-text !text-sm">Hà Nội, VN</td>
+                                    <td class="px-4 py-3 font-mono">- 50,000đ</td>
+                                </tr>
+                                <tr id="fraud-row" class="border-b border-slate-100 transition-colors duration-500">
+                                    <td class="px-4 py-3 content-text !text-sm">10:05</td>
+                                    <td class="px-4 py-3 content-text !text-sm">Thanh toán Online</td>
+                                    <td class="px-4 py-3 content-text !text-sm">Châu Phi (IP Lạ)</td>
+                                    <td class="px-4 py-3 font-mono text-red-500 font-bold">- 50,000,000đ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-between items-center">
+                        <button onclick="runFraudSim()" class="px-6 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600"><i class="fa-solid fa-radar text-white mr-2"></i> Khởi động AI Quét</button>
+                        <span id="fraud-msg" class="text-red-500 font-bold hidden"><i class="fa-solid fa-lock"></i> Đã tự động khóa thẻ & chặn giao dịch!</span>
+                    </div>
+                </div>
+
+                <!-- 5. Mô phỏng Giáo Dục (ChatGPT - Giống hệt SGK) -->
+                <div id="sim-giaoduc" class="sim-module p-6 md:p-8 bg-purple-50/30 rounded-2xl">
+                    <div class="flex items-center justify-between mb-4 border-b border-purple-100 pb-4">
+                        <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-graduation-cap text-purple-500 mr-2"></i> Trợ lý học tập ảo (Dựa theo Hình 2.2)</h3>
+                        <button onclick="closeSim()" class="text-slate-400 hover:text-purple-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                    </div>
+                    
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm flex flex-col max-h-[400px] overflow-y-auto scroll-smooth" id="chat-container">
+                        <!-- User Msg 1 -->
+                        <div class="p-4 bg-slate-50 flex gap-4">
+                            <div class="w-8 h-8 rounded bg-teal-600 text-white flex items-center justify-center font-bold shrink-0">F</div>
+                            <div class="flex-1 text-sm text-slate-700">
+                                <p class="font-bold mb-2">Hãy kiểm tra đoạn chương trình sau:</p>
+                                <pre class="bg-slate-800 text-slate-200 p-3 rounded-lg text-xs overflow-x-auto"><code>def factorial(n):
+    if n = 0:
+        return 1
+    else:
+        return n * factorial(n-1)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Msg 1 -->
+                        <div id="chat-msg-2" class="p-4 bg-white hidden gap-4 border-t border-slate-100">
+                            <div class="w-8 h-8 rounded bg-green-500 text-white flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-robot"></i></div>
+                            <div class="flex-1 text-sm text-slate-700">
+                                <div id="chat-response-1">
+                                    <p class="mb-2 content-text !text-sm">Có một lỗi syntax trong chương trình: dòng thứ 2, `if n = 0` cần thay bằng `if n == 0` để kiểm tra bằng với 0, không phải gán giá trị 0 cho `n`.</p>
+                                </div>
+                                <button id="btn-fix-code" onclick="runChatSimStep2()" class="px-4 py-1.5 bg-purple-100 text-purple-700 font-bold rounded-lg text-xs hover:bg-purple-200 border border-purple-200 mt-3 hidden transition-all">Yêu cầu AI viết lại code đúng</button>
+                            </div>
+                        </div>
+
+                        <!-- User Msg 2 -->
+                        <div id="chat-msg-3" class="p-4 bg-slate-50 hidden gap-4 border-t border-slate-100">
+                            <div class="w-8 h-8 rounded bg-teal-600 text-white flex items-center justify-center font-bold shrink-0">F</div>
+                            <div class="flex-1 text-sm text-slate-700">
+                                <p class="font-bold content-text !text-sm">Hãy đưa ra đoạn code đúng.</p>
+                            </div>
+                        </div>
+
+                        <!-- AI Msg 2 -->
+                        <div id="chat-msg-4" class="p-4 bg-white hidden gap-4 border-t border-slate-100">
+                            <div class="w-8 h-8 rounded bg-green-500 text-white flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-robot"></i></div>
+                            <div class="flex-1 text-sm text-slate-700">
+                                <div id="chat-response-2">
+                                    <p class="mb-2 content-text !text-sm">Dưới đây là đoạn code đã được sửa lỗi cú pháp:</p>
+                                    <pre class="bg-slate-800 text-green-400 p-3 rounded-lg text-xs overflow-x-auto"><code>def factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n-1)</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-center">
+                        <button id="btn-chatgpt" onclick="runChatSimStep1()" class="px-6 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles"></i> Nhờ AI phân tích lỗi</button>
+                    </div>
+                </div>
+
+                <!-- 6. Mô phỏng Khoa học khác (AIoT) -->
+                <div id="sim-khac" class="sim-module p-6 md:p-8 bg-pink-50/30 rounded-2xl">
+                    <div class="flex items-center justify-between mb-6 border-b border-pink-100 pb-4">
+                        <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-network-wired text-pink-500 mr-2"></i> Giám sát môi trường tự nhiên (AIoT)</h3>
+                        <button onclick="closeSim()" class="text-slate-400 hover:text-pink-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                    </div>
+                    <p class="content-text !text-sm mb-4">Kết hợp IoT (Cảm biến) và AI để phân tích dữ liệu, theo dõi tình hình biến đổi khí hậu hoặc dự báo thảm họa.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-xl shadow-sm text-center border-t-4 border-orange-400">
+                            <i class="fa-solid fa-temperature-high text-3xl text-orange-400 mb-2"></i>
+                            <div class="text-2xl font-bold text-slate-700">42°C</div>
+                            <div class="text-xs text-slate-400 uppercase">Cảm biến Nhiệt</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm text-center border-t-4 border-blue-400">
+                            <i class="fa-solid fa-droplet text-3xl text-blue-400 mb-2"></i>
+                            <div class="text-2xl font-bold text-slate-700">15%</div>
+                            <div class="text-xs text-slate-400 uppercase">Cảm biến Ẩm</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-red-100 border border-red-200 rounded-xl text-center">
+                        <h4 class="font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation animate-pulse"></i> AI CẢNH BÁO: NGUY CƠ CHÁY RỪNG CỰC KỲ CAO</h4>
+                        <p class="content-text !text-xs !text-red-500 mt-1">Dựa trên mô hình học máy phân tích dữ liệu lịch sử.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 3: PHÂN TÍCH SÂU -->
+        <section id="tab-phantich" class="tab-content">
+            <!-- Xếp thành 1 cột thay vì grid-cols-2 -->
+            <div class="grid grid-cols-1 gap-8">
+                
+                <!-- Mối quan hệ khái niệm -->
+                <div>
+                    <h2 class="text-xl font-bold mb-6 text-slate-700 flex items-center gap-2">
+                        <i class="fa-solid fa-link text-blue-500"></i> Mối Quan Hệ Khái Niệm
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Quan hệ 1 -->
+                        <div class="glass-card p-4 rounded-2xl flex items-center justify-between gap-4">
+                            <div class="text-center flex-1">
+                                <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold mb-2 shadow-inner text-xs">Dữ liệu</div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Học máy giúp</span>
+                                <i class="fa-solid fa-arrow-right text-slate-300"></i>
+                            </div>
+                            <div class="text-center flex-1">
+                                <div class="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold mb-2 shadow-inner text-xs">Hệ<br>Chuyên<br>Gia</div>
+                            </div>
+                            <p class="content-text !text-xs flex-1">Tự hình thành luật và tri thức từ dữ liệu (không cần viết luật thủ công).</p>
+                        </div>
+
+                        <!-- Quan hệ 2 -->
+                        <div class="glass-card p-4 rounded-2xl flex items-center justify-between gap-4">
+                            <div class="text-center flex-1">
+                                <div class="w-16 h-16 mx-auto bg-cyan-100 rounded-full flex items-center justify-center text-cyan-600 font-bold text-xl mb-2 shadow-inner">IoT</div>
+                            </div>
+                            <i class="fa-solid fa-plus text-slate-300"></i>
+                            <div class="text-center flex-1">
+                                <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl mb-2 shadow-inner">AI</div>
+                            </div>
+                            <i class="fa-solid fa-equals text-slate-300"></i>
+                            <div class="text-center flex-1">
+                                <div class="w-16 h-16 mx-auto bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-xl mb-2 border-2 border-indigo-400">AIoT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- So sánh Hệ chuyên gia (Chuyển xuống dưới) -->
+                <div>
+                    <h2 class="text-xl font-bold mb-6 text-slate-700 flex items-center gap-2">
+                        <i class="fa-solid fa-code-compare text-purple-500"></i> Sự tiến hóa Hệ Chuyên Gia
+                    </h2>
+                    
+                    <div class="mb-4 flex gap-2 max-w-md">
+                        <button onclick="runExpertSim('known')" class="flex-1 py-2 text-xs bg-white text-slate-700 font-bold rounded shadow-sm border border-slate-200">Dữ liệu có luật sẵn</button>
+                        <button onclick="runExpertSim('unknown')" class="flex-1 py-2 text-xs bg-purple-500 text-white font-bold rounded shadow-md">Dữ liệu hoàn toàn mới</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <h4 class="font-bold text-slate-700 mb-2 text-center text-sm">Cũ (Truyền thống)</h4>
+                            <div id="sim-trad-result" class="bg-white p-2 rounded border border-slate-200 h-24 flex flex-col justify-center items-center text-center text-xs text-slate-400 italic">Chờ dữ liệu...</div>
+                        </div>
+                        <div class="bg-purple-50 rounded-xl p-4 border border-purple-200">
+                            <h4 class="font-bold text-purple-700 mb-2 text-center text-sm">Mới (Có Học Máy AI)</h4>
+                            <div id="sim-ai-result2" class="bg-white p-2 rounded border border-purple-200 h-24 flex flex-col justify-center items-center text-center text-xs text-purple-400 italic">Chờ dữ liệu...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: TƯƠNG TÁC & LUYỆN TẬP (Giữ nguyên) -->
+        <section id="tab-luyentap" class="tab-content">
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-8 text-white shadow-lg mb-8 relative overflow-hidden">
+                <i class="fa-solid fa-comments absolute -right-6 -top-6 text-9xl text-white opacity-10"></i>
+                <h3 class="text-2xl font-bold mb-2">Góc Tranh Luận</h3>
+                <p class="mb-6 text-blue-100">Trong các cuộc tranh luận về AI thường có hai quan điểm sau. Bạn ủng hộ quan điểm nào?</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="debate-options">
+                    <button onclick="showDebateResult(1)" class="bg-white/20 hover:bg-white/30 backdrop-blur border border-white/30 p-4 rounded-xl text-left transition-all group">
+                        <div class="font-bold text-lg mb-1 group-hover:text-yellow-300">Quan điểm 1:</div>
+                        <p class="content-text !text-white !text-sm">Trong tương lai, AI sẽ thay thế hoàn toàn con người.</p>
+                    </button>
+                    <button onclick="showDebateResult(2)" class="bg-white/20 hover:bg-white/30 backdrop-blur border border-white/30 p-4 rounded-xl text-left transition-all group">
+                        <div class="font-bold text-lg mb-1 group-hover:text-green-300">Quan điểm 2:</div>
+                        <p class="content-text !text-white !text-sm">AI có thể làm được nhiều việc nhưng không thể thay thế con người.</p>
+                    </button>
+                </div>
+                <div id="debate-feedback" class="mt-4 hidden p-4 bg-white text-slate-800 rounded-xl font-medium animate-[fadeIn_0.5s]"></div>
+            </div>
+            
+            <h2 class="text-2xl font-bold mb-6 text-slate-700 text-center">Ôn Tập Nhanh (5 Câu Hỏi)</h2>
+            <div class="max-w-3xl mx-auto space-y-6" id="quiz-container">
+                <!-- Nội dung 5 câu hỏi giữ nguyên như cũ để tối ưu -->
+                <div class="glass-card p-6 rounded-2xl" data-correct="A">
+                    <h4 class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu 1:</span> Sự khác biệt lớn nhất của Hệ chuyên gia ứng dụng AI hiện nay là?</h4>
+                    <label class="flex items-center gap-3 p-3 cursor-pointer"><input type="radio" name="q1" value="A"> <span class="content-text">Tự học từ dữ liệu để hình thành luật.</span></label>
+                    <label class="flex items-center gap-3 p-3 cursor-pointer"><input type="radio" name="q1" value="B"> <span class="content-text">Hoàn toàn dựa trên các luật viết sẵn.</span></label>
+                </div>
+                <div class="glass-card p-6 rounded-2xl" data-correct="C">
+                    <h4 class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu 2:</span> Phần mềm IBM Watson for Oncology dùng trong lĩnh vực nào?</h4>
+                    <label class="flex items-center gap-3 p-3 cursor-pointer"><input type="radio" name="q2" value="B"> <span class="content-text">Nông nghiệp</span></label>
+                    <label class="flex items-center gap-3 p-3 cursor-pointer"><input type="radio" name="q2" value="C"> <span class="content-text">Y học</span></label>
+                </div>
+                <div class="glass-card p-6 rounded-2xl" data-correct="B">
+                    <h4 class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu 3:</span> AIoT là sự kết hợp của?</h4>
+                    <label class="flex items-center gap-3 p-3 cursor-pointer"><input type="radio" name="q3" value="A"> <span class="content-text">IoT và Hệ chuyên gia</span></label>
+                    <label class="flex items-center gap-3 p-3 cursor-pointer"><input type="radio" name="q3" value="B"> <span class="content-text">IoT và Trí tuệ nhân tạo (AI)</span></label>
+                </div>
+                <div class="text-center mt-4">
+                    <button onclick="submitQuiz()" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700">Kết Quả</button>
+                    <div id="quiz-score" class="mt-4 font-bold text-xl text-slate-800 hidden"></div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- JavaScript Interactivity -->
+    <script>
+        // Tab System
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-white', 'shadow', 'text-blue-600');
+                el.classList.add('text-slate-500');
+            });
+            document.getElementById(tabId).classList.add('active');
+            const activeBtnId = tabId.replace('tab-', 'btn-');
+            const btn = document.getElementById(activeBtnId);
+            btn.classList.remove('text-slate-500');
+            btn.classList.add('bg-white', 'shadow', 'text-blue-600');
+        }
+
+        // Show/Hide Specific Detail Simulations
+        function showSim(simId) {
+            document.getElementById('simulation-container').classList.remove('hidden');
+            document.querySelectorAll('.sim-module').forEach(el => el.classList.remove('active'));
+            document.getElementById(simId).classList.add('active');
+            
+            // Scroll to the simulation box
+            setTimeout(() => {
+                document.getElementById('simulation-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        function closeSim() {
+            document.getElementById('simulation-container').classList.add('hidden');
+            document.querySelectorAll('.sim-module').forEach(el => el.classList.remove('active'));
+        }
+
+        // 1. Y Tế Sim
+        function runMedicalSim() {
+            const scanner = document.getElementById('med-scanner');
+            const spot = document.getElementById('med-spot');
+            spot.classList.add('hidden');
+            scanner.classList.remove('hidden');
+            setTimeout(() => {
+                scanner.classList.add('hidden');
+                spot.classList.remove('hidden');
+            }, 1500);
+        }
+
+        // 2. Giao thông Sim
+        function runTrafficSim(hasAI) {
+            const car = document.getElementById('car-sim');
+            const box = document.getElementById('ai-vision-box');
+            const log = document.getElementById('traffic-log');
+            
+            // Reset
+            car.style.animation = 'none';
+            box.classList.add('hidden');
+            log.innerText = '';
+            car.offsetHeight; /* trigger reflow */
+            
+            if(!hasAI) {
+                log.innerHTML = "<span class='text-red-500'>Không AI: Xe không nhận diện được vật cản!</span>";
+                car.style.animation = 'drive 2s linear forwards';
+            } else {
+                log.innerHTML = "<span class='text-green-500'><i class='fa-solid fa-shield-halved'></i> AI Camera kích hoạt! Phát hiện người và tự động phanh.</span>";
+                car.style.animation = 'driveStop 1.5s ease-out forwards';
+                setTimeout(() => {
+                    box.classList.remove('hidden');
+                }, 800);
+            }
+        }
+
+        // 3. Nông nghiệp Sim
+        function updateSimUI() {
+            document.getElementById('moisture-val').innerText = document.getElementById('sim-moisture').value + '%';
+        }
+        function runAISimulation() {
+            const moisture = parseInt(document.getElementById('sim-moisture').value);
+            const weather = document.getElementById('sim-weather').value;
+            const res = document.getElementById('ai-result');
+            
+            res.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-3xl text-green-400 mb-2"></i>';
+            setTimeout(() => {
+                if (weather === 'rain') {
+                    res.innerHTML = '<i class="fa-solid fa-cloud-rain text-3xl text-blue-400 mb-2"></i><br><b class="text-white">Dừng tưới.</b> Sắp có mưa to.';
+                } else if (moisture < 40) {
+                    res.innerHTML = '<i class="fa-solid fa-droplet text-3xl text-blue-400 mb-2"></i><br><b class="text-white">Bơm nước 45p.</b> Đất đang khô.';
+                } else {
+                    res.innerHTML = '<i class="fa-solid fa-check text-3xl text-green-400 mb-2"></i><br><b class="text-white">Độ ẩm tốt.</b> Không cần tưới.';
+                }
+            }, 1000);
+        }
+
+        // 4. Tài chính Sim
+        function runFraudSim() {
+            const row = document.getElementById('fraud-row');
+            const msg = document.getElementById('fraud-msg');
+            row.classList.add('bg-red-100');
+            msg.classList.remove('hidden');
+        }
+
+        // 5. Giáo dục Sim (Mô phỏng Chat đa bước)
+        function runChatSimStep1() {
+            document.getElementById('btn-chatgpt').classList.add('hidden');
+            const msg2 = document.getElementById('chat-msg-2');
+            msg2.classList.remove('hidden');
+            msg2.classList.add('flex');
+            
+            const res1 = document.getElementById('chat-response-1');
+            res1.classList.add('typing-text');
+            
+            setTimeout(() => { 
+                res1.classList.remove('typing-text'); 
+                document.getElementById('btn-fix-code').classList.remove('hidden');
+            }, 2000);
+        }
+
+        function runChatSimStep2() {
+            document.getElementById('btn-fix-code').classList.add('hidden');
+            
+            const msg3 = document.getElementById('chat-msg-3');
+            msg3.classList.remove('hidden');
+            msg3.classList.add('flex');
+
+            const container = document.getElementById('chat-container');
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                const msg4 = document.getElementById('chat-msg-4');
+                msg4.classList.remove('hidden');
+                msg4.classList.add('flex');
+                
+                const res2 = document.getElementById('chat-response-2');
+                res2.classList.add('typing-text');
+                
+                container.scrollTop = container.scrollHeight;
+                
+                setTimeout(() => {
+                    res2.classList.remove('typing-text');
+                }, 2000);
+            }, 800);
+        }
+
+        // Khái niệm - Expert Sim
+        function runExpertSim(type) {
+            const trad = document.getElementById('sim-trad-result');
+            const ai = document.getElementById('sim-ai-result2');
+            trad.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-slate-400"></i>';
+            ai.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-purple-400"></i>';
+            setTimeout(() => {
+                if(type === 'known') {
+                    trad.innerHTML = '<span class="text-green-600 font-bold">Thành công</span> (Có sẵn luật)';
+                    ai.innerHTML = '<span class="text-green-600 font-bold">Thành công</span> (Khớp dữ liệu)';
+                } else {
+                    trad.innerHTML = '<span class="text-red-500 font-bold">Báo lỗi!</span><br>Không có trong luật';
+                    ai.innerHTML = '<span class="text-blue-600 font-bold">Tự học & Phân loại</span><br>Bằng mô hình xác suất';
+                }
+            }, 800);
+        }
+
+        // Helpers for logic
+        function showDebateResult(opt) {
+            const box = document.getElementById('debate-feedback');
+            box.classList.remove('hidden');
+            box.innerHTML = opt === 1 ? 'Dù AI rất thông minh, bài học nhấn mạnh vai trò hỗ trợ, không thay thế hoàn toàn.' : 'Rất hợp lý! Các ví dụ trong bài đều nhấn mạnh AI hỗ trợ công việc con người.';
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            document.querySelectorAll('#quiz-container .glass-card').forEach((card, i) => {
+                const ans = card.getAttribute('data-correct');
+                const sel = document.querySelector(`input[name="q${i+1}"]:checked`);
+                if(sel && sel.value === ans) score++;
+            });
+            document.getElementById('quiz-score').classList.remove('hidden');
+            document.getElementById('quiz-score').innerText = `Đúng ${score} câu!`;
+        }
+    </script>
+</body>
+</html>

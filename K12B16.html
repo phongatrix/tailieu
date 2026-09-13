@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Định Dạng Khung & Bộ Chọn CSS</title>
+    
+    <!-- Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons: FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Config cho Tailwind & Custom CSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            purple: '#f3e8ff',
+                            pink: '#fce7f3',
+                            green: '#dcfce3',
+                            yellow: '#fef3c7',
+                            gray: '#f8fafc',
+                            orange: '#ffedd5'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slight': 'bounceSlight 2s infinite ease-in-out',
+                    },
+                    keyframes: {
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(-2%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f1f5f9;
+            color: #334155;
+            scroll-behavior: smooth;
+        }
+
+        /* Tiêu chuẩn Tiêu đề theo yêu cầu */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            text-transform: capitalize;
+            line-height: 1.4;
+        }
+
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background: white;
+            color: #6366f1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-bottom: 3px solid #8b5cf6;
+            font-weight: 700;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hiệu ứng trang trí & tương tác */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .glow-border {
+            position: relative;
+        }
+        .glow-border::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #a855f7, #ec4899);
+            z-index: -1;
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .glow-border:hover::before {
+            opacity: 0.6;
+        }
+
+        .study-marker {
+            background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 88%;
+            font-weight: 600;
+            padding: 0 2px;
+        }
+
+        /* Box Model Interactive CSS */
+        .box-model-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 1rem;
+            min-height: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #demo-box {
+            background-color: #bfdbfe;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-weight: 600;
+            color: #1e3a8a;
+            box-sizing: content-box;
+            position: relative;
+            z-index: 10;
+        }
+
+        .layer-wrapper {
+            display: inline-block;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .margin-wrapper { background-color: #fecaca; }
+        .margin-wrapper:hover { background-color: #f87171; box-shadow: 0 0 15px rgba(248, 113, 113, 0.5); }
+        .margin-wrapper::before { content: 'Margin'; position: absolute; top: 2px; left: 4px; font-size: 10px; color: #991b1b; font-weight: bold;}
+
+        .border-wrapper { background-color: #fef08a; }
+        .border-wrapper:hover { background-color: #facc15; box-shadow: 0 0 15px rgba(250, 204, 21, 0.5); }
+        .border-wrapper::before { content: 'Border'; position: absolute; top: 2px; left: 4px; font-size: 10px; color: #854d0e; font-weight: bold;}
+
+        .padding-wrapper { background-color: #bbf7d0; }
+        .padding-wrapper:hover { background-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.5); }
+        .padding-wrapper::before { content: 'Padding'; position: absolute; top: 2px; left: 4px; font-size: 10px; color: #166534; font-weight: bold;}
+
+        /* Sliders */
+        input[type=range] { accent-color: #8b5cf6; }
+
+        /* Tag Chip */
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: 600;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin: 4px;
+            transition: all 0.2s;
+        }
+        .tag-chip:hover { transform: scale(1.05); }
+
+        .highlight-code {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-family: monospace;
+            font-size: 14px;
+            position: relative;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider-toggle {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .4s;
+            border-radius: 24px;
+        }
+        .slider-toggle:before {
+            position: absolute; content: "";
+            height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider-toggle { background-color: #8b5cf6; }
+        input:checked + .slider-toggle:before { transform: translateX(26px); }
+
+        /* Playground Selectors */
+        .pg-element {
+            transition: all 0.3s ease;
+            border: 2px dashed #cbd5e1;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            background-color: white;
+        }
+        .pg-selected {
+            border: 3px solid #ef4444 !important;
+            background-color: #fee2e2 !important;
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden glow-border">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-purple-500"></div>
+            <h1 class="title-gradient mb-2 animate-bounce-slight inline-block"><i class="fa-solid fa-layer-group mr-2 text-blue-500"></i>Kỹ Thuật Định Dạng Khung Và Bộ Chọn CSS</h1>
+            <p class="text-slate-500 font-medium">Tin Học K12 - Bài 16 (Kết nối tri thức)</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap bg-slate-200 p-1 rounded-xl mb-6 shadow-inner gap-1 sticky top-2 z-50">
+            <button class="tab-btn active flex-1 py-3 px-4 rounded-lg text-slate-600 font-semibold text-sm md:text-base flex items-center justify-center gap-2" onclick="openTab(event, 'tab-tongquan')">
+                <i class="fa-solid fa-bullseye"></i> Tổng Quan
+            </button>
+            <button class="tab-btn flex-1 py-3 px-4 rounded-lg text-slate-600 font-semibold text-sm md:text-base flex items-center justify-center gap-2" onclick="openTab(event, 'tab-phanloai')">
+                <i class="fa-solid fa-cubes"></i> Khối & Nội Tuyến
+            </button>
+            <button class="tab-btn flex-1 py-3 px-4 rounded-lg text-slate-600 font-semibold text-sm md:text-base flex items-center justify-center gap-2" onclick="openTab(event, 'tab-boxmodel')">
+                <i class="fa-solid fa-box-open"></i> Mô Hình Hộp
+            </button>
+            <button class="tab-btn flex-1 py-3 px-4 rounded-lg text-slate-600 font-semibold text-sm md:text-base flex items-center justify-center gap-2" onclick="openTab(event, 'tab-selector')">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Bộ Chọn CSS
+            </button>
+            <button class="tab-btn flex-1 py-3 px-4 rounded-lg text-slate-600 font-semibold text-sm md:text-base flex items-center justify-center gap-2" onclick="openTab(event, 'tab-quiz')">
+                <i class="fa-solid fa-gamepad"></i> Ôn Tập
+            </button>
+        </div>
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <div id="tab-tongquan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Mục tiêu -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover-lift">
+                    <h2 class="title-gradient mb-6"><i class="fa-solid fa-flag-checkered mr-2 text-purple-400"></i>Mục Tiêu Bài Học</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-4 p-4 bg-pastel-blue rounded-xl border border-blue-100 transition hover:bg-blue-100">
+                            <div class="bg-blue-500 text-white p-3 rounded-xl shadow-md"><i class="fa-solid fa-border-all text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-blue-900 text-lg">Định dạng khung văn bản</h3>
+                                <p class="text-sm text-blue-700 mt-1">Làm chủ việc thiết lập kích thước, kiểu đường viền, khoảng cách lề cho các khối HTML bằng CSS.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4 p-4 bg-pastel-purple rounded-xl border border-purple-100 transition hover:bg-purple-100">
+                            <div class="bg-purple-500 text-white p-3 rounded-xl shadow-md"><i class="fa-solid fa-tags text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-purple-900 text-lg">Ứng dụng các Bộ chọn</h3>
+                                <p class="text-sm text-purple-700 mt-1">Xác định chính xác đối tượng cần định dạng thông qua <b>ID</b>, <b>Class</b>, hoặc <b>Thuộc tính</b>.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Sơ đồ tư duy -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center hover-lift relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 text-[150px] text-slate-50 opacity-50"><i class="fa-solid fa-sitemap"></i></div>
+                    <h2 class="title-gradient mb-4 text-center z-10">Sơ Đồ Tư Duy</h2>
+                    <div class="relative bg-white p-4 rounded-xl flex items-center justify-center h-full z-10 border-2 border-dashed border-slate-200">
+                        <div class="flex flex-col items-center gap-4 w-full">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full font-bold shadow-lg w-full text-center hover:scale-105 transition-transform cursor-pointer">
+                                CSS ĐỊNH DẠNG KHUNG
+                            </div>
+                            <div class="flex w-full justify-around mt-1">
+                                <div class="h-6 border-l-2 border-slate-300"></div>
+                                <div class="h-6 border-l-2 border-slate-300"></div>
+                                <div class="h-6 border-l-2 border-slate-300"></div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 w-full text-center">
+                                <div class="bg-blue-50 border-2 border-blue-300 p-3 rounded-xl shadow-sm text-sm font-bold text-blue-700 hover:-translate-y-1 transition-transform">
+                                    <i class="fa-solid fa-cube mb-1 text-blue-400 block text-lg"></i>
+                                    Phân Loại<br><span class="text-xs font-normal text-slate-500">Khối / Nội tuyến</span>
+                                </div>
+                                <div class="bg-purple-50 border-2 border-purple-300 p-3 rounded-xl shadow-sm text-sm font-bold text-purple-700 hover:-translate-y-1 transition-transform">
+                                    <i class="fa-solid fa-box-open mb-1 text-purple-400 block text-lg"></i>
+                                    Mô Hình Hộp<br><span class="text-xs font-normal text-slate-500">Margin, Border...</span>
+                                </div>
+                                <div class="bg-pink-50 border-2 border-pink-300 p-3 rounded-xl shadow-sm text-sm font-bold text-pink-700 hover:-translate-y-1 transition-transform">
+                                    <i class="fa-solid fa-wand-magic-sparkles mb-1 text-pink-400 block text-lg"></i>
+                                    Bộ Chọn<br><span class="text-xs font-normal text-slate-500">Class, ID...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: KHỐI & NỘI TUYẾN -->
+        <div id="tab-phanloai" class="tab-content">
+            <h2 class="title-gradient mb-6 text-center">Phân Loại Phần Tử HTML</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Khối -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-blue-500 hover-lift relative">
+                    <div class="absolute top-4 right-4 bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-bold">Block</div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="fa-solid fa-cube text-4xl text-blue-500"></i>
+                        <h3 class="text-xl font-bold text-slate-800">Phần Tử Khối</h3>
+                    </div>
+                    <p class="mb-4 text-slate-600">Luôn <span class="study-marker">bắt đầu bằng dòng mới</span> và tự động chiếm <span class="study-marker">100% chiều rộng</span> của phần tử cha.</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="tag-chip text-blue-600 border border-blue-200">h1 - h6</span>
+                        <span class="tag-chip text-blue-600 border border-blue-200">p</span>
+                        <span class="tag-chip text-blue-600 border border-blue-200">div</span>
+                        <span class="tag-chip text-blue-600 border border-blue-200">ul / li</span>
+                    </div>
+                    <!-- Visual demo -->
+                    <div class="bg-slate-100 p-2 rounded-lg border border-slate-300 w-full relative h-20 flex flex-col justify-center">
+                        <div class="bg-blue-400 text-white text-xs font-bold p-1 text-center rounded shadow-sm animate-pulse-slow">Thẻ Khối (Chiếm hết hàng)</div>
+                    </div>
+                </div>
+
+                <!-- Nội tuyến -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-pink-500 hover-lift relative">
+                    <div class="absolute top-4 right-4 bg-pink-100 text-pink-600 px-2 py-1 rounded text-xs font-bold">Inline</div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="fa-solid fa-cubes text-4xl text-pink-500"></i>
+                        <h3 class="text-xl font-bold text-slate-800">Phần Tử Nội Tuyến</h3>
+                    </div>
+                    <p class="mb-4 text-slate-600">Nằm trên cùng một hàng với văn bản khác, chỉ chiếm <span class="study-marker">không gian vừa đủ</span> với nội dung.</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="tag-chip text-pink-600 border border-pink-200">span</span>
+                        <span class="tag-chip text-pink-600 border border-pink-200">a</span>
+                        <span class="tag-chip text-pink-600 border border-pink-200">img</span>
+                        <span class="tag-chip text-pink-600 border border-pink-200">strong / b</span>
+                    </div>
+                    <!-- Visual demo -->
+                    <div class="bg-slate-100 p-2 rounded-lg border border-slate-300 w-full relative h-20 flex items-center justify-start gap-2">
+                        Văn bản <div class="bg-pink-400 text-white text-xs font-bold p-1 text-center rounded shadow-sm inline-block animate-pulse-slow">Thẻ Inline</div> tiếp theo.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tương tác thuộc tính Display -->
+            <div class="bg-pastel-yellow p-6 rounded-2xl border border-yellow-300 shadow-sm relative overflow-hidden">
+                <i class="fa-solid fa-wand-magic text-6xl text-yellow-200 absolute -right-2 -bottom-2"></i>
+                <h3 class="font-bold text-yellow-900 mb-2 text-lg relative z-10"><i class="fa-solid fa-hand-pointer mr-2"></i>Tương tác:</h3>
+                <p class="text-sm text-yellow-800 mb-4 relative z-10">CSS có thể bẻ cong quy tắc! Bạn có thể ép một thẻ inline biến thành block hoặc ngược lại nhờ thuộc tính <code>display</code>.</p>
+                
+                <div class="bg-white p-6 rounded-xl border-2 border-dashed border-yellow-400 mb-6 relative z-10 text-center text-lg">
+                    <span>Đây là đầu câu.</span>
+                    <div id="interactive-display-area" class="inline">
+                        <span class="demo-span bg-pink-100 text-pink-800 p-1 border-2 border-pink-400 font-bold rounded shadow-sm mx-1 transition-all duration-500">Phần tử thứ 1</span>
+                        <span class="demo-span bg-pink-100 text-pink-800 p-1 border-2 border-pink-400 font-bold rounded shadow-sm mx-1 transition-all duration-500">Phần tử thứ 2</span>
+                    </div>
+                    <span>Đây là cuối câu.</span>
+                </div>
+
+                <div class="flex flex-wrap gap-4 justify-center relative z-10">
+                    <button class="px-5 py-3 bg-pink-500 text-white rounded-xl font-bold shadow-md hover:bg-pink-600 hover:-translate-y-1 transition-all" onclick="changeDisplay('inline')">
+                        <i class="fa-solid fa-arrow-right-long mr-2"></i>display: inline
+                    </button>
+                    <button class="px-5 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md hover:bg-blue-600 hover:-translate-y-1 transition-all" onclick="changeDisplay('block')">
+                        <i class="fa-solid fa-arrow-down-long mr-2"></i>display: block
+                    </button>
+                    <button class="px-5 py-3 bg-slate-600 text-white rounded-xl font-bold shadow-md hover:bg-slate-700 hover:-translate-y-1 transition-all" title="Mất tích hoàn toàn, không chiếm chỗ" onclick="changeDisplay('none')">
+                        <i class="fa-solid fa-eye-slash mr-2"></i>display: none
+                    </button>
+                    <button class="px-5 py-3 bg-slate-400 text-white rounded-xl font-bold shadow-md hover:bg-slate-500 hover:-translate-y-1 transition-all" title="Ẩn đi nhưng vẫn chiếm khoảng trống" onclick="changeDisplay('hidden')">
+                        <i class="fa-solid fa-ghost mr-2"></i>visibility: hidden
+                    </button>
+                </div>
+
+                <!-- NEW: Hiển thị mã HTML tương ứng -->
+                <div class="mt-6 bg-slate-800 p-4 rounded-xl font-mono text-sm text-left overflow-x-auto relative shadow-inner max-w-2xl mx-auto border border-slate-700 z-10">
+                    <div class="absolute top-2 right-3 text-[10px] text-slate-400 font-bold uppercase tracking-widest"><i class="fa-solid fa-code mr-1"></i> Mã HTML Tương Ứng</div>
+                    <pre class="mt-4"><code id="interactive-code-display" class="text-slate-300">
+&lt;span style="<span class="text-pink-400 font-bold">display: inline;</span>"&gt;Phần tử thứ 1&lt;/span&gt;
+&lt;span style="<span class="text-pink-400 font-bold">display: inline;</span>"&gt;Phần tử thứ 2&lt;/span&gt;
+                    </code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: MÔ HÌNH HỘP (BOX MODEL) -->
+        <div id="tab-boxmodel" class="tab-content">
+            <h2 class="title-gradient mb-6 text-center">Mô Hình Hộp (Box Model)</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Điều khiển -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 lg:col-span-4">
+                    <h3 class="font-bold text-slate-800 mb-4 text-lg"><i class="fa-solid fa-sliders mr-2 text-purple-500"></i>Điều Khiển Hộp</h3>
+                    
+                    <div class="space-y-5 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <!-- Box Sizing Toggle (Internet Addition) -->
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+                            <div>
+                                <h4 class="font-bold text-sm text-indigo-700">box-sizing: border-box</h4>
+                                <p class="text-[10px] text-slate-500 w-40">Giữ tổng kích thước không đổi khi thêm viền/đệm.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="ctrl-boxsizing" onchange="updateBoxModel()">
+                                <span class="slider-toggle"></span>
+                            </label>
+                        </div>
+
+                        <!-- Width -->
+                        <div>
+                            <label class="flex justify-between text-sm font-bold text-blue-700 mb-1">
+                                <span><i class="fa-solid fa-arrows-left-right mr-1"></i> Width</span> <span id="val-width" class="bg-blue-100 px-2 rounded">150px</span>
+                            </label>
+                            <input type="range" id="ctrl-width" min="50" max="250" value="150" class="w-full" oninput="updateBoxModel()">
+                        </div>
+                        
+                        <!-- Height -->
+                        <div>
+                            <label class="flex justify-between text-sm font-bold text-blue-700 mb-1">
+                                <span><i class="fa-solid fa-arrows-up-down mr-1"></i> Height</span> <span id="val-height" class="bg-blue-100 px-2 rounded">80px</span>
+                            </label>
+                            <input type="range" id="ctrl-height" min="40" max="150" value="80" class="w-full" oninput="updateBoxModel()">
+                        </div>
+
+                        <!-- Padding -->
+                        <div class="group">
+                            <label class="flex justify-between text-sm font-bold text-green-700 mb-1 cursor-help" title="Vùng đệm bên trong">
+                                <span><i class="fa-regular fa-square mr-1"></i> Padding</span> <span id="val-padding" class="bg-green-100 px-2 rounded">20px</span>
+                            </label>
+                            <input type="range" id="ctrl-padding" min="0" max="50" value="20" class="w-full" oninput="updateBoxModel()">
+                        </div>
+
+                        <!-- Border -->
+                        <div class="group">
+                            <label class="flex justify-between text-sm font-bold text-yellow-700 mb-1 cursor-help" title="Đường viền">
+                                <span><i class="fa-solid fa-border-style mr-1"></i> Border</span> <span id="val-border" class="bg-yellow-100 px-2 rounded">5px</span>
+                            </label>
+                            <input type="range" id="ctrl-border" min="0" max="30" value="5" class="w-full" oninput="updateBoxModel()">
+                            <select id="ctrl-border-style" class="w-full mt-2 p-2 border border-yellow-300 rounded-lg text-sm bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-400" onchange="updateBoxModel()">
+                                <option value="solid">solid (Nét liền)</option>
+                                <option value="dashed">dashed (Nét đứt)</option>
+                                <option value="dotted">dotted (Chấm bi)</option>
+                                <option value="double">double (Nét đôi)</option>
+                            </select>
+                        </div>
+
+                        <!-- Margin -->
+                        <div class="group">
+                            <label class="flex justify-between text-sm font-bold text-red-700 mb-1 cursor-help" title="Lề ngoài">
+                                <span><i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> Margin</span> <span id="val-margin" class="bg-red-100 px-2 rounded">30px</span>
+                            </label>
+                            <input type="range" id="ctrl-margin" min="0" max="50" value="30" class="w-full" oninput="updateBoxModel()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div class="lg:col-span-8 flex flex-col gap-4">
+                    <div class="box-model-container shadow-inner border border-slate-200">
+                        <div class="absolute top-4 left-4 text-xs font-bold text-slate-400"><i class="fa-solid fa-globe mr-1"></i>Trình duyệt giả lập</div>
+                        
+                        <!-- Tổng kích thước đo -->
+                        <div class="absolute top-2 right-4 text-xs font-mono font-bold text-indigo-600 bg-indigo-50 p-1 rounded border border-indigo-200 shadow-sm" id="total-size">
+                            Tổng Rộng: 290px
+                        </div>
+
+                        <!-- Lớp bọc Margin -->
+                        <div class="layer-wrapper margin-wrapper rounded-sm" id="wrap-margin" style="padding: 30px;">
+                            <!-- Lớp bọc Border -->
+                            <div class="layer-wrapper border-wrapper rounded-sm" id="wrap-border" style="padding: 5px; border: 0px solid black; background-color: #854d0e;">
+                                <!-- Lớp bọc Padding -->
+                                <div class="layer-wrapper padding-wrapper rounded-sm" id="wrap-padding" style="padding: 20px;">
+                                    <!-- Nội dung -->
+                                    <div id="demo-box" class="rounded-sm shadow text-sm md:text-base flex-col" style="width: 150px; height: 80px;">
+                                        <i class="fa-regular fa-image mb-1 opacity-50"></i>
+                                        <span>Content</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CSS Code Sinh Ra -->
+                    <div class="highlight-code glow-border group">
+                        <button class="absolute top-2 right-2 bg-slate-700 text-slate-300 hover:text-white rounded p-1 text-xs" onclick="alert('Đã copy!')"><i class="fa-regular fa-copy"></i> Copy</button>
+<pre><code class="language-css"><span class="text-pink-400">.box</span> {
+    <span class="text-blue-200">width</span>: <span id="code-width" class="text-blue-400 font-bold">150px</span>;
+    <span class="text-blue-200">height</span>: <span id="code-height" class="text-blue-400 font-bold">80px</span>;
+    <span class="text-green-200">padding</span>: <span id="code-padding" class="text-green-400 font-bold">20px</span>;
+    <span class="text-yellow-200">border</span>: <span id="code-border" class="text-yellow-400 font-bold">5px solid</span> <span class="text-yellow-100">#854d0e</span>;
+    <span class="text-red-200">margin</span>: <span id="code-margin" class="text-red-400 font-bold">30px</span>;<span id="code-boxsizing" class="hidden">
+    <span class="text-indigo-200">box-sizing</span>: <span class="text-indigo-400 font-bold">border-box</span>;</span>
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: BỘ CHỌN CSS -->
+        <div id="tab-selector" class="tab-content">
+            <h2 class="title-gradient mb-6 text-center">Các Bộ Chọn CSS Đặc Biệt</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Class -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-purple-500 relative overflow-hidden hover-lift">
+                    <div class="absolute -right-2 -top-6 text-8xl text-purple-100 opacity-50 font-mono font-bold">.</div>
+                    <h3 class="font-bold text-xl text-purple-800 mb-2">Lớp (Class)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Gom nhóm nhiều phần tử để định dạng chung. Bắt đầu bằng <code>.</code></p>
+                    <div class="bg-slate-800 text-purple-300 p-3 rounded-lg text-sm font-mono mb-2">
+                        .highlight { color: red; }
+                    </div>
+                    <p class="text-xs text-slate-500 border-l-2 border-purple-300 pl-2">
+                        Dùng cho: <code>&lt;p class="highlight"&gt;</code>
+                    </p>
+                </div>
+
+                <!-- ID -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-orange-500 relative overflow-hidden hover-lift">
+                    <div class="absolute right-0 -top-4 text-8xl text-orange-100 opacity-50 font-mono font-bold">#</div>
+                    <h3 class="font-bold text-xl text-orange-800 mb-2">Định danh (ID)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Chỉ nhắm vào <span class="study-marker">một phần tử duy nhất</span>. Bắt đầu bằng <code>#</code></p>
+                    <div class="bg-slate-800 text-orange-300 p-3 rounded-lg text-sm font-mono mb-2">
+                        #main-title { font-size: 24px; }
+                    </div>
+                    <p class="text-xs text-slate-500 border-l-2 border-orange-300 pl-2">
+                        Dùng cho: <code>&lt;h1 id="main-title"&gt;</code>
+                    </p>
+                </div>
+
+                <!-- Thuộc tính -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-emerald-500 relative overflow-hidden hover-lift">
+                    <div class="absolute -right-2 -top-2 text-7xl text-emerald-100 opacity-50 font-mono font-bold">[]</div>
+                    <h3 class="font-bold text-xl text-emerald-800 mb-2">Thuộc tính</h3>
+                    <p class="text-sm text-slate-600 mb-4">Chọn dựa trên thẻ HTML đó có thuộc tính gì. Dùng <code>[]</code></p>
+                    <div class="bg-slate-800 text-emerald-300 p-3 rounded-lg text-sm font-mono mb-2">
+                        [target="_blank"] { color: blue; }
+                    </div>
+                    <p class="text-xs text-slate-500 border-l-2 border-emerald-300 pl-2">
+                        Dùng cho: <code>&lt;a target="_blank"&gt;</code>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Selector Interactive Playground -->
+            <div class="bg-slate-100 p-6 rounded-2xl border border-slate-300 mb-8 shadow-inner">
+                <h3 class="font-bold text-slate-800 mb-4 text-center"><i class="fa-solid fa-flask mr-2 text-indigo-500"></i>Sa Bàn Thực Hành Bộ Chọn</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Nút bấm -->
+                    <div class="flex flex-col gap-3">
+                        <p class="text-sm text-slate-600 mb-2 font-medium">Nhấn vào các lệnh CSS dưới đây để xem kết quả áp dụng:</p>
+                        <button class="bg-white border-2 border-purple-400 text-purple-700 hover:bg-purple-50 font-mono p-3 rounded-xl text-left shadow-sm transition-all" onclick="applySelector('class')">
+                            <span class="font-bold">.warning</span> { border-color: red; background: pink; }
+                        </button>
+                        <button class="bg-white border-2 border-orange-400 text-orange-700 hover:bg-orange-50 font-mono p-3 rounded-xl text-left shadow-sm transition-all" onclick="applySelector('id')">
+                            <span class="font-bold">#special-box</span> { border-color: red; background: pink; }
+                        </button>
+                        <button class="bg-white border-2 border-blue-400 text-blue-700 hover:bg-blue-50 font-mono p-3 rounded-xl text-left shadow-sm transition-all" onclick="applySelector('tag')">
+                            <span class="font-bold">p</span> { border-color: red; background: pink; }
+                        </button>
+                        <button class="bg-slate-300 text-slate-700 hover:bg-slate-400 font-bold p-2 rounded-xl text-center shadow transition-all mt-2" onclick="applySelector('reset')">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Xóa tất cả CSS
+                        </button>
+                    </div>
+                    
+                    <!-- Kết quả hiển thị -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-300 flex flex-col gap-2 relative">
+                        <div class="absolute top-2 right-2 text-[10px] text-slate-400 uppercase font-bold tracking-wider">Trang Web Mẫu</div>
+                        
+                        <div id="pg-box1" class="pg-element mt-4" data-type="div">
+                            <span class="text-xs font-mono text-slate-400 block mb-1">&lt;div id="special-box"&gt;</span>
+                            Hộp chứa nội dung đặc biệt
+                        </div>
+                        
+                        <div id="pg-box2" class="pg-element warning-class" data-type="p">
+                            <span class="text-xs font-mono text-slate-400 block mb-1">&lt;p class="warning"&gt;</span>
+                            Đoạn văn bản cảnh báo 1
+                        </div>
+                        
+                        <div id="pg-box3" class="pg-element" data-type="p">
+                            <span class="text-xs font-mono text-slate-400 block mb-1">&lt;p&gt;</span>
+                            Đoạn văn bản bình thường
+                        </div>
+
+                        <div id="pg-box4" class="pg-element warning-class" data-type="div">
+                            <span class="text-xs font-mono text-slate-400 block mb-1">&lt;div class="warning"&gt;</span>
+                            Hộp chứa cảnh báo 2
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kiến thức mở rộng: Specificity -->
+            <div class="bg-pastel-orange p-6 rounded-2xl border border-orange-200 shadow-sm relative overflow-hidden">
+                <i class="fa-solid fa-scale-balanced absolute -right-4 -bottom-4 text-[120px] text-orange-200 opacity-40"></i>
+                <h4 class="font-bold text-orange-900 mb-4 text-lg relative z-10"><i class="fa-solid fa-fire mr-2"></i>Mở rộng: Độ ưu tiên (Specificity)</h4>
+                <p class="text-sm text-orange-800 mb-4 relative z-10">Nếu 1 phần tử bị định dạng bởi nhiều bộ chọn khác nhau, CSS nào sẽ thắng? Dựa vào "điểm sức mạnh":</p>
+                <div class="grid grid-cols-3 gap-4 text-center relative z-10">
+                    <div class="bg-white p-3 rounded-lg shadow border border-orange-100 hover-lift">
+                        <div class="text-3xl text-slate-300 mb-1"><i class="fa-solid fa-tag"></i></div>
+                        <div class="font-bold text-slate-700">Thẻ HTML</div>
+                        <div class="text-xs text-slate-500">Ví dụ: p, div</div>
+                        <div class="mt-2 bg-slate-100 rounded text-slate-800 font-bold text-sm p-1">1 Điểm</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow border border-purple-100 hover-lift">
+                        <div class="text-3xl text-purple-400 mb-1"><i class="fa-solid fa-users"></i></div>
+                        <div class="font-bold text-purple-800">Class (Lớp)</div>
+                        <div class="text-xs text-purple-600">Ví dụ: .test</div>
+                        <div class="mt-2 bg-purple-100 rounded text-purple-800 font-bold text-sm p-1">10 Điểm</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow border border-orange-200 hover-lift transform scale-105 relative">
+                        <div class="absolute -top-3 -right-3 text-2xl text-yellow-500 animate-pulse"><i class="fa-solid fa-crown"></i></div>
+                        <div class="text-3xl text-orange-500 mb-1"><i class="fa-solid fa-fingerprint"></i></div>
+                        <div class="font-bold text-orange-800">ID (Định danh)</div>
+                        <div class="text-xs text-orange-600">Ví dụ: #home</div>
+                        <div class="mt-2 bg-orange-500 text-white rounded font-bold text-sm p-1 shadow-inner">100 Điểm</div>
+                    </div>
+                </div>
+
+                <!-- Tính năng nhập và tính điểm Specificity thực tế -->
+                <div class="mt-8 bg-white p-5 rounded-xl border-2 border-dashed border-orange-300 shadow-inner relative z-10">
+                    <h5 class="font-bold text-orange-800 mb-3"><i class="fa-solid fa-calculator mr-2"></i>Trình Tính Điểm Ưu Tiên (Thực Hành)</h5>
+                    <p class="text-xs text-slate-500 mb-3">Thử nghiệm: Nhập một Selector CSS bất kỳ (VD: <code class="bg-slate-100 text-pink-500 px-1 rounded">div#main .box p</code>). Hệ thống sẽ tự tính điểm. Lưu ý: Phải nhập đúng tên thẻ HTML!</p>
+                    
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="spec-input" class="flex-1 border-2 border-slate-200 p-3 rounded-lg focus:border-orange-400 focus:outline-none font-mono text-slate-700 shadow-inner transition-colors" placeholder="Nhập CSS Selector vào đây..." oninput="calculateSpecificity()">
+                    </div>
+                    
+                    <!-- Thông báo lỗi (ẩn mặc định) -->
+                    <div id="spec-error" class="hidden text-red-500 text-sm font-bold mb-3 p-3 bg-red-50 rounded-lg border border-red-200 animate-pulse">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> <span id="spec-error-msg"></span>
+                    </div>
+
+                    <!-- Bảng kết quả -->
+                    <div class="flex flex-col md:flex-row justify-between items-center bg-orange-50 p-4 rounded-lg border border-orange-200 gap-4">
+                        <div class="flex gap-6 text-sm font-bold text-slate-700">
+                            <div class="flex flex-col items-center"><span class="text-xs font-normal text-slate-500">Thẻ HTML (x1)</span><span id="spec-tag-count" class="text-xl text-slate-700">0</span></div>
+                            <div class="flex flex-col items-center"><span class="text-xs font-normal text-purple-500">Class (x10)</span><span id="spec-class-count" class="text-xl text-purple-600">0</span></div>
+                            <div class="flex flex-col items-center"><span class="text-xs font-normal text-orange-500">ID (x100)</span><span id="spec-id-count" class="text-xl text-orange-600">0</span></div>
+                        </div>
+                        <div class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">
+                            Tổng: <span id="spec-total">0</span> Điểm
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: ÔN TẬP -->
+        <div id="tab-quiz" class="tab-content">
+            <h2 class="title-gradient mb-6 text-center">Ôn Tập</h2>
+            
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-slate-100 max-w-3xl mx-auto glow-border">
+                <form id="quiz-form">
+                    <!-- Q1 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+                        <p class="font-bold text-slate-800 mb-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 text-sm">Câu 1</span> Thẻ nào sau đây là phần tử khối (Block-level)?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q1" value="A" class="w-4 h-4 text-blue-600"> A. &lt;span&gt;</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q1" value="B" class="w-4 h-4 text-blue-600"> B. &lt;div&gt;</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q1" value="C" class="w-4 h-4 text-blue-600"> C. &lt;img&gt;</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q1" value="D" class="w-4 h-4 text-blue-600"> D. &lt;a&gt;</label>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+                        <p class="font-bold text-slate-800 mb-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 text-sm">Câu 2</span> Thuộc tính CSS nào cho phép thay đổi phần tử từ nội tuyến sang dạng khối?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q2" value="A" class="w-4 h-4 text-blue-600"> A. margin</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q2" value="B" class="w-4 h-4 text-blue-600"> B. width</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q2" value="C" class="w-4 h-4 text-blue-600"> C. display</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q2" value="D" class="w-4 h-4 text-blue-600"> D. border</label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+                        <p class="font-bold text-slate-800 mb-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 text-sm">Câu 3</span> Trong Box Model, khoảng cách từ "nội dung" đến "đường viền" được gọi là gì?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q3" value="A" class="w-4 h-4 text-blue-600"> A. Padding (Vùng đệm)</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q3" value="B" class="w-4 h-4 text-blue-600"> B. Margin (Lề ngoài)</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q3" value="C" class="w-4 h-4 text-blue-600"> C. Height (Chiều cao)</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q3" value="D" class="w-4 h-4 text-blue-600"> D. Width (Chiều rộng)</label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+                        <p class="font-bold text-slate-800 mb-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 text-sm">Câu 4</span> Cú pháp thiết lập bộ chọn định danh (ID) trong CSS bắt đầu bằng ký tự nào?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q4" value="A" class="w-4 h-4 text-blue-600"> A. Dấu chấm (.)</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q4" value="B" class="w-4 h-4 text-blue-600"> B. Dấu thăng (#)</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q4" value="C" class="w-4 h-4 text-blue-600"> C. Dấu ngoặc vuông ([])</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q4" value="D" class="w-4 h-4 text-blue-600"> D. Dấu hoa thị (*)</label>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+                        <p class="font-bold text-slate-800 mb-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 text-sm">Câu 5</span> Khẳng định nào sau đây là ĐÚNG khi đặt tên id và class?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q5" value="A" class="w-4 h-4 text-blue-600"> A. Không phân biệt chữ hoa, chữ thường.</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q5" value="B" class="w-4 h-4 text-blue-600"> B. Có thể bắt đầu bằng một số (ví dụ: .1test).</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q5" value="C" class="w-4 h-4 text-blue-600"> C. Được phép chứa khoảng trắng.</label>
+                            <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 hover:shadow-sm transition-all"><input type="radio" name="q5" value="D" class="w-4 h-4 text-blue-600"> D. Một phần tử có thể gán đồng thời nhiều class.</label>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-8">
+                        <button type="button" onclick="checkQuiz()" class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all text-lg">
+                            <i class="fa-solid fa-paper-plane mr-2"></i> Nộp Bài & Nhận Điểm
+                        </button>
+                    </div>
+
+                    <!-- Kết quả -->
+                    <div id="quiz-result" class="hidden mt-8 p-6 rounded-2xl text-center transition-all duration-500 transform scale-95 opacity-0">
+                        <div class="text-5xl mb-3" id="score-icon"></div>
+                        <h3 class="text-3xl font-bold mb-2" id="score-text"></h3>
+                        <p id="score-message" class="text-lg font-medium"></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Logic chuyển Tab
+        function openTab(evt, tabId) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            
+            // Trigger recalculations if needed
+            if (tabId === 'tab-boxmodel') updateBoxModel();
+        }
+
+        // Logic tương tác phần tử Khối/Nội tuyến
+        function changeDisplay(displayValue) {
+            const spans = document.querySelectorAll('.demo-span');
+            let codeHTML = "";
+            
+            spans.forEach((span, index) => {
+                if (displayValue === 'hidden') {
+                    span.style.visibility = 'hidden';
+                    // Khôi phục lại trạng thái display nếu phần tử đang bị display: none
+                    if (span.style.display === 'none') {
+                        span.style.display = 'inline';
+                    }
+                    codeHTML += `&lt;span style="<span class="text-slate-400 font-bold">visibility: hidden;</span>"&gt;Phần tử thứ ${index + 1}&lt;/span&gt;\n`;
+                } else {
+                    span.style.visibility = 'visible';
+                    span.style.display = displayValue;
+                    
+                    // Định dạng màu chữ trong đoạn code
+                    let colorCode = 'text-pink-400';
+                    if (displayValue === 'block') colorCode = 'text-blue-400';
+                    else if (displayValue === 'none') colorCode = 'text-slate-500';
+                    
+                    codeHTML += `&lt;span style="<span class="${colorCode} font-bold">display: ${displayValue};</span>"&gt;Phần tử thứ ${index + 1}&lt;/span&gt;\n`;
+                    
+                    if(displayValue === 'block') {
+                        span.classList.replace('bg-pink-100', 'bg-blue-100');
+                        span.classList.replace('text-pink-800', 'text-blue-800');
+                        span.classList.replace('border-pink-400', 'border-blue-400');
+                    } else if(displayValue === 'inline') {
+                        span.classList.replace('bg-blue-100', 'bg-pink-100');
+                        span.classList.replace('text-blue-800', 'text-pink-800');
+                        span.classList.replace('border-blue-400', 'border-pink-400');
+                    }
+                }
+            });
+
+            // Cập nhật giao diện mã code HTML bên dưới
+            const codeDisplay = document.getElementById('interactive-code-display');
+            if (codeDisplay) {
+                codeDisplay.innerHTML = codeHTML.trim();
+            }
+        }
+
+        // Logic tương tác Box Model (Đã bổ sung Box-Sizing)
+        function updateBoxModel() {
+            // Get values
+            const w = parseInt(document.getElementById('ctrl-width').value);
+            const h = parseInt(document.getElementById('ctrl-height').value);
+            const p = parseInt(document.getElementById('ctrl-padding').value);
+            const b = parseInt(document.getElementById('ctrl-border').value);
+            const bStyle = document.getElementById('ctrl-border-style').value;
+            const m = parseInt(document.getElementById('ctrl-margin').value);
+            const isBorderBox = document.getElementById('ctrl-boxsizing').checked;
+
+            // Update UI Numbers
+            document.getElementById('val-width').innerText = w + 'px';
+            document.getElementById('val-height').innerText = h + 'px';
+            document.getElementById('val-padding').innerText = p + 'px';
+            document.getElementById('val-border').innerText = b + 'px ' + bStyle;
+            document.getElementById('val-margin').innerText = m + 'px';
+
+            // Update CSS Code Block
+            document.getElementById('code-width').innerText = w + 'px';
+            document.getElementById('code-height').innerText = h + 'px';
+            document.getElementById('code-padding').innerText = p + 'px';
+            document.getElementById('code-border').innerText = b + 'px ' + bStyle;
+            document.getElementById('code-margin').innerText = m + 'px';
+            
+            const codeBoxSizing = document.getElementById('code-boxsizing');
+            if(isBorderBox) {
+                codeBoxSizing.classList.remove('hidden');
+            } else {
+                codeBoxSizing.classList.add('hidden');
+            }
+
+            // Apply styles to Visual Boxes
+            const demoBox = document.getElementById('demo-box');
+            const wrapPadding = document.getElementById('wrap-padding');
+            const wrapBorder = document.getElementById('wrap-border');
+            const wrapMargin = document.getElementById('wrap-margin');
+            
+            // Tính toán theo mô hình Content-Box vs Border-Box
+            let contentW = w;
+            let contentH = h;
+            
+            if (isBorderBox) {
+                // Border-box: width/height bao gồm cả padding và border
+                // Phải đảm bảo nội dung không bị âm
+                contentW = Math.max(0, w - (p * 2) - (b * 2));
+                contentH = Math.max(0, h - (p * 2) - (b * 2));
+                demoBox.style.boxSizing = 'border-box';
+            } else {
+                demoBox.style.boxSizing = 'content-box';
+            }
+
+            demoBox.style.width = contentW + 'px';
+            demoBox.style.height = contentH + 'px';
+            
+            wrapPadding.style.padding = p + 'px';
+            
+            if(bStyle === 'solid') {
+                wrapBorder.style.backgroundColor = '#854d0e';
+                wrapBorder.style.padding = b + 'px';
+                wrapBorder.style.border = 'none';
+            } else {
+                wrapBorder.style.backgroundColor = 'transparent';
+                wrapBorder.style.padding = '0';
+                wrapBorder.style.border = `${b}px ${bStyle} #854d0e`;
+            }
+
+            wrapMargin.style.padding = m + 'px';
+
+            // Tính tổng kích thước (bao gồm cả Margin để hiển thị trên UI)
+            let totalWidth = w;
+            if(!isBorderBox) {
+                totalWidth = w + (p*2) + (b*2);
+            }
+            totalWidth += (m*2);
+            
+            document.getElementById('total-size').innerText = `Tổng vùng chiếm (Kể cả Margin): ${totalWidth}px`;
+        }
+
+        // Logic thực hành Bộ Chọn
+        function applySelector(type) {
+            // Xóa tất cả highlight hiện tại
+            const elements = document.querySelectorAll('.pg-element');
+            elements.forEach(el => el.classList.remove('pg-selected'));
+
+            if (type === 'class') {
+                const targets = document.querySelectorAll('.warning-class');
+                targets.forEach(el => el.classList.add('pg-selected'));
+            } else if (type === 'id') {
+                document.getElementById('pg-box1').classList.add('pg-selected');
+            } else if (type === 'tag') {
+                const targets = document.querySelectorAll('[data-type="p"]');
+                targets.forEach(el => el.classList.add('pg-selected'));
+            }
+        }
+
+        // --- NEW: Logic tính điểm Specificity ---
+        // Danh sách các thẻ HTML chuẩn (bản tóm gọn các thẻ phổ biến để kiểm tra lỗi)
+        const validHTMLTags = ["a", "abbr", "address", "area", "article", "aside", "audio", "b", "base", "bdi", "bdo", "blockquote", "body", "br", "button", "canvas", "caption", "cite", "code", "col", "colgroup", "data", "datalist", "dd", "del", "details", "dfn", "dialog", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "iframe", "img", "input", "ins", "kbd", "label", "legend", "li", "link", "main", "map", "mark", "meta", "meter", "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", "select", "small", "source", "span", "strong", "style", "sub", "summary", "sup", "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"];
+
+        function calculateSpecificity() {
+            const input = document.getElementById('spec-input').value.trim();
+            const errorDiv = document.getElementById('spec-error');
+            const errorMsg = document.getElementById('spec-error-msg');
+            
+            errorDiv.classList.add('hidden'); // Ẩn lỗi mặc định
+            
+            if (!input) {
+                updateSpecUI(0, 0, 0);
+                return;
+            }
+
+            // Đếm số ID (bắt đầu bằng #)
+            const ids = input.match(/#[a-zA-Z0-9_-]+/g) || [];
+            const idCount = ids.length;
+
+            // Đếm số Class (bắt đầu bằng .)
+            const classes = input.match(/\.[a-zA-Z0-9_-]+/g) || [];
+            const classCount = classes.length;
+
+            // Lọc ra thẻ HTML bằng cách xóa ID, Class và các ký hiệu liên kết khỏi chuỗi
+            let remainingString = input.replace(/#[a-zA-Z0-9_-]+/g, ' ')
+                                       .replace(/\.[a-zA-Z0-9_-]+/g, ' ')
+                                       .replace(/\[.*?\]/g, ' ') 
+                                       .replace(/:[a-zA-Z0-9_-]+/g, ' '); 
+
+            // Tách các từ còn lại (loại bỏ dấu cách, >, +, ~)
+            const potentialTags = remainingString.split(/[\s>+~]+/).filter(t => t.trim() !== '' && t !== '*');
+            
+            let tagCount = 0;
+            let invalidTags = [];
+            
+            potentialTags.forEach(tag => {
+                const cleanTag = tag.toLowerCase();
+                if (validHTMLTags.includes(cleanTag)) {
+                    tagCount++;
+                } else {
+                    invalidTags.push(tag);
+                }
+            });
+
+            // Nếu phát hiện thẻ không có trong danh sách chuẩn HTML -> Báo lỗi
+            if (invalidTags.length > 0) {
+                errorMsg.innerText = `Lỗi: Nhận diện thấy "${invalidTags.join(', ')}" không phải là thẻ HTML hợp lệ!`;
+                errorDiv.classList.remove('hidden');
+                updateSpecUI(0, 0, 0); // Trả về 0 nếu nhập sai cú pháp
+                return;
+            }
+
+            updateSpecUI(tagCount, classCount, idCount);
+        }
+
+        function updateSpecUI(tags, classes, ids) {
+            document.getElementById('spec-tag-count').innerText = tags;
+            document.getElementById('spec-class-count').innerText = classes;
+            document.getElementById('spec-id-count').innerText = ids;
+            
+            const total = (ids * 100) + (classes * 10) + (tags * 1);
+            document.getElementById('spec-total').innerText = total;
+        }
+        // ----------------------------------------
+
+        // Khởi tạo khi load trang
+        window.onload = function() {
+            updateBoxModel();
+        };
+
+        // Logic chấm điểm Trắc nghiệm (Có hiệu ứng)
+        function checkQuiz() {
+            const answers = { q1: 'B', q2: 'C', q3: 'A', q4: 'B', q5: 'D' };
+            let score = 0;
+            const form = document.getElementById('quiz-form');
+            const data = new FormData(form);
+
+            for (let [key, val] of Object.entries(answers)) {
+                if (data.get(key) === val) score++;
+            }
+
+            const resultDiv = document.getElementById('quiz-result');
+            const scoreText = document.getElementById('score-text');
+            const scoreMsg = document.getElementById('score-message');
+            const scoreIcon = document.getElementById('score-icon');
+
+            resultDiv.classList.remove('hidden');
+            
+            // Animation Trigger (hack to restart animation)
+            resultDiv.style.opacity = '0';
+            resultDiv.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                resultDiv.style.opacity = '1';
+                resultDiv.style.transform = 'scale(1)';
+            }, 50);
+
+            if (score === 5) {
+                resultDiv.className = 'mt-8 p-6 rounded-2xl text-center bg-green-100 text-green-800 border-2 border-green-400 transition-all duration-500 transform';
+                scoreIcon.innerHTML = '🏆';
+                scoreText.innerHTML = `Tuyệt đỉnh! ${score}/5`;
+                scoreMsg.innerText = "Bạn đã nắm vững toàn bộ kiến thức bài học!";
+            } else if (score >= 3) {
+                resultDiv.className = 'mt-8 p-6 rounded-2xl text-center bg-blue-100 text-blue-800 border-2 border-blue-400 transition-all duration-500 transform';
+                scoreIcon.innerHTML = '👏';
+                scoreText.innerHTML = `Khá tốt! ${score}/5`;
+                scoreMsg.innerText = "Hãy ôn lại các phần bị sai nhé.";
+            } else {
+                resultDiv.className = 'mt-8 p-6 rounded-2xl text-center bg-red-100 text-red-800 border-2 border-red-400 transition-all duration-500 transform';
+                scoreIcon.innerHTML = '📚';
+                scoreText.innerHTML = `Cần cố gắng! ${score}/5`;
+                scoreMsg.innerText = "Bạn nên đọc kỹ lại tab Tổng Quan và Các lưu ý quan trọng.";
+            }
+        }
+    </script>
+</body>
+</html>

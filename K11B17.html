@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 17: Quản trị CSDL trên máy tính</title>
+    
+    <!-- Fonts: Quicksand for Studygram aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind Config for Pastel Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            blueDark: '#bae6fd',
+                            pink: '#fce7f3',
+                            pinkDark: '#fbcfe8',
+                            green: '#dcfce7',
+                            greenDark: '#bbf7d0',
+                            yellow: '#fef08a',
+                            purple: '#f3e8ff',
+                            purpleDark: '#e9d5ff',
+                            gray: '#f8fafc',
+                            text: '#475569'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .mindmap-line {
+            position: absolute;
+            z-index: -1;
+            border-left: 2px dashed #94a3b8;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Terminal input reset */
+        .term-input {
+            background: transparent; border: none; outline: none; color: inherit; width: calc(100% - 100px);
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <nav class="w-20 md:w-64 bg-white border-r border-slate-200 flex flex-col justify-between transition-all duration-300 z-10">
+        <div>
+            <div class="h-16 flex items-center justify-center md:justify-start md:px-6 border-b border-slate-100">
+                <i class="fa-solid fa-database text-blue-500 text-2xl"></i>
+                <span class="hidden md:block ml-3 font-bold text-lg text-slate-700">Bài 17: CSDL</span>
+            </div>
+            <ul class="py-4 space-y-2">
+                <li>
+                    <button onclick="switchTab('tab-muctieu')" class="tab-btn w-full flex items-center py-3 px-6 text-slate-600 hover:bg-pastel-blue hover:text-blue-600 transition-colors bg-pastel-blue text-blue-600 border-r-4 border-blue-500">
+                        <i class="fa-solid fa-bullseye text-xl w-6"></i>
+                        <span class="hidden md:block ml-3 font-semibold">Mục tiêu & Khái niệm</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchTab('tab-cotloi')" class="tab-btn w-full flex items-center py-3 px-6 text-slate-600 hover:bg-pastel-green hover:text-green-600 transition-colors border-r-4 border-transparent">
+                        <i class="fa-solid fa-brain text-xl w-6"></i>
+                        <span class="hidden md:block ml-3 font-semibold">Kiến thức cốt lõi</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchTab('tab-sodo')" class="tab-btn w-full flex items-center py-3 px-6 text-slate-600 hover:bg-pastel-purple hover:text-purple-600 transition-colors border-r-4 border-transparent">
+                        <i class="fa-solid fa-project-diagram text-xl w-6"></i>
+                        <span class="hidden md:block ml-3 font-semibold">Sơ đồ & Phân tích</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchTab('tab-tuongtac')" class="tab-btn w-full flex items-center py-3 px-6 text-slate-600 hover:bg-pastel-yellow hover:text-yellow-600 transition-colors border-r-4 border-transparent">
+                        <i class="fa-solid fa-laptop-code text-xl w-6"></i>
+                        <span class="hidden md:block ml-3 font-semibold">Mô phỏng thực hành</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchTab('tab-luyentap')" class="tab-btn w-full flex items-center py-3 px-6 text-slate-600 hover:bg-pastel-pink hover:text-pink-600 transition-colors border-r-4 border-transparent">
+                        <i class="fa-solid fa-clipboard-check text-xl w-6"></i>
+                        <span class="hidden md:block ml-3 font-semibold">Luyện tập (Trắc nghiệm)</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="p-4 text-center hidden md:block text-xs text-slate-400">
+            K11 - Tin học<br>Studygram Version
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 relative p-4 md:p-8">
+
+        <!-- TAB 1: MỤC TIÊU & KHÁI NIỆM -->
+        <section id="tab-muctieu" class="tab-content active h-full">
+            <h1 class="text-3xl font-bold text-slate-800 mb-6 flex items-center">
+                <i class="fa-solid fa-book-open text-blue-500 mr-3"></i> Khởi động Bài 17
+            </h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto">
+                <!-- Mục tiêu -->
+                <div class="glass-card rounded-2xl p-6 bg-pastel-blue">
+                    <h2 class="text-xl font-bold text-blue-700 mb-4 flex items-center">
+                        <i class="fa-solid fa-flag-checkered mr-2"></i> Mục tiêu bài học
+                    </h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center shrink-0 mt-1 shadow-sm"><i class="fa-solid fa-1"></i></span>
+                            <div class="ml-4 p-3 bg-white rounded-xl shadow-sm border border-blue-100 flex-1">
+                                Biết được <strong>lợi ích</strong> của việc quản trị CSDL trên máy tính.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center shrink-0 mt-1 shadow-sm"><i class="fa-solid fa-2"></i></span>
+                            <div class="ml-4 p-3 bg-white rounded-xl shadow-sm border border-blue-100 flex-1">
+                                Làm quen với <strong>MySQL</strong> và <strong>HeidiSQL</strong> – bộ công cụ hỗ trợ việc quản trị CSDL trên máy tính.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Khái niệm -->
+                <div class="glass-card rounded-2xl p-6 bg-pastel-green">
+                    <h2 class="text-xl font-bold text-green-700 mb-4 flex items-center">
+                        <i class="fa-solid fa-key mr-2"></i> Khái niệm Quan trọng
+                    </h2>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex bg-white rounded-xl overflow-hidden shadow-sm border border-green-100">
+                            <div class="w-16 bg-green-200 flex items-center justify-center text-green-700">
+                                <i class="fa-solid fa-database text-2xl"></i>
+                            </div>
+                            <div class="p-4 flex-1">
+                                <h3 class="font-bold text-slate-800">Hệ QTCSDL</h3>
+                                <p class="text-sm text-slate-600">Hệ quản trị cơ sở dữ liệu. Giúp khởi tạo, cập nhật, khai thác dữ liệu.</p>
+                            </div>
+                        </div>
+                        <div class="flex bg-white rounded-xl overflow-hidden shadow-sm border border-green-100">
+                            <div class="w-16 bg-orange-200 flex items-center justify-center text-orange-700">
+                                <i class="fa-solid fa-dolphin text-2xl"></i>
+                            </div>
+                            <div class="p-4 flex-1">
+                                <h3 class="font-bold text-slate-800">MySQL</h3>
+                                <p class="text-sm text-slate-600">Hệ QTCSDL phổ biến, mã nguồn mở, miễn phí. Xử lí nhanh, bảo mật cao.</p>
+                            </div>
+                        </div>
+                        <div class="flex bg-white rounded-xl overflow-hidden shadow-sm border border-green-100">
+                            <div class="w-16 bg-purple-200 flex items-center justify-center text-purple-700">
+                                <i class="fa-solid fa-window-maximize text-2xl"></i>
+                            </div>
+                            <div class="p-4 flex-1">
+                                <h3 class="font-bold text-slate-800">HeidiSQL</h3>
+                                <p class="text-sm text-slate-600">Phần mềm giúp giao tiếp với MySQL qua giao diện đồ họa. Miễn phí, hỗ trợ Tiếng Việt.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: KIẾN THỨC CỐT LÕI (Infographic) -->
+        <section id="tab-cotloi" class="tab-content h-full">
+            <h1 class="text-3xl font-bold text-slate-800 mb-6 flex items-center">
+                <i class="fa-solid fa-brain text-green-500 mr-3"></i> Kiến thức Cốt lõi
+            </h1>
+            
+            <div class="flex flex-col gap-8">
+                <!-- Box Lợi ích -->
+                <div class="glass-card rounded-2xl p-6 bg-pastel-purple text-center border border-purple-200 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 opacity-10 text-9xl"><i class="fa-solid fa-chart-line"></i></div>
+                    <h2 class="text-2xl font-bold text-purple-800 mb-6 relative z-10">Lợi ích quản trị CSDL trên máy tính</h2>
+                    <div class="flex flex-wrap justify-center gap-4 relative z-10">
+                        <span class="px-4 py-2 bg-white text-purple-700 rounded-full font-bold shadow-sm flex items-center"><i class="fa-solid fa-bolt mr-2 text-yellow-400"></i> Tiện lợi, Kịp thời, Nhanh chóng</span>
+                        <span class="px-4 py-2 bg-white text-purple-700 rounded-full font-bold shadow-sm flex items-center"><i class="fa-solid fa-shield-halved mr-2 text-blue-400"></i> Hạn chế sai sót</span>
+                        <span class="px-4 py-2 bg-white text-purple-700 rounded-full font-bold shadow-sm flex items-center"><i class="fa-solid fa-compress mr-2 text-green-400"></i> Hạn chế tối đa dư thừa dữ liệu</span>
+                        <span class="px-4 py-2 bg-white text-purple-700 rounded-full font-bold shadow-sm flex items-center"><i class="fa-solid fa-link mr-2 text-pink-400"></i> Đảm bảo tính nhất quán</span>
+                        <span class="px-4 py-2 bg-white text-purple-700 rounded-full font-bold shadow-sm flex items-center"><i class="fa-solid fa-lock mr-2 text-slate-700"></i> Đảm bảo an ninh, an toàn</span>
+                    </div>
+                </div>
+
+                <!-- Box So sánh & Đặc điểm -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card rounded-2xl p-6 bg-orange-50 border border-orange-100">
+                        <h2 class="text-xl font-bold text-orange-600 mb-4 text-center">Đặc điểm MySQL</h2>
+                        <ul class="space-y-3">
+                            <li class="bg-white p-3 rounded-lg shadow-sm text-sm border-l-4 border-orange-400 flex items-center"><i class="fa-solid fa-check-circle text-orange-400 mr-2"></i> Sản phẩm mã nguồn mở miễn phí.</li>
+                            <li class="bg-white p-3 rounded-lg shadow-sm text-sm border-l-4 border-orange-400 flex items-center"><i class="fa-solid fa-check-circle text-orange-400 mr-2"></i> Gọn nhẹ, tốc độ xử lí nhanh.</li>
+                            <li class="bg-white p-3 rounded-lg shadow-sm text-sm border-l-4 border-orange-400 flex items-center"><i class="fa-solid fa-check-circle text-orange-400 mr-2"></i> Hỗ trợ quản lí chặt chẽ, an toàn dữ liệu.</li>
+                            <li class="bg-white p-3 rounded-lg shadow-sm text-sm border-l-4 border-orange-400 flex items-center"><i class="fa-solid fa-check-circle text-orange-400 mr-2"></i> Có sẵn dòng lệnh mysql.exe</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 bg-blue-50 border border-blue-100">
+                        <h2 class="text-xl font-bold text-blue-600 mb-4 text-center">Tại sao dùng HeidiSQL?</h2>
+                        <ul class="space-y-3">
+                            <li class="bg-white p-3 rounded-lg shadow-sm text-sm border-l-4 border-blue-400 flex items-center"><i class="fa-solid fa-mouse-pointer text-blue-400 mr-2"></i> mysql.exe dòng lệnh không thân thiện.</li>
+                            <li class="bg-white p-3 rounded-lg shadow-sm text-sm border-l-4 border-blue-400 flex items-center"><i class="fa-solid fa-images text-blue-400 mr-2"></i> HeidiSQL cung cấp giao diện đồ hoạ dễ dùng.</li>
+                            <li class="bg-white p-3 rounded-lg shadow-sm text-sm border-l-4 border-blue-400 flex items-center"><i class="fa-solid fa-language text-blue-400 mr-2"></i> Hỗ trợ tiếng Việt.</li>
+                            <li class="bg-white p-3 rounded-lg shadow-sm text-sm border-l-4 border-blue-400 flex items-center"><i class="fa-solid fa-gift text-blue-400 mr-2"></i> Mã nguồn mở, miễn phí.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: SƠ ĐỒ & PHÂN TÍCH -->
+        <section id="tab-sodo" class="tab-content h-full">
+            <h1 class="text-3xl font-bold text-slate-800 mb-6 flex items-center">
+                <i class="fa-solid fa-project-diagram text-purple-500 mr-3"></i> Sơ đồ & Phân tích
+            </h1>
+
+            <!-- Mối quan hệ -->
+            <div class="glass-card rounded-2xl p-6 bg-white mb-6">
+                <h2 class="text-xl font-bold text-slate-700 mb-6 text-center">Sơ đồ mối quan hệ giữa các Khái niệm</h2>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+                    
+                    <div class="bg-pastel-pink text-pink-700 p-4 rounded-xl font-bold text-center w-40 shadow-sm border border-pink-200">
+                        <i class="fa-solid fa-user-tie text-3xl mb-2 block"></i>
+                        Người dùng
+                    </div>
+
+                    <div class="hidden md:flex flex-col items-center">
+                        <span class="text-xs text-slate-400 mb-1">Thao tác qua</span>
+                        <i class="fa-solid fa-arrow-right text-slate-300 text-2xl"></i>
+                    </div>
+                    <div class="md:hidden text-slate-300 text-2xl my-2"><i class="fa-solid fa-arrow-down"></i></div>
+
+                    <div class="bg-pastel-blue text-blue-700 p-4 rounded-xl font-bold text-center w-40 shadow-sm border border-blue-200">
+                        <i class="fa-solid fa-window-maximize text-3xl mb-2 block"></i>
+                        HeidiSQL<br>
+                        <span class="text-xs font-normal">(Phần mềm khách)</span>
+                    </div>
+
+                    <div class="hidden md:flex flex-col items-center">
+                        <span class="text-xs text-slate-400 mb-1">Giao tiếp với</span>
+                        <i class="fa-solid fa-arrow-right text-slate-300 text-2xl"></i>
+                    </div>
+                    <div class="md:hidden text-slate-300 text-2xl my-2"><i class="fa-solid fa-arrow-down"></i></div>
+
+                    <div class="bg-pastel-green text-green-700 p-4 rounded-xl font-bold text-center w-40 shadow-sm border border-green-200">
+                        <i class="fa-solid fa-database text-3xl mb-2 block"></i>
+                        MySQL<br>
+                        <span class="text-xs font-normal">(Hệ QTCSDL)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ví dụ ngân hàng (Infographic) -->
+            <div class="glass-card rounded-2xl p-6 bg-pastel-yellow border border-yellow-200">
+                <h2 class="text-xl font-bold text-yellow-800 mb-4"><i class="fa-solid fa-building-columns mr-2"></i> Ví dụ minh họa: Quản lí Ngân Hàng</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="bg-white p-4 rounded-xl border border-red-200 relative">
+                        <div class="absolute -top-3 -right-3 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fa-solid fa-times"></i></div>
+                        <h3 class="font-bold text-red-600 border-b pb-2 mb-2 text-center">Thủ công (Trước kia)</h3>
+                        <ul class="text-sm text-slate-600 space-y-2">
+                            <li><i class="fa-solid fa-book text-slate-400 mr-2"></i> Ghi chép sổ sách vất vả, khó kiểm soát.</li>
+                            <li><i class="fa-solid fa-clock text-slate-400 mr-2"></i> Rà soát, đối chiếu số liệu cuối ngày mất nhiều thời gian.</li>
+                            <li><i class="fa-solid fa-triangle-exclamation text-slate-400 mr-2"></i> Tiền tệ luân chuyển chậm.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-green-200 relative">
+                        <div class="absolute -top-3 -right-3 bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fa-solid fa-check"></i></div>
+                        <h3 class="font-bold text-green-600 border-b pb-2 mb-2 text-center">Sử dụng Máy tính (Hiện nay)</h3>
+                        <ul class="text-sm text-slate-600 space-y-2">
+                            <li><i class="fa-solid fa-magnifying-glass text-slate-400 mr-2"></i> Tìm kiếm nhanh chóng, chính xác.</li>
+                            <li><i class="fa-solid fa-shield-check text-slate-400 mr-2"></i> Hạn chế tối đa dư thừa, sai sót.</li>
+                            <li><i class="fa-solid fa-mobile-screen-button text-slate-400 mr-2"></i> Hỗ trợ giao dịch trực tuyến trên điện thoại/máy tính.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box dễ nhầm lẫn -->
+            <div class="mt-6 glass-card rounded-2xl p-4 border-l-4 border-red-400 bg-white shadow-sm flex items-center">
+                <div class="text-red-500 text-3xl mr-4"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div>
+                    <h3 class="font-bold text-slate-800">Điểm dễ nhầm lẫn!</h3>
+                    <p class="text-sm text-slate-600">Nhiều bạn nghĩ <strong>HeidiSQL</strong> là hệ QTCSDL. Sai nhé! <strong>MySQL</strong> mới là Hệ quản trị CSDL, còn <strong>HeidiSQL</strong> chỉ là "bộ mặt" (giao diện đồ hoạ/phần mềm khách) để giúp ta làm việc với MySQL dễ dàng hơn thôi.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: TƯƠNG TÁC & MÔ PHỎNG -->
+        <section id="tab-tuongtac" class="tab-content h-full">
+            <h1 class="text-3xl font-bold text-slate-800 mb-6 flex items-center">
+                <i class="fa-solid fa-laptop-code text-yellow-500 mr-3"></i> Thực hành: Dòng lệnh vs Đồ hoạ
+            </h1>
+            <p class="text-slate-600 mb-4">Trải nghiệm sự khác biệt giữa sử dụng công cụ dòng lệnh (mysql.exe) và công cụ đồ hoạ (HeidiSQL).</p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Mô phỏng Dòng lệnh MySQL -->
+                <div class="bg-[#1e1e1e] rounded-xl overflow-hidden shadow-lg border border-slate-700 flex flex-col h-[400px]">
+                    <div class="bg-[#323233] px-4 py-2 flex items-center">
+                        <i class="fa-solid fa-terminal text-white text-xs mr-2"></i>
+                        <span class="text-white text-xs font-mono">Command Prompt - mysql.exe</span>
+                    </div>
+                    <div class="p-4 font-mono text-sm text-[#cccccc] overflow-y-auto flex-1" id="terminal-screen" onclick="document.getElementById('cmd-input').focus()">
+                        <div id="term-history"></div>
+                        <div id="term-input-line" class="flex">
+                            <span id="term-prompt" class="mr-2">C:\Temp></span>
+                            <input type="text" id="cmd-input" class="term-input focus:outline-none bg-transparent text-white" autocomplete="off" placeholder="Gõ mysql -u root -p và Enter" onkeypress="handleTerminal(event)">
+                        </div>
+                    </div>
+                    <div class="bg-yellow-100 p-2 text-xs text-yellow-800 border-t border-yellow-200">
+                        <i class="fa-solid fa-lightbulb"></i> <strong>Gợi ý:</strong> Làm theo hướng dẫn Hình 17.1, Hình 17.3 sách giáo khoa.
+                    </div>
+                </div>
+
+                <!-- Mô phỏng HeidiSQL -->
+                <div class="bg-slate-100 rounded-xl overflow-hidden shadow-lg border border-slate-300 flex flex-col h-[400px]">
+                    <div class="bg-white px-4 py-2 flex items-center justify-between border-b">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-window-restore text-blue-500 text-xs mr-2"></i>
+                            <span class="text-slate-700 text-xs font-sans">Trình quản lý phiên (HeidiSQL)</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-red-400 cursor-pointer"></div>
+                        </div>
+                    </div>
+                    <div class="p-4 flex-1 bg-white text-sm font-sans flex flex-col relative">
+                        <div class="grid grid-cols-3 gap-4 h-full" id="heidi-login-screen">
+                            <div class="col-span-1 border rounded p-2 bg-slate-50">
+                                <strong>Tên phiên</strong>
+                                <div class="mt-2 p-1 bg-blue-100 border border-blue-300 rounded text-xs flex items-center"><i class="fa-solid fa-desktop mr-1"></i> Unnamed *</div>
+                            </div>
+                            <div class="col-span-2 space-y-3 p-2">
+                                <div>
+                                    <label class="block text-xs mb-1 text-slate-500">Kiểu mạng:</label>
+                                    <select class="w-full border p-1 rounded text-xs bg-slate-100"><option>MariaDB or MySQL (TCP/IP)</option></select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs mb-1 text-slate-500">Tên máy chủ / IP:</label>
+                                    <input type="text" value="127.0.0.1" class="w-full border p-1 rounded text-xs" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-xs mb-1 text-slate-500">Người dùng (Gõ root):</label>
+                                    <input type="text" id="heidi-user" placeholder="Nhập tên..." class="w-full border p-1 rounded text-xs border-blue-400 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs mb-1 text-slate-500">Mật khẩu:</label>
+                                    <input type="password" id="heidi-pass" class="w-full border p-1 rounded text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-xs mb-1 text-slate-500">Cổng:</label>
+                                    <input type="text" value="3306" class="w-20 border p-1 rounded text-xs" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Logged In Screen (Hidden initially) -->
+                        <div id="heidi-work-screen" class="hidden h-full flex flex-col">
+                            <div class="flex gap-2 border-b pb-2 mb-2">
+                                <button class="px-2 py-1 bg-slate-100 border rounded text-xs hover:bg-slate-200" onclick="alert('Đã chọn bảng bannhac trong csdl mymusic')"><i class="fa-solid fa-table"></i> mymusic > bannhac</button>
+                                <button class="px-2 py-1 bg-blue-500 text-white border rounded text-xs hover:bg-blue-600" onclick="showHeidiData()"><i class="fa-solid fa-play"></i> Dữ liệu (Truy vấn)</button>
+                            </div>
+                            <div id="heidi-data-view" class="flex-1 bg-slate-50 border rounded overflow-hidden flex items-center justify-center text-slate-400">
+                                Nhấn "Dữ liệu" để hiển thị
+                            </div>
+                        </div>
+
+                        <!-- Bottom Buttons -->
+                        <div class="absolute bottom-4 right-4 flex gap-2" id="heidi-btn-group">
+                            <button class="px-4 py-1.5 bg-slate-200 rounded text-sm hover:bg-slate-300">Huỷ</button>
+                            <button onclick="loginHeidi()" class="px-4 py-1.5 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 shadow-sm">Mở</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: LUYỆN TẬP -->
+        <section id="tab-luyentap" class="tab-content h-full">
+            <h1 class="text-3xl font-bold text-slate-800 mb-6 flex items-center">
+                <i class="fa-solid fa-clipboard-check text-pink-500 mr-3"></i> Trắc nghiệm ôn tập (5 Câu)
+            </h1>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 max-w-3xl mx-auto h-[70vh] overflow-y-auto">
+                <form id="quiz-form">
+                    
+                    <!-- Câu 1 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl">
+                        <p class="font-bold text-slate-700 mb-3">Câu 1: Đâu là lợi ích của việc ứng dụng CSDL trong quản lí (so với làm thủ công)?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q1" value="A" class="mr-2"> Tiện lợi, kịp thời, nhanh chóng, hạn chế sai sót.
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q1" value="B" class="mr-2"> Làm tăng dư thừa dữ liệu.
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q1" value="C" class="mr-2"> Tiền tệ luân chuyển chậm hơn.
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q1" value="D" class="mr-2"> Mất nhiều thời gian rà soát, đối chiếu số liệu cuối ngày.
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 2 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl">
+                        <p class="font-bold text-slate-700 mb-3">Câu 2: Nếu được lựa chọn một hệ QTCSDL mã nguồn mở miễn phí, tốc độ xử lí nhanh, phổ biến hiện nay, em sẽ chọn phần mềm nào?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q2" value="A" class="mr-2"> Microsoft Word
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q2" value="B" class="mr-2"> MySQL
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q2" value="C" class="mr-2"> Paint
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q2" value="D" class="mr-2"> Windows
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 3 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl">
+                        <p class="font-bold text-slate-700 mb-3">Câu 3: HeidiSQL là gì?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q3" value="A" class="mr-2"> Là một hệ QTCSDL lớn hơn MySQL.
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q3" value="B" class="mr-2"> Là phần mềm soạn thảo văn bản.
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q3" value="C" class="mr-2"> Là phần mềm mã nguồn mở, miễn phí giúp giao tiếp với hệ QTCSDL thông qua giao diện đồ hoạ.
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q3" value="D" class="mr-2"> Là phần cứng máy tính.
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 4 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl">
+                        <p class="font-bold text-slate-700 mb-3">Câu 4: Để mở cửa sổ làm việc của MySQL từ dòng lệnh, người dùng mặc định thường sử dụng tài khoản nào?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q4" value="A" class="mr-2"> admin
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q4" value="B" class="mr-2"> guest
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q4" value="C" class="mr-2"> user
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q4" value="D" class="mr-2"> root
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 5 -->
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl">
+                        <p class="font-bold text-slate-700 mb-3">Câu 5: Cổng (Port) giao tiếp mặc định dành cho các hệ QTCSDL MySQL hiển thị trên HeidiSQL là bao nhiêu?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q5" value="A" class="mr-2"> 8080
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q5" value="B" class="mr-2"> 3306
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q5" value="C" class="mr-2"> 127
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-slate-200 cursor-pointer">
+                                <input type="radio" name="q5" value="D" class="mr-2"> 21
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="button" onclick="chamDiem()" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                            <i class="fa-solid fa-check-double mr-2"></i> Chấm điểm
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="quiz-result" class="hidden mt-6 p-4 bg-green-100 text-green-800 rounded-xl font-bold text-center text-xl"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- Logic Tab Navigation ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active styles from buttons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-pastel-blue', 'text-blue-600', 'bg-pastel-green', 'text-green-600', 'bg-pastel-purple', 'text-purple-600', 'bg-pastel-yellow', 'text-yellow-600', 'bg-pastel-pink', 'text-pink-600');
+                el.classList.replace('border-blue-500', 'border-transparent');
+                el.classList.replace('border-green-500', 'border-transparent');
+                el.classList.replace('border-purple-500', 'border-transparent');
+                el.classList.replace('border-yellow-500', 'border-transparent');
+                el.classList.replace('border-pink-500', 'border-transparent');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight button
+            const btn = event.currentTarget;
+            if(tabId.includes('muctieu')) { btn.classList.add('bg-pastel-blue', 'text-blue-600'); btn.classList.replace('border-transparent', 'border-blue-500'); }
+            if(tabId.includes('cotloi')) { btn.classList.add('bg-pastel-green', 'text-green-600'); btn.classList.replace('border-transparent', 'border-green-500'); }
+            if(tabId.includes('sodo')) { btn.classList.add('bg-pastel-purple', 'text-purple-600'); btn.classList.replace('border-transparent', 'border-purple-500'); }
+            if(tabId.includes('tuongtac')) { btn.classList.add('bg-pastel-yellow', 'text-yellow-600'); btn.classList.replace('border-transparent', 'border-yellow-500'); }
+            if(tabId.includes('luyentap')) { btn.classList.add('bg-pastel-pink', 'text-pink-600'); btn.classList.replace('border-transparent', 'border-pink-500'); }
+        }
+
+        // --- Logic Terminal Simulation (Hình 17.1, 17.2, 17.3) ---
+        let termState = 0; // 0: wait login, 1: wait pass, 2: logged in, wait query
+        const hist = document.getElementById('term-history');
+        const prompt = document.getElementById('term-prompt');
+        const input = document.getElementById('cmd-input');
+
+        function printTerm(text, isHtml=false) {
+            const div = document.createElement('div');
+            if(isHtml) div.innerHTML = text;
+            else div.textContent = text;
+            hist.appendChild(div);
+            document.getElementById('terminal-screen').scrollTop = document.getElementById('terminal-screen').scrollHeight;
+        }
+
+        function handleTerminal(e) {
+            if(e.key === 'Enter') {
+                const val = input.value.trim();
+                
+                if (termState === 0) {
+                    printTerm(`C:\\Temp> ${val}`);
+                    if (val === 'mysql -u root -p') {
+                        termState = 1;
+                        prompt.innerText = 'Enter password:';
+                        input.type = 'password';
+                        input.placeholder = "Nhập mật khẩu (ẩn) và Enter";
+                    } else {
+                        printTerm(`'${val}' is not recognized as an internal or external command.`);
+                    }
+                } 
+                else if (termState === 1) {
+                    printTerm(`Enter password: ${'*'.repeat(val.length)}`);
+                    termState = 2;
+                    printTerm("<br>Welcome to the MySQL monitor. Commands end with ; or \\g.", true);
+                    printTerm("Your MySQL connection id is 97");
+                    printTerm("Server version: 5.5.5-10.6.4-MariaDB mariadb.org binary distribution<br>", true);
+                    prompt.innerText = 'mysql>';
+                    input.type = 'text';
+                    input.placeholder = "Thử: select * from mymusic.bannhac;";
+                }
+                else if (termState === 2) {
+                    printTerm(`mysql> ${val}`);
+                    if (val.toLowerCase() === 'select * from mymusic.bannhac;') {
+                        const tableHtml = `
+<pre style="color: #4ade80;">
++-----------+-------------------------+----------+
+| idBannhac | tenBannhac              | idNhacsi |
++-----------+-------------------------+----------+
+|         1 | Du kích sông Thao       |        1 |
+|         7 | Nhạc rừng               |        3 |
+|         6 | Tiến về Hà Nội          |        2 |
+|         8 | Tiếng hát giữa rừng...  |        4 |
+|         3 | Tình ca                 |        3 |
++-----------+-------------------------+----------+
+5 rows in set (0.00 sec)
+</pre>`;
+                        printTerm(tableHtml, true);
+                    } else if (val.toLowerCase() === 'select * from mymusic.nhacsi;') {
+                         const tableHtml2 = `
+<pre style="color: #4ade80;">
++----------+----------------+
+| idNhacsi | tenNhacsi      |
++----------+----------------+
+|        1 | Đỗ Nhuận       |
+|        2 | Văn Cao        |
+|        3 | Hoàng Việt     |
++----------+----------------+
+</pre>`;
+                        printTerm(tableHtml2, true);
+                    } else if(val !== '') {
+                        printTerm(`ERROR 1064 (42000): You have an error in your SQL syntax near '${val}'`);
+                    }
+                }
+                input.value = '';
+            }
+        }
+
+        // --- Logic HeidiSQL Simulation ---
+        function loginHeidi() {
+            const user = document.getElementById('heidi-user').value;
+            if(user.toLowerCase() === 'root') {
+                document.getElementById('heidi-login-screen').classList.add('hidden');
+                document.getElementById('heidi-btn-group').classList.add('hidden');
+                document.getElementById('heidi-work-screen').classList.remove('hidden');
+            } else {
+                alert("Vui lòng nhập Tên người dùng là: root");
+            }
+        }
+
+        function showHeidiData() {
+            document.getElementById('heidi-data-view').innerHTML = `
+                <table class="w-full text-xs text-left text-slate-600 h-full">
+                    <thead class="bg-slate-200 uppercase sticky top-0">
+                        <tr>
+                            <th class="px-4 py-2 border">idBannhac</th>
+                            <th class="px-4 py-2 border">tenBannhac</th>
+                            <th class="px-4 py-2 border">idNhacsi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        <tr class="hover:bg-blue-50 cursor-pointer border-b"><td class="px-4 py-2 border-r">1</td><td class="px-4 py-2 border-r">Du kích sông Thao</td><td class="px-4 py-2">1</td></tr>
+                        <tr class="hover:bg-blue-50 cursor-pointer border-b"><td class="px-4 py-2 border-r">7</td><td class="px-4 py-2 border-r">Nhạc rừng</td><td class="px-4 py-2">3</td></tr>
+                        <tr class="hover:bg-blue-50 cursor-pointer border-b"><td class="px-4 py-2 border-r">6</td><td class="px-4 py-2 border-r">Tiến về Hà Nội</td><td class="px-4 py-2">2</td></tr>
+                        <tr class="hover:bg-blue-50 cursor-pointer border-b"><td class="px-4 py-2 border-r">3</td><td class="px-4 py-2 border-r">Tình ca</td><td class="px-4 py-2">3</td></tr>
+                        <tr class="hover:bg-blue-50 cursor-pointer border-b"><td class="px-4 py-2 border-r">2</td><td class="px-4 py-2 border-r">Trường ca Sông Lô</td><td class="px-4 py-2">2</td></tr>
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('heidi-data-view').classList.remove('items-center', 'justify-center', 'text-slate-400', 'p-4');
+        }
+
+        // --- Logic Quiz ---
+        function chamDiem() {
+            const form = document.getElementById('quiz-form');
+            const answers = {
+                q1: 'A', // Tiện lợi, kịp thời...
+                q2: 'B', // MySQL
+                q3: 'C', // PM giao tiếp đồ hoạ
+                q4: 'D', // root
+                q5: 'B'  // 3306
+            };
+            let score = 0;
+            let total = 5;
+            
+            for(let q in answers) {
+                const selected = form.querySelector(`input[name="${q}"]:checked`);
+                if(selected && selected.value === answers[q]) {
+                    score++;
+                    // Optional: Highlight correct parent div
+                    selected.closest('.bg-slate-50').classList.add('border-2', 'border-green-400', 'bg-green-50');
+                } else if(selected) {
+                    selected.closest('.bg-slate-50').classList.add('border-2', 'border-red-400', 'bg-red-50');
+                }
+            }
+
+            const resDiv = document.getElementById('quiz-result');
+            resDiv.classList.remove('hidden');
+            resDiv.innerHTML = `Bạn đã đúng ${score}/${total} câu! <br><span class="text-sm font-normal">(${score*2} Điểm)</span>`;
+            if(score === total) {
+                resDiv.classList.replace('bg-green-100', 'bg-yellow-100');
+                resDiv.classList.replace('text-green-800', 'text-yellow-700');
+                resDiv.innerHTML += "<br>🎉 Xuất sắc! Bạn đã nắm vững lý thuyết.";
+            }
+        }
+    </script>
+</body>
+</html>

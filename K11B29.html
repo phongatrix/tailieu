@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 29: Khám Phá Phần Mềm Làm Phim</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome cho Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            purple: '#f3e8ff',
+                            pink: '#fce7f3',
+                            green: '#dcfce7',
+                            yellow: '#fef3c7',
+                            gray: '#f8fafc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background-color: #f8fafc; }
+        
+        /* Tiêu đề theo đúng định dạng yêu cầu */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700; /* bold */
+            font-size: 28px; /* Kích thước 28px */
+            text-transform: capitalize; /* Viết hoa chữ đầu */
+            background: linear-gradient(to right, #2563eb, #9333ea); /* Gradient xanh dương sang tím */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Ẩn thanh cuộn nhưng vẫn cuộn được */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .tab-btn.active {
+            background-color: #ffffff;
+            color: #9333ea;
+            border-bottom: 3px solid #9333ea;
+            font-weight: 700;
+        }
+        
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Pseudo-UI Editor */
+        .ui-zone { transition: all 0.3s ease; cursor: pointer; }
+        .ui-zone:hover { transform: scale(0.98); box-shadow: 0 0 15px rgba(147, 51, 234, 0.3); }
+        .ui-zone.active-zone { border: 2px solid #9333ea; background-color: #f3e8ff; }
+
+        /* Custom Styles cho phần Mô phỏng Wizard */
+        .wizard-step { display: none; }
+        .wizard-step.active { display: block; animation: fadeIn 0.4s; }
+        .mock-window { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        .template-card.selected { border-color: #3b82f6; background-color: #eff6ff; }
+    </style>
+</head>
+<body class="text-slate-700 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <h1 class="title-gradient flex items-center gap-2">
+                <i class="fa-solid fa-clapperboard text-purple-600"></i>
+                Bài 29: Khám phá phần mềm làm phim
+            </h1>
+            
+            <!-- Navigation Tabs -->
+            <nav class="flex overflow-x-auto w-full md:w-auto no-scrollbar gap-2 bg-slate-100 p-1 rounded-xl">
+                <button onclick="switchTab('tongquan')" class="tab-btn active px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap"><i class="fa-solid fa-map-location-dot mr-1"></i> Tổng Quan</button>
+                <button onclick="switchTab('giaodien')" class="tab-btn px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap"><i class="fa-solid fa-desktop mr-1"></i> Giao Diện</button>
+                <button onclick="switchTab('thuchanh')" class="tab-btn px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Thực Hành</button>
+                <button onclick="switchTab('phantich')" class="tab-btn px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap"><i class="fa-solid fa-code-compare mr-1"></i> Phân Tích</button>
+                <button onclick="switchTab('luyentap')" class="tab-btn px-4 py-2 rounded-lg text-sm transition-all whitespace-nowrap"><i class="fa-solid fa-gamepad mr-1"></i> Luyện Tập</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 mt-8">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tongquan" class="tab-content fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Mục tiêu -->
+                <div class="bg-pastel-blue p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                    <i class="fa-solid fa-bullseye absolute -right-6 -top-6 text-9xl text-blue-200 opacity-50"></i>
+                    <h2 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2 z-10 relative">
+                        <i class="fa-solid fa-flag-checkered"></i> Mục tiêu bài học
+                    </h2>
+                    <ul class="space-y-3 relative z-10">
+                        <li class="flex items-start gap-3 bg-white/60 p-3 rounded-lg backdrop-blur-sm">
+                            <i class="fa-solid fa-check-circle text-green-500 mt-1"></i>
+                            <span>Tạo được các đoạn phim phục vụ học tập và giải trí.</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-white/60 p-3 rounded-lg backdrop-blur-sm">
+                            <i class="fa-solid fa-check-circle text-green-500 mt-1"></i>
+                            <span>Nhập tư liệu từ ảnh và video có sẵn.</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-white/60 p-3 rounded-lg backdrop-blur-sm">
+                            <i class="fa-solid fa-check-circle text-green-500 mt-1"></i>
+                            <span>Biên tập được đoạn phim.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Kiến thức cốt lõi (Sơ đồ) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
+                    <h2 class="text-xl font-bold text-slate-800 mb-6 text-center">Tiến trình cốt lõi</h2>
+                    
+                    <div class="flex flex-col items-center gap-2">
+                        <!-- Đầu vào -->
+                        <div class="flex gap-4">
+                            <div class="bg-pastel-pink px-4 py-2 rounded-xl flex flex-col items-center shadow-sm w-24">
+                                <i class="fa-regular fa-image text-2xl text-pink-500 mb-1"></i>
+                                <span class="text-xs font-bold">Ảnh</span>
+                            </div>
+                            <div class="bg-pastel-blue px-4 py-2 rounded-xl flex flex-col items-center shadow-sm w-24">
+                                <i class="fa-solid fa-film text-2xl text-blue-500 mb-1"></i>
+                                <span class="text-xs font-bold">Video</span>
+                            </div>
+                            <div class="bg-pastel-green px-4 py-2 rounded-xl flex flex-col items-center shadow-sm w-24">
+                                <i class="fa-solid fa-music text-2xl text-green-500 mb-1"></i>
+                                <span class="text-xs font-bold">Âm thanh</span>
+                            </div>
+                        </div>
+                        
+                        <i class="fa-solid fa-arrow-down text-xl text-slate-300 my-1"></i>
+                        
+                        <!-- Xử lý -->
+                        <div class="bg-purple-100 border-2 border-purple-300 px-6 py-4 rounded-xl flex items-center justify-center gap-3 w-full shadow-sm">
+                            <i class="fa-solid fa-laptop-code text-3xl text-purple-600"></i>
+                            <div>
+                                <h3 class="font-bold text-purple-900">Phần mềm làm phim</h3>
+                                <p class="text-xs text-purple-700">Sắp xếp, thiết lập thời lượng, chuyển cảnh, lồng ghép</p>
+                            </div>
+                        </div>
+
+                        <i class="fa-solid fa-arrow-down text-xl text-slate-300 my-1"></i>
+                        
+                        <!-- Đầu ra -->
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full font-bold shadow-md flex items-center gap-2 transform hover:scale-105 transition-all">
+                            <i class="fa-solid fa-play-circle text-xl"></i>
+                            Đoạn phim hoàn chỉnh
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ví dụ minh họa -->
+            <div class="mt-6 bg-pastel-yellow p-6 rounded-2xl shadow-sm">
+                <h2 class="text-xl font-bold text-yellow-800 mb-4"><i class="fa-regular fa-lightbulb"></i> Ví dụ minh hoạ</h2>
+                <div class="flex items-center gap-4 bg-white p-4 rounded-xl">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Biển" class="w-16 h-16 rounded-lg object-cover">
+                    <p class="text-sm">Bạn Nam làm đoạn phim kể lại kì nghỉ hè. Sử dụng các <strong>ảnh</strong> và <strong>video</strong> đã chụp/quay, ghép lại với nhau tạo thành một đoạn phim có: <em>Đoạn phim mở đầu -> Một số hình ảnh -> Một video chèn vào -> Đoạn phim kết thúc.</em></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: GIAO DIỆN & KHÁI NIỆM -->
+        <section id="giaodien" class="tab-content hidden fade-in">
+            <p class="text-center text-slate-500 mb-6"><i class="fa-solid fa-hand-pointer animate-bounce"></i> Click vào các khu vực trên giao diện mô phỏng (VideoPad) để xem định nghĩa khái niệm.</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Khung mô phỏng UI (Chiếm 2 cột) -->
+                <div class="lg:col-span-2 bg-slate-800 rounded-xl p-2 shadow-xl flex flex-col gap-2 h-[500px]">
+                    <!-- Thanh công cụ -->
+                    <div id="ui-toolbar" class="ui-zone bg-slate-700 text-slate-300 rounded p-2 flex items-center gap-4 text-xs" onclick="showDef('toolbar')">
+                        <span class="text-white font-bold bg-slate-600 px-2 py-1 rounded">1</span>
+                        <div class="flex gap-2"><i class="fa-solid fa-folder-open"></i><i class="fa-solid fa-save"></i><i class="fa-solid fa-share-nodes"></i></div>
+                        <div class="w-px h-4 bg-slate-500"></div>
+                        <span>Add File</span>
+                        <span>Add Text</span>
+                        <span>Export Video</span>
+                    </div>
+
+                    <!-- Phần giữa: Tư liệu & Xem trước -->
+                    <div class="flex gap-2 flex-1">
+                        <!-- Ngăn tư liệu -->
+                        <div id="ui-bin" class="ui-zone bg-slate-700 text-slate-300 rounded p-2 flex-1 flex flex-col" onclick="showDef('bin')">
+                            <span class="text-white font-bold bg-slate-600 px-2 py-1 rounded w-fit mb-2">2</span>
+                            <div class="text-xs font-bold border-b border-slate-600 pb-1 mb-2">Ngăn tư liệu</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-slate-600 h-12 rounded flex items-center justify-center"><i class="fa-regular fa-image"></i></div>
+                                <div class="bg-slate-600 h-12 rounded flex items-center justify-center"><i class="fa-solid fa-film"></i></div>
+                                <div class="bg-slate-600 h-12 rounded flex items-center justify-center"><i class="fa-solid fa-music"></i></div>
+                            </div>
+                        </div>
+
+                        <!-- Ngăn xem trước -->
+                        <div id="ui-preview" class="ui-zone bg-black rounded p-2 flex-[2] flex flex-col relative" onclick="showDef('preview')">
+                            <span class="text-white font-bold bg-slate-600 px-2 py-1 rounded w-fit absolute z-10">3</span>
+                            <div class="flex-1 flex items-center justify-center text-slate-500">
+                                <i class="fa-solid fa-play text-4xl"></i>
+                            </div>
+                            <div class="h-6 flex items-center justify-center gap-4 text-xs text-slate-400">
+                                <i class="fa-solid fa-backward-step"></i>
+                                <i class="fa-solid fa-play"></i>
+                                <i class="fa-solid fa-forward-step"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ngăn tiến trình -->
+                    <div id="ui-timeline" class="ui-zone bg-slate-700 text-slate-300 rounded p-2 h-40 relative flex flex-col" onclick="showDef('timeline')">
+                        <span class="text-white font-bold bg-slate-600 px-2 py-1 rounded w-fit absolute top-2 left-2 z-10">5</span>
+                        <div class="text-xs font-bold flex gap-4 ml-10 mb-1 border-b border-slate-600 pb-1">
+                            <span class="text-white bg-slate-800 px-2 rounded">Timeline</span>
+                            <span>Story board</span>
+                        </div>
+                        
+                        <!-- Track Video -->
+                        <div class="flex items-center gap-2 flex-1 pl-2">
+                            <span class="text-[10px] w-16">Video Track 1</span>
+                            <div class="flex-1 h-10 bg-blue-900/50 rounded flex relative overflow-hidden border border-blue-800">
+                                <div class="w-1/4 h-full bg-blue-500 border-r border-slate-900 flex items-center justify-center text-[10px]">Ảnh 1</div>
+                                <div class="w-2/4 h-full bg-purple-500 border-r border-slate-900 flex items-center justify-center text-[10px]">Video 1</div>
+                                <div class="w-1/4 h-full bg-blue-500 flex items-center justify-center text-[10px]">Ảnh 2</div>
+                                
+                                <!-- Con trỏ -->
+                                <div id="ui-cursor" class="absolute w-px h-[200%] bg-red-500 left-1/3 top-0 z-20 ui-zone group" onclick="event.stopPropagation(); showDef('cursor')">
+                                    <div class="absolute -top-3 -left-2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-red-500 group-hover:scale-150 transition-all"></div>
+                                    <span class="absolute -top-8 -left-2 text-white font-bold bg-red-600 px-1 rounded text-xs hidden group-hover:block">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Track Audio -->
+                        <div class="flex items-center gap-2 flex-1 pl-2">
+                            <span class="text-[10px] w-16">Audio Track 1</span>
+                            <div class="flex-1 h-10 bg-green-900/50 rounded overflow-hidden border border-green-800 relative">
+                                <!-- Audio Waveform mockup -->
+                                <svg class="w-full h-full text-green-500 opacity-50" preserveAspectRatio="none" viewBox="0 0 100 20">
+                                    <path d="M0 10 L5 5 L10 15 L15 8 L20 12 L25 2 L30 18 L35 10 L40 14 L45 5 L50 15 L55 8 L60 12 L65 2 L70 18 L75 10 L80 14 L85 5 L90 15 L95 8 L100 10" stroke="currentColor" fill="none" stroke-width="0.5"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bảng Hiển Thị Khái Niệm -->
+                <div class="bg-white rounded-xl shadow-sm border border-purple-100 p-6 flex flex-col relative h-[500px]">
+                    <div class="absolute top-0 right-0 bg-purple-100 text-purple-600 font-bold px-4 py-1 rounded-bl-xl rounded-tr-xl text-sm">
+                        Từ Điển Trực Quan
+                    </div>
+                    
+                    <div id="def-default" class="flex-1 flex flex-col items-center justify-center text-center opacity-100 transition-opacity">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4213/4213271.png" alt="Select" class="w-24 h-24 mb-4 opacity-50">
+                        <h3 class="text-xl font-bold text-slate-700">Chọn một thành phần</h3>
+                        <p class="text-slate-500 text-sm mt-2">Bấm vào các khu vực trên giao diện phần mềm bên trái để xem giải thích chi tiết.</p>
+                    </div>
+
+                    <!-- Các nội dung giải thích (ẩn mặc định) -->
+                    <div id="def-content" class="hidden flex-1 flex-col mt-4">
+                        <div class="w-12 h-12 rounded-full bg-pastel-purple flex items-center justify-center mb-4">
+                            <i id="def-icon" class="fa-solid fa-list text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 id="def-title" class="text-2xl font-bold text-purple-900 mb-2">Tên khu vực</h3>
+                        <p id="def-desc" class="text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-lg border-l-4 border-purple-500">Mô tả khái niệm...</p>
+                        
+                        <div id="def-extra" class="mt-4 hidden bg-pastel-yellow p-3 rounded-lg text-sm border border-yellow-200">
+                            <!-- Nội dung phụ/ví dụ -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: THỰC HÀNH -->
+        <section id="thuchanh" class="tab-content hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800"><i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i> Mô Phỏng Tương Tác: Video Wizard</h2>
+                    <p class="text-slate-500 mt-2">Thực hành tạo phim theo mẫu. Hãy đóng vai bạn Nam, làm theo hướng dẫn bên trái và thao tác trực tiếp trên cửa sổ phần mềm ảo bên phải.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Cột Hướng Dẫn -->
+                    <div class="lg:col-span-1 space-y-4 relative">
+                        <div class="sticky top-24">
+                            <h3 class="font-bold text-purple-900 bg-purple-100 px-4 py-2 rounded-t-xl border-b-2 border-purple-200">Tiến trình thực hiện</h3>
+                            <div class="bg-slate-50 p-4 rounded-b-xl border border-slate-200 border-t-0 min-h-[300px]">
+                                <!-- Trạng thái hướng dẫn sẽ thay đổi qua JS -->
+                                <div id="instr-0" class="wizard-instr active text-sm text-slate-700 space-y-3">
+                                    <p class="font-bold text-blue-600"><i class="fa-solid fa-1"></i> Bước 1 & 2: Khởi động & Chọn Mẫu</p>
+                                    <p>Tại màn hình chính, tính năng <strong>Video Wizard</strong> giúp tạo phim đơn giản và nhanh nhất.</p>
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <i class="fa-solid fa-hand-pointer text-yellow-600 animate-bounce"></i> <strong>Nhiệm vụ:</strong> Nháy chuột vào nút <em>Video Wizard</em> trên giao diện ảo để bắt đầu.
+                                    </div>
+                                </div>
+
+                                <div id="instr-1" class="wizard-instr hidden text-sm text-slate-700 space-y-3">
+                                    <p class="font-bold text-purple-600"><i class="fa-solid fa-2"></i> Bước 2: Chọn mẫu (Template)</p>
+                                    <p>Hộp thoại Video Wizard hiện ra cung cấp các mẫu chủ đề có sẵn (Full Video).</p>
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <i class="fa-solid fa-hand-pointer text-yellow-600 animate-bounce"></i> <strong>Nhiệm vụ:</strong> Chọn mẫu <strong>Vacation</strong> (Kì nghỉ) và nháy nút <strong>Select</strong>.
+                                    </div>
+                                </div>
+
+                                <div id="instr-2" class="wizard-instr hidden text-sm text-slate-700 space-y-3">
+                                    <p class="font-bold text-pink-600"><i class="fa-solid fa-3"></i> Bước 3.1: Chọn tư liệu (Add Content)</p>
+                                    <p>Đây là lúc đưa các tư liệu (ảnh, video) đã chuẩn bị vào dự án.</p>
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <i class="fa-solid fa-hand-pointer text-yellow-600 animate-bounce"></i> <strong>Nhiệm vụ:</strong> Nháy chọn nút <strong>Add Files...</strong> để mô phỏng tải 5 ảnh và 1 video lên. Sau đó chọn <strong>Next</strong>.
+                                    </div>
+                                </div>
+
+                                <div id="instr-3" class="wizard-instr hidden text-sm text-slate-700 space-y-3">
+                                    <p class="font-bold text-pink-600"><i class="fa-solid fa-4"></i> Bước 3.2: Chọn âm thanh</p>
+                                    <p>Phần mềm cho phép dùng nhạc nền của mẫu, không dùng nhạc, hoặc tải nhạc từ máy tính.</p>
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <i class="fa-solid fa-hand-pointer text-yellow-600 animate-bounce"></i> <strong>Nhiệm vụ:</strong> Chọn <strong>Use Theme Music</strong> (Sử dụng nhạc nền đi kèm mẫu) rồi nhấn <strong>Next</strong>.
+                                    </div>
+                                </div>
+
+                                <div id="instr-4" class="wizard-instr hidden text-sm text-slate-700 space-y-3">
+                                    <p class="font-bold text-pink-600"><i class="fa-solid fa-5"></i> Bước 3.3: Biên tập mở đầu (Intro)</p>
+                                    <p>Chỉnh sửa tiêu đề xuất hiện ở đầu đoạn phim.</p>
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <i class="fa-solid fa-keyboard text-yellow-600 animate-pulse"></i> <strong>Nhiệm vụ:</strong> Gõ nội dung <strong>"Our Incredible Vacation"</strong> vào ô văn bản. Quan sát sự thay đổi và nhấn <strong>Next</strong>.
+                                    </div>
+                                </div>
+
+                                <div id="instr-5" class="wizard-instr hidden text-sm text-slate-700 space-y-3">
+                                    <p class="font-bold text-green-600"><i class="fa-solid fa-6"></i> Bước 3.5 & 4: Xem trước & Tạo phim</p>
+                                    <p>Sau khi biên tập Intro và Outro, ta có thể xem lại đoạn phim vừa tạo.</p>
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <i class="fa-solid fa-hand-pointer text-yellow-600 animate-bounce"></i> <strong>Nhiệm vụ:</strong> Nháy nút <strong>Create</strong> để kết thúc quá trình tạo đoạn phim qua Wizard.
+                                    </div>
+                                </div>
+
+                                <div id="instr-6" class="wizard-instr hidden text-sm text-slate-700 space-y-3">
+                                    <p class="font-bold text-green-600"><i class="fa-solid fa-7"></i> Bước 5: Xuất bản phim</p>
+                                    <p>Sau khi hoàn thiện trên Timeline, bước cuối cùng là xuất đoạn phim ra tệp video (vd: .mp4) để chia sẻ.</p>
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <i class="fa-solid fa-hand-pointer text-yellow-600 animate-bounce"></i> <strong>Nhiệm vụ:</strong> Đặt tên file, chọn định dạng <strong>.mp4</strong> và nhấn <strong>Create</strong>.
+                                    </div>
+                                </div>
+                                
+                                <!-- Thanh tiến trình nhỏ -->
+                                <div class="mt-6 pt-4 border-t border-slate-200">
+                                    <div class="w-full bg-slate-200 rounded-full h-2">
+                                        <div id="wiz-progress" class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                    </div>
+                                    <p class="text-xs text-center text-slate-500 mt-1">Tiến độ hoàn thành</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cột Giao Diện Mô Phỏng (UI) -->
+                    <div class="lg:col-span-2">
+                        <div class="mock-window rounded-xl overflow-hidden bg-white border border-slate-300">
+                            <!-- Window Header -->
+                            <div class="bg-slate-200 px-4 py-2 flex items-center justify-between border-b border-slate-300">
+                                <div class="text-xs font-bold text-slate-600 flex items-center gap-2">
+                                    <i class="fa-solid fa-film text-slate-500"></i> <span id="win-title">VideoPad Video Editor</span>
+                                </div>
+                                <div class="flex gap-1.5">
+                                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                                </div>
+                            </div>
+
+                            <!-- Window Body -->
+                            <div class="bg-slate-100 min-h-[400px] relative p-4 flex flex-col justify-center items-center">
+                                
+                                <!-- Màn hình 0: Desktop/Khởi động -->
+                                <div id="step-0" class="wizard-step active w-full h-full flex items-center justify-center">
+                                    <button onclick="nextStep(1)" class="bg-white border-2 border-slate-300 p-6 rounded-xl hover:border-purple-500 hover:shadow-lg transition-all group flex flex-col items-center gap-4">
+                                        <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <i class="fa-solid fa-wand-magic-sparkles text-3xl text-purple-600"></i>
+                                        </div>
+                                        <span class="font-bold text-slate-700 text-lg">Khởi động Video Wizard</span>
+                                    </button>
+                                </div>
+
+                                <!-- Màn hình 1: Select Template -->
+                                <div id="step-1" class="wizard-step w-full h-full">
+                                    <h4 class="text-sm font-bold text-slate-700 mb-4">Select a Template: Full Video</h4>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <div class="template-card bg-white p-3 rounded-lg border-2 border-slate-200 cursor-pointer flex flex-col items-center gap-2 opacity-60">
+                                            <i class="fa-solid fa-cake-candles text-2xl text-slate-400"></i><span class="text-xs">Baby Birthday</span>
+                                        </div>
+                                        <div class="template-card bg-white p-3 rounded-lg border-2 border-slate-200 cursor-pointer flex flex-col items-center gap-2 opacity-60">
+                                            <i class="fa-solid fa-tree text-2xl text-slate-400"></i><span class="text-xs">Christmas</span>
+                                        </div>
+                                        <div id="tpl-vacation" onclick="selectTemplate()" class="template-card bg-white p-3 rounded-lg border-2 border-slate-200 cursor-pointer flex flex-col items-center gap-2 hover:border-blue-300 transition-colors">
+                                            <i class="fa-solid fa-plane-departure text-2xl text-blue-500"></i><span class="text-xs font-bold">Vacation</span>
+                                        </div>
+                                        <div class="template-card bg-white p-3 rounded-lg border-2 border-slate-200 cursor-pointer flex flex-col items-center gap-2 opacity-60">
+                                            <i class="fa-solid fa-graduation-cap text-2xl text-slate-400"></i><span class="text-xs">Graduation</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Màn hình 2: Add Content -->
+                                <div id="step-2" class="wizard-step w-full h-full flex flex-col">
+                                    <h4 class="text-sm font-bold text-slate-700 mb-2">Add Content</h4>
+                                    <div class="flex-1 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center bg-white p-6 relative overflow-hidden">
+                                        
+                                        <!-- Khung trống ban đầu -->
+                                        <div id="add-files-btn-container" class="text-center z-10">
+                                            <button onclick="simulateAddFiles()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded shadow font-bold text-sm flex items-center gap-2 transition-colors">
+                                                <i class="fa-solid fa-plus"></i> Add Files...
+                                            </button>
+                                            <p class="text-xs text-slate-400 mt-2">Drag image(s) or video file(s) here</p>
+                                        </div>
+
+                                        <!-- Lưới ảnh hiển thị sau khi add -->
+                                        <div id="mock-gallery" class="hidden absolute inset-0 bg-white p-4 grid grid-cols-3 gap-2 overflow-y-auto">
+                                            <div class="bg-blue-100 rounded flex items-center justify-center h-16"><i class="fa-regular fa-image text-blue-400"></i></div>
+                                            <div class="bg-blue-100 rounded flex items-center justify-center h-16"><i class="fa-regular fa-image text-blue-400"></i></div>
+                                            <div class="bg-blue-100 rounded flex items-center justify-center h-16"><i class="fa-regular fa-image text-blue-400"></i></div>
+                                            <div class="bg-blue-100 rounded flex items-center justify-center h-16"><i class="fa-regular fa-image text-blue-400"></i></div>
+                                            <div class="bg-blue-100 rounded flex items-center justify-center h-16"><i class="fa-regular fa-image text-blue-400"></i></div>
+                                            <div class="bg-purple-100 rounded flex items-center justify-center h-16"><i class="fa-solid fa-film text-purple-400"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Màn hình 3: Add Music -->
+                                <div id="step-3" class="wizard-step w-full h-full">
+                                    <h4 class="text-sm font-bold text-slate-700 mb-4">Add Music</h4>
+                                    <div class="bg-white border border-slate-300 rounded-lg p-6 w-full max-w-sm mx-auto">
+                                        <div class="space-y-4">
+                                            <label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-slate-50">
+                                                <input type="radio" name="music" value="theme" onchange="enableNextBtn()" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                                <span class="text-sm font-bold text-slate-700">Use Theme Music</span>
+                                            </label>
+                                            <label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-slate-50">
+                                                <input type="radio" name="music" value="no" onchange="enableNextBtn()" class="w-4 h-4 text-slate-400">
+                                                <span class="text-sm text-slate-600">No Music</span>
+                                            </label>
+                                            <label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-slate-50">
+                                                <input type="radio" name="music" value="custom" onchange="enableNextBtn()" class="w-4 h-4 text-slate-400">
+                                                <span class="text-sm text-slate-600">Load My Own Music</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Màn hình 4: Intro -->
+                                <div id="step-4" class="wizard-step w-full h-full">
+                                    <h4 class="text-sm font-bold text-slate-700 mb-2">Intro</h4>
+                                    <div class="flex flex-col sm:flex-row gap-4 h-[250px]">
+                                        <!-- Khung Xem trước -->
+                                        <div class="sm:w-1/2 bg-slate-800 rounded border border-slate-700 flex items-center justify-center relative overflow-hidden">
+                                            <img src="https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Background" class="absolute inset-0 w-full h-full object-cover opacity-50">
+                                            <div class="z-10 text-center">
+                                                <h2 id="live-intro-text" class="text-white text-2xl font-bold uppercase tracking-wider drop-shadow-lg font-sans">VACATION</h2>
+                                            </div>
+                                        </div>
+                                        <!-- Bảng Điều khiển -->
+                                        <div class="sm:w-1/2 bg-white rounded border border-slate-300 p-4 space-y-4">
+                                            <div>
+                                                <label class="block text-xs font-bold text-slate-600 mb-1">Enter Intro Text:</label>
+                                                <input type="text" id="intro-input" oninput="updateIntroText()" placeholder="Gõ tiêu đề vào đây..." class="w-full border border-slate-300 rounded p-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label class="block text-xs text-slate-500 mb-1">Color</label>
+                                                    <div class="h-8 bg-white border border-slate-300 rounded cursor-not-allowed"></div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-slate-500 mb-1">Font</label>
+                                                    <select class="w-full border border-slate-300 rounded p-1 text-xs cursor-not-allowed" disabled>
+                                                        <option>Bahnschrift Light Condensed</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Màn hình 5: Preview -->
+                                <div id="step-5" class="wizard-step w-full h-full">
+                                    <h4 class="text-sm font-bold text-slate-700 mb-2">Preview</h4>
+                                    <div class="w-full max-w-lg mx-auto bg-black rounded-lg aspect-video relative flex flex-col justify-between border border-slate-800">
+                                        <div class="flex-1 flex items-center justify-center relative overflow-hidden">
+                                            <img src="https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="absolute inset-0 w-full h-full object-cover opacity-70 blur-[1px]">
+                                            <div class="z-10 text-center animate-pulse">
+                                                <h2 class="text-white text-2xl font-bold uppercase drop-shadow-md">Our Incredible Vacation</h2>
+                                            </div>
+                                            <i class="fa-solid fa-play text-4xl text-white/50 absolute z-20 hover:text-white transition-colors cursor-pointer"></i>
+                                        </div>
+                                        <!-- Controls -->
+                                        <div class="bg-slate-900 h-10 px-4 flex items-center gap-4 text-slate-400 text-xs">
+                                            <i class="fa-solid fa-play"></i>
+                                            <div class="flex-1 h-1 bg-slate-700 rounded relative"><div class="w-1/4 h-full bg-blue-500 rounded"></div></div>
+                                            <span>0:00:15</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Màn hình 6: Export -->
+                                <div id="step-6" class="wizard-step w-full h-full">
+                                    <h4 class="text-sm font-bold text-slate-700 mb-4">Export File Settings</h4>
+                                    <div class="bg-white border border-slate-300 rounded-lg p-6 w-full max-w-lg mx-auto grid grid-cols-[120px_1fr] gap-4 items-center">
+                                        <span class="text-xs font-bold text-slate-600 text-right">Export File Name:</span>
+                                        <input type="text" id="export-name" value="PhimKiNghiHe" class="w-full border border-slate-300 rounded p-1.5 text-sm">
+                                        
+                                        <span class="text-xs font-bold text-slate-600 text-right">Save to Folder:</span>
+                                        <div class="flex gap-2">
+                                            <input type="text" value="C:\Users\Video\" disabled class="w-full border border-slate-300 rounded p-1.5 text-sm bg-slate-50 text-slate-500">
+                                        </div>
+
+                                        <span class="text-xs font-bold text-slate-600 text-right">File Format:</span>
+                                        <select id="export-format" onchange="enableCreateFinalBtn()" class="w-full border border-slate-300 rounded p-1.5 text-sm font-bold text-blue-700">
+                                            <option value="">-- Chọn định dạng --</option>
+                                            <option value=".mp4">.mp4 (Default Quality)</option>
+                                            <option value=".avi">.avi</option>
+                                            <option value=".mov">.mov</option>
+                                        </select>
+                                        
+                                        <span class="text-xs font-bold text-slate-600 text-right">Resolution:</span>
+                                        <select disabled class="w-full border border-slate-300 rounded p-1.5 text-sm bg-slate-50 text-slate-500"><option>Auto Match Content (1024x900)</option></select>
+                                    </div>
+                                </div>
+
+                                <!-- Màn hình 7: Exporting & Success -->
+                                <div id="step-7" class="wizard-step w-full h-full flex flex-col items-center justify-center">
+                                    <!-- Trạng thái Đang xử lý -->
+                                    <div id="export-loading" class="text-center w-full max-w-sm">
+                                        <i class="fa-solid fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
+                                        <h3 class="text-lg font-bold text-slate-700 mb-2">Đang xuất bản phim...</h3>
+                                        <div class="w-full bg-slate-200 rounded-full h-2 mt-4">
+                                            <div id="export-progress" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                        </div>
+                                        <p id="export-percent" class="text-xs text-slate-500 mt-2 font-bold">0%</p>
+                                    </div>
+                                    
+                                    <!-- Trạng thái Hoàn thành (ẩn ban đầu) -->
+                                    <div id="export-success" class="text-center hidden">
+                                        <div class="animate-bounce mb-4">
+                                            <i class="fa-solid fa-circle-check text-6xl text-green-500"></i>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-green-700">Hoàn Thành!</h3>
+                                        <p class="text-slate-500 mt-2">Đoạn phim của bạn đã được xuất bản thành công.</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Window Footer Controls -->
+                            <div id="wizard-footer" class="bg-slate-200 p-3 flex justify-between border-t border-slate-300 hidden">
+                                <button class="px-4 py-1.5 rounded text-sm font-bold text-slate-500 hover:bg-slate-300 transition-colors">Cancel</button>
+                                <div class="flex gap-2">
+                                    <button class="px-4 py-1.5 rounded text-sm font-bold text-slate-500 hover:bg-slate-300 transition-colors cursor-not-allowed opacity-50">Back</button>
+                                    <button id="btn-wiz-next" onclick="nextStep()" disabled class="px-6 py-1.5 rounded text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: PHÂN TÍCH (So sánh & Mối quan hệ) -->
+        <section id="phantich" class="tab-content hidden fade-in space-y-6">
+            
+            <!-- Nội dung dễ nhầm lẫn -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-red-100">
+                <div class="bg-red-50 p-4 border-b border-red-100">
+                    <h2 class="text-xl font-bold text-red-800 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Chú ý nhầm lẫn: 2 Chế độ hiển thị
+                    </h2>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Phân cảnh -->
+                    <div class="border-2 border-dashed border-blue-200 rounded-xl p-4 flex flex-col items-center text-center">
+                        <div class="flex gap-2 mb-4">
+                            <div class="w-16 h-12 bg-blue-100 rounded border border-blue-300 flex items-center justify-center"><i class="fa-regular fa-image text-blue-500"></i></div>
+                            <div class="w-6 h-12 flex items-center justify-center"><i class="fa-solid fa-xmark text-slate-400"></i></div>
+                            <div class="w-16 h-12 bg-blue-100 rounded border border-blue-300 flex items-center justify-center"><i class="fa-solid fa-film text-blue-500"></i></div>
+                        </div>
+                        <h3 class="font-bold text-blue-900 text-lg">Phân cảnh (Story board)</h3>
+                        <p class="text-sm text-slate-600 mt-2">Chế độ đơn giản. Quan sát chuỗi các cảnh. Có con số chỉ thời lượng dưới mỗi phân cảnh và nút thiết lập <strong>hiệu ứng chuyển cảnh (X)</strong> ở giữa.</p>
+                    </div>
+
+                    <!-- Dòng thời gian -->
+                    <div class="border-2 border-dashed border-purple-200 rounded-xl p-4 flex flex-col items-center text-center">
+                        <div class="w-full space-y-2 mb-4">
+                            <div class="h-6 w-full bg-blue-100 border border-blue-300 rounded flex items-center px-2 text-xs text-blue-600">Video Track</div>
+                            <div class="h-6 w-full bg-green-100 border border-green-300 rounded flex items-center px-2 text-xs text-green-600">Audio Track</div>
+                        </div>
+                        <h3 class="font-bold text-purple-900 text-lg">Dòng thời gian (Timeline)</h3>
+                        <p class="text-sm text-slate-600 mt-2">Hiển thị toàn bộ các thành phần dưới dạng <strong>các lớp (track)</strong> theo đúng trình tự thời gian. Cho phép thấy sự đồng thời của hình ảnh và âm thanh.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mối quan hệ -->
+            <div class="bg-pastel-blue p-6 rounded-2xl shadow-sm">
+                <h2 class="text-xl font-bold text-blue-900 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-diagram-project"></i> Mối quan hệ các khái niệm
+                </h2>
+                
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+                    <div class="bg-white px-4 py-3 rounded-lg shadow font-bold text-slate-700 w-full md:w-auto text-center">Tư liệu đầu vào<br><span class="text-xs font-normal">(Ảnh, Video, Âm thanh)</span></div>
+                    <i class="fa-solid fa-arrow-right text-blue-400 text-xl hidden md:block"></i>
+                    <i class="fa-solid fa-arrow-down text-blue-400 text-xl md:hidden"></i>
+                    <div class="bg-white px-4 py-3 rounded-lg shadow font-bold text-slate-700 w-full md:w-auto text-center border-2 border-blue-400">Các Lớp (Tracks)<br><span class="text-xs font-normal">Video Track / Audio Track</span></div>
+                    <i class="fa-solid fa-arrow-right text-blue-400 text-xl hidden md:block"></i>
+                    <i class="fa-solid fa-arrow-down text-blue-400 text-xl md:hidden"></i>
+                    <div class="bg-blue-600 text-white px-4 py-3 rounded-lg shadow font-bold w-full md:w-auto text-center">Đoạn Phim Hoàn Chỉnh<br><span class="text-xs font-normal text-blue-200">Bao gồm Intro, Phim chính, Outro</span></div>
+                </div>
+                <p class="text-center text-sm text-blue-800 mt-6 italic">"Tại mỗi thời điểm (do con trỏ xác định), phim sẽ thể hiện đồng thời các lớp đối tượng này."</p>
+            </div>
+        </section>
+
+        <!-- TAB 5: LUYỆN TẬP -->
+        <section id="luyentap" class="tab-content hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-sm p-6 max-w-3xl mx-auto border-t-4 border-purple-500">
+                <div class="flex items-center justify-between border-b pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-clipboard-question text-purple-500"></i> Bài Trắc Nghiệm Ôn Tập</h2>
+                    <span id="score-display" class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold text-sm hidden">Điểm: 0/5</span>
+                </div>
+
+                <form id="quiz-form" class="space-y-6">
+                    <!-- Câu 1 -->
+                    <div class="quiz-item" data-correct="A">
+                        <p class="font-bold text-slate-700 mb-2">Câu 1. Trong giao diện phần mềm làm phim, khu vực nào chứa các tệp ảnh, tệp video clip, tệp âm thanh đầu vào?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q1" value="A" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>A. Ngăn tư liệu</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q1" value="B" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>B. Ngăn xem trước</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q1" value="C" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>C. Thanh công cụ</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 2 -->
+                    <div class="quiz-item" data-correct="C">
+                        <p class="font-bold text-slate-700 mb-2">Câu 2. Ngăn tiến trình trong phần mềm làm phim có mấy chế độ hiển thị chính?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q2" value="A" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>A. 1 chế độ (Chỉ có Dòng thời gian)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q2" value="B" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>B. 3 chế độ</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q2" value="C" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>C. 2 chế độ (Phân cảnh và Dòng thời gian)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 3 -->
+                    <div class="quiz-item" data-correct="B">
+                        <p class="font-bold text-slate-700 mb-2">Câu 3. Tính năng nào trong màn hình khởi động của VideoPad hỗ trợ tạo phim đơn giản và nhanh nhất theo mẫu có sẵn?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q3" value="A" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>A. Export Video</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q3" value="B" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>B. Video Wizard</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q3" value="C" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>C. Add Content</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 4 -->
+                    <div class="quiz-item" data-correct="A">
+                        <p class="font-bold text-slate-700 mb-2">Câu 4. Khi lưu dự án làm phim (chưa xuất bản) trong VideoPad, tệp lưu trữ mặc định có đuôi mở rộng là gì?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q4" value="A" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>A. .vpj</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q4" value="B" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>B. .mp4</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q4" value="C" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>C. .jpg</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 5 -->
+                    <div class="quiz-item" data-correct="B">
+                        <p class="font-bold text-slate-700 mb-2">Câu 5. Trong chế độ hiển thị Dòng thời gian, lớp Băng hình (Video track) bao gồm những gì?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q5" value="A" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>A. Chỉ gồm các ảnh chụp</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q5" value="B" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>B. Bao gồm các ảnh và các video clip</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 border border-transparent transition-colors">
+                                <input type="radio" name="q5" value="C" class="w-4 h-4 text-purple-600 focus:ring-purple-500">
+                                <span>C. Đoạn âm thanh được sử dụng làm nhạc nền</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center pt-4">
+                        <button type="button" onclick="checkQuiz()" class="bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                            Kiểm tra kết quả
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // 1. Chuyển đổi Tab
+        function switchTab(tabId) {
+            // Ẩn tất cả nội dung
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // Bỏ active tất cả button
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Hiện tab được chọn
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            // Tìm và active button tương ứng (dựa vào onclick attribute)
+            const btn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+            if(btn) btn.classList.add('active');
+        }
+
+        // 2. Tương tác UI Giao diện
+        const definitions = {
+            toolbar: {
+                title: "Thanh công cụ (Toolbar)",
+                icon: "fa-toolbox",
+                desc: "Chứa các nút lệnh để thiết lập các tính năng hay các thao tác chỉnh sửa phim. Ví dụ: Add Files (Thêm file), Export Video (Xuất phim).",
+                extra: "Được đánh số (1) trong sách giáo khoa."
+            },
+            bin: {
+                title: "Ngăn tư liệu (Media Bin)",
+                icon: "fa-box-archive",
+                desc: "Chứa các tệp ảnh, tệp video clip, tệp âm thanh,... Đây là đầu vào cho phim.",
+                extra: "Các tư liệu này sẽ được kéo thả xuống Ngăn tiến trình để chỉnh sửa."
+            },
+            preview: {
+                title: "Ngăn xem trước (Preview)",
+                icon: "fa-display",
+                desc: "Hiển thị đoạn phim và các lệnh chỉnh sửa, điều khiển đối tượng đang xem trước (Phát, Dừng, Tua).",
+                extra: "Giúp người dùng xem trực tiếp kết quả trong quá trình chỉnh sửa."
+            },
+            timeline: {
+                title: "Ngăn tiến trình",
+                icon: "fa-bars-staggered",
+                desc: "Khu vực giúp theo dõi, quản lí toàn bộ trình tự cũng như các thành phần của phim.",
+                extra: "<i class='fa-solid fa-lightbulb text-yellow-500'></i> Có 2 chế độ: <strong>Phân cảnh (Story board)</strong> nhìn trực quan dạng chuỗi và <strong>Dòng thời gian (Timeline)</strong> chia theo lớp Băng hình/Âm thanh."
+            },
+            cursor: {
+                title: "Con trỏ thời điểm",
+                icon: "fa-location-crosshairs",
+                desc: "Vạch màu đỏ xác định thời điểm hiện tại của phim. Tại mỗi thời điểm, đoạn phim sẽ thể hiện đồng thời các lớp đối tượng nằm ngay tại vị trí con trỏ.",
+                extra: "Di chuyển con trỏ để xem các khoảng thời gian khác nhau của video."
+            }
+        };
+
+        function showDef(key) {
+            // Xóa active UI zone
+            document.querySelectorAll('.ui-zone').forEach(el => el.classList.remove('active-zone'));
+            // Active current zone (nếu tìm thấy ID tương ứng)
+            const zone = document.getElementById(`ui-${key}`);
+            if(zone) zone.classList.add('active-zone');
+
+            // Ẩn màn hình default, hiện màn hình content
+            document.getElementById('def-default').classList.add('hidden');
+            document.getElementById('def-content').classList.remove('hidden');
+            document.getElementById('def-content').classList.add('fade-in');
+
+            const data = definitions[key];
+            
+            // Đổi icon
+            const iconEl = document.getElementById('def-icon');
+            iconEl.className = `fa-solid ${data.icon} text-2xl text-purple-600`;
+
+            // Cập nhật text
+            document.getElementById('def-title').innerText = data.title;
+            document.getElementById('def-desc').innerText = data.desc;
+
+            // Xử lý Extra info
+            const extraEl = document.getElementById('def-extra');
+            if(data.extra) {
+                extraEl.innerHTML = data.extra;
+                extraEl.classList.remove('hidden');
+            } else {
+                extraEl.classList.add('hidden');
+            }
+        }
+
+        // 3. Logic Quiz
+        function checkQuiz() {
+            let score = 0;
+            const items = document.querySelectorAll('.quiz-item');
+            
+            items.forEach((item, index) => {
+                const correctVal = item.getAttribute('data-correct');
+                const selected = item.querySelector(`input[type="radio"]:checked`);
+                const labels = item.querySelectorAll('label');
+                
+                // Reset styling
+                labels.forEach(l => {
+                    l.classList.remove('bg-green-100', 'border-green-400', 'bg-red-100', 'border-red-400');
+                    l.classList.add('bg-slate-50', 'border-transparent');
+                });
+
+                if (selected) {
+                    const selectedLabel = selected.closest('label');
+                    if (selected.value === correctVal) {
+                        score++;
+                        selectedLabel.classList.remove('bg-slate-50', 'border-transparent');
+                        selectedLabel.classList.add('bg-green-100', 'border-green-400');
+                    } else {
+                        selectedLabel.classList.remove('bg-slate-50', 'border-transparent');
+                        selectedLabel.classList.add('bg-red-100', 'border-red-400');
+                        
+                        // Highlight đáp án đúng
+                        const correctInput = item.querySelector(`input[value="${correctVal}"]`);
+                        const correctLabel = correctInput.closest('label');
+                        correctLabel.classList.remove('bg-slate-50', 'border-transparent');
+                        correctLabel.classList.add('bg-green-50', 'border-green-300', 'border-dashed');
+                    }
+                }
+            });
+
+            // Hiện điểm
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.innerText = `Điểm: ${score}/5`;
+            scoreDisplay.classList.remove('hidden');
+            scoreDisplay.classList.add('fade-in');
+        }
+
+        // 4. Logic Interactive Wizard
+        let currentStep = 0;
+        
+        function nextStep(forceStep = null) {
+            if (forceStep !== null) {
+                currentStep = forceStep;
+            } else {
+                if (currentStep === 7) {
+                    alert('Chúc mừng bạn đã hoàn thành bài thực hành Video Wizard!');
+                    currentStep = 0; // Tự động quay lại từ đầu sau khi hoàn thành
+                } else {
+                    currentStep++;
+                }
+            }
+            updateWizardUI();
+        }
+
+        function updateWizardUI() {
+            // Ẩn tất cả nội dung
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.wizard-instr').forEach(el => el.classList.add('hidden', 'active'));
+            
+            // Cập nhật thanh tiến trình
+            const progress = Math.min((currentStep / 7) * 100, 100);
+            document.getElementById('wiz-progress').style.width = `${progress}%`;
+
+            // Cập nhật Header Title
+            const titleEl = document.getElementById('win-title');
+            const footerEl = document.getElementById('wizard-footer');
+            const nextBtn = document.getElementById('btn-wiz-next');
+            
+            // Xử lý hiển thị theo Step
+            if (currentStep === 0) {
+                document.getElementById('step-0').classList.add('active');
+                document.getElementById('instr-0').classList.remove('hidden');
+                footerEl.classList.add('hidden');
+            } 
+            else if (currentStep > 0) {
+                footerEl.classList.remove('hidden');
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                
+                // Map Hướng dẫn với Màn hình ảo
+                const instrMap = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 6};
+                document.getElementById(`instr-${instrMap[currentStep]}`).classList.remove('hidden');
+
+                // Logic từng màn hình cụ thể để Disable/Enable Next Button
+                if(currentStep === 1) { // Chọn mẫu
+                    titleEl.innerText = "VideoPad - Video Wizard";
+                    nextBtn.innerText = "Next";
+                    // Kiểm tra xem đã chọn mẫu chưa
+                    nextBtn.disabled = !document.getElementById('tpl-vacation').classList.contains('selected');
+                }
+                else if (currentStep === 2) { // Add Content
+                    titleEl.innerText = "VideoPad - Add Content";
+                    nextBtn.disabled = document.getElementById('mock-gallery').classList.contains('hidden');
+                }
+                else if (currentStep === 3) { // Add Music
+                    titleEl.innerText = "VideoPad - Add Music";
+                    nextBtn.disabled = !document.querySelector('input[name="music"]:checked');
+                }
+                else if (currentStep === 4) { // Intro
+                    titleEl.innerText = "VideoPad - Intro";
+                    const inputVal = document.getElementById('intro-input').value;
+                    nextBtn.disabled = inputVal.toLowerCase() !== "our incredible vacation";
+                }
+                else if (currentStep === 5) { // Preview
+                    titleEl.innerText = "VideoPad - Preview";
+                    nextBtn.innerText = "Create";
+                    nextBtn.disabled = false;
+                    nextBtn.className = "px-6 py-1.5 rounded text-sm font-bold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+                }
+                else if (currentStep === 6) { // Export Form
+                    titleEl.innerText = "Export Video";
+                    nextBtn.innerText = "Create (Export)";
+                    nextBtn.className = "px-6 py-1.5 rounded text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+                    nextBtn.disabled = document.getElementById('export-format').value !== ".mp4";
+                }
+                else if (currentStep === 7) { // Đang Xuất & Hoàn thành
+                    titleEl.innerText = "Exporting Video...";
+                    footerEl.classList.add('hidden'); // Tạm ẩn footer lúc phần mềm "đang xuất file"
+                    
+                    // Khởi tạo trạng thái Loading
+                    document.getElementById('export-loading').classList.remove('hidden');
+                    document.getElementById('export-success').classList.add('hidden');
+                    
+                    const progressBar = document.getElementById('export-progress');
+                    const progressText = document.getElementById('export-percent');
+                    progressBar.style.width = '0%';
+                    progressText.innerText = '0%';
+
+                    // Mô phỏng thanh tiến trình chạy (Loading)
+                    let progress = 0;
+                    const exportInterval = setInterval(() => {
+                        progress += Math.floor(Math.random() * 25) + 10;
+                        if (progress >= 100) progress = 100;
+                        
+                        progressBar.style.width = `${progress}%`;
+                        progressText.innerText = `${progress}%`;
+
+                        if (progress === 100) {
+                            clearInterval(exportInterval);
+                            setTimeout(() => {
+                                // 1. Ẩn Loading, Hiện Thông báo Hoàn Thành
+                                document.getElementById('export-loading').classList.add('hidden');
+                                document.getElementById('export-success').classList.remove('hidden');
+                                document.getElementById('export-success').classList.add('fade-in');
+                                titleEl.innerText = "Thành công!";
+                                
+                                // 2. Hiện lại footer với nút Next màu xanh lá như ảnh
+                                footerEl.classList.remove('hidden');
+                                nextBtn.innerText = "Next";
+                                nextBtn.className = "px-6 py-1.5 rounded text-sm font-bold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+                                nextBtn.disabled = false;
+                            }, 500);
+                        }
+                    }, 400);
+                }
+            }
+        }
+
+        // Tương tác Step 1: Chọn mẫu
+        function selectTemplate() {
+            document.getElementById('tpl-vacation').classList.add('selected');
+            document.getElementById('btn-wiz-next').disabled = false;
+        }
+
+        // Tương tác Step 2: Add Files
+        function simulateAddFiles() {
+            document.getElementById('add-files-btn-container').classList.add('hidden');
+            document.getElementById('mock-gallery').classList.remove('hidden');
+            document.getElementById('btn-wiz-next').disabled = false;
+        }
+
+        // Tương tác Step 3: Enable Next khi chọn Radio
+        function enableNextBtn() {
+            document.getElementById('btn-wiz-next').disabled = false;
+        }
+
+        // Tương tác Step 4: Gõ chữ Intro
+        function updateIntroText() {
+            const val = document.getElementById('intro-input').value;
+            document.getElementById('live-intro-text').innerText = val || "VACATION";
+            // Check đúng text yêu cầu để pass
+            if(val.toLowerCase() === "our incredible vacation") {
+                document.getElementById('btn-wiz-next').disabled = false;
+            } else {
+                document.getElementById('btn-wiz-next').disabled = true;
+            }
+        }
+
+        // Tương tác Step 6: Form Export
+        function enableCreateFinalBtn() {
+            if(document.getElementById('export-format').value === ".mp4") {
+                document.getElementById('btn-wiz-next').disabled = false;
+            } else {
+                document.getElementById('btn-wiz-next').disabled = true;
+            }
+        }
+
+    </script>
+</body>
+</html>

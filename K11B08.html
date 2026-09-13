@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 8: Thực hành nâng cao Email & MXH</title>
+    <!-- Google Fonts: Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe', pink: '#fce7f3', green: '#dcfce7',
+                            yellow: '#fef08a', purple: '#f3e8ff', orange: '#ffedd5',
+                            gray: '#f1f5f9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; color: #334155; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        }
+
+        /* Toggle Switch CSS */
+        .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
+        .toggle-checkbox:checked + .toggle-label:after { transform: translateX(100%); border-color: white; }
+        
+        /* Tooltip */
+        .group:hover .group-hover\:opacity-100 { opacity: 1; }
+        
+        /* Sim Gmail Checkbox */
+        .sim-checkbox.checked { background-color: #3b82f6; border-color: #3b82f6; color: white; }
+        
+        /* Ẩn thanh cuộn cho menu ngang trên mobile */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans">
+
+    <!-- Top Navigation (Menu ngang) -->
+    <nav class="w-full bg-white border-b border-slate-200 px-4 md:px-8 py-4 shadow-sm z-30 shrink-0 flex flex-col md:flex-row items-center justify-between sticky top-0">
+        <div class="flex items-center gap-4 mb-4 md:mb-0 w-full md:w-auto shrink-0 border-b md:border-b-0 border-slate-100 pb-4 md:pb-0">
+            <div class="p-2.5 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl text-white shadow-lg shadow-blue-200">
+                <i data-lucide="book-open" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-xl md:text-2xl text-slate-800 tracking-tight">Bài 8</h1>
+                <p class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider">Tin học 11 - KNTT</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-row items-center gap-2 overflow-x-auto w-full md:w-auto hide-scrollbar pb-1 md:pb-0">
+            <button onclick="openTab('overview')" id="btn-overview" class="tab-btn shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pastel-blue text-blue-700 font-bold transition-all hover:bg-blue-100 whitespace-nowrap">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Tổng quan kiến thức
+            </button>
+            <button onclick="openTab('email')" id="btn-email" class="tab-btn shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 font-semibold transition-all hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap">
+                <i data-lucide="mail" class="w-5 h-5"></i> 1. Thực hành Email
+            </button>
+            <button onclick="openTab('social')" id="btn-social" class="tab-btn shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 font-semibold transition-all hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap">
+                <i data-lucide="facebook" class="w-5 h-5"></i> 2. Mạng xã hội
+            </button>
+            <button onclick="openTab('quiz')" id="btn-quiz" class="tab-btn shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 font-semibold transition-all hover:bg-slate-50 hover:text-slate-900 border border-slate-100 whitespace-nowrap">
+                <i data-lucide="pen-tool" class="w-5 h-5 text-green-500"></i> Luyện tập trắc nghiệm
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto bg-slate-50 relative">
+        <!-- Background decorative elements -->
+        <div class="fixed top-0 right-0 w-96 h-96 bg-pastel-blue rounded-full blur-3xl opacity-50 -z-10 translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+        <div class="fixed bottom-0 left-1/4 w-96 h-96 bg-pastel-pink rounded-full blur-3xl opacity-40 -z-10 translate-y-1/3 pointer-events-none"></div>
+
+        <!-- ================= TAB 1: TỔNG QUAN ================= -->
+        <section id="overview" class="tab-content active max-w-5xl mx-auto">
+            <div class="mb-10 text-center">
+                <span class="px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-bold tracking-wide uppercase mb-3 inline-block">Studygram Notes</span>
+                <h2 class="text-4xl md:text-5xl font-black mb-4 text-slate-800">
+                    Thực hành nâng cao<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Email & Mạng Xã Hội</span>
+                </h2>
+                <p class="text-slate-500 text-lg">Hệ thống hóa kiến thức trọng tâm bài học một cách trực quan.</p>
+            </div>
+
+            <div class="glass-card rounded-3xl p-8 mb-10 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-green-400 to-blue-500"></div>
+                <h3 class="text-2xl font-bold flex items-center gap-3 mb-6 text-slate-800">
+                    <div class="p-2 bg-green-100 text-green-600 rounded-lg"><i data-lucide="target"></i></div> Mục tiêu bài học
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl hover:shadow-md transition-shadow border border-slate-100">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-500 shadow-sm shrink-0 border border-slate-100">1</div>
+                        <p class="font-semibold text-slate-700 leading-relaxed mt-1">Biết cách <span class="text-blue-600 font-bold">đánh dấu</span> và <span class="text-blue-600 font-bold">phân loại</span> thư điện tử hợp lí, giúp tìm kiếm thuận tiện.</p>
+                    </div>
+                    <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl hover:shadow-md transition-shadow border border-slate-100">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-purple-500 shadow-sm shrink-0 border border-slate-100">2</div>
+                        <p class="font-semibold text-slate-700 leading-relaxed mt-1">Khai thác được một số chức năng nâng cao của mạng xã hội: <span class="text-purple-600 font-bold">Tạo Fanpage</span> & <span class="text-purple-600 font-bold">Cài đặt Quyền riêng tư</span>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-800 justify-center">
+                <i data-lucide="key" class="text-yellow-500"></i> Từ khóa cốt lõi
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm text-center border-t-4 border-yellow-400 hover:-translate-y-2 transition-all duration-300 group cursor-default">
+                    <div class="w-16 h-16 mx-auto bg-yellow-50 rounded-2xl flex items-center justify-center mb-5 text-yellow-500 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path d="M12 2L22 12L12 22L2 12L12 2Z"/></svg>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2 text-slate-800">Dấu quan trọng</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">Hệ thống tự động đánh dấu (kí hiệu `>`) dựa trên hành vi (người gửi, tần suất mở, trả lời...).</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm text-center border-t-4 border-blue-400 hover:-translate-y-2 transition-all duration-300 group cursor-default">
+                    <div class="w-16 h-16 mx-auto bg-blue-50 rounded-2xl flex items-center justify-center mb-5 text-blue-500 group-hover:scale-110 transition-transform">
+                        <i data-lucide="tags" class="w-8 h-8"></i>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2 text-slate-800">Nhãn (Label)</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">Công cụ gộp nhóm thư. Một thư có thể có nhiều nhãn. Xóa thư sẽ mất khỏi mọi nhãn.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm text-center border-t-4 border-purple-400 hover:-translate-y-2 transition-all duration-300 group cursor-default">
+                    <div class="w-16 h-16 mx-auto bg-purple-50 rounded-2xl flex items-center justify-center mb-5 text-purple-500 group-hover:scale-110 transition-transform">
+                        <i data-lucide="flag" class="w-8 h-8"></i>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2 text-slate-800">Fanpage</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">Trang chuyên biệt trên FB giúp tổ chức, lớp học quảng bá hình ảnh, đăng tải sự kiện.</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm text-center border-t-4 border-pink-400 hover:-translate-y-2 transition-all duration-300 group cursor-default">
+                    <div class="w-16 h-16 mx-auto bg-pink-50 rounded-2xl flex items-center justify-center mb-5 text-pink-500 group-hover:scale-110 transition-transform">
+                        <i data-lucide="shield-check" class="w-8 h-8"></i>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2 text-slate-800">Xét duyệt thẻ</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">Cài đặt cho phép bạn xem lại bài viết người khác gắn thẻ mình trước khi nó hiện lên tường nhà.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: EMAIL ================= -->
+        <section id="email" class="tab-content max-w-6xl mx-auto">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="p-3 bg-red-100 text-red-600 rounded-2xl"><i data-lucide="mail" class="w-8 h-8"></i></div>
+                <h2 class="text-3xl font-extrabold text-slate-800">Mô phỏng thao tác Gmail</h2>
+            </div>
+
+            <!-- SIM 1: Dấu quan trọng & Tìm kiếm -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+                <div class="bg-slate-50 p-6 border-b border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2 mb-2">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span> 
+                        Nhiệm vụ 1: Tìm hiểu dấu hiệu thư quan trọng
+                    </h3>
+                    <p class="text-slate-600 text-sm">Thực hành: Di chuột vào dấu `>` màu vàng để xem lí do. Click để đổi trạng thái. Thử dùng thanh tìm kiếm.</p>
+                </div>
+                
+                <div class="p-6 bg-slate-100 flex flex-col items-center">
+                    <!-- Search Bar Sim -->
+                    <div class="w-full max-w-2xl bg-white rounded-full shadow-sm border border-slate-300 flex items-center px-4 py-3 mb-6 focus-within:ring-2 focus-within:ring-blue-400 focus-within:border-blue-400 transition-all">
+                        <i data-lucide="search" class="w-5 h-5 text-slate-400 mr-3"></i>
+                        <input type="text" id="sim-search-input" placeholder="Tìm kiếm trong thư..." class="flex-1 outline-none text-slate-700 font-mono text-sm" value="">
+                        <button onclick="simSearchImportant()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
+                            Lọc <code class="text-blue-600 bg-blue-50 px-1 rounded">is:important</code>
+                        </button>
+                        <button onclick="simClearSearch()" class="ml-2 text-slate-400 hover:text-slate-600"><i data-lucide="x-circle" class="w-5 h-5"></i></button>
+                    </div>
+
+                    <!-- Email List Sim -->
+                    <div id="sim-email-list" class="w-full max-w-2xl bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIM 2: Tạo và Gán Nhãn -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+                <div class="bg-slate-50 p-6 border-b border-slate-200 flex justify-between items-start lg:items-center flex-col lg:flex-row gap-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2 mb-2">
+                            <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span> 
+                            Nhiệm vụ 2: Sắp xếp bằng Nhãn (Label)
+                        </h3>
+                        <p class="text-slate-600 text-sm">Thực hành: Nháy "Tạo nhãn mới", sau đó tick chọn thư và gán nhãn vừa tạo qua menu.</p>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded-xl border border-red-100 flex items-start gap-3 max-w-sm">
+                        <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 shrink-0 mt-0.5"></i>
+                        <p class="text-xs text-red-800 font-semibold">Lưu ý cực kì quan trọng: Nhãn khác thư mục. Xóa thư có nhãn thì thư đó mất luôn trong hộp thư đến!</p>
+                    </div>
+                </div>
+                
+                <!-- Split View Gmail Sim -->
+                <div class="flex flex-col md:flex-row h-[500px] border-t border-slate-200">
+                    <!-- Sidebar -->
+                    <div class="w-full md:w-64 bg-slate-50 border-r border-slate-200 flex flex-col p-4 shrink-0 overflow-y-auto">
+                        <div class="flex items-center gap-3 p-2 rounded-lg bg-blue-100 text-blue-700 font-bold mb-4">
+                            <i data-lucide="inbox" class="w-5 h-5"></i> Hộp thư đến
+                        </div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2 mt-4">Nhãn của bạn</div>
+                        
+                        <div id="sim-sidebar-labels" class="space-y-1 mb-4 flex-1">
+                            <!-- Rendered by JS -->
+                            <div class="flex items-center gap-3 p-2 rounded-lg text-slate-700 hover:bg-slate-200 cursor-pointer text-sm font-semibold">
+                                <i data-lucide="tag" class="w-4 h-4 text-green-500"></i> Bài tập về nhà
+                            </div>
+                        </div>
+
+                        <!-- Add Label Button -->
+                        <button onclick="openLabelModal()" class="flex items-center gap-2 p-2 rounded-lg text-slate-600 hover:bg-slate-200 font-semibold text-sm transition-colors mt-auto">
+                            <i data-lucide="plus" class="w-5 h-5"></i> Tạo nhãn mới
+                        </button>
+                    </div>
+
+                    <!-- Main Email View -->
+                    <div class="flex-1 flex flex-col bg-white">
+                        <!-- Toolbar -->
+                        <div class="h-14 border-b border-slate-200 flex items-center px-4 gap-4 relative">
+                            <button onclick="toggleAllEmails()" class="p-1 hover:bg-slate-100 rounded text-slate-500"><i data-lucide="square" id="sim-select-all-icon" class="w-5 h-5"></i></button>
+                            <button class="p-1 hover:bg-slate-100 rounded text-slate-400 cursor-not-allowed"><i data-lucide="archive" class="w-5 h-5"></i></button>
+                            <button class="p-1 hover:bg-slate-100 rounded text-slate-400 cursor-not-allowed"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                            <div class="w-px h-6 bg-slate-200 mx-1"></div>
+                            
+                            <!-- Assign Label Dropdown -->
+                            <button onclick="toggleAssignLabelMenu()" class="p-1.5 hover:bg-slate-100 rounded text-slate-600 flex items-center gap-1 group relative tooltip-trigger" id="btn-assign-label">
+                                <i data-lucide="tag" class="w-5 h-5 group-hover:text-blue-600 transition-colors"></i>
+                                <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap">Gán nhãn</span>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div id="sim-assign-label-menu" class="absolute top-12 left-24 w-56 bg-white border border-slate-200 rounded-xl shadow-xl z-10 hidden flex-col py-2">
+                                <div class="px-4 py-2 text-xs font-bold text-slate-400 border-b border-slate-100 mb-1">Gán nhãn cho thư đã chọn:</div>
+                                <div id="sim-assign-label-list" class="max-h-48 overflow-y-auto">
+                                    <!-- Rendered by JS -->
+                                </div>
+                                <div id="sim-no-email-selected-msg" class="px-4 py-3 text-sm text-red-500 hidden font-semibold bg-red-50">Vui lòng chọn ít nhất 1 thư!</div>
+                            </div>
+                        </div>
+
+                        <!-- Email List Data -->
+                        <div id="sim-label-email-list" class="flex-1 overflow-y-auto">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: MẠNG XÃ HỘI ================= -->
+        <section id="social" class="tab-content max-w-6xl mx-auto">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl"><i data-lucide="facebook" class="w-8 h-8"></i></div>
+                <h2 class="text-3xl font-extrabold text-slate-800">Thao tác nâng cao trên Facebook</h2>
+            </div>
+
+            <!-- SIM 3: Tạo Fanpage -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-10">
+                <div class="bg-slate-50 p-6 border-b border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2 mb-2">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span> 
+                        Nhiệm vụ 3: Tạo Fanpage (Mô phỏng Live Preview)
+                    </h3>
+                    <p class="text-slate-600 text-sm">Thực hành: Truy cập Menu > Tạo > Trang. Nhập thông tin bên trái để xem kết quả hiển thị bên phải.</p>
+                </div>
+                
+                <div class="flex flex-col lg:flex-row h-[550px]">
+                    <!-- Form Input -->
+                    <div class="w-full lg:w-1/3 bg-white border-r border-slate-200 p-6 flex flex-col gap-5 overflow-y-auto">
+                        <h4 class="font-bold text-lg border-b border-slate-100 pb-2">Tạo Trang</h4>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Tên trang (Bắt buộc)</label>
+                            <input type="text" id="fp-name" oninput="updateFanpage()" placeholder="VD: Lớp 11A - THPT Lê Lợi" class="w-full p-2.5 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-sm transition-all">
+                            <p class="text-xs text-slate-500 mt-1">Sử dụng tên thể hiện rõ mục đích của trang.</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Hạng mục (Bắt buộc)</label>
+                            <input type="text" id="fp-category" oninput="updateFanpage()" placeholder="VD: Giáo dục, Trường học..." class="w-full p-2.5 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-sm transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Tiểu sử (Không bắt buộc)</label>
+                            <textarea id="fp-bio" oninput="updateFanpage()" rows="3" placeholder="Mô tả ngắn gọn về trang của bạn..." class="w-full p-2.5 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-sm transition-all resize-none"></textarea>
+                        </div>
+
+                        <button onclick="alert('Mô phỏng: Đã lưu thông tin trang thành công!')" class="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            Tạo Trang
+                        </button>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div class="flex-1 bg-slate-100 p-6 flex items-center justify-center relative overflow-hidden">
+                        <!-- Desktop Preview Frame -->
+                        <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg border border-slate-200 overflow-hidden flex flex-col h-full max-h-[450px]">
+                            <!-- Top bar mock -->
+                            <div class="h-12 border-b border-slate-100 flex items-center px-4 bg-white gap-4">
+                                <div class="font-bold text-slate-800 flex-1 flex justify-center text-sm">Xem trước trên máy tính</div>
+                            </div>
+                            <!-- Cover -->
+                            <div class="h-40 bg-gradient-to-r from-slate-200 to-slate-300 relative flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
+                                <!-- Avatar -->
+                                <div class="absolute -bottom-10 left-8 w-24 h-24 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center shadow-sm overflow-hidden">
+                                     <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                            <!-- Info section -->
+                            <div class="pt-12 px-8 pb-4 border-b border-slate-200">
+                                <h2 id="preview-name" class="text-2xl font-black text-slate-900 leading-tight">Tên Trang</h2>
+                                <p id="preview-category" class="text-sm font-semibold text-slate-500 mt-1">Hạng mục</p>
+                            </div>
+                            <!-- Content section -->
+                            <div class="flex-1 bg-slate-50 p-6 overflow-y-auto">
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                                    <h3 class="font-bold text-slate-800 mb-2">Giới thiệu</h3>
+                                    <p id="preview-bio" class="text-sm text-slate-600">Mô tả trang của bạn...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIM 4: Quyền riêng tư & Gắn thẻ -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 p-6 border-b border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2 mb-2">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">4</span> 
+                        Nhiệm vụ 4: Cài đặt quyền riêng tư & Gắn thẻ
+                    </h3>
+                    <p class="text-slate-600 text-sm">Đường dẫn: Cài đặt -> Trang cá nhân và gắn thẻ. Thực hành bật/tắt tính năng Xem lại (Xét duyệt).</p>
+                </div>
+                
+                <div class="p-8 max-w-3xl mx-auto">
+                    <!-- Setting Section -->
+                    <div class="mb-8">
+                        <h4 class="font-bold text-lg border-b border-slate-200 pb-3 mb-4 flex items-center gap-2">
+                            <i data-lucide="eye" class="text-blue-500"></i> Quyền riêng tư cơ bản
+                        </h4>
+                        <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer group">
+                            <div>
+                                <div class="font-bold text-slate-800">Ai có thể xem các bài viết của bạn trong tương lai?</div>
+                                <div class="text-sm text-slate-500">Giới hạn đối tượng cho các bài đăng sau này.</div>
+                            </div>
+                            <button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg font-semibold text-sm flex items-center gap-2 transition-colors">
+                                <i data-lucide="users" class="w-4 h-4"></i> Bạn bè <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tagging Section (Interactive) -->
+                    <div>
+                        <h4 class="font-bold text-lg border-b border-slate-200 pb-3 mb-4 flex items-center gap-2">
+                            <i data-lucide="tag" class="text-green-500"></i> Trang cá nhân và gắn thẻ
+                        </h4>
+                        
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer">
+                                <div>
+                                    <div class="font-bold text-slate-800">Ai có thể đăng lên trang cá nhân của bạn?</div>
+                                </div>
+                                <button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg font-semibold text-sm flex items-center gap-2">
+                                    <i data-lucide="lock" class="w-4 h-4"></i> Chỉ mình tôi
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer">
+                                <div>
+                                    <div class="font-bold text-slate-800">Ai có thể xem bài viết có gắn thẻ bạn...</div>
+                                </div>
+                                <button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg font-semibold text-sm flex items-center gap-2">
+                                    <i data-lucide="users" class="w-4 h-4"></i> Bạn bè
+                                </button>
+                            </div>
+
+                            <!-- The Interactive Toggle -->
+                            <div class="mt-6 border-t border-slate-100 pt-4">
+                                <h5 class="font-bold text-slate-700 mb-3 ml-4">Xem lại (Xét duyệt)</h5>
+                                <div class="flex items-start sm:items-center justify-between p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
+                                    <div class="pr-4">
+                                        <div class="font-bold text-slate-800 flex items-center gap-2">
+                                            Xem lại bài viết có gắn thẻ bạn trước khi bài viết đó xuất hiện trên trang cá nhân của bạn?
+                                        </div>
+                                        <p class="text-sm text-slate-500 mt-1">Khi tính năng này bật, bạn phải phê duyệt thủ công từng bài viết được gắn thẻ. Rất hữu ích để tránh nội dung không mong muốn.</p>
+                                    </div>
+                                    <!-- Custom Toggle Switch -->
+                                    <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in mt-1 sm:mt-0 shrink-0">
+                                        <input type="checkbox" name="toggle" id="sim-review-toggle" onchange="toggleReviewStatus()" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-all duration-300"/>
+                                        <label for="sim-review-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                                    </div>
+                                </div>
+                                <div id="sim-review-status-text" class="ml-4 mt-2 text-sm font-bold text-slate-500 italic">Trạng thái: Đang TẮT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: TRẮC NGHIỆM ================= -->
+        <section id="quiz" class="tab-content max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <div class="inline-flex p-3 bg-green-100 text-green-600 rounded-2xl mb-4"><i data-lucide="check-square" class="w-8 h-8"></i></div>
+                <h2 class="text-3xl font-extrabold text-slate-800">Trắc nghiệm Ôn tập</h2>
+                <p class="text-slate-500 mt-2">Nội dung bám sát 100% tài liệu SGK Bài 8.</p>
+            </div>
+            
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-10">
+                <form id="quiz-form" onsubmit="submitQuiz(event)">
+                    <!-- Q1 -->
+                    <div class="mb-8 group">
+                        <p class="font-bold text-lg mb-4 text-slate-800 flex gap-2"><span class="text-blue-500">1.</span> Việc đánh dấu, phân loại thư điện tử nhằm mục đích chính là gì?</p>
+                        <div class="space-y-3 pl-6">
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q1" value="A" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">A. Ngăn chặn thư rác gửi đến hộp thư.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q1" value="B" class="w-5 h-5 text-blue-600 mt-0.5" required>
+                                <span class="text-slate-700 font-semibold">B. Sắp xếp hộp thư hợp lí, giúp sử dụng và tìm kiếm thư thuận tiện hơn.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q1" value="C" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">C. Tự động trả lời mọi thư được gửi đến.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="mb-8 group">
+                        <p class="font-bold text-lg mb-4 text-slate-800 flex gap-2"><span class="text-blue-500">2.</span> Trong Gmail, dấu hiệu thư quan trọng (tự động xác định) có hình dáng và màu sắc thế nào?</p>
+                        <div class="space-y-3 pl-6">
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q2" value="A" class="w-5 h-5 text-blue-600 mt-0.5" required>
+                                <span class="text-slate-700 font-semibold">A. Dấu `>` màu vàng.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q2" value="B" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">B. Hình ngôi sao màu đỏ.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q2" value="C" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">C. Dấu chấm than màu xanh.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="mb-8 group relative">
+                        <div class="absolute -left-4 top-0 w-1 h-full bg-red-400 rounded-full"></div>
+                        <p class="font-bold text-lg mb-4 text-slate-800 flex gap-2"><span class="text-blue-500">3.</span> Khẳng định nào sau đây ĐÚNG khi nói về sự khác biệt giữa Nhãn (Label) và Thư mục?</p>
+                        <div class="space-y-3 pl-6">
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q3" value="A" class="w-5 h-5 text-blue-600 mt-0.5" required>
+                                <span class="text-slate-700 font-semibold">A. Xoá một thư có nhãn, thư đó sẽ bị xoá khỏi mọi nhãn đính kèm và hộp thư đến.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q3" value="B" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">B. Xoá một thư trong nhãn thì thư đó vẫn còn nguyên trong hộp thư đến.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q3" value="C" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">C. Nhãn và Thư mục hoàn toàn giống nhau.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="mb-8 group">
+                        <p class="font-bold text-lg mb-4 text-slate-800 flex gap-2"><span class="text-blue-500">4.</span> Fanpage trên Facebook được tạo ra với mục đích chính là gì?</p>
+                        <div class="space-y-3 pl-6">
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q4" value="A" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">A. Chỉ để nhắn tin bí mật với nhóm bạn.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q4" value="B" class="w-5 h-5 text-blue-600 mt-0.5" required>
+                                <span class="text-slate-700 font-semibold">B. Giúp tổ chức, doanh nghiệp (hoặc lớp học) quảng bá hình ảnh, thương hiệu, sự kiện.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q4" value="C" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">C. Để thay thế tài khoản cá nhân.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="mb-10 group">
+                        <p class="font-bold text-lg mb-4 text-slate-800 flex gap-2"><span class="text-blue-500">5.</span> Trong Facebook, để thiết lập chức năng "Xét duyệt bài viết có gắn thẻ bạn trước khi nó xuất hiện trên trang cá nhân", em cần vào mục nào?</p>
+                        <div class="space-y-3 pl-6">
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q5" value="A" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">A. Tạo trang (Fanpage) -> Cài đặt trang.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q5" value="B" class="w-5 h-5 text-blue-600 mt-0.5">
+                                <span class="text-slate-700">B. Cài đặt -> Quyền riêng tư -> Ai có thể xem bài viết.</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-blue-200 transition-all">
+                                <input type="radio" name="q5" value="C" class="w-5 h-5 text-blue-600 mt-0.5" required>
+                                <span class="text-slate-700 font-semibold">C. Cài đặt -> Trang cá nhân và gắn thẻ -> Xem lại.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-4 rounded-xl hover:shadow-lg hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+                        <i data-lucide="check-circle-2"></i> Chấm điểm bài làm
+                    </button>
+                </form>
+
+                <div id="quiz-result" class="hidden mt-10 p-8 bg-green-50 rounded-3xl border border-green-200 text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-green-200 rounded-full blur-3xl opacity-50"></div>
+                    <i data-lucide="award" class="w-20 h-20 text-green-500 mx-auto mb-4 relative z-10"></i>
+                    <h3 class="text-3xl font-black text-green-800 mb-2 relative z-10">Kết quả xuất sắc!</h3>
+                    <p id="score-text" class="text-2xl font-bold text-green-600 mb-4 relative z-10"></p>
+                    <div class="inline-block bg-white px-6 py-3 rounded-xl shadow-sm border border-green-100 font-semibold text-slate-700 relative z-10">
+                        Đáp án chuẩn: 1<span class="text-green-600">B</span> - 2<span class="text-green-600">A</span> - 3<span class="text-green-600">A</span> - 4<span class="text-green-600">B</span> - 5<span class="text-green-600">C</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal Tạo Nhãn Mới (Hidden by default) -->
+        <div id="modal-create-label" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform scale-95 transition-transform" id="modal-content">
+                <h3 class="font-bold text-xl mb-4 text-slate-800">Tạo nhãn mới</h3>
+                <input type="text" id="new-label-name" placeholder="Vui lòng nhập tên nhãn mới" class="w-full p-3 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none mb-4">
+                <p class="text-sm font-bold text-slate-700 mb-2">Chọn màu nhãn:</p>
+                <div class="flex gap-2 mb-6" id="color-picker">
+                    <button type="button" onclick="selectColor('text-blue-500', 'bg-blue-100')" class="w-8 h-8 rounded-full bg-blue-500 ring-2 ring-offset-2 ring-blue-500"></button>
+                    <button type="button" onclick="selectColor('text-red-500', 'bg-red-100')" class="w-8 h-8 rounded-full bg-red-500 hover:ring-2 ring-offset-2 ring-red-500 transition-all"></button>
+                    <button type="button" onclick="selectColor('text-purple-500', 'bg-purple-100')" class="w-8 h-8 rounded-full bg-purple-500 hover:ring-2 ring-offset-2 ring-purple-500 transition-all"></button>
+                    <button type="button" onclick="selectColor('text-orange-500', 'bg-orange-100')" class="w-8 h-8 rounded-full bg-orange-500 hover:ring-2 ring-offset-2 ring-orange-500 transition-all"></button>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeLabelModal()" class="px-4 py-2 font-bold text-slate-500 hover:bg-slate-100 rounded-lg">Hủy</button>
+                    <button onclick="saveNewLabel()" class="px-4 py-2 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Tạo mới (Save)</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // ================= TAB NAVIGATION =================
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-pastel-blue', 'text-blue-700');
+                el.classList.add('text-slate-600');
+            });
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-slate-600');
+            activeBtn.classList.add('bg-pastel-blue', 'text-blue-700');
+        }
+
+        // ================= SIM 1: IMPORTANT EMAILS =================
+        let sim1Emails = [
+            { id: 1, sender: 'Cô giáo Chủ Nhiệm', subject: 'Thông báo họp phụ huynh', snippet: 'Mời phụ huynh đến trường...', isImportant: true, reason: 'Thư này quan trọng do người gửi nằm trong danh sách thường xuyên tương tác.' },
+            { id: 2, sender: 'Nhóm Toán 11', subject: 'Tài liệu ôn thi Học kì', snippet: 'Các bạn down file đính kèm nhé.', isImportant: false, reason: 'Chưa đủ điều kiện tự động đánh dấu. Click để đánh dấu thủ công.' },
+            { id: 3, sender: 'Thư viện trường', subject: 'Sách mới tháng 10', snippet: 'Danh mục sách mới nhập...', isImportant: false, reason: 'Thư thông báo chung, ít tương tác.' }
+        ];
+
+        function renderSim1Emails(filterImportant = false) {
+            const container = document.getElementById('sim-email-list');
+            container.innerHTML = '';
+            
+            const emailsToRender = filterImportant ? sim1Emails.filter(e => e.isImportant) : sim1Emails;
+            
+            if(emailsToRender.length === 0) {
+                container.innerHTML = '<div class="p-8 text-center text-slate-400 font-semibold">Không tìm thấy thư phù hợp.</div>';
+                return;
+            }
+
+            emailsToRender.forEach(email => {
+                const iconColor = email.isImportant ? 'text-yellow-400' : 'text-slate-300 hover:text-slate-400';
+                const fillPath = email.isImportant ? 'fill="currentColor"' : 'fill="none" stroke="currentColor" stroke-width="2"';
+                
+                const html = `
+                    <div class="flex items-center px-4 py-3 border-b border-slate-100 hover:shadow-md hover:-translate-y-0.5 transition-all bg-white cursor-pointer group relative">
+                        <div class="w-5 h-5 rounded border border-slate-300 mr-4"></div>
+                        
+                        <!-- Important Marker with Tooltip -->
+                        <div class="relative group/marker mr-4" onclick="toggleSim1Important(${email.id}, event)">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 transition-colors duration-300 ${iconColor}">
+                                <path d="M12 2L22 12L12 22L2 12L12 2Z" ${fillPath}/>
+                            </svg>
+                            <!-- Tooltip -->
+                            <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-48 p-2 bg-slate-800 text-white text-xs rounded shadow-xl opacity-0 invisible group-hover/marker:opacity-100 group-hover/marker:visible transition-all z-10 text-center pointer-events-none">
+                                ${email.reason}
+                            </div>
+                        </div>
+
+                        <div class="w-32 font-bold text-slate-800 truncate pr-2 text-sm">${email.sender}</div>
+                        <div class="flex-1 truncate text-slate-600 text-sm"><span class="font-semibold text-slate-900">${email.subject}</span> <span class="text-slate-400">- ${email.snippet}</span></div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        function toggleSim1Important(id, event) {
+            event.stopPropagation();
+            const email = sim1Emails.find(e => e.id === id);
+            if(email) {
+                email.isImportant = !email.isImportant;
+                email.reason = email.isImportant ? 'Đánh dấu thủ công bởi người dùng.' : 'Chưa đủ điều kiện tự động đánh dấu.';
+                // Check if search is active
+                const searchVal = document.getElementById('sim-search-input').value;
+                renderSim1Emails(searchVal === 'is:important');
+            }
+        }
+
+        function simSearchImportant() {
+            document.getElementById('sim-search-input').value = 'is:important';
+            renderSim1Emails(true);
+        }
+        function simClearSearch() {
+            document.getElementById('sim-search-input').value = '';
+            renderSim1Emails(false);
+        }
+
+        // Initialize Sim 1
+        renderSim1Emails();
+
+        // ================= SIM 2: LABELS =================
+        let simLabels = [{ name: 'Bài tập về nhà', iconColor: 'text-green-500', bgColor: 'bg-green-100' }];
+        let sim2Emails = [
+            { id: 101, sender: 'Lớp Trưởng', subject: 'Tài liệu Lý thuyết', labels: [], selected: false },
+            { id: 102, sender: 'CLB Tiếng Anh', subject: 'Lịch sinh hoạt Tuần 5', labels: ['Bài tập về nhà'], selected: false }
+        ];
+        
+        let newLabelColor = { text: 'text-blue-500', bg: 'bg-blue-100' };
+
+        function renderSim2Sidebar() {
+            const container = document.getElementById('sim-sidebar-labels');
+            container.innerHTML = '';
+            simLabels.forEach(label => {
+                container.innerHTML += `
+                    <div class="flex items-center gap-3 p-2 rounded-lg text-slate-700 hover:bg-slate-200 cursor-pointer text-sm font-semibold transition-colors">
+                        <i data-lucide="tag" class="w-4 h-4 ${label.iconColor}"></i> ${label.name}
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function renderSim2Emails() {
+            const container = document.getElementById('sim-label-email-list');
+            container.innerHTML = '';
+            sim2Emails.forEach(email => {
+                const checkClass = email.selected ? 'checked' : '';
+                const bgClass = email.selected ? 'bg-blue-50/50' : 'bg-white hover:bg-slate-50';
+                
+                let labelsHtml = email.labels.map(lName => {
+                    const lObj = simLabels.find(l => l.name === lName);
+                    if(lObj) return `<span class="text-xs font-bold px-2 py-0.5 rounded ${lObj.bgColor} ${lObj.iconColor} mr-1 border border-current opacity-70">${lName}</span>`;
+                    return '';
+                }).join('');
+
+                container.innerHTML += `
+                    <div class="flex items-center px-4 py-3 border-b border-slate-100 transition-colors cursor-pointer ${bgClass}" onclick="toggleSim2Select(${email.id})">
+                        <div class="sim-checkbox w-5 h-5 rounded border border-slate-300 mr-4 flex items-center justify-center transition-colors ${checkClass}">
+                            ${email.selected ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
+                        </div>
+                        <div class="w-32 font-bold text-slate-800 truncate pr-2 text-sm">${email.sender}</div>
+                        <div class="flex-1 flex items-center">
+                            <span class="font-semibold text-slate-900 text-sm mr-2">${email.subject}</span>
+                            ${labelsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+            updateSelectAllIcon();
+        }
+
+        function toggleSim2Select(id) {
+            const email = sim2Emails.find(e => e.id === id);
+            if(email) email.selected = !email.selected;
+            renderSim2Emails();
+        }
+
+        function toggleAllEmails() {
+            const allSelected = sim2Emails.every(e => e.selected);
+            sim2Emails.forEach(e => e.selected = !allSelected);
+            renderSim2Emails();
+        }
+
+        function updateSelectAllIcon() {
+            const icon = document.getElementById('sim-select-all-icon');
+            const anySelected = sim2Emails.some(e => e.selected);
+            const allSelected = sim2Emails.every(e => e.selected);
+            
+            if(allSelected && sim2Emails.length > 0) {
+                icon.setAttribute('data-lucide', 'check-square');
+                icon.classList.add('text-blue-600');
+            } else if (anySelected) {
+                icon.setAttribute('data-lucide', 'minus-square');
+                icon.classList.add('text-blue-600');
+            } else {
+                icon.setAttribute('data-lucide', 'square');
+                icon.classList.remove('text-blue-600');
+            }
+            lucide.createIcons();
+        }
+
+        // Modal Logic
+        function openLabelModal() {
+            document.getElementById('modal-create-label').classList.remove('hidden');
+            setTimeout(() => document.getElementById('modal-content').classList.remove('scale-95'), 10);
+            document.getElementById('new-label-name').focus();
+        }
+        function closeLabelModal() {
+            document.getElementById('modal-content').classList.add('scale-95');
+            setTimeout(() => document.getElementById('modal-create-label').classList.add('hidden'), 200);
+            document.getElementById('new-label-name').value = '';
+        }
+        function selectColor(textClass, bgClass) {
+            newLabelColor = { text: textClass, bg: bgClass };
+            // Update UI rings
+            const btns = document.getElementById('color-picker').children;
+            for(let btn of btns) btn.classList.remove('ring-2');
+            event.target.classList.add('ring-2');
+        }
+        function saveNewLabel() {
+            const name = document.getElementById('new-label-name').value.trim();
+            if(!name) { alert('Vui lòng nhập tên nhãn!'); return; }
+            if(simLabels.some(l => l.name === name)) { alert('Tên nhãn đã tồn tại!'); return; }
+            
+            simLabels.push({ name: name, iconColor: newLabelColor.text, bgColor: newLabelColor.bg });
+            renderSim2Sidebar();
+            closeLabelModal();
+        }
+
+        // Assign Label Menu Logic
+        function toggleAssignLabelMenu() {
+            const menu = document.getElementById('sim-assign-label-menu');
+            const list = document.getElementById('sim-assign-label-list');
+            const msg = document.getElementById('sim-no-email-selected-msg');
+            
+            const selectedEmails = sim2Emails.filter(e => e.selected);
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                
+                if (selectedEmails.length === 0) {
+                    list.innerHTML = '';
+                    msg.classList.remove('hidden');
+                } else {
+                    msg.classList.add('hidden');
+                    list.innerHTML = '';
+                    simLabels.forEach(label => {
+                        list.innerHTML += `
+                            <button onclick="applyLabelToSelected('${label.name}')" class="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2 text-sm">
+                                <i data-lucide="tag" class="w-4 h-4 ${label.iconColor}"></i> ${label.name}
+                            </button>
+                        `;
+                    });
+                    lucide.createIcons();
+                }
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+        }
+
+        function applyLabelToSelected(labelName) {
+            sim2Emails.forEach(email => {
+                if(email.selected && !email.labels.includes(labelName)) {
+                    email.labels.push(labelName);
+                }
+            });
+            renderSim2Emails();
+            toggleAssignLabelMenu();
+            // Deselect all after apply
+            sim2Emails.forEach(e => e.selected = false);
+            renderSim2Emails();
+        }
+
+        // Hide menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const btn = document.getElementById('btn-assign-label');
+            const menu = document.getElementById('sim-assign-label-menu');
+            if (btn && menu && !btn.contains(event.target) && !menu.contains(event.target)) {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+        });
+
+        // Initialize Sim 2
+        renderSim2Sidebar();
+        renderSim2Emails();
+
+        // ================= SIM 3: FANPAGE =================
+        function updateFanpage() {
+            const name = document.getElementById('fp-name').value;
+            const cat = document.getElementById('fp-category').value;
+            const bio = document.getElementById('fp-bio').value;
+
+            document.getElementById('preview-name').innerText = name || 'Tên Trang';
+            document.getElementById('preview-category').innerText = cat || 'Hạng mục';
+            document.getElementById('preview-bio').innerText = bio || 'Mô tả trang của bạn sẽ hiển thị ở đây...';
+        }
+
+        // ================= SIM 4: PRIVACY TOGGLE =================
+        function toggleReviewStatus() {
+            const toggle = document.getElementById('sim-review-toggle');
+            const statusText = document.getElementById('sim-review-status-text');
+            
+            if(toggle.checked) {
+                statusText.innerHTML = 'Trạng thái: <span class="text-blue-600">Đang BẬT</span> (Bài viết gắn thẻ chờ bạn duyệt)';
+            } else {
+                statusText.innerHTML = 'Trạng thái: <span class="text-slate-500">Đang TẮT</span> (Bài viết gắn thẻ tự động hiện lên tường)';
+            }
+        }
+
+        // ================= QUIZ LOGIC =================
+        function submitQuiz(e) {
+            e.preventDefault();
+            const form = document.getElementById('quiz-form');
+            const formData = new FormData(form);
+            const answers = { q1: 'B', q2: 'A', q3: 'A', q4: 'B', q5: 'C' };
+            let score = 0;
+            
+            for (let [key, value] of Object.entries(answers)) {
+                if (formData.get(key) === value) score++;
+            }
+
+            const resultDiv = document.getElementById('quiz-result');
+            document.getElementById('score-text').textContent = `Em làm đúng ${score} / 5 câu!`;
+            resultDiv.classList.remove('hidden');
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>

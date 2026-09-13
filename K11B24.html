@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 24: Thực Hành Sao Lưu Dữ Liệu</title>
+    <!-- Tailwind CSS cho bố cục và màu sắc pastel -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome cho Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Quicksand (Tiêu đề) và Nunito (Nội dung) -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'title': ['Quicksand', 'sans-serif'],
+                        'body': ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            purple: '#f3e8ff',
+                            pink: '#fce7f3',
+                            green: '#dcfce7',
+                            yellow: '#fef9c3',
+                            gray: '#f3f4f6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Định dạng tiêu đề chính xác theo yêu cầu */
+        .gradient-heading {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Blue to Purple */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize; /* Title Case */
+            display: inline-block;
+        }
+
+        body { font-family: 'Nunito', sans-serif; background-color: #fdfdfd; color: #333; }
+        
+        /* Hiệu ứng tương tác */
+        .interactive-element { transition: all 0.2s ease; cursor: pointer; }
+        .interactive-element:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .tab-btn { transition: all 0.3s; }
+        .tab-active { background-color: #a855f7; color: white; border-radius: 9999px; }
+        .tab-inactive { background-color: #f3f4f6; color: #4b5563; border-radius: 9999px; }
+
+        /* Sơ đồ kết nối */
+        .arrow-down::after {
+            content: '\f063';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #9ca3af;
+            display: block;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.5rem;
+        }
+        .arrow-right::after {
+            content: '\f061';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #9ca3af;
+            margin: 0 10px;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+        
+        <!-- Header -->
+        <div class="p-6 text-center border-b border-gray-100 bg-pastel-gray relative">
+            <h1 class="gradient-heading">
+                <i class="fas fa-database text-blue-500 mr-2 text-2xl"></i>Bài 24: Thực Hành Sao Lưu Dữ Liệu
+            </h1>
+            <p class="text-gray-500 mt-2 font-medium text-sm">Mindmap & Mô Phỏng Trực Quan</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex justify-center space-x-2 md:space-x-4 p-4 bg-white">
+            <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn tab-active px-6 py-2 font-bold text-sm shadow-sm flex items-center">
+                <i class="fas fa-sitemap mr-2"></i> Tổng Quan
+            </button>
+            <button onclick="switchTab('simulation')" id="btn-simulation" class="tab-btn tab-inactive px-6 py-2 font-bold text-sm shadow-sm flex items-center">
+                <i class="fas fa-laptop-code mr-2"></i> Mô Phỏng
+            </button>
+            <button onclick="switchTab('quiz')" id="btn-quiz" class="tab-btn tab-inactive px-6 py-2 font-bold text-sm shadow-sm flex items-center">
+                <i class="fas fa-check-circle mr-2"></i> Luyện Tập
+            </button>
+        </div>
+
+        <!-- TAB 1: TỔNG QUAN (INFOGRAPHIC) -->
+        <div id="tab-overview" class="p-6 bg-white animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                
+                <!-- Cột trái: Mục tiêu & Khái niệm -->
+                <div class="md:col-span-5 flex flex-col gap-4">
+                    <!-- Mục tiêu -->
+                    <div class="bg-pastel-blue p-5 rounded-2xl border border-blue-100 shadow-sm relative">
+                        <div class="absolute -top-3 -left-3 bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+                            <i class="fas fa-bullseye text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-blue-800 ml-6 mb-2 text-lg">Mục tiêu bài học</h3>
+                        <p class="text-blue-900 font-medium leading-relaxed">Nắm được các thao tác <span class="bg-white px-2 py-1 rounded text-blue-700 shadow-sm">sao lưu</span> và <span class="bg-white px-2 py-1 rounded text-blue-700 shadow-sm">phục hồi</span> dữ liệu.</p>
+                    </div>
+
+                    <!-- Nội dung dễ nhầm lẫn -->
+                    <div class="bg-pastel-pink p-5 rounded-2xl border border-pink-100 shadow-sm relative">
+                        <div class="absolute -top-3 -left-3 bg-pink-400 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+                            <i class="fas fa-exclamation-triangle text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-pink-800 ml-6 mb-3 text-lg">Dễ nhầm lẫn</h3>
+                        <ul class="space-y-2 text-pink-900 text-sm font-medium">
+                            <li class="flex items-start"><i class="fas fa-times-circle text-pink-500 mt-1 mr-2"></i>Quên chọn <b>Drop</b>: Lỗi khi phục hồi nếu đối tượng cũ vẫn còn.</li>
+                            <li class="flex items-start"><i class="fas fa-times-circle text-pink-500 mt-1 mr-2"></i>Không chọn <b>Delete + insert</b>: Dữ liệu cũ không bị xóa trước khi chèn dữ liệu sao lưu.</li>
+                            <li class="flex items-start"><i class="fas fa-info-circle text-pink-500 mt-1 mr-2"></i>Có thể sao lưu toàn bộ CSDL hoặc chỉ sao lưu <b>một số bảng</b>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Mối quan hệ & Kiến thức cốt lõi (Sơ đồ) -->
+                <div class="md:col-span-7 bg-pastel-gray p-6 rounded-3xl border border-gray-200 shadow-inner flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-gray-700 mb-6 text-xl uppercase tracking-wider text-center w-full border-b pb-2">Mối quan hệ khái niệm</h3>
+                    
+                    <div class="flex flex-col md:flex-row items-center w-full justify-between px-4">
+                        
+                        <!-- Sao lưu -->
+                        <div class="bg-white p-4 rounded-xl shadow-md w-40 text-center border-t-4 border-blue-400">
+                            <i class="fas fa-file-export text-4xl text-blue-500 mb-2"></i>
+                            <h4 class="font-bold text-blue-800">Sao Lưu</h4>
+                            <p class="text-xs text-gray-500 mt-1">(Xuất CSDL dưới dạng SQL)</p>
+                        </div>
+
+                        <!-- Mũi tên & File -->
+                        <div class="flex flex-col items-center my-4 md:my-0">
+                            <div class="text-gray-400 text-sm font-bold mb-1">Tạo ra</div>
+                            <div class="flex items-center">
+                                <i class="fas fa-arrow-right text-gray-300 text-2xl hidden md:block mr-3"></i>
+                                <div class="bg-pastel-yellow px-4 py-2 rounded-lg border border-yellow-300 shadow-sm flex items-center">
+                                    <i class="fas fa-file-code text-yellow-600 mr-2"></i>
+                                    <span class="font-mono text-sm font-bold text-yellow-800">.sql file</span>
+                                </div>
+                                <i class="fas fa-arrow-right text-gray-300 text-2xl hidden md:block ml-3"></i>
+                            </div>
+                            <div class="text-gray-400 text-sm font-bold mt-1">Sử dụng để</div>
+                        </div>
+
+                        <!-- Phục hồi -->
+                        <div class="bg-white p-4 rounded-xl shadow-md w-40 text-center border-t-4 border-green-400">
+                            <i class="fas fa-file-import text-4xl text-green-500 mb-2"></i>
+                            <h4 class="font-bold text-green-800">Phục Hồi</h4>
+                            <p class="text-xs text-gray-500 mt-1">(Load SQL file & Chạy truy vấn)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: MÔ PHỎNG THỰC HÀNH -->
+        <div id="tab-simulation" class="p-6 bg-gray-50 hidden">
+            
+            <div class="text-center mb-6">
+                <h2 class="font-bold text-xl text-gray-700">Tương Tác Mô Phỏng Các Nhiệm Vụ</h2>
+                <p class="text-sm text-gray-500">Nhấp vào các khu vực để thực hiện thao tác y hệt trên máy tính</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Mô phỏng 1: Sao lưu -->
+                <div class="bg-[#f0f0f0] rounded shadow-lg overflow-hidden border border-gray-400 text-[13px] font-sans text-gray-800 flex flex-col relative h-[420px]">
+                    <!-- Title Bar -->
+                    <div class="bg-white px-2 py-1 flex justify-between items-center border-b border-gray-300 select-none">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-green-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold mr-2">HS</div>
+                            <span>Table tools</span>
+                        </div>
+                        <div class="flex space-x-1 text-gray-500 text-lg">
+                            <button class="hover:bg-gray-200 px-2 leading-none">&quest;</button>
+                            <button class="hover:bg-red-500 hover:text-white px-2 leading-none">&times;</button>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="flex flex-1 p-2 gap-2 h-full overflow-hidden">
+                        <!-- Left Panel: Tree View -->
+                        <div class="w-[40%] flex flex-col gap-1 h-full">
+                            <div class="flex gap-1">
+                                <div class="bg-white border border-gray-300 px-2 py-1 flex-1 flex items-center text-gray-400 text-xs"><i class="fas fa-filter mr-1 text-orange-300"></i> Database filter</div>
+                                <div class="bg-white border border-gray-300 px-2 py-1 flex-1 flex items-center text-gray-400 text-xs"><i class="fas fa-filter mr-1 text-orange-300"></i> Table filter</div>
+                            </div>
+                            <div class="bg-white border border-gray-300 flex-1 overflow-y-auto p-2">
+                                <div class="flex items-center mb-1">
+                                    <i class="fas fa-caret-down text-gray-500 w-3 text-center mr-1"></i>
+                                    <i class="fas fa-server text-blue-500 mr-1"></i> <span class="font-bold">Unnamed</span>
+                                </div>
+                                <div class="pl-4">
+                                    <div class="flex items-center mb-1 justify-between hover:bg-gray-100 cursor-pointer">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-caret-right text-gray-400 w-3 text-center mr-1"></i>
+                                            <input type="checkbox" class="mr-1">
+                                            <i class="fas fa-database text-purple-300 mr-1"></i> information_schema
+                                        </div>
+                                        <span class="text-gray-400 text-xs">0 B</span>
+                                    </div>
+                                    <div class="flex items-center mb-1 justify-between bg-gray-200 cursor-pointer interactive-element">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-caret-down text-gray-500 w-3 text-center mr-1"></i>
+                                            <input type="checkbox" id="sim-db-check" class="mr-1 accent-blue-600" onchange="updateFooter()">
+                                            <i class="fas fa-database text-green-500 mr-1"></i> <strong>mymusic</strong>
+                                        </div>
+                                        <span class="text-gray-600 text-xs">2.6 MiB</span>
+                                    </div>
+                                    <!-- Tables -->
+                                    <div class="pl-6 text-gray-600">
+                                        <div class="flex items-center mb-1"><input type="checkbox" class="sim-table-check mr-1 accent-blue-600"> <i class="fas fa-table text-purple-300 mr-1 opacity-80"></i> banthuam</div>
+                                        <div class="flex items-center mb-1"><input type="checkbox" class="sim-table-check mr-1 accent-blue-600"> <i class="fas fa-table text-purple-300 mr-1 opacity-80"></i> casi</div>
+                                        <div class="flex items-center mb-1"><input type="checkbox" class="sim-table-check mr-1 accent-blue-600"> <i class="fas fa-table text-purple-300 mr-1 opacity-80"></i> nhacsi</div>
+                                    </div>
+                                    <div class="flex items-center mb-1 justify-between hover:bg-gray-100 cursor-pointer mt-1">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-caret-right text-gray-400 w-3 text-center mr-1"></i>
+                                            <input type="checkbox" class="mr-1">
+                                            <i class="fas fa-database text-purple-300 mr-1"></i> performance_schema
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center mb-1 justify-between hover:bg-gray-100 cursor-pointer">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-caret-right text-gray-400 w-3 text-center mr-1"></i>
+                                            <input type="checkbox" class="mr-1">
+                                            <i class="fas fa-database text-purple-300 mr-1"></i> sys
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Options -->
+                        <div class="w-[60%] flex flex-col">
+                            <!-- Tabs -->
+                            <div class="flex text-[12px] border-b border-gray-300 mb-2 bg-[#f0f0f0]">
+                                <div class="px-2 py-1 text-gray-600 hover:bg-gray-200 cursor-pointer flex items-center gap-1"><i class="fas fa-wrench text-gray-500"></i> Maintenance</div>
+                                <div class="px-2 py-1 text-gray-600 hover:bg-gray-200 cursor-pointer flex items-center gap-1"><i class="fas fa-search text-blue-500"></i> Find text</div>
+                                <div class="px-2 py-1 text-blue-700 bg-white border-b-[3px] border-blue-500 cursor-pointer flex items-center gap-1 -mb-[1px]"><i class="fas fa-exchange-alt text-blue-600"></i> SQL export</div>
+                                <div class="px-2 py-1 text-gray-600 hover:bg-gray-200 cursor-pointer flex items-center gap-1"><i class="fas fa-layer-group text-blue-500"></i> Bulk table editor</div>
+                            </div>
+                            
+                            <!-- Form -->
+                            <div class="flex-1 grid grid-cols-[85px_1fr] gap-y-3 items-center px-2">
+                                <div class="text-right pr-2">Database(s):</div>
+                                <div class="flex items-center">
+                                    <label class="flex items-center cursor-pointer hover:bg-pink-50 rounded px-1 interactive-element w-24"><input type="checkbox" id="sim-drop-db" class="mr-1 accent-pink-500"> Drop</label>
+                                    <label class="flex items-center cursor-pointer hover:bg-blue-50 rounded px-1 interactive-element"><input type="checkbox" id="sim-create-db" class="mr-1 accent-blue-500"> Create</label>
+                                </div>
+
+                                <div class="text-right pr-2">Table(s):</div>
+                                <div class="flex items-center">
+                                    <label class="flex items-center cursor-pointer hover:bg-pink-50 rounded px-1 interactive-element w-24"><input type="checkbox" id="sim-drop-table" class="mr-1 accent-pink-500"> Drop</label>
+                                    <label class="flex items-center cursor-pointer hover:bg-blue-50 rounded px-1 interactive-element"><input type="checkbox" id="sim-create-table" class="mr-1 accent-blue-500"> Create</label>
+                                </div>
+
+                                <div class="text-right pr-2">Data:</div>
+                                <div class="relative w-full" id="custom-dropdown-container">
+                                    <div id="sim-data-display" class="w-full border border-blue-500 p-[2px] bg-white flex justify-between items-center cursor-pointer select-none shadow-sm focus:outline-none ring-1 ring-blue-200" tabindex="0" onclick="toggleDropdown(event)">
+                                        <span id="sim-data-text" class="px-1 truncate text-gray-800">No data</span>
+                                        <div class="bg-gray-100 border border-gray-300 w-4 h-4 flex items-center justify-center shrink-0 hover:bg-blue-100">
+                                            <i class="fas fa-chevron-down text-[8px] text-gray-600"></i>
+                                        </div>
+                                    </div>
+                                    <div id="sim-data-list" class="absolute left-0 top-full mt-0 w-auto whitespace-nowrap min-w-full bg-white border border-gray-400 shadow-md z-50 text-[13px] py-[1px] block">
+                                        <div class="dropdown-item px-2 py-[1px] bg-[#0078d7] text-white cursor-pointer select-none" onclick="selectDataOption('none', 'No data', this, event)">No data</div>
+                                        <div class="dropdown-item px-2 py-[1px] hover:bg-[#0078d7] hover:text-white cursor-pointer select-none text-gray-800" onclick="selectDataOption('delete_insert', 'Delete + insert (truncate existing data)', this, event)">Delete + insert (truncate existing data)</div>
+                                        <div class="dropdown-item px-2 py-[1px] hover:bg-[#0078d7] hover:text-white cursor-pointer select-none text-gray-800" onclick="selectDataOption('insert', 'Insert', this, event)">Insert</div>
+                                        <div class="dropdown-item px-2 py-[1px] hover:bg-[#0078d7] hover:text-white cursor-pointer select-none text-gray-800" onclick="selectDataOption('insert_ignore', 'Insert ignore (do not update existing)', this, event)">Insert ignore (do not update existing)</div>
+                                        <div class="dropdown-item px-2 py-[1px] hover:bg-[#0078d7] hover:text-white cursor-pointer select-none text-gray-800" onclick="selectDataOption('replace', 'Replace existing data', this, event)">Replace existing data</div>
+                                    </div>
+                                    <input type="hidden" id="sim-data-select" value="none">
+                                </div>
+                                
+                                <div class="text-right pr-2 text-gray-400">Max INSERT size:</div>
+                                <div class="flex items-center text-gray-400">
+                                    <input type="text" value="1024" disabled class="w-20 border border-gray-300 p-1 mr-1 bg-gray-100"> KiB = 1 MiB
+                                </div>
+
+                                <div class="text-right pr-2">Output:</div>
+                                <div>
+                                    <select class="w-full border border-gray-300 p-1 bg-white">
+                                        <option>Single .sql file</option>
+                                    </select>
+                                </div>
+
+                                <div class="text-right pr-2">Filename:</div>
+                                <div class="flex">
+                                    <input type="text" value="C:\Temp\_mymusic.sql" class="flex-1 border border-gray-300 p-1 outline-none">
+                                    <button class="border border-gray-300 px-2 bg-gray-200 hover:bg-gray-300"><i class="far fa-folder-open text-yellow-600"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Empty Text Area (Mock) -->
+                            <div class="mt-2 h-20 border border-gray-300 bg-white shadow-inner"></div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="bg-[#f0f0f0] border-t border-gray-300 px-3 py-2 flex justify-between items-center mt-auto">
+                        <div id="sim-footer-text" class="text-gray-600">0 selected objects, size: 0 B</div>
+                        <div class="flex gap-2">
+                            <button onclick="simExport()" class="bg-[#e1e1e1] border border-[#adadad] px-6 py-1 hover:bg-[#d0d0d0] hover:border-[#808080] interactive-element active:bg-[#c0c0c0]">Export</button>
+                            <button class="bg-[#e1e1e1] border border-[#adadad] px-6 py-1 hover:bg-[#d0d0d0] hover:border-[#808080]">Close</button>
+                        </div>
+                    </div>
+
+                    <!-- Thông báo kết quả nổi (Overlay) -->
+                    <div id="sim-export-result" class="absolute bottom-14 right-1/2 translate-x-1/2 p-3 bg-green-100 text-green-800 rounded hidden text-sm font-bold shadow-xl border border-green-400 z-20 whitespace-nowrap">
+                        <i class="fas fa-check-circle mr-2"></i> Đã sao lưu thành công tệp _mymusic.sql!
+                    </div>
+                </div>
+
+                <!-- Mô phỏng 2: Phục hồi -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 relative">
+                    <div class="absolute inset-0 bg-white bg-opacity-80 z-10 flex flex-col items-center justify-center" id="sim-restore-overlay">
+                        <i class="fas fa-lock text-4xl text-gray-400 mb-2"></i>
+                        <p class="font-bold text-gray-600">Hãy thực hiện Export thành công trước</p>
+                    </div>
+
+                    <div class="bg-green-600 text-white px-4 py-2 font-bold text-sm flex items-center justify-between">
+                        <span>Nhiệm vụ 2: Phục hồi (Restore)</span>
+                        <div class="flex space-x-1">
+                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <!-- Thanh công cụ giả lập -->
+                        <div class="flex space-x-2 border-b pb-2 mb-3">
+                            <button onclick="simLoadFile()" class="p-2 bg-gray-100 rounded hover:bg-gray-200 interactive-element border" title="Load SQL file... (Ctrl+O)">
+                                <i class="far fa-folder-open text-yellow-600"></i>
+                            </button>
+                            <button onclick="simRunQuery()" id="sim-btn-run" class="p-2 bg-gray-100 rounded hover:bg-gray-200 interactive-element border opacity-50 cursor-not-allowed" title="Thực hiện truy vấn">
+                                <i class="fas fa-play text-blue-600"></i>
+                            </button>
+                            <button onclick="simRefresh()" id="sim-btn-refresh" class="p-2 bg-gray-100 rounded hover:bg-gray-200 interactive-element border opacity-50 cursor-not-allowed" title="Làm tươi (F5)">
+                                <i class="fas fa-sync-alt text-green-600"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Khu vực Query -->
+                        <div class="flex gap-2">
+                            <!-- Danh sách CSDL -->
+                            <div class="w-1/3 border rounded bg-gray-50 p-2 h-40 overflow-y-auto text-xs font-mono">
+                                <div class="mb-1"><i class="fas fa-server text-gray-400"></i> Server</div>
+                                <div id="sim-db-list">
+                                    <div class="ml-2 text-gray-400 italic">Chưa có mymusic</div>
+                                </div>
+                            </div>
+                            <!-- Khung Query -->
+                            <div class="w-2/3 border rounded bg-white p-2 h-40 text-xs font-mono relative overflow-hidden">
+                                <div id="sim-query-text" class="text-gray-400 italic">Trống. Nhấn <i class="far fa-folder-open"></i> để tải tệp .sql.</div>
+                                <div id="sim-run-overlay" class="absolute bottom-0 left-0 w-full h-1 bg-blue-500 scale-x-0 origin-left transition-transform duration-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div id="sim-restore-status" class="mt-3 text-sm text-center text-gray-500 italic h-5">
+                            Chờ thao tác...
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 3: LUYỆN TẬP -->
+        <div id="tab-quiz" class="p-6 bg-white hidden">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Cột Câu hỏi tương tác mở -->
+                <div class="md:col-span-1 space-y-4">
+                    <div class="bg-pastel-purple p-4 rounded-xl border border-purple-200">
+                        <h3 class="font-bold text-purple-800 mb-3 border-b border-purple-300 pb-2 flex items-center">
+                            <i class="fas fa-comments mr-2"></i> Câu Hỏi Tương Tác
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <details class="bg-white p-3 rounded-lg shadow-sm cursor-pointer group">
+                                <summary class="font-bold text-sm text-gray-700 outline-none group-hover:text-purple-600">1. Tại sao phải đánh dấu vào ô Drop?</summary>
+                                <p class="text-sm text-gray-600 mt-2 pl-2 border-l-2 border-purple-400 bg-purple-50 p-2 rounded">Khi phục hồi, hệ thống sẽ xoá đối tượng cũ (nếu có) trước khi tạo đối tượng mới (Create), tránh lỗi trùng lặp cấu trúc.</p>
+                            </details>
+                            <details class="bg-white p-3 rounded-lg shadow-sm cursor-pointer group">
+                                <summary class="font-bold text-sm text-gray-700 outline-none group-hover:text-purple-600">2. Phím tắt để tải lên tệp SQL là gì?</summary>
+                                <p class="text-sm text-gray-600 mt-2 pl-2 border-l-2 border-purple-400 bg-purple-50 p-2 rounded">Nhấn tổ hợp phím <b>Ctrl+O</b> (Hoặc chọn thẻ Tập tin -> Load SQL file...).</p>
+                            </details>
+                            <details class="bg-white p-3 rounded-lg shadow-sm cursor-pointer group">
+                                <summary class="font-bold text-sm text-gray-700 outline-none group-hover:text-purple-600">3. Làm sao để xem kết quả sau khi phục hồi?</summary>
+                                <p class="text-sm text-gray-600 mt-2 pl-2 border-l-2 border-purple-400 bg-purple-50 p-2 rounded">Sau khi chạy truy vấn, cần nhấn phím <b>F5</b> để làm tươi lại danh sách CSDL.</p>
+                            </details>
+                            <div class="mt-4 p-3 bg-pastel-yellow border border-yellow-300 rounded-lg text-sm text-yellow-800">
+                                <b>Vận dụng:</b> Giả sử cần di chuyển CSDL sang máy tính khác, ta sẽ làm gì? 
+                                <br><i class="fas fa-arrow-right mt-1"></i> Sao lưu ra tệp .sql -> Copy tệp sang máy mới -> Mở phần mềm -> Load tệp .sql và chạy phục hồi.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột Trắc nghiệm -->
+                <div class="md:col-span-2 bg-pastel-blue p-6 rounded-xl border border-blue-200">
+                    <h3 class="font-bold text-blue-800 mb-4 text-xl flex items-center">
+                        <i class="fas fa-clipboard-list mr-2 text-2xl"></i> Trắc Nghiệm Ôn Tập
+                    </h3>
+                    
+                    <div id="quiz-container" class="space-y-6">
+                        <!-- Câu hỏi được render bằng JS -->
+                    </div>
+
+                    <div class="mt-6 border-t border-blue-300 pt-4 flex justify-between items-center">
+                        <button onclick="checkQuiz()" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-blue-700 transition">
+                            <i class="fas fa-paper-plane mr-2"></i> Nộp Bài
+                        </button>
+                        <div id="quiz-result" class="font-bold text-lg hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Scripts điều khiển -->
+    <script>
+        // --- 1. CHUYỂN TAB ---
+        function switchTab(tabId) {
+            // Ẩn tất cả nội dung
+            document.getElementById('tab-overview').classList.add('hidden');
+            document.getElementById('tab-simulation').classList.add('hidden');
+            document.getElementById('tab-quiz').classList.add('hidden');
+            
+            // Hiện tab được chọn
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Cập nhật style nút
+            const buttons = ['overview', 'simulation', 'quiz'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(`btn-${id}`);
+                if (id === tabId) {
+                    btn.classList.remove('tab-inactive');
+                    btn.classList.add('tab-active');
+                } else {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                }
+            });
+        }
+
+        // --- 2. LOGIC MÔ PHỎNG ---
+        let isSimExported = false;
+        let isSimFileLoaded = false;
+        let isSimQueryRun = false;
+        
+        let isDropdownOpen = true; // match the image initially
+
+        function toggleDropdown(event) {
+            if(event) event.stopPropagation();
+            const list = document.getElementById('sim-data-list');
+            isDropdownOpen = !isDropdownOpen;
+            list.style.display = isDropdownOpen ? 'block' : 'none';
+        }
+
+        function selectDataOption(value, text, element, event) {
+            if(event) event.stopPropagation();
+            document.getElementById('sim-data-text').innerText = text;
+            document.getElementById('sim-data-select').value = value;
+            
+            // update highlights
+            document.querySelectorAll('.dropdown-item').forEach(el => {
+                el.classList.remove('bg-[#0078d7]', 'text-white');
+                el.classList.add('text-gray-800');
+            });
+            element.classList.add('bg-[#0078d7]', 'text-white');
+            element.classList.remove('text-gray-800');
+            
+            isDropdownOpen = false;
+            document.getElementById('sim-data-list').style.display = 'none';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const container = document.getElementById('custom-dropdown-container');
+            if (container && !container.contains(event.target) && isDropdownOpen) {
+                isDropdownOpen = false;
+                document.getElementById('sim-data-list').style.display = 'none';
+            }
+        });
+
+        function updateFooter() {
+            const isChecked = document.getElementById('sim-db-check').checked;
+            const footerText = document.getElementById('sim-footer-text');
+            if (isChecked) {
+                footerText.innerText = "38 selected objects, size: 2.6 MiB";
+                document.querySelectorAll('.sim-table-check').forEach(cb => cb.checked = true);
+            } else {
+                footerText.innerText = "0 selected objects, size: 0 B";
+                document.querySelectorAll('.sim-table-check').forEach(cb => cb.checked = false);
+            }
+        }
+
+        function simExport() {
+            // Đọc giá trị từ Native Checkboxes thay vì icon classes
+            const dbChecked = document.getElementById('sim-db-check').checked;
+            const dropDbChecked = document.getElementById('sim-drop-db').checked;
+            const createDbChecked = document.getElementById('sim-create-db').checked;
+            const dropTableChecked = document.getElementById('sim-drop-table').checked;
+            const createTableChecked = document.getElementById('sim-create-table').checked;
+            const dataVal = document.getElementById('sim-data-select').value;
+            const resultDiv = document.getElementById('sim-export-result');
+
+            if (!dbChecked) {
+                alert("Bạn phải chọn (tích vào) CSDL mymusic ở cây thư mục bên trái để sao lưu!");
+                return;
+            }
+            if (!(dropDbChecked || dropTableChecked) || !(createDbChecked || createTableChecked) || dataVal !== 'delete_insert') {
+                alert("Chú ý: Theo hướng dẫn, bạn cần chọn ô 'Drop', 'Create' (Database hoặc Table) và cấu hình Data là 'Delete + insert' để thực hành đúng chuẩn bài học!");
+                return;
+            }
+
+            // Thành công
+            resultDiv.classList.remove('hidden');
+            resultDiv.classList.add('animate-bounce');
+            setTimeout(() => resultDiv.classList.remove('animate-bounce'), 2000);
+            
+            isSimExported = true;
+            document.getElementById('sim-restore-overlay').classList.add('hidden'); // Mở khóa nhiệm vụ 2
+            document.getElementById('sim-restore-status').innerText = "Đã có tệp sao lưu. Hãy nhấn biểu tượng Mở thư mục bên dưới.";
+        }
+
+        function simLoadFile() {
+            if (!isSimExported) return;
+            document.getElementById('sim-query-text').innerHTML = `<span class="text-blue-600 font-bold">-- NỘI DUNG TỆP C:\Temp\_mymusic.sql</span><br>DROP DATABASE IF EXISTS \`mymusic\`;<br>CREATE DATABASE IF NOT EXISTS \`mymusic\`;<br>USE \`mymusic\`;<br>... (Dữ liệu bảng banthuam, casi...)`;
+            document.getElementById('sim-btn-run').classList.remove('opacity-50', 'cursor-not-allowed');
+            isSimFileLoaded = true;
+            document.getElementById('sim-restore-status').innerHTML = "Đã tải tệp <b class='text-blue-600'>_mymusic.sql</b>. Nhấn nút Run (Play) để thực thi.";
+        }
+
+        function simRunQuery() {
+            if (!isSimFileLoaded) return;
+            document.getElementById('sim-run-overlay').style.transform = 'scaleX(1)';
+            setTimeout(() => {
+                document.getElementById('sim-run-overlay').style.transform = 'scaleX(0)';
+                document.getElementById('sim-btn-refresh').classList.remove('opacity-50', 'cursor-not-allowed');
+                isSimQueryRun = true;
+                document.getElementById('sim-restore-status').innerHTML = "Đã thực thi xong truy vấn. Nhấn nút Refresh (F5) để xem kết quả.";
+            }, 600);
+        }
+
+        function simRefresh() {
+            if (!isSimQueryRun) return;
+            document.getElementById('sim-db-list').innerHTML = `
+                <div class="ml-2 font-bold text-gray-700">
+                    <i class="fas fa-database text-blue-400"></i> mymusic
+                </div>
+                <div class="ml-6 text-gray-500">
+                    <div><i class="fas fa-table"></i> banthuam</div>
+                    <div><i class="fas fa-table"></i> casi</div>
+                    <div><i class="fas fa-table"></i> nhacsi</div>
+                </div>
+            `;
+            document.getElementById('sim-restore-status').innerHTML = "<span class='text-green-600 font-bold'><i class='fas fa-check-circle'></i> Phục hồi CSDL thành công!</span>";
+        }
+
+        // --- 3. LOGIC TRẮC NGHIỆM ---
+        const quizData = [
+            {
+                q: "1. Mục tiêu chính của bài học này là gì?",
+                options: [
+                    "Viết mã lệnh SQL cơ bản.",
+                    "Nắm được các thao tác sao lưu và phục hồi dữ liệu.",
+                    "Thiết kế giao diện cho CSDL.",
+                    "Cài đặt hệ quản trị CSDL mới."
+                ],
+                ans: 1
+            },
+            {
+                q: "2. Tại công cụ Xuất cơ sở dữ liệu dưới dạng SQL, việc đánh dấu vào ô 'Drop' có ý nghĩa gì?",
+                options: [
+                    "Xóa CSDL hiện tại vĩnh viễn.",
+                    "Xóa đối tượng cũ (nếu có) trước khi tạo đối tượng mới (Create) khi phục hồi.",
+                    "Bỏ qua các bảng bị lỗi khi xuất.",
+                    "Nén tệp SQL để giảm dung lượng."
+                ],
+                ans: 1
+            },
+            {
+                q: "3. Ở dòng Data (Dữ liệu) khi sao lưu, lựa chọn 'Delete + insert' dùng để làm gì?",
+                options: [
+                    "Chỉ xóa dữ liệu, không chèn.",
+                    "Khi phục hồi sẽ xóa dữ liệu cũ đi (nếu có) trước khi chèn vào dữ liệu đã sao lưu.",
+                    "Tạo bảng mới và chèn dữ liệu.",
+                    "Cập nhật (Update) những dòng dữ liệu bị trùng."
+                ],
+                ans: 1
+            },
+            {
+                q: "4. Sau khi đã Load file .sql và thực hiện chạy truy vấn, thao tác nào tiếp theo để làm tươi lại danh sách CSDL?",
+                options: [
+                    "Nhấn phím F5",
+                    "Nhấn Ctrl + S",
+                    "Nhấn Alt + F4",
+                    "Đóng cửa sổ truy vấn"
+                ],
+                ans: 0
+            },
+            {
+                q: "5. Có thể thực hiện sao lưu một phần của CSDL thay vì toàn bộ không?",
+                options: [
+                    "Không thể, bắt buộc phải sao lưu toàn bộ.",
+                    "Có thể, bằng cách chỉ chọn những bảng muốn sao lưu.",
+                    "Chỉ thực hiện được khi dùng lệnh dòng lệnh.",
+                    "Có thể, nhưng chỉ giới hạn 1 bảng duy nhất."
+                ],
+                ans: 1
+            }
+        ];
+
+        // Render câu hỏi
+        const quizContainer = document.getElementById('quiz-container');
+        quizData.forEach((item, index) => {
+            let optionsHTML = '';
+            item.options.forEach((opt, optIndex) => {
+                optionsHTML += `
+                    <label class="flex items-start p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 transition mb-2 interactive-element">
+                        <input type="radio" name="q${index}" value="${optIndex}" class="mt-1 mr-3 w-4 h-4 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm font-medium text-gray-700">${opt}</span>
+                    </label>
+                `;
+            });
+
+            quizContainer.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-white">
+                    <p class="font-bold text-blue-900 mb-3">${item.q}</p>
+                    <div class="space-y-1">
+                        ${optionsHTML}
+                    </div>
+                </div>
+            `;
+        });
+
+        // Chấm điểm
+        function checkQuiz() {
+            let score = 0;
+            quizData.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const questionBlock = document.querySelectorAll('#quiz-container > div')[index];
+                
+                // Xóa màu viền cũ
+                questionBlock.classList.remove('border-red-400', 'border-green-400', 'border-white');
+
+                if (selected) {
+                    if (parseInt(selected.value) === item.ans) {
+                        score++;
+                        questionBlock.classList.add('border-green-400');
+                    } else {
+                        questionBlock.classList.add('border-red-400');
+                    }
+                } else {
+                    questionBlock.classList.add('border-red-400');
+                }
+            });
+
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.classList.remove('hidden', 'text-green-600', 'text-red-600', 'text-yellow-600');
+            
+            resultDiv.innerHTML = `Kết quả: ${score} / 5`;
+            if(score === 5) {
+                resultDiv.classList.add('text-green-600');
+                resultDiv.innerHTML += ' <i class="fas fa-star text-yellow-400"></i> Tuyệt vời!';
+            } else if (score >= 3) {
+                resultDiv.classList.add('text-blue-600');
+            } else {
+                resultDiv.classList.add('text-red-600');
+                resultDiv.innerHTML += ' <span class="text-sm font-normal">Hãy xem lại bài nhé!</span>';
+            }
+        }
+    </script>
+</body>
+</html>

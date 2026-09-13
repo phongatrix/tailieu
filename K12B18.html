@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiết Kế Website Câu Lạc Bộ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        /* Yêu cầu định dạng Tiêu đề chính */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 28px;
+            font-weight: 700; /* Bold */
+            text-transform: capitalize; /* Title Case */
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Xanh lam sang Tím */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        /* Tabs styling */
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background-color: #ffffff;
+            color: #8b5cf6;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-bottom: 3px solid #a855f7;
+            font-weight: 700;
+        }
+
+        /* Content animation */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pastel Palettes */
+        .pastel-blue { background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;}
+        .pastel-purple { background-color: #f3e8ff; color: #7e22ce; border-color: #e9d5ff;}
+        .pastel-pink { background-color: #fce7f3; color: #be185d; border-color: #fbcfe8;}
+        .pastel-green { background-color: #dcfce7; color: #15803d; border-color: #bbf7d0;}
+        .pastel-orange { background-color: #ffedd5; color: #c2410c; border-color: #fed7aa;}
+
+        /* Mindmap & Infographic Elements */
+        .connection-line {
+            position: absolute;
+            width: 2px;
+            background-color: #cbd5e1;
+            z-index: 0;
+        }
+        
+        /* Glassmorphism for studygram feel */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Interactive Simulator */
+        .sim-container { transition: all 0.5s ease; }
+        .sim-flex-active { display: flex; flex-wrap: wrap; }
+        .sim-block { transition: all 0.5s ease; border: 2px dashed #94a3b8; }
+        .sim-flex-active .sim-block { width: 33.33%; border-style: solid;}
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* --- NEW STYLES FOR TREE DIAGRAM & EFFECTS --- */
+        .tree { display: flex; justify-content: center; overflow-x: auto; padding-bottom: 20px; }
+        .tree ul { padding-top: 20px; position: relative; display: flex; justify-content: center; padding-left: 0; }
+        .tree li { text-align: center; list-style-type: none; position: relative; padding: 20px 10px 0 10px; }
+        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #cbd5e1; width: 50%; height: 20px; z-index: 1;}
+        .tree li::after { right: auto; left: 50%; border-left: 2px solid #cbd5e1; }
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child { padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        .tree li:last-child::before { border-right: 2px solid #cbd5e1; border-radius: 0 10px 0 0; }
+        .tree li:first-child::after { border-radius: 10px 0 0 0; }
+        .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #cbd5e1; width: 0; height: 20px; z-index: 1; transform: translateX(-50%);}
+        .tree li div.node { display: inline-block; position: relative; z-index: 2; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .tree li div.node:hover { transform: scale(1.05) translateY(-8px); box-shadow: 0 15px 30px -5px rgba(0,0,0,0.15); }
+        .tree li div.node:hover + ul li::after, .tree li div.node:hover + ul li::before, .tree li div.node:hover + ul::before, .tree li div.node:hover + ul ul::before { border-color: #a855f7; transition: border-color 0.3s; }
+        
+        @keyframes floatAnim {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: floatAnim 3s ease-in-out infinite; }
+        
+        .tooltip-custom { visibility: hidden; opacity: 0; transition: all 0.3s ease; bottom: 100%; margin-bottom: 10px; }
+        .node:hover .tooltip-custom { visibility: visible; opacity: 1; transform: translateY(-5px); }
+
+        .glow-green { box-shadow: 0 0 20px rgba(34, 197, 94, 0.4); border-color: #4ade80 !important; }
+        .glow-red { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); border-color: #f87171 !important; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="text-center mb-10 mt-4">
+        <h1 class="title-gradient"><i class="fa-solid fa-laptop-code mr-2"></i>Thiết Kế Website Câu Lạc Bộ Với HTML Và CSS</h1>
+        <p class="text-slate-500 mt-2 font-medium"><i class="fa-solid fa-book-open mr-1"></i> Tin Học - Bài 18 (Kết Nối Tri Thức)</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="max-w-5xl mx-auto flex flex-wrap justify-center gap-2 mb-8 bg-slate-100 p-2 rounded-2xl">
+        <button onclick="openTab('tongquan')" class="tab-btn active px-6 py-3 rounded-xl font-semibold text-slate-600 flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-lg"></i> Tổng Quan
+        </button>
+        <button onclick="openTab('sodo')" class="tab-btn px-6 py-3 rounded-xl font-semibold text-slate-600 flex items-center gap-2">
+            <i class="fa-solid fa-sitemap text-lg"></i> Cấu Trúc
+        </button>
+        <button onclick="openTab('thuchanh')" class="tab-btn px-6 py-3 rounded-xl font-semibold text-slate-600 flex items-center gap-2">
+            <i class="fa-solid fa-code text-lg"></i> Bố Cục & Tương Tác
+        </button>
+        <button onclick="openTab('luuy')" class="tab-btn px-6 py-3 rounded-xl font-semibold text-slate-600 flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-lg"></i> Lưu Ý
+        </button>
+        <button onclick="openTab('tracnghiem')" class="tab-btn px-6 py-3 rounded-xl font-semibold text-slate-600 flex items-center gap-2">
+            <i class="fa-solid fa-gamepad text-lg"></i> Luyện Tập
+        </button>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-5xl mx-auto">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tongquan" class="tab-content active">
+            <!-- Mục tiêu (Visual Icons) -->
+            <div class="glass-card rounded-3xl p-8 mb-8">
+                <h2 class="text-xl font-bold text-slate-700 mb-6 border-b-2 border-blue-100 pb-2"><i class="fa-solid fa-flag-checkered text-blue-500 mr-2"></i> Mục Tiêu Dự Án</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="pastel-blue p-6 rounded-2xl text-center border-2 shadow-sm hover:-translate-y-1 transition transform duration-300">
+                        <i class="fa-regular fa-lightbulb text-5xl mb-4 opacity-80"></i>
+                        <h3 class="font-bold text-lg mb-2">Lên Ý Tưởng</h3>
+                        <p class="text-sm opacity-80">Thảo luận nhóm, tổ chức nội dung cho CLB</p>
+                    </div>
+                    <div class="pastel-pink p-6 rounded-2xl text-center border-2 shadow-sm hover:-translate-y-1 transition transform duration-300">
+                        <i class="fa-brands fa-html5 text-5xl mb-4 opacity-80"></i>
+                        <h3 class="font-bold text-lg mb-2">Dựng Khung HTML</h3>
+                        <p class="text-sm opacity-80">Tạo trang web bằng các thẻ HTML (div, h2, h3, p...)</p>
+                    </div>
+                    <div class="pastel-purple p-6 rounded-2xl text-center border-2 shadow-sm hover:-translate-y-1 transition transform duration-300">
+                        <i class="fa-brands fa-css3-alt text-5xl mb-4 opacity-80"></i>
+                        <h3 class="font-bold text-lg mb-2">Định Dạng CSS</h3>
+                        <p class="text-sm opacity-80">Thiết kế giao diện đẹp mắt, nhất quán</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mối quan hệ (Infographic) -->
+            <div class="glass-card rounded-3xl p-8">
+                <h2 class="text-xl font-bold text-slate-700 mb-6 border-b-2 border-purple-100 pb-2"><i class="fa-solid fa-link text-purple-500 mr-2"></i> Mối Quan Hệ Cốt Lõi</h2>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-2 border-slate-200 w-full md:w-1/3">
+                        <i class="fa-regular fa-file-code text-4xl text-slate-400 mb-2"></i>
+                        <h3 class="font-bold">Nhiều tệp HTML</h3>
+                        <p class="text-xs mt-2 bg-slate-100 p-2 rounded">index.html<br>thethao.html<br>nghethuat.html</p>
+                    </div>
+                    <div class="text-2xl text-purple-400 animate-pulse">
+                        <i class="fa-solid fa-link"></i> Liên kết tới
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-2 border-purple-200 w-full md:w-1/3 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-purple-500 text-white text-[10px] px-2 py-1 rounded-bl-lg">Dùng chung</div>
+                        <i class="fa-solid fa-palette text-4xl text-purple-400 mb-2"></i>
+                        <h3 class="font-bold text-purple-700">1 Tệp CSS duy nhất</h3>
+                        <p class="text-xs mt-2 bg-purple-50 p-2 rounded text-purple-600">style.css</p>
+                    </div>
+                </div>
+                <p class="text-center text-sm text-slate-500 mt-6"><i class="fa-solid fa-circle-info text-blue-400"></i> Đảm bảo phong cách trình bày thống nhất cho toàn bộ website.</p>
+            </div>
+        </section>
+
+        <!-- TAB 2: SƠ ĐỒ (Cấu trúc & Khái niệm) -->
+        <section id="sodo" class="tab-content">
+            <div class="glass-card rounded-3xl p-8 mb-8 relative">
+                <h2 class="text-xl font-bold text-slate-700 mb-8 text-center border-b-2 border-emerald-100 pb-2"><i class="fa-solid fa-diagram-project text-emerald-500 mr-2"></i> Sơ Đồ Cấu Trúc Website Câu Lạc Bộ</h2>
+                
+                <!-- Tree HTML/CSS Mindmap -->
+                <div class="tree w-full">
+                    <ul>
+                        <li>
+                            <!-- Root Node -->
+                            <div class="node pastel-green px-8 py-4 rounded-2xl font-bold border-2 shadow-md w-48 mx-auto animate-float">
+                                <i class="fa-solid fa-house text-3xl block mb-2 text-green-600"></i>
+                                Trang Chủ<br>
+                                <span class="text-xs font-normal bg-white/70 px-2 py-1 rounded mt-1 inline-block text-green-800 font-mono shadow-sm">index.html</span>
+                                <!-- Tooltip -->
+                                <div class="tooltip-custom absolute left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-2 px-3 rounded-lg whitespace-nowrap shadow-xl">
+                                    Liên kết đến các trang con
+                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                </div>
+                            </div>
+                            <!-- Child Nodes -->
+                            <ul>
+                                <li>
+                                    <div class="node pastel-blue p-4 rounded-2xl text-center border-2 shadow-sm w-36 relative group">
+                                        <i class="fa-solid fa-basketball text-3xl mb-2 text-blue-500 group-hover:animate-bounce"></i>
+                                        <div class="font-bold text-sm">CLB Thể Thao</div>
+                                        <div class="text-[10px] mt-1 bg-white/70 rounded px-1 font-mono text-blue-800 shadow-inner">thethao.html</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="node pastel-pink p-4 rounded-2xl text-center border-2 shadow-sm w-36 relative group">
+                                        <i class="fa-solid fa-masks-theater text-3xl mb-2 text-pink-500 group-hover:scale-110 transition-transform"></i>
+                                        <div class="font-bold text-sm">CLB Nghệ Thuật</div>
+                                        <div class="text-[10px] mt-1 bg-white/70 rounded px-1 font-mono text-pink-800 shadow-inner">nghethuat.html</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="node pastel-yellow p-4 rounded-2xl text-center border-2 shadow-sm border-dashed w-36 relative group">
+                                        <div class="absolute -top-3 -right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg animate-pulse z-10">Bài tập!</div>
+                                        <i class="fa-solid fa-pen-to-square text-3xl mb-2 text-yellow-600 group-hover:rotate-12 transition-transform"></i>
+                                        <div class="font-bold text-sm text-yellow-800">Mẫu Đăng Ký</div>
+                                        <div class="text-[10px] mt-1 bg-white/70 rounded px-1 font-mono text-yellow-800 shadow-inner">dang_ky.html</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Khái niệm core -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-700 mb-4"><i class="fa-brands fa-html5 text-orange-500"></i> Thẻ HTML Trọng Tâm</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-mono border">&lt;div&gt;</span>
+                            <span class="text-sm text-slate-600">Dùng để tạo khối, dựng khung cho các thành phần (Banner, Slogan).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-mono border">&lt;h2&gt;,&lt;h3&gt;</span>
+                            <span class="text-sm text-slate-600">Chứa tiêu đề trang hoặc tiêu đề các khối nội dung.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-mono border">&lt;p&gt;</span>
+                            <span class="text-sm text-slate-600">Đoạn văn bản chứa nội dung chi tiết.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-700 mb-4"><i class="fa-brands fa-css3-alt text-blue-500"></i> Định Dạng CSS (style.css)</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-mono border border-blue-200">.class</span>
+                            <span class="text-sm text-slate-600">Sử dụng chọn lớp (ví dụ: .banner, .slogan) để định dạng chung.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-mono border border-blue-200">flex</span>
+                            <span class="text-sm text-slate-600">Thuộc tính <code>display: flex</code> quan trọng để xếp các ô nằm ngang.</span>
+                        </li>
+                         <li class="flex items-start gap-3">
+                            <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-mono border border-blue-200">:hover</span>
+                            <span class="text-sm text-slate-600">Hiệu ứng di chuột (bài tập vận dụng).</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: BỐ CỤC & TƯƠNG TÁC (Interactive) -->
+        <section id="thuchanh" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Cột trái -->
+                <div class="flex flex-col gap-6">
+                    
+                    <!-- Sơ đồ bố cục Trực quan (Visual Wireframe) -->
+                    <div class="glass-card rounded-3xl p-6">
+                        <h2 class="text-lg font-bold text-slate-700 mb-4"><i class="fa-solid fa-object-group text-indigo-500"></i> Sơ Đồ Bố Cục Trực Quan</h2>
+                        <div class="flex flex-col gap-4 p-5 bg-slate-50 rounded-2xl border-2 border-slate-200">
+                            
+                            <!-- Header -->
+                            <div class="border-2 border-slate-300 bg-slate-200/50 rounded-xl p-3 flex flex-col gap-3">
+                                <div class="text-center text-xs font-bold text-slate-600">Đầu trang (Header)</div>
+                                <!-- Banner -->
+                                <div class="bg-red-50 text-red-700 p-5 border border-red-200 rounded-lg flex items-center justify-center shadow-inner" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(254,226,226,0.8) 10px, rgba(254,226,226,0.8) 20px);">
+                                    <span class="bg-white/90 px-3 py-1.5 rounded-md text-xs font-bold shadow-sm text-red-800">&lt;div class="banner"&gt; (Ảnh nền)</span>
+                                </div>
+                                <!-- Slogan -->
+                                <div class="flex gap-2">
+                                    <div class="flex-1 bg-white border border-blue-200 text-slate-500 py-3 text-center text-[11px] font-medium rounded-lg shadow-sm">.block_3 (1/3)</div>
+                                    <div class="flex-1 bg-white border border-blue-200 text-slate-500 py-3 text-center text-[11px] font-medium rounded-lg shadow-sm">.block_3 (1/3)</div>
+                                    <div class="flex-1 bg-white border border-blue-200 text-slate-500 py-3 text-center text-[11px] font-medium rounded-lg shadow-sm">.block_3 (1/3)</div>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="border-2 border-slate-300 bg-slate-100 rounded-xl p-3 flex flex-col gap-3">
+                                <div class="text-center text-xs font-bold text-slate-600">Phần nội dung chính (Body)</div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="bg-white py-5 border border-slate-200 rounded-lg flex items-center justify-center text-xs text-slate-400 font-medium shadow-sm"><i class="fa-regular fa-image mr-2 text-lg"></i> Ảnh/Nội dung</div>
+                                    <div class="bg-white py-5 border border-slate-200 rounded-lg flex items-center justify-center text-xs text-slate-400 font-medium shadow-sm"><i class="fa-regular fa-image mr-2 text-lg"></i> Ảnh/Nội dung</div>
+                                    <div class="bg-white py-5 border border-slate-200 rounded-lg flex items-center justify-center text-xs text-slate-400 font-medium shadow-sm"><i class="fa-regular fa-image mr-2 text-lg"></i> Ảnh/Nội dung</div>
+                                    <div class="bg-white py-5 border border-slate-200 rounded-lg flex items-center justify-center text-xs text-slate-400 font-medium shadow-sm"><i class="fa-regular fa-image mr-2 text-lg"></i> Ảnh/Nội dung</div>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="bg-slate-700 text-white rounded-xl p-4 text-center text-xs font-bold shadow-md">
+                                Cuối trang (Footer)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mã HTML Khung & CSS -->
+                    <div class="glass-card rounded-3xl p-6">
+                        <h2 class="text-lg font-bold text-slate-700 mb-2"><i class="fa-solid fa-code text-indigo-500"></i> Mã HTML Khung</h2>
+                        <p class="text-xs text-slate-500 mb-3">Mô phỏng cấu trúc HTML và CSS dựa trên Sơ đồ bố cục. Khung mã này đã bao gồm định dạng chia cột cơ bản.</p>
+                        
+                        <div class="bg-slate-800 text-sky-300 p-4 rounded-xl text-[11px] font-mono shadow-inner overflow-x-auto leading-relaxed h-[420px] overflow-y-auto">
+<span class="text-slate-400">&lt;!-- 1. MÃ HTML --&gt;</span><br>
+<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"header"</span><span class="text-pink-400">&gt;</span><br>
+&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"banner"</span><span class="text-pink-400">&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;h2&gt;</span>TÊN CÂU LẠC BỘ<span class="text-pink-400">&lt;/h2&gt;</span><br>
+&nbsp;&nbsp;<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"slogan"</span><span class="text-pink-400">&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"row"</span><span class="text-pink-400">&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"block_3"</span><span class="text-pink-400">&gt;</span>Năng động<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"block_3"</span><span class="text-pink-400">&gt;</span>Đam mê<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"block_3"</span><span class="text-pink-400">&gt;</span>Toả sáng<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;<span class="text-pink-400">&lt;/div&gt;</span><br>
+<span class="text-pink-400">&lt;/div&gt;</span><br><br>
+
+<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"content"</span><span class="text-pink-400">&gt;</span><br>
+&nbsp;&nbsp;<span class="text-slate-400">&lt;!-- Khung 4 Ảnh/Nội dung --&gt;</span><br>
+&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"row"</span><span class="text-pink-400">&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"box_content"</span><span class="text-pink-400">&gt;</span>Ảnh/Nội dung 1<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"box_content"</span><span class="text-pink-400">&gt;</span>Ảnh/Nội dung 2<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"box_content"</span><span class="text-pink-400">&gt;</span>Ảnh/Nội dung 3<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"box_content"</span><span class="text-pink-400">&gt;</span>Ảnh/Nội dung 4<span class="text-pink-400">&lt;/div&gt;</span><br>
+&nbsp;&nbsp;<span class="text-pink-400">&lt;/div&gt;</span><br>
+<span class="text-pink-400">&lt;/div&gt;</span><br><br>
+
+<span class="text-pink-400">&lt;div</span> <span class="text-green-300">class</span>=<span class="text-yellow-300">"footer"</span><span class="text-pink-400">&gt;</span><br>
+&nbsp;&nbsp;<span class="text-pink-400">&lt;p&gt;</span>Bản quyền © 2026 - Trường THPT Trương Định - HF<span class="text-pink-400">&lt;/p&gt;</span><br>
+<span class="text-pink-400">&lt;/div&gt;</span><br><br>
+
+<span class="text-slate-400">/* 2. MÃ CSS (style.css) */</span><br>
+<span class="text-pink-400">.row</span> { <br>
+&nbsp;&nbsp;<span class="text-blue-300">display</span>: flex; <br>
+&nbsp;&nbsp;<span class="text-blue-300">flex-wrap</span>: wrap; <br>
+}<br>
+<span class="text-pink-400">.block_3</span> { <br>
+&nbsp;&nbsp;<span class="text-blue-300">width</span>: 33.33%; <span class="text-slate-400">/* Chia 3 cột */</span><br>
+}<br>
+<span class="text-pink-400">.box_content</span> { <br>
+&nbsp;&nbsp;<span class="text-blue-300">width</span>: 50%; <span class="text-slate-400">/* Chia 2 cột */</span><br>
+&nbsp;&nbsp;<span class="text-blue-300">padding</span>: 10px;<br>
+}<br>
+<span class="text-pink-400">.banner</span> { <br>
+&nbsp;&nbsp;<span class="text-blue-300">background-image</span>: url("../assets/img/bg.jpg"); <br>
+&nbsp;&nbsp;<span class="text-blue-300">text-align</span>: center; <br>
+}<br>
+<span class="text-pink-400">.footer</span> { <br>
+&nbsp;&nbsp;<span class="text-blue-300">background-color</span>: #334155; <br>
+&nbsp;&nbsp;<span class="text-blue-300">color</span>: white; <br>
+&nbsp;&nbsp;<span class="text-blue-300">text-align</span>: center; <br>
+}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Mô phỏng Tương tác HTML/CSS -->
+                <div class="flex flex-col gap-6">
+                    
+                    <!-- Mô phỏng Flexbox -->
+                    <div class="glass-card rounded-3xl p-6 border-l-4 border-l-blue-400">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-bold text-slate-700"><i class="fa-solid fa-wand-magic-sparkles text-blue-500"></i> Mô Phỏng Thuộc Tính Flex</h2>
+                            <button onclick="toggleFlex()" id="flexBtn" class="bg-blue-500 text-white px-4 py-1.5 rounded-full text-xs font-bold hover:bg-blue-600 transition shadow-md">Bật display: flex</button>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">Nhấn nút bên trên để xem cách lớp <code class="bg-slate-100 px-1 rounded">.row</code> điều khiển 3 ô <code class="bg-slate-100 px-1 rounded">.block_3</code>.</p>
+                        
+                        <!-- Khu vực hiển thị -->
+                        <div class="bg-slate-200 p-2 rounded-lg border border-slate-300">
+                            <div class="text-[10px] text-slate-500 mb-1 ml-1">&lt;div class="row"&gt;</div>
+                            
+                            <div id="simContainer" class="sim-container bg-white p-2 rounded">
+                                <div class="sim-block bg-blue-100 text-blue-800 p-3 m-1 text-center text-xs rounded">
+                                    <b>Năng động</b><br>Hoạt động năng nổ
+                                </div>
+                                <div class="sim-block bg-green-100 text-green-800 p-3 m-1 text-center text-xs rounded">
+                                    <b>Đam mê</b><br>Cháy hết mình
+                                </div>
+                                <div class="sim-block bg-orange-100 text-orange-800 p-3 m-1 text-center text-xs rounded">
+                                    <b>Toả sáng</b><br>Giành giải thưởng
+                                </div>
+                            </div>
+                            
+                            <div class="text-[10px] text-slate-500 mt-1 ml-1">&lt;/div&gt;</div>
+                        </div>
+                        <div id="flexCode" class="mt-3 bg-slate-800 text-green-400 p-3 rounded-lg text-xs font-mono overflow-x-auto shadow-inner transition-all duration-300">
+                            .row { <br>
+                            &nbsp;&nbsp;<span class="text-slate-400">/* Mặc định thẻ div hiển thị dọc (block) */</span><br>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Mô phỏng Hover -->
+                    <div class="glass-card rounded-3xl p-6 border-l-4 border-l-purple-400">
+                        <h2 class="text-lg font-bold text-slate-700 mb-2"><i class="fa-solid fa-hand-pointer text-purple-500 hover:scale-125 transition-transform duration-300"></i> Mô Phỏng Hiệu Ứng :hover</h2>
+                        <p class="text-xs text-slate-500 mb-4">Bài tập 2 yêu cầu đổi màu phông chữ khi rê chuột. Thử tương tác với nút bên dưới!</p>
+                        <div class="flex flex-col md:flex-row items-center gap-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div class="flex-1 text-center w-full">
+                                <button class="bg-white border-2 border-purple-400 text-purple-600 font-bold py-3 px-6 rounded-full transition-all duration-300 hover:bg-purple-500 hover:text-white hover:scale-110 hover:-translate-y-1 shadow hover:shadow-xl hover:shadow-purple-200 w-full md:w-auto">
+                                    <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Rê chuột vào đây!
+                                </button>
+                            </div>
+                            <div class="flex-1 bg-slate-800 text-sky-300 p-3 rounded-lg text-[11px] font-mono shadow-inner w-full">
+<span class="text-pink-400">button</span><span class="text-yellow-300">:hover</span> {
+  <span class="text-blue-300">background-color</span>: <span class="text-purple-300">#a855f7</span>;
+  <span class="text-blue-300">color</span>: <span class="text-white">white</span>;
+  <span class="text-blue-300">transform</span>: <span class="text-orange-300">scale(1.1)</span>;
+}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: LƯU Ý DỄ NHẦM LẪN -->
+        <section id="luuy" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Thẻ lồng nhau -->
+                <div class="bg-amber-50 border-2 border-amber-200 p-6 rounded-3xl relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 bg-amber-200 rounded-full w-24 h-24 opacity-50 group-hover:scale-150 transition duration-500"></div>
+                    <i class="fa-solid fa-layer-group text-3xl text-amber-500 mb-4"></i>
+                    <h3 class="font-bold text-amber-800 text-lg mb-2">Cấu Trúc Thẻ Lồng Nhau</h3>
+                    <p class="text-sm text-amber-700 mb-3">Học sinh rất dễ viết sai cấu trúc bao bọc của phần Slogan.</p>
+                    <div class="bg-white p-3 rounded-xl border border-amber-300 text-xs font-mono text-slate-600 shadow-sm">
+                        <span class="text-green-600 font-bold">ĐÚNG:</span><br>
+                        &lt;div class="slogan"&gt;<br>
+                        &nbsp;&nbsp;&lt;div class="row"&gt;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="block_3"&gt;...&lt;/div&gt;<br>
+                        &nbsp;&nbsp;&lt;/div&gt;<br>
+                        &lt;/div&gt;
+                    </div>
+                </div>
+
+                <!-- Thuộc tính Flex -->
+                <div class="bg-rose-50 border-2 border-rose-200 p-6 rounded-3xl relative overflow-hidden group">
+                     <div class="absolute -right-6 -top-6 bg-rose-200 rounded-full w-24 h-24 opacity-50 group-hover:scale-150 transition duration-500"></div>
+                    <i class="fa-solid fa-arrows-left-right text-3xl text-rose-500 mb-4"></i>
+                    <h3 class="font-bold text-rose-800 text-lg mb-2">Nhầm Vị Trí Đặt 'Flex'</h3>
+                    <p class="text-sm text-rose-700 mb-3">Để các ô nằm ngang, <code>display: flex;</code> phải được đặt ở <b>lớp cha (.row)</b>, chứ không phải ở lớp con (.block_3).</p>
+                    <ul class="text-xs text-rose-800 space-y-1 bg-white p-3 rounded-xl border border-rose-300 shadow-sm">
+                        <li><i class="fa-solid fa-check text-green-500 mr-1"></i> <b>.row</b> chứa <code>display: flex</code></li>
+                        <li><i class="fa-solid fa-check text-green-500 mr-1"></i> <b>.block_3</b> chứa <code>width: 33.33%</code></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: TRẮC NGHIỆM -->
+        <section id="tracnghiem" class="tab-content">
+            <div class="glass-card rounded-3xl p-8 max-w-3xl mx-auto border-t-8 border-t-purple-400 shadow-lg">
+                <div class="flex justify-between items-center mb-6 border-b-2 border-slate-100 pb-4">
+                    <h2 class="text-2xl font-bold text-slate-700"><i class="fa-solid fa-list-check text-purple-500 mr-2"></i> Trắc Nghiệm Ôn Tập</h2>
+                    <span id="scoreBadge" class="bg-purple-100 text-purple-700 font-bold px-4 py-1 rounded-full border border-purple-200 hidden">Điểm: <span id="scoreValue">0</span>/5</span>
+                </div>
+                
+                <div id="quizContainer" class="space-y-8">
+                    <!-- Questions will be generated here by JS -->
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button onclick="submitQuiz()" id="submitBtn" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition transform duration-300">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> Nộp Bài & Xem Điểm
+                    </button>
+                    <button onclick="resetQuiz()" id="retryBtn" class="hidden bg-slate-200 text-slate-700 font-bold py-3 px-8 rounded-full shadow hover:bg-slate-300 transition mt-4 mx-auto">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> Làm Lại
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. Tab Switching Logic ---
+        function openTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Remove active style from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            // Highlight clicked button
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- 2. Flexbox Simulator Logic ---
+        let isFlexActive = false;
+        function toggleFlex() {
+            const container = document.getElementById('simContainer');
+            const btn = document.getElementById('flexBtn');
+            const codeBlock = document.getElementById('flexCode');
+            
+            isFlexActive = !isFlexActive;
+            
+            if(isFlexActive) {
+                container.classList.add('sim-flex-active');
+                btn.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i> Tắt Flex';
+                btn.classList.replace('bg-blue-500', 'bg-red-500');
+                btn.classList.replace('hover:bg-blue-600', 'hover:bg-red-600');
+                codeBlock.innerHTML = `.row { <br>&nbsp;&nbsp;<span class="text-yellow-400">display: flex;</span><br>&nbsp;&nbsp;<span class="text-yellow-400">flex-wrap: wrap;</span><br>}`;
+            } else {
+                container.classList.remove('sim-flex-active');
+                btn.innerHTML = 'Bật display: flex';
+                btn.classList.replace('bg-red-500', 'bg-blue-500');
+                btn.classList.replace('hover:bg-red-600', 'hover:bg-blue-600');
+                codeBlock.innerHTML = `.row { <br>&nbsp;&nbsp;<span class="text-slate-400">/* Mặc định thẻ div hiển thị dọc (block) */</span><br>}`;
+            }
+        }
+
+        // --- 3. Quiz Logic ---
+        const quizData = [
+            {
+                question: "1. Để đảm bảo phong cách trình bày thống nhất cho toàn bộ trang web (trang chủ, thể thao, nghệ thuật), tài liệu hướng dẫn dùng cách nào?",
+                options: [
+                    "Viết mã định dạng riêng cho từng tệp HTML.",
+                    "Tất cả HTML đều liên kết tới cùng một tệp CSS (style.css).",
+                    "Chỉ sử dụng thẻ div, không dùng CSS.",
+                    "Copy mã HTML dán vào tất cả các trang."
+                ],
+                answer: 1
+            },
+            {
+                question: "2. Để phần Slogan (3 ô) hiển thị nằm ngang trên cùng một hàng, ta thiết lập thuộc tính CSS nào cho lớp chứa nó (.row)?",
+                options: [
+                    "text-align: center;",
+                    "background-size: cover;",
+                    "display: flex;",
+                    "width: 33.33333333%;"
+                ],
+                answer: 2
+            },
+            {
+                question: "3. Theo dự án trong bài, website đơn giản được cấu trúc gồm những trang cơ bản nào?",
+                options: [
+                    "Chỉ một trang duy nhất (index.html).",
+                    "Trang chủ (index) và các trang thành viên (thethao, nghethuat).",
+                    "Trang đăng ký và trang đăng nhập.",
+                    "Chỉ gồm trang thể thao và nghệ thuật."
+                ],
+                answer: 1
+            },
+            {
+                question: "4. Trong lớp CSS <code>.banner</code>, thuộc tính nào được dùng để thiết lập ảnh nền?",
+                options: [
+                    "color",
+                    "padding-top",
+                    "background: url(...)",
+                    "text-align"
+                ],
+                answer: 2
+            },
+            {
+                question: "5. Ở phần Luyện tập, bài học yêu cầu tạo thêm tệp HTML nào chứa biểu mẫu để tham gia câu lạc bộ?",
+                options: [
+                    "thethao.html",
+                    "style.css",
+                    "dang_ky.html",
+                    "index.html"
+                ],
+                answer: 2
+            }
+        ];
+
+        const quizContainer = document.getElementById('quizContainer');
+        let userAnswers = new Array(quizData.length).fill(null);
+        let quizSubmitted = false;
+
+        // Render Quiz
+        function renderQuiz() {
+            quizContainer.innerHTML = '';
+            quizData.forEach((q, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition';
+                questionDiv.id = `q-container-${qIndex}`;
+                
+                let optionsHtml = '';
+                q.options.forEach((opt, oIndex) => {
+                    optionsHtml += `
+                        <label class="block relative cursor-pointer group mt-3">
+                            <input type="radio" name="q${qIndex}" value="${oIndex}" class="peer sr-only" onchange="selectAnswer(${qIndex}, ${oIndex})" ${quizSubmitted ? 'disabled' : ''}>
+                            <div class="p-3 pl-10 rounded-xl border-2 border-slate-100 bg-slate-50 peer-checked:border-purple-400 peer-checked:bg-purple-50 group-hover:border-purple-200 transition text-sm text-slate-600" id="opt-div-${qIndex}-${oIndex}">
+                                ${opt}
+                            </div>
+                            <div class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-slate-300 peer-checked:border-purple-500 peer-checked:bg-purple-500 transition"></div>
+                        </label>
+                    `;
+                });
+
+                questionDiv.innerHTML = `
+                    <h3 class="font-bold text-slate-700 text-lg mb-2">${q.question}</h3>
+                    <div class="options-container">
+                        ${optionsHtml}
+                    </div>
+                    <div id="feedback-${qIndex}" class="mt-3 text-sm font-bold hidden rounded-lg p-2 px-4 inline-block"></div>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+        }
+
+        function selectAnswer(qIndex, oIndex) {
+            if(quizSubmitted) return;
+            userAnswers[qIndex] = oIndex;
+        }
+
+        function submitQuiz() {
+            if(quizSubmitted) return;
+            
+            // Check if all answered
+            if(userAnswers.includes(null)) {
+                alert("Vui lòng trả lời tất cả các câu hỏi trước khi nộp bài! 📝");
+                return;
+            }
+
+            quizSubmitted = true;
+            let score = 0;
+
+            quizData.forEach((q, qIndex) => {
+                const selected = userAnswers[qIndex];
+                const feedbackDiv = document.getElementById(`feedback-${qIndex}`);
+                const containerDiv = document.getElementById(`q-container-${qIndex}`);
+                
+                feedbackDiv.classList.remove('hidden');
+
+                if (selected === q.answer) {
+                    score++;
+                    feedbackDiv.innerHTML = '<i class="fa-solid fa-circle-check fa-bounce"></i> Tuyệt vời! Chính xác!';
+                    feedbackDiv.className = 'mt-3 text-sm font-bold rounded-lg p-2 px-4 inline-block bg-green-100 text-green-700 border border-green-300 shadow-sm';
+                    containerDiv.classList.add('glow-green', 'scale-[1.02]', 'z-10');
+                    document.getElementById(`opt-div-${qIndex}-${selected}`).classList.replace('border-purple-400', 'border-green-500');
+                    document.getElementById(`opt-div-${qIndex}-${selected}`).classList.replace('bg-purple-50', 'bg-green-100');
+                } else {
+                    feedbackDiv.innerHTML = `<i class="fa-solid fa-circle-xmark fa-shake"></i> Sai. Đáp án đúng là: ${q.options[q.answer]}`;
+                    feedbackDiv.className = 'mt-3 text-sm font-bold rounded-lg p-2 px-4 inline-block bg-red-100 text-red-700 border border-red-300 shadow-sm';
+                    containerDiv.classList.add('glow-red');
+                    document.getElementById(`opt-div-${qIndex}-${selected}`).classList.replace('border-purple-400', 'border-red-400');
+                    document.getElementById(`opt-div-${qIndex}-${selected}`).classList.replace('bg-purple-50', 'bg-red-50');
+                    
+                    // Highlight correct answer
+                    const correctDiv = document.getElementById(`opt-div-${qIndex}-${q.answer}`);
+                    correctDiv.classList.add('border-green-500', 'bg-green-100', 'shadow-md');
+                    correctDiv.classList.remove('border-slate-100', 'bg-slate-50');
+                }
+            });
+
+            // Show Score
+            document.getElementById('scoreValue').innerText = score;
+            document.getElementById('scoreBadge').classList.remove('hidden');
+            
+            // Toggle Buttons
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('retryBtn').classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            userAnswers = new Array(quizData.length).fill(null);
+            quizSubmitted = false;
+            document.getElementById('scoreBadge').classList.add('hidden');
+            document.getElementById('submitBtn').classList.remove('hidden');
+            document.getElementById('retryBtn').classList.add('hidden');
+            renderQuiz();
+        }
+
+        // Initialize quiz on load
+        window.onload = () => {
+            renderQuiz();
+        };
+
+    </script>
+</body>
+</html>

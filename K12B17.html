@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Nâng Cao - Trực Quan Hóa</title>
+    
+    <!-- Google Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --pastel-blue: #EBF5FF;
+            --pastel-purple: #F3E8FF;
+            --pastel-green: #F0FDF4;
+            --pastel-pink: #FDF2F8;
+            --pastel-yellow: #FEFCE8;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        /* Tiêu đề chính theo đúng yêu cầu: Sans-serif, Bold, Gradient, Title Case, 28px */
+        .main-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700; /* Bold */
+            font-size: 28px; /* Size 28px */
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Xanh dương sang tím */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize; /* Title Case */
+            display: inline-block;
+        }
+
+        /* Glassmorphism cho Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border-radius: 1rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Demo CSS cho Pseudo-element (Cập nhật tách riêng hiệu ứng) */
+        .effect-first-line::first-line { font-family: monospace; color: #a855f7; font-weight: bold; font-size: 1.1em;}
+        .effect-first-letter::first-letter { font-size: 250%; font-weight: bold; color: #ec4899; float: left; margin-right: 8px; line-height: 1; }
+        .effect-selection *::selection { background-color: #84cc16; color: white; }
+
+        /* Animation */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-10 fade-in">
+            <h1 class="main-title mb-2">CSS: Bộ Chọn Đặc Biệt Và Quy Tắc Ưu Tiên</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">Bài 17 - Khám phá sức mạnh định dạng trang web nâng cao</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap justify-center gap-3 mb-8 fade-in" style="animation-delay: 0.1s;">
+            <button onclick="switchTab('tab-tongquan')" id="btn-tab-tongquan" class="px-6 py-2 rounded-full font-bold transition-all duration-300 bg-blue-500 text-white shadow-md">
+                <i class="fa-solid fa-map text-sm mr-2"></i>Tổng Quan
+            </button>
+            <button onclick="switchTab('tab-pseudo')" id="btn-tab-pseudo" class="px-6 py-2 rounded-full font-bold transition-all duration-300 bg-white text-slate-600 hover:bg-purple-50">
+                <i class="fa-solid fa-wand-magic-sparkles text-sm mr-2 text-purple-500"></i>Pseudo Trực Quan
+            </button>
+            <button onclick="switchTab('tab-uutien')" id="btn-tab-uutien" class="px-6 py-2 rounded-full font-bold transition-all duration-300 bg-white text-slate-600 hover:bg-green-50">
+                <i class="fa-solid fa-layer-group text-sm mr-2 text-green-500"></i>Ưu Tiên & Trọng Số
+            </button>
+            <button onclick="switchTab('tab-tracnghiem')" id="btn-tab-tracnghiem" class="px-6 py-2 rounded-full font-bold transition-all duration-300 bg-white text-slate-600 hover:bg-pink-50">
+                <i class="fa-solid fa-gamepad text-sm mr-2 text-pink-500"></i>Luyện Tập
+            </button>
+        </nav>
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <main id="tab-tongquan" class="tab-content active fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Cột trái: Mục tiêu & Kiến thức cốt lõi -->
+                <div class="md:col-span-1 space-y-6">
+                    <div class="glass-card p-6 bg-blue-50/50">
+                        <div class="flex items-center mb-4 text-blue-600">
+                            <i class="fa-solid fa-bullseye text-2xl mr-3"></i>
+                            <h2 class="text-xl font-bold">Mục tiêu bài học</h2>
+                        </div>
+                        <ul class="space-y-3 text-sm font-medium">
+                            <li class="flex items-start"><i class="fa-solid fa-check text-green-500 mt-1 mr-2"></i> Áp dụng CSS cho pseudo-class & pseudo-element.</li>
+                            <li class="flex items-start"><i class="fa-solid fa-check text-green-500 mt-1 mr-2"></i> Hiểu và tính toán mức độ ưu tiên (trọng số) của CSS.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card p-6 bg-red-50/50">
+                        <div class="flex items-center mb-4 text-red-500">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl mr-3"></i>
+                            <h2 class="text-xl font-bold">Dễ nhầm lẫn</h2>
+                        </div>
+                        <p class="text-sm mb-3">Sự khác biệt cốt lõi:</p>
+                        <div class="flex flex-col gap-2 text-sm">
+                            <div class="p-3 bg-white rounded-lg border border-red-100 shadow-sm">
+                                <span class="font-bold text-red-600">Lớp giả (Pseudo-class):</span> Chỉ <b>Trạng thái</b> (Hover, click...).
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-red-100 shadow-sm">
+                                <span class="font-bold text-red-600">Phần tử giả (Pseudo-element):</span> Chỉ <b>Một phần cấu trúc</b> (Dòng đầu, ký tự đầu...).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Infographic Khái niệm -->
+                <div class="md:col-span-2 glass-card p-6 bg-white">
+                    <div class="flex items-center mb-6 text-purple-600">
+                        <i class="fa-solid fa-brain text-2xl mr-3"></i>
+                        <h2 class="text-xl font-bold">Sơ đồ khái niệm cốt lõi</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Khái niệm 1 -->
+                        <div class="relative p-5 bg-purple-50 rounded-xl border-2 border-purple-100 hover:shadow-lg transition-shadow">
+                            <div class="absolute -top-4 -right-4 w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md">1</div>
+                            <h3 class="font-bold text-lg text-purple-800 mb-2">Pseudo-class</h3>
+                            <p class="text-sm text-slate-600 mb-3">Định dạng <i>trạng thái tương tác</i> không cần thêm class HTML.</p>
+                            <div class="bg-white p-2 rounded text-xs font-mono text-purple-600 text-center shadow-inner">
+                                :pseudo-class { ... }
+                            </div>
+                        </div>
+                        
+                        <!-- Khái niệm 2 -->
+                        <div class="relative p-5 bg-pink-50 rounded-xl border-2 border-pink-100 hover:shadow-lg transition-shadow">
+                            <div class="absolute -top-4 -right-4 w-12 h-12 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md">2</div>
+                            <h3 class="font-bold text-lg text-pink-800 mb-2">Pseudo-element</h3>
+                            <p class="text-sm text-slate-600 mb-3">Định dạng <i>một phần nhỏ</i> cụ thể của phần tử.</p>
+                            <div class="bg-white p-2 rounded text-xs font-mono text-pink-600 text-center shadow-inner">
+                                ::pseudo-element { ... }
+                            </div>
+                        </div>
+
+                        <!-- Khái niệm 3 -->
+                        <div class="relative p-5 bg-green-50 rounded-xl border-2 border-green-100 hover:shadow-lg transition-shadow sm:col-span-2">
+                            <div class="absolute -top-4 -right-4 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md">3</div>
+                            <h3 class="font-bold text-lg text-green-800 mb-2">Quy tắc ưu tiên (Specificity)</h3>
+                            <p class="text-sm text-slate-600 mb-2">Trình duyệt giải quyết xung đột CSS bằng cách tính điểm "Trọng số".</p>
+                            <div class="flex items-center gap-2 text-sm justify-center flex-wrap">
+                                <span class="px-2 py-1 bg-white rounded border">ID (100)</span>
+                                <i class="fa-solid fa-angle-right text-green-400"></i>
+                                <span class="px-2 py-1 bg-white rounded border">Class (10)</span>
+                                <i class="fa-solid fa-angle-right text-green-400"></i>
+                                <span class="px-2 py-1 bg-white rounded border">Element (1)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 2: PSEUDO TRỰC QUAN -->
+        <main id="tab-pseudo" class="tab-content fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Pseudo-class Demo -->
+                <div class="glass-card p-6 bg-white border-t-4 border-t-blue-500">
+                    <h2 class="text-xl font-bold text-blue-600 mb-4"><i class="fa-solid fa-hand-pointer mr-2"></i>Mô phỏng Lớp giả (Pseudo-class)</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Trực quan :link -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-blue-300 transition-all cursor-pointer group hover:shadow-md" onclick="updateCodeViewer('link')">
+                            <div class="w-1/2 pr-2">
+                                <code class="text-sm font-bold text-blue-600 bg-white px-2 py-1 rounded shadow-sm flex items-center w-max mb-2">
+                                    :link
+                                    <span class="ml-2 text-[10px] text-slate-400 font-normal opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"><i class="fa-solid fa-code"></i> Xem code</span>
+                                </code>
+                                <p class="text-xs text-slate-500">Liên kết mặc định khi <b>chưa kích hoạt</b>. (Ví dụ: Màu xanh dương)</p>
+                            </div>
+                            <div class="w-1/2 flex justify-end">
+                                <a href="javascript:void(0)" class="text-blue-600 font-bold underline decoration-2 underline-offset-4 pointer-events-none bg-white px-4 py-2 rounded-lg shadow-sm border border-blue-100">Liên kết bình thường</a>
+                            </div>
+                        </div>
+
+                        <!-- Trực quan :visited -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-purple-300 transition-all cursor-pointer group hover:shadow-md" onclick="updateCodeViewer('visited')">
+                            <div class="w-1/2 pr-2">
+                                <code class="text-sm font-bold text-purple-600 bg-white px-2 py-1 rounded shadow-sm flex items-center w-max mb-2">
+                                    :visited
+                                    <span class="ml-2 text-[10px] text-slate-400 font-normal opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"><i class="fa-solid fa-code"></i> Xem code</span>
+                                </code>
+                                <p class="text-xs text-slate-500">Định dạng sau khi <b>đã click</b>. Hãy thử click vào nút bên phải!</p>
+                            </div>
+                            <div class="w-1/2 flex justify-end">
+                                <a href="javascript:void(0)" onclick="this.style.color='#9ca3af'; this.style.borderColor='#e5e7eb'; this.innerText='✓ Đã truy cập';" class="text-purple-600 font-bold underline decoration-2 underline-offset-4 bg-white px-4 py-2 rounded-lg shadow-sm border border-purple-200 transition-all cursor-pointer">Click thử xem!</a>
+                            </div>
+                        </div>
+
+                        <!-- Trực quan :hover -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-pink-300 transition-all cursor-pointer group hover:shadow-md overflow-hidden" onclick="updateCodeViewer('hover')">
+                            <div class="w-1/2 pr-2">
+                                <code class="text-sm font-bold text-pink-500 bg-white px-2 py-1 rounded shadow-sm flex items-center w-max mb-2">
+                                    :hover
+                                    <span class="ml-2 text-[10px] text-slate-400 font-normal opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"><i class="fa-solid fa-code"></i> Xem code</span>
+                                </code>
+                                <p class="text-xs text-slate-500">Khi <b>di chuột qua</b>. Thử rê chuột vào nút bên phải nhé!</p>
+                            </div>
+                            <div class="w-1/2 flex justify-end items-center h-[50px]">
+                                <!-- Interactive Element -->
+                                <a href="javascript:void(0)" class="inline-block px-4 py-2 bg-white text-pink-500 font-bold rounded-lg shadow-sm border border-pink-200 transition-all duration-300 hover:bg-pink-500 hover:text-white hover:scale-110 hover:shadow-md hover:shadow-pink-200">
+                                    Trỏ chuột vào đây
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pseudo-element Demo -->
+                <div class="glass-card p-6 bg-white border-t-4 border-t-pink-500">
+                    <h2 class="text-xl font-bold text-pink-600 mb-4"><i class="fa-solid fa-paragraph mr-2"></i>Mô phỏng Phần tử giả (Pseudo-element)</h2>
+                    
+                    <div class="grid grid-cols-3 gap-2 mb-6">
+                        <button id="btn-first-line" onclick="changePseudoElement('first-line')" class="pseudo-elem-btn p-2 bg-slate-50 rounded-xl text-center border-2 border-transparent hover:border-pink-200 transition-all cursor-pointer">
+                            <code class="text-xs font-bold text-pink-600 block">::first-line</code>
+                            <span class="text-[10px] text-slate-500">Dòng đầu</span>
+                        </button>
+                        <button id="btn-first-letter" onclick="changePseudoElement('first-letter')" class="pseudo-elem-btn p-2 bg-slate-50 rounded-xl text-center border-2 border-transparent hover:border-pink-200 transition-all cursor-pointer">
+                            <code class="text-xs font-bold text-pink-600 block">::first-letter</code>
+                            <span class="text-[10px] text-slate-500">Ký tự đầu</span>
+                        </button>
+                        <button id="btn-selection" onclick="changePseudoElement('selection')" class="pseudo-elem-btn p-2 bg-slate-50 rounded-xl text-center border-2 border-transparent hover:border-green-200 transition-all cursor-pointer">
+                            <code class="text-xs font-bold text-green-600 block">::selection</code>
+                            <span class="text-[10px] text-slate-500">Bôi đen văn bản</span>
+                        </button>
+                    </div>
+
+                    <div class="p-6 bg-pink-50 rounded-xl">
+                        <p id="demo-pseudo-hint" class="text-sm mb-4 text-pink-400 italic text-center font-medium"><i class="fa-solid fa-arrow-down mr-1"></i> Hãy click chọn các mục ở trên nhé!</p>
+                        <!-- Interactive Element -->
+                        <div id="demo-pseudo-text-wrapper" class="bg-white p-4 rounded-lg shadow-sm">
+                            <p id="demo-pseudo-text" class="text-slate-700 text-justify text-sm leading-relaxed transition-all duration-300">
+                                CSS (Cascading Style Sheets) là ngôn ngữ định dạng đặc biệt. Đoạn văn này mô phỏng cách các phần tử giả (pseudo-element) hoạt động. Bạn hãy thử click vào các nút ở trên để xem cách CSS can thiệp vào từng phần nhỏ của văn bản như dòng đầu, ký tự đầu, hoặc khi bôi đen văn bản nhé!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Viewer Full Width -->
+            <div id="demo-pseudo-code-container" class="bg-[#1e293b] rounded-xl overflow-hidden shadow-xl text-left fade-in border border-slate-700 relative">
+                <div class="absolute top-0 right-0 px-4 py-1 bg-blue-500 text-white text-[10px] font-bold rounded-bl-lg tracking-wider uppercase shadow-sm">
+                    Mô phỏng Code
+                </div>
+                <div class="flex items-center bg-slate-800 px-4 py-3 border-b border-slate-700">
+                    <div class="flex gap-1.5 mr-4">
+                        <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                    </div>
+                    <span class="text-xs font-mono text-slate-400 border-r border-slate-600 pr-3 mr-3">style.css & index.html</span>
+                    <span class="text-xs font-mono text-blue-300 font-bold" id="code-viewer-title">...</span>
+                </div>
+                <div class="p-6 overflow-x-auto text-sm font-mono leading-relaxed text-slate-300">
+                    <pre><code id="global-code-snippet"></code></pre>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 3: ƯU TIÊN & TRỌNG SỐ -->
+        <main id="tab-uutien" class="tab-content fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Cột trái: 7 Mức ưu tiên -->
+                <div class="glass-card p-6 bg-white">
+                    <h2 class="text-xl font-bold text-green-600 mb-6 text-center"><i class="fa-solid fa-sort-amount-down mr-2"></i>7 Mức độ ưu tiên CSS</h2>
+                    
+                    <div class="relative wrap overflow-hidden p-2 pt-4">
+                        <div class="border-2-2 absolute border-opacity-20 border-green-500 h-full border" style="left: 50%"></div>
+                        
+                        <!-- Cấp 1 -->
+                        <div class="mb-8 flex justify-between items-center w-full right-timeline cursor-pointer group fade-in" onclick="revealTimeline(2)" id="time-item-1">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-red-500 shadow-xl w-8 h-8 rounded-full group-hover:scale-125 transition-transform">
+                                <h1 class="mx-auto font-semibold text-lg text-white">1</h1>
+                            </div>
+                            <div class="order-1 bg-red-50 rounded-lg shadow-sm w-5/12 px-4 py-2 border border-red-100 relative group-hover:shadow-md transition-all">
+                                <h3 class="font-bold text-red-600 text-sm">!important</h3>
+                                <p class="text-xs text-slate-500 leading-snug">Cao nhất, đè mọi thứ</p>
+                                <div id="hint-1" class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-white bg-red-400 px-2 py-0.5 rounded-full shadow-sm animate-bounce whitespace-nowrap">Click mở mức 2 <i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                        </div>
+
+                        <!-- Cấp 2 -->
+                        <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline cursor-pointer group hidden fade-in" onclick="revealTimeline(3)" id="time-item-2">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-orange-400 shadow-xl w-8 h-8 rounded-full group-hover:scale-125 transition-transform">
+                                <h1 class="mx-auto font-semibold text-lg text-white">2</h1>
+                            </div>
+                            <div class="order-1 bg-orange-50 rounded-lg shadow-sm w-5/12 px-4 py-2 text-right border border-orange-100 relative group-hover:shadow-md transition-all">
+                                <h3 class="font-bold text-orange-600 text-sm">Inline CSS</h3>
+                                <p class="text-xs text-slate-500 leading-snug">Viết trong thuộc tính style</p>
+                                <div id="hint-2" class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-white bg-orange-400 px-2 py-0.5 rounded-full shadow-sm animate-bounce whitespace-nowrap">Click mở mức 3 <i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                        </div>
+
+                        <!-- Cấp 3 -->
+                        <div class="mb-8 flex justify-between items-center w-full right-timeline cursor-pointer group hidden fade-in" onclick="revealTimeline(4)" id="time-item-3">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-yellow-400 shadow-xl w-8 h-8 rounded-full group-hover:scale-125 transition-transform">
+                                <h1 class="mx-auto font-semibold text-lg text-white">3</h1>
+                            </div>
+                            <div class="order-1 bg-yellow-50 rounded-lg shadow-sm w-5/12 px-4 py-2 border border-yellow-200 relative group-hover:shadow-md transition-all">
+                                <h3 class="font-bold text-yellow-600 text-sm">Media Type</h3>
+                                <p class="text-xs text-slate-500 leading-snug">@media (Kích thước thiết bị)</p>
+                                <div id="hint-3" class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-white bg-yellow-500 px-2 py-0.5 rounded-full shadow-sm animate-bounce whitespace-nowrap">Click mở mức 4 <i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                        </div>
+
+                        <!-- Cấp 4 -->
+                        <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline cursor-pointer group hidden fade-in" onclick="revealTimeline(5)" id="time-item-4">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-green-500 shadow-xl w-8 h-8 rounded-full group-hover:scale-125 transition-transform">
+                                <h1 class="mx-auto font-semibold text-lg text-white">4</h1>
+                            </div>
+                            <div class="order-1 bg-green-50 rounded-lg shadow-sm w-5/12 px-4 py-2 text-right border border-green-200 relative group-hover:shadow-md transition-all">
+                                <h3 class="font-bold text-green-700 text-sm">Trọng số CSS</h3>
+                                <p class="text-[10px] text-green-600 font-medium">Specificity (Xem chi tiết bảng bên) ➔</p>
+                                <div id="hint-4" class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-white bg-green-500 px-2 py-0.5 rounded-full shadow-sm animate-bounce whitespace-nowrap">Click mở mức 5 <i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                        </div>
+
+                        <!-- Cấp 5 -->
+                        <div class="mb-8 flex justify-between items-center w-full right-timeline cursor-pointer group hidden fade-in" onclick="revealTimeline(6)" id="time-item-5">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-blue-500 shadow-xl w-8 h-8 rounded-full group-hover:scale-125 transition-transform">
+                                <h1 class="mx-auto font-semibold text-lg text-white">5</h1>
+                            </div>
+                            <div class="order-1 bg-blue-50 rounded-lg shadow-sm w-5/12 px-4 py-2 border border-blue-200 relative group-hover:shadow-md transition-all">
+                                <h3 class="font-bold text-blue-700 text-sm">Thứ tự cuối cùng</h3>
+                                <p class="text-xs text-slate-500 leading-snug">Rule order trong mã nguồn</p>
+                                <div id="hint-5" class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-white bg-blue-500 px-2 py-0.5 rounded-full shadow-sm animate-bounce whitespace-nowrap">Click mở mức 6 <i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                        </div>
+
+                        <!-- Cấp 6 -->
+                        <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline cursor-pointer group hidden fade-in" onclick="revealTimeline(7)" id="time-item-6">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-indigo-400 shadow-xl w-8 h-8 rounded-full group-hover:scale-125 transition-transform">
+                                <h1 class="mx-auto font-semibold text-lg text-white">6</h1>
+                            </div>
+                            <div class="order-1 bg-indigo-50 rounded-lg shadow-sm w-5/12 px-4 py-2 text-right border border-indigo-200 relative group-hover:shadow-md transition-all">
+                                <h3 class="font-bold text-indigo-700 text-sm">Kế thừa</h3>
+                                <p class="text-xs text-slate-500 leading-snug">Lấy thông số từ phần tử cha</p>
+                                <div id="hint-6" class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-white bg-indigo-500 px-2 py-0.5 rounded-full shadow-sm animate-bounce whitespace-nowrap">Click mở mức 7 <i class="fa-solid fa-chevron-down"></i></div>
+                            </div>
+                        </div>
+
+                        <!-- Cấp 7 -->
+                        <div class="mb-4 flex justify-between items-center w-full right-timeline group hidden fade-in" id="time-item-7">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-slate-400 shadow-xl w-8 h-8 rounded-full group-hover:scale-125 transition-transform">
+                                <h1 class="mx-auto font-semibold text-lg text-white">7</h1>
+                            </div>
+                            <div class="order-1 bg-slate-50 rounded-lg shadow-sm w-5/12 px-4 py-2 border border-slate-200 relative group-hover:shadow-md transition-all">
+                                <h3 class="font-bold text-slate-700 text-sm">Mặc định trình duyệt</h3>
+                                <p class="text-xs text-slate-500 leading-snug">Mức ưu tiên thấp nhất</p>
+                                <div id="hint-7" class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-white bg-green-500 px-3 py-0.5 rounded-full shadow-sm whitespace-nowrap">Đã hoàn thành <i class="fa-solid fa-check"></i></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Cột phải: Tính Trọng Số Interactive -->
+                <div class="glass-card p-6 bg-green-50/70 relative">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-green-700"><i class="fa-solid fa-calculator mr-2"></i>Bảng Tính Trọng Số Tương Tác</h2>
+                    </div>
+                    
+                    <!-- Bảng giá trị -->
+                    <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm mb-6 border border-green-200">
+                        <div class="text-center w-1/4">
+                            <div class="text-xs text-slate-400 uppercase font-bold">ID</div>
+                            <div class="text-xl font-black text-red-500" id="spec-val-id">0</div>
+                        </div>
+                        <div class="text-slate-300"><i class="fa-solid fa-plus"></i></div>
+                        <div class="text-center w-1/4">
+                            <div class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold text-center leading-tight">Class / Pseudo-class</div>
+                            <div class="text-xl font-black text-blue-500" id="spec-val-class">0</div>
+                        </div>
+                        <div class="text-slate-300"><i class="fa-solid fa-plus"></i></div>
+                        <div class="text-center w-1/4">
+                            <div class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold text-center leading-tight">Element / Pseudo-ele</div>
+                            <div class="text-xl font-black text-green-500" id="spec-val-element">0</div>
+                        </div>
+                        <div class="text-slate-300"><i class="fa-solid fa-equals"></i></div>
+                        <div class="text-center w-1/4">
+                            <div class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold">Tổng</div>
+                            <div class="text-xl font-black text-purple-600" id="spec-val-total"><i class="fa-solid fa-star"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- Input Box -->
+                    <h3 class="font-bold text-sm text-slate-600 mb-2">Nhập thử một CSS Selector bất kỳ để phân tích:</h3>
+                    
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-green-100 mb-6 relative">
+                        <input type="text" id="specificity-input" class="w-full px-4 py-3 rounded-lg border-2 border-slate-200 focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition-all font-mono text-slate-700 text-sm" placeholder='vd: p.test>h1' oninput="calculateInteractiveSpecificity()">
+
+                        <!-- Khung báo lỗi realtime -->
+                        <div id="specificity-error" class="hidden mt-3 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-200 font-medium fade-in shadow-sm">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> <span id="specificity-error-msg">Lỗi hiển thị ở đây</span>
+                        </div>
+                    </div>
+
+                    <!-- Kết quả phân tích chi tiết -->
+                    <div id="specificity-result-breakdown" class="hidden fade-in">
+                        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 text-sm leading-relaxed" id="breakdown-detail">
+                            <!-- Nội dung JavaScript điền vào -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 4: TRẮC NGHIỆM -->
+        <main id="tab-tracnghiem" class="tab-content fade-in max-w-3xl mx-auto">
+            <div class="glass-card p-6 md:p-8 bg-white border-t-4 border-pink-500 text-center">
+                <i class="fa-solid fa-ranking-star text-4xl text-pink-500 mb-4"></i>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Mini Quiz - Kiểm Tra Kiến Thức</h2>
+                <p class="text-slate-500 mb-8">Hoàn thành 5 câu hỏi dựa trên nội dung bài học để củng cố kiến thức nhé!</p>
+                
+                <div id="quiz-container" class="text-left">
+                    <!-- Quiz content generated by JS -->
+                </div>
+                
+                <div id="quiz-result" class="hidden mt-8 p-6 bg-pink-50 rounded-xl text-center fade-in">
+                    <h3 class="text-2xl font-bold text-pink-600 mb-2">Hoàn Thành! 🎉</h3>
+                    <p class="text-lg">Số điểm của bạn: <span id="score-display" class="font-bold text-2xl text-purple-600"></span>/5</p>
+                    <button onclick="resetQuiz()" class="mt-4 px-6 py-2 bg-pink-500 text-white font-bold rounded-full hover:bg-pink-600 transition-colors">Làm lại</button>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- JavaScript Xử Lý Tương Tác -->
+    <script>
+        // --- 1. XỬ LÝ CHUYỂN TAB ---
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Reset all buttons style
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.className = "px-6 py-2 rounded-full font-bold transition-all duration-300 bg-white text-slate-600 hover:bg-slate-100";
+            });
+
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+
+            // Style active button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(tabId === 'tab-tongquan') activeBtn.className = "px-6 py-2 rounded-full font-bold transition-all duration-300 bg-blue-500 text-white shadow-md";
+            if(tabId === 'tab-pseudo') activeBtn.className = "px-6 py-2 rounded-full font-bold transition-all duration-300 bg-purple-500 text-white shadow-md";
+            if(tabId === 'tab-uutien') activeBtn.className = "px-6 py-2 rounded-full font-bold transition-all duration-300 bg-green-500 text-white shadow-md";
+            if(tabId === 'tab-tracnghiem') activeBtn.className = "px-6 py-2 rounded-full font-bold transition-all duration-300 bg-pink-500 text-white shadow-md";
+        }
+
+        // --- 2.5 XỬ LÝ TƯƠNG TÁC PSEUDO-ELEMENT ---
+        function changePseudoElement(type) {
+            const textWrapper = document.getElementById('demo-pseudo-text-wrapper');
+            const textEl = document.getElementById('demo-pseudo-text');
+            const hintEl = document.getElementById('demo-pseudo-hint');
+
+            // Reset tất cả các nút
+            document.querySelectorAll('.pseudo-elem-btn').forEach(btn => {
+                btn.classList.remove('border-pink-400', 'bg-pink-100', 'border-green-400', 'bg-green-100', 'shadow-sm');
+                btn.classList.add('border-transparent');
+            });
+
+            // Reset class của văn bản
+            textEl.className = 'text-slate-700 text-justify text-sm leading-relaxed transition-all duration-300';
+            textWrapper.className = 'bg-white p-4 rounded-lg shadow-sm';
+
+            // Cập nhật giao diện theo thẻ được click
+            if (type === 'first-line') {
+                document.getElementById('btn-first-line').classList.remove('border-transparent');
+                document.getElementById('btn-first-line').classList.add('border-pink-400', 'bg-pink-100', 'shadow-sm');
+                textEl.classList.add('effect-first-line');
+                hintEl.innerHTML = '<i class="fa-solid fa-arrow-down mr-1"></i> Chú ý: Dòng đầu tiên của đoạn văn đã được đổi font monospace và tô màu tím.';
+            } else if (type === 'first-letter') {
+                document.getElementById('btn-first-letter').classList.remove('border-transparent');
+                document.getElementById('btn-first-letter').classList.add('border-pink-400', 'bg-pink-100', 'shadow-sm');
+                textEl.classList.add('effect-first-letter');
+                hintEl.innerHTML = '<i class="fa-solid fa-arrow-down mr-1"></i> Chú ý: Chữ cái đầu tiên đã được phóng to và tô màu hồng.';
+            } else if (type === 'selection') {
+                document.getElementById('btn-selection').classList.remove('border-transparent');
+                document.getElementById('btn-selection').classList.add('border-green-400', 'bg-green-100', 'shadow-sm');
+                textWrapper.classList.add('effect-selection');
+                hintEl.innerHTML = '<i class="fa-solid fa-arrow-down mr-1"></i> Hãy bôi đen (chọn) bằng chuột lên đoạn văn dưới đây để thấy nền xanh lá mạ!';
+            }
+
+            // Gọi hàm cập nhật Code Viewer dùng chung
+            updateCodeViewer(type);
+        }
+
+        // --- 2.6 HÀM CẬP NHẬT CODE VIEWER DÙNG CHUNG ---
+        function updateCodeViewer(type) {
+            const codeSnippet = document.getElementById('global-code-snippet');
+            const titleEl = document.getElementById('code-viewer-title');
+            if(!codeSnippet) return;
+
+            let htmlStr = `&lt;<span class="text-blue-400">style</span>&gt;\n`;
+            let bodyStr = `\n&lt;<span class="text-blue-400">body</span>&gt;\n`;
+
+            if (type === 'link') {
+                titleEl.innerText = "Lớp giả (Pseudo-class): :link";
+                htmlStr += `  <span class="text-pink-400">a:link</span> {\n    <span class="text-slate-300">color</span>: <span class="text-orange-300">#3b82f6</span>;\n    <span class="text-slate-300">text-decoration</span>: <span class="text-orange-300">none</span>;\n  }\n`;
+                bodyStr += `  &lt;<span class="text-blue-400">a</span> <span class="text-green-300">href</span>=<span class="text-orange-300">"#"</span>&gt;Liên kết bình thường&lt;/<span class="text-blue-400">a</span>&gt;\n`;
+            } else if (type === 'visited') {
+                titleEl.innerText = "Lớp giả (Pseudo-class): :visited";
+                htmlStr += `  <span class="text-pink-400">a:visited</span> {\n    <span class="text-slate-300">color</span>: <span class="text-orange-300">#9ca3af</span>;\n  }\n`;
+                bodyStr += `  &lt;<span class="text-blue-400">a</span> <span class="text-green-300">href</span>=<span class="text-orange-300">"https://example.com"</span>&gt;Click thử xem!&lt;/<span class="text-blue-400">a</span>&gt;\n`;
+            } else if (type === 'hover') {
+                titleEl.innerText = "Lớp giả (Pseudo-class): :hover";
+                htmlStr += `  <span class="text-pink-400">a:hover</span> {\n    <span class="text-slate-300">background-color</span>: <span class="text-orange-300">#ec4899</span>;\n    <span class="text-slate-300">color</span>: <span class="text-orange-300">white</span>;\n    <span class="text-slate-300">transform</span>: <span class="text-orange-300">scale(1.1)</span>;\n  }\n`;
+                bodyStr += `  &lt;<span class="text-blue-400">a</span> <span class="text-green-300">href</span>=<span class="text-orange-300">"#"</span>&gt;Trỏ chuột vào đây&lt;/<span class="text-blue-400">a</span>&gt;\n`;
+            } else if (type === 'first-line') {
+                titleEl.innerText = "Phần tử giả (Pseudo-element): ::first-line";
+                htmlStr += `  <span class="text-pink-400">p::first-line</span> {\n    <span class="text-slate-300">font-family</span>: <span class="text-orange-300">monospace</span>;\n    <span class="text-slate-300">color</span>: <span class="text-orange-300">#a855f7</span>;\n  }\n`;
+                bodyStr += `  &lt;<span class="text-blue-400">p</span>&gt;\n    CSS (Cascading Style Sheets) là ngôn ngữ định dạng...\n  &lt;/<span class="text-blue-400">p</span>&gt;\n`;
+            } else if (type === 'first-letter') {
+                titleEl.innerText = "Phần tử giả (Pseudo-element): ::first-letter";
+                htmlStr += `  <span class="text-pink-400">p::first-letter</span> {\n    <span class="text-slate-300">font-size</span>: <span class="text-orange-300">250%</span>;\n    <span class="text-slate-300">color</span>: <span class="text-orange-300">#ec4899</span>;\n  }\n`;
+                bodyStr += `  &lt;<span class="text-blue-400">p</span>&gt;\n    CSS (Cascading Style Sheets) là ngôn ngữ định dạng...\n  &lt;/<span class="text-blue-400">p</span>&gt;\n`;
+            } else if (type === 'selection') {
+                titleEl.innerText = "Phần tử giả (Pseudo-element): ::selection";
+                htmlStr += `  <span class="text-pink-400">::selection</span> {\n    <span class="text-slate-300">background-color</span>: <span class="text-orange-300">#84cc16</span>;\n    <span class="text-slate-300">color</span>: <span class="text-orange-300">white</span>;\n  }\n`;
+                bodyStr += `  &lt;<span class="text-blue-400">p</span>&gt;\n    CSS (Cascading Style Sheets) là ngôn ngữ định dạng...\n  &lt;/<span class="text-blue-400">p</span>&gt;\n`;
+            }
+
+            htmlStr += `&lt;/<span class="text-blue-400">style</span>&gt;\n`;
+            bodyStr += `&lt;/<span class="text-blue-400">body</span>&gt;`;
+
+            codeSnippet.innerHTML = htmlStr + bodyStr;
+
+            // Trigger hiệu ứng nhấp nháy cho khung code để người dùng chú ý
+            const container = document.getElementById('demo-pseudo-code-container');
+            container.classList.remove('fade-in');
+            void container.offsetWidth; // Force reflow
+            container.classList.add('fade-in');
+        }
+
+        // --- 2.7 XỬ LÝ TIMELINE ƯU TIÊN CSS ---
+        function revealTimeline(level) {
+            const nextItem = document.getElementById('time-item-' + level);
+            if (nextItem) {
+                // Hiển thị phần tử tiếp theo
+                nextItem.classList.remove('hidden');
+                
+                // Ẩn nút gợi ý (hint) của phần tử hiện tại
+                const prevHint = document.getElementById('hint-' + (level - 1));
+                if (prevHint) prevHint.classList.add('hidden');
+            }
+        }
+
+        // --- 2.8 XỬ LÝ TÍNH TOÁN TRỌNG SỐ TƯƠNG TÁC (SPECIFICITY CALCULATOR) ---
+        // Danh sách các thẻ HTML hợp lệ thông dụng
+        const validHTMLTags = ['a','abbr','address','area','article','aside','audio','b','base','bdi','bdo','blockquote','body','br','button','canvas','caption','cite','code','col','colgroup','data','datalist','dd','del','details','dfn','dialog','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header','hgroup','hr','html','i','iframe','img','input','ins','kbd','label','legend','li','link','main','map','mark','meta','meter','nav','noscript','object','ol','optgroup','option','output','p','param','picture','pre','progress','q','rp','rt','ruby','s','samp','script','section','select','small','source','span','strong','style','sub','summary','sup','svg','table','tbody','td','template','textarea','tfoot','th','thead','time','title','tr','track','u','ul','var','video','wbr'];
+
+        function calculateInteractiveSpecificity() {
+            const inputVal = document.getElementById('specificity-input').value.trim();
+            const errorContainer = document.getElementById('specificity-error');
+            const errorMsg = document.getElementById('specificity-error-msg');
+            const resultBreakdown = document.getElementById('specificity-result-breakdown');
+            const breakdownDetail = document.getElementById('breakdown-detail');
+            
+            const valId = document.getElementById('spec-val-id');
+            const valClass = document.getElementById('spec-val-class');
+            const valElement = document.getElementById('spec-val-element');
+            const valTotal = document.getElementById('spec-val-total');
+
+            // Reset trạng thái ban đầu
+            errorContainer.classList.add('hidden');
+            resultBreakdown.classList.add('hidden');
+
+            if (!inputVal) {
+                valId.innerText = '0';
+                valClass.innerText = '0';
+                valElement.innerText = '0';
+                valTotal.innerHTML = '<i class="fa-solid fa-star text-purple-300"></i>';
+                return;
+            }
+
+            let idsCount = 0, classCount = 0, elementCount = 0;
+            // Phân tách chi tiết các danh sách lưu trữ
+            let idList = [], classList = [], pseudoClassList = [], tagList = [], pseudoElementList = [], attrList = [];
+
+            // Làm sạch input: Thay các kí hiệu cấu trúc (>, +, ~, khoảng trắng) thành khoảng trắng để tách chuỗi
+            let cleanedInput = inputVal.replace(/\s*([>+~])\s*/g, ' ').replace(/\s+/g, ' ');
+            let tokens = cleanedInput.split(' ');
+
+            for (let token of tokens) {
+                if (!token) continue;
+
+                // 1. Thuộc tính (Attribute selectors: [type="text"])
+                let matchAttrs = token.match(/\[[^\]]+\]/g);
+                if (matchAttrs) {
+                    classCount += matchAttrs.length;
+                    attrList.push(...matchAttrs);
+                    token = token.replace(/\[[^\]]+\]/g, '');
+                }
+
+                // 2. Phần tử giả (Pseudo-elements: ::before, ::first-line)
+                let pseudoElements = token.match(/::[a-zA-Z0-9_-]+/g);
+                if (pseudoElements) {
+                    elementCount += pseudoElements.length;
+                    pseudoElementList.push(...pseudoElements);
+                    token = token.replace(/::[a-zA-Z0-9_-]+/g, '');
+                }
+
+                // 3. Lớp giả (Pseudo-classes: :hover, :nth-child(2))
+                let pseudoClasses = token.match(/:[a-zA-Z0-9_-]+(\([^)]+\))?/g);
+                if (pseudoClasses) {
+                    classCount += pseudoClasses.length;
+                    pseudoClassList.push(...pseudoClasses);
+                    token = token.replace(/:[a-zA-Z0-9_-]+(\([^)]+\))?/g, '');
+                }
+
+                // 4. Mã định danh (IDs: #header)
+                let matchIds = token.match(/#[a-zA-Z0-9_-]+/g);
+                if (matchIds) {
+                    idsCount += matchIds.length;
+                    idList.push(...matchIds);
+                    token = token.replace(/#[a-zA-Z0-9_-]+/g, '');
+                }
+
+                // 5. Lớp (Classes: .active)
+                let matchClasses = token.match(/\.[a-zA-Z0-9_-]+/g);
+                if (matchClasses) {
+                    classCount += matchClasses.length;
+                    classList.push(...matchClasses);
+                    token = token.replace(/\.[a-zA-Z0-9_-]+/g, '');
+                }
+
+                // 6. Xử lý phần Element/Tag còn sót lại
+                token = token.replace(/[^a-zA-Z0-9_-]/g, '').trim(); 
+                
+                if (token && token !== '*') {
+                    // CẢNH BÁO TỨC THÌ: Kiểm tra thẻ HTML có hợp lệ không
+                    if (!validHTMLTags.includes(token.toLowerCase())) {
+                        errorMsg.innerHTML = `Thẻ HTML <strong class="font-bold">"${token}"</strong> không hợp lệ! Vui lòng kiểm tra lại cú pháp.`;
+                        errorContainer.classList.remove('hidden');
+                        
+                        // Báo lỗi bằng cách hiển thị điểm X
+                        valId.innerText = '0';
+                        valClass.innerText = '0';
+                        valElement.innerText = '0';
+                        valTotal.innerHTML = '<i class="fa-solid fa-xmark text-red-500"></i>';
+                        return; // Lập tức ngừng tính toán và thoát
+                    }
+                    elementCount += 1;
+                    tagList.push(token);
+                }
+            }
+
+            // Cập nhật điểm lên thẻ trên cùng
+            let totalScore = (idsCount * 100) + (classCount * 10) + (elementCount * 1);
+            valId.innerText = idsCount * 100;
+            valClass.innerText = classCount * 10;
+            valElement.innerText = elementCount * 1;
+            valTotal.innerText = totalScore;
+
+            // Xây dựng đoạn HTML cho phần Thành phần bao gồm phân tách chi tiết theo yêu cầu
+            let htmlBreakdown = [];
+            if (tagList.length > 0) {
+                htmlBreakdown.push(`<span class="text-green-600 font-bold">${tagList.length} Tag(s)</span> (<code class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded font-mono text-xs">${tagList.join(', ')}</code>)`);
+            }
+            if (pseudoElementList.length > 0) {
+                htmlBreakdown.push(`<span class="text-teal-600 font-bold">${pseudoElementList.length} Pseudo-Element(s)</span> (<code class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded font-mono text-xs">${pseudoElementList.join(', ')}</code>)`);
+            }
+            if (classList.length > 0) {
+                htmlBreakdown.push(`<span class="text-blue-600 font-bold">${classList.length} Class(es)</span> (<code class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-mono text-xs">${classList.join(', ')}</code>)`);
+            }
+            if (pseudoClassList.length > 0) {
+                htmlBreakdown.push(`<span class="text-indigo-600 font-bold">${pseudoClassList.length} Pseudo-Class(es)</span> (<code class="bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded font-mono text-xs">${pseudoClassList.join(', ')}</code>)`);
+            }
+            if (attrList.length > 0) {
+                htmlBreakdown.push(`<span class="text-cyan-600 font-bold">${attrList.length} Attribute(s)</span> (<code class="bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded font-mono text-xs">${attrList.join(', ')}</code>)`);
+            }
+            if (idList.length > 0) {
+                htmlBreakdown.push(`<span class="text-red-600 font-bold">${idList.length} ID(s)</span> (<code class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded font-mono text-xs">${idList.join(', ')}</code>)`);
+            }
+
+            if (htmlBreakdown.length === 0) {
+                breakdownDetail.innerHTML = '<span class="italic text-slate-500">Trọng số bằng 0 (Ví dụ: Bộ chọn toàn cục *)</span>';
+            } else {
+                breakdownDetail.innerHTML = `<p class="text-slate-700 font-medium leading-relaxed">Thành phần bao gồm: ${htmlBreakdown.join(' <strong class="text-slate-400 mx-1">+</strong> ')}</p>`;
+            }
+
+            resultBreakdown.classList.remove('hidden');
+        }
+
+        // --- 3. HỆ THỐNG TRẮC NGHIỆM ---
+        const quizData = [
+            {
+                question: "1. Bộ chọn Pseudo-class (Lớp giả) dùng để làm gì?",
+                options: [
+                    "A. Tạo ra một phần tử HTML mới.",
+                    "B. Chỉ các trạng thái đặc biệt của một phần tử (VD: hover, visited).",
+                    "C. Định dạng dòng đầu tiên của đoạn văn.",
+                    "D. Xóa một thuộc tính CSS."
+                ],
+                correct: 1
+            },
+            {
+                question: "2. Cú pháp ::first-letter thuộc loại bộ chọn nào?",
+                options: [
+                    "A. Pseudo-element (Phần tử giả)",
+                    "B. Pseudo-class (Lớp giả)",
+                    "C. Attribute selector (Kiểu thuộc tính)",
+                    "D. ID selector"
+                ],
+                correct: 0
+            },
+            {
+                question: "3. Mức độ ưu tiên cao nhất khi áp dụng CSS thuộc về:",
+                options: [
+                    "A. CSS trực tiếp (inline CSS)",
+                    "B. Trọng số CSS (specificity)",
+                    "C. Nguyên tắc thứ tự cuối cùng",
+                    "D. Lệnh !important"
+                ],
+                correct: 3
+            },
+            {
+                question: "4. Trong bảng tính trọng số, Mã định danh (ID) có giá trị đóng góp là bao nhiêu?",
+                options: [
+                    "A. 1",
+                    "B. 10",
+                    "C. 100",
+                    "D. 0"
+                ],
+                correct: 2
+            },
+            {
+                question: "5. Dựa vào bảng tính, trọng số của bộ chọn '.test #p11' là bao nhiêu?",
+                options: [
+                    "A. 2",
+                    "B. 20",
+                    "C. 102",
+                    "D. 110"
+                ],
+                correct: 3
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        function renderQuestion() {
+            if (currentQuestion >= quizData.length) {
+                showResult();
+                return;
+            }
+
+            const q = quizData[currentQuestion];
+            let html = `
+                <div class="mb-6 fade-in">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">${q.question}</h3>
+                    <div class="space-y-3">
+            `;
+
+            q.options.forEach((opt, index) => {
+                html += `
+                    <button onclick="selectOption(${index})" id="opt-${index}" class="w-full text-left p-4 rounded-xl border-2 border-slate-100 hover:border-pink-300 hover:bg-pink-50 transition-all font-medium text-slate-700">
+                        ${opt}
+                    </button>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <button onclick="nextQuestion()" class="px-6 py-2 bg-slate-800 text-white rounded-full font-bold shadow-md hover:bg-slate-700 transition-colors disabled:opacity-50" id="next-btn" disabled>Tiếp theo <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            `;
+            if(quizContainer) {
+                quizContainer.innerHTML = html;
+            }
+        }
+
+        function selectOption(index) {
+            selectedOption = index;
+            // Reset styles
+            for(let i=0; i<4; i++) {
+                const el = document.getElementById(`opt-${i}`);
+                if(el) {
+                    el.className = "w-full text-left p-4 rounded-xl border-2 border-slate-100 hover:border-pink-300 hover:bg-pink-50 transition-all font-medium text-slate-700";
+                }
+            }
+            // Active style
+            const activeEl = document.getElementById(`opt-${index}`);
+            activeEl.className = "w-full text-left p-4 rounded-xl border-2 border-pink-500 bg-pink-50 transition-all font-bold text-pink-700";
+            
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if(selectedOption === null) return;
+            
+            if(selectedOption === quizData[currentQuestion].correct) {
+                score++;
+            }
+            
+            currentQuestion++;
+            selectedOption = null;
+            renderQuestion();
+        }
+
+        function showResult() {
+            if(quizContainer) quizContainer.innerHTML = '';
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('score-display').innerText = score;
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('quiz-result').classList.add('hidden');
+            renderQuestion();
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestion();
+            changePseudoElement('first-letter');
+        });
+    </script>
+</body>
+</html>

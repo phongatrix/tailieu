@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao Tiếp Và Ứng Xử Nhân Văn</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            pink: '#fce7f3',
+                            purple: '#f3e8ff',
+                            green: '#dcfce7',
+                            yellow: '#fef9c3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fafafa;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Định dạng tiêu đề theo yêu cầu */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3b82f6, #9333ea); /* Blue to Purple */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize;
+        }
+
+        /* Tabs styling */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards & Shadows */
+        .study-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .study-card:hover {
+            transform: translateY(-5px);
+            border-color: #e2e8f0;
+        }
+
+        /* Interactive Flip Card */
+        .flip-card {
+            background-color: transparent;
+            height: 180px;
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flip-card:hover .flip-card-inner, .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .flip-card-front { background-color: white; border: 2px dashed #cbd5e1; }
+        .flip-card-back { background-color: #f3e8ff; transform: rotateY(180deg); border: 2px solid #d8b4fe; }
+
+        /* Quiz styling */
+        .quiz-option {
+            transition: all 0.2s;
+            border: 2px solid #e2e8f0;
+        }
+        .quiz-option:hover:not(.disabled) {
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+            cursor: pointer;
+        }
+        .quiz-option.correct { background-color: #dcfce7; border-color: #22c55e; color: #166534; }
+        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; }
+        .quiz-option.disabled { pointer-events: none; }
+        
+        /* Simulation Styles */
+        .phone-mockup {
+            border: 8px solid #cbd5e1;
+            border-radius: 2rem;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        .chat-bubble {
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            max-width: 85%;
+            font-size: 0.9rem;
+        }
+        .chat-bubble.them {
+            background-color: #f1f5f9;
+            color: #334155;
+            border-bottom-left-radius: 0.25rem;
+        }
+        .chat-bubble.me {
+            background-color: #3b82f6;
+            color: white;
+            border-bottom-right-radius: 0.25rem;
+            margin-left: auto;
+        }
+        .meter-container { height: 1.5rem; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+        .meter-fill { height: 100%; transition: width 0.5s ease, background-color 0.5s ease; width: 0%; }
+        
+        /* --- HIỆU ỨNG MỚI CHO SƠ ĐỒ TƯ DUY --- */
+        .node-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .node-hover:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 15px 30px -5px rgba(0,0,0,0.1); z-index: 10; }
+        
+        .pulse-core { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.5); animation: pulse-core 2s infinite; }
+        @keyframes pulse-core { 
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7); } 
+            70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(147, 51, 234, 0); } 
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); } 
+        }
+        
+        .aspect-btn { transition: all 0.3s ease; filter: grayscale(80%); opacity: 0.6; transform: scale(0.95); border: 2px solid transparent; }
+        .aspect-btn:hover { filter: grayscale(0%); opacity: 1; }
+        .aspect-btn.active { filter: grayscale(0%); opacity: 1; transform: scale(1.1); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.15); border-color: inherit; }
+        
+        .timeline-box { transition: all 0.5s ease; opacity: 0.4; filter: grayscale(100%); border: 2px dashed #cbd5e1; pointer-events: none; }
+        .timeline-box.unlocked { opacity: 1; filter: grayscale(0%); border-style: solid; pointer-events: auto; }
+        .timeline-box.unlocked:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .progress-line-fill { transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .tooltip-custom { visibility: hidden; opacity: 0; transition: all 0.3s ease; transform: translateY(10px); }
+        .node-hover:hover .tooltip-custom { visibility: visible; opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="text-gray-700 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <h1 class="title-gradient text-center md:text-left">
+                <i class="fa-solid fa-laptop-code mr-2 text-blue-500"></i>
+                Bài 6: Giao Tiếp & Ứng Xử Nhân Văn Trên Không Gian Mạng
+            </h1>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-5xl mx-auto px-4 mt-6">
+        <nav class="flex flex-wrap justify-center md:justify-start gap-3 bg-white p-2 rounded-2xl shadow-sm">
+            <button onclick="openTab('tongquan')" id="btn-tongquan" class="tab-btn active px-5 py-2.5 rounded-xl font-bold text-gray-500 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-seedling"></i> Khái Niệm Cốt Lõi
+            </button>
+            <button onclick="openTab('sodo')" id="btn-sodo" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-gray-500 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-project-diagram"></i> Sơ Đồ Tư Duy
+            </button>
+            <button onclick="openTab('tinhhuong')" id="btn-tinhhuong" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-gray-500 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-comments"></i> Tình Huống
+            </button>
+            <button onclick="openTab('quiz')" id="btn-quiz" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-gray-500 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-gamepad"></i> Trắc Nghiệm
+            </button>
+        </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-5xl mx-auto px-4 mt-8">
+
+        <!-- TAB 1: KHÁI NIỆM (Overview & Concepts) -->
+        <section id="tongquan" class="tab-content active">
+            
+            <!-- Mục tiêu & Lưu ý -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="study-card p-6 bg-pastel-blue">
+                    <h3 class="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye"></i> Mục Tiêu Bài Học
+                    </h3>
+                    <ul class="space-y-3">
+                        <li class="flex gap-2 items-start"><i class="fa-solid fa-check text-blue-500 mt-1"></i> Phân tích <b>ưu, nhược điểm</b> của giao tiếp trực tuyến qua ví dụ.</li>
+                        <li class="flex gap-2 items-start"><i class="fa-solid fa-check text-blue-500 mt-1"></i> Phân tích <b>tính nhân văn</b> trong ứng xử ở các tình huống mạng.</li>
+                    </ul>
+                </div>
+                
+                <div class="study-card p-6 bg-pastel-yellow border-2 border-yellow-200">
+                    <h3 class="text-xl font-bold text-yellow-700 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Điểm Dễ Nhầm Lẫn
+                    </h3>
+                    <div class="bg-white/60 p-4 rounded-xl mb-2">
+                        <span class="text-red-500 font-bold"><i class="fa-solid fa-xmark"></i> Sai:</span> Trực tuyến giống trực tiếp.
+                        <br>
+                        <span class="text-green-600 font-bold"><i class="fa-solid fa-check"></i> Đúng:</span> Trực tuyến <b>thiếu tín hiệu phi ngôn ngữ</b> (nét mặt, giọng nói) -> Dễ hiểu lầm.
+                    </div>
+                    <div class="bg-white/60 p-4 rounded-xl">
+                        <span class="text-red-500 font-bold"><i class="fa-solid fa-xmark"></i> Sai:</span> Được ép buộc người khác theo quan điểm của mình.
+                        <br>
+                        <span class="text-green-600 font-bold"><i class="fa-solid fa-check"></i> Đúng:</span> Phải <b>Tôn trọng</b> quan điểm, suy nghĩ riêng của mỗi người.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khái niệm quan trọng (Flashcards) -->
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Khái Niệm Quan Trọng (Lật thẻ)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fa-solid fa-globe text-4xl text-blue-400 mb-3"></i>
+                            <h4 class="font-bold text-lg text-gray-800">Không Gian Mạng</h4>
+                            <p class="text-xs text-gray-400 mt-2">Chạm để xem định nghĩa</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="text-sm text-purple-900 font-medium">Môi trường được tạo ra nhờ sử dụng mạng máy tính. <b>Internet</b> là không gian mạng lớn nhất.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fa-regular fa-comments text-4xl text-green-400 mb-3"></i>
+                            <h4 class="font-bold text-lg text-gray-800">Giao Tiếp Trực Tuyến</h4>
+                            <p class="text-xs text-gray-400 mt-2">Chạm để xem ví dụ</p>
+                        </div>
+                        <div class="flip-card-back !bg-pastel-green !border-green-300">
+                            <p class="text-sm text-green-900 font-medium">Kết nối qua phần mềm: Mạng xã hội, thư điện tử, diễn đàn, nhật kí web (blog)...</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <i class="fa-solid fa-heart text-4xl text-pink-400 mb-3"></i>
+                            <h4 class="font-bold text-lg text-gray-800">Cộng Đồng An Toàn</h4>
+                            <p class="text-xs text-gray-400 mt-2">Chạm để xem kết quả</p>
+                        </div>
+                        <div class="flip-card-back !bg-pastel-pink !border-pink-300">
+                            <p class="text-sm text-pink-900 font-medium">Ứng xử nhân văn giúp tạo môi trường lành mạnh, tránh tổn thương, xây dựng lòng tin.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: SƠ ĐỒ (Mindmap & Infographics) -->
+        <section id="sodo" class="tab-content">
+            
+            <!-- 1. Bản Đồ Tư Duy (Mindmap): Ưu/Nhược Điểm -->
+            <div class="study-card p-6 mb-8 bg-gray-50 border border-gray-200">
+                <h3 class="text-2xl font-bold text-center text-gray-800 mb-2">Bản Đồ Tư Duy Tương Tác</h3>
+                <p class="text-center text-gray-500 mb-8 text-sm">Di chuột vào các khối để xem mô phỏng chi tiết</p>
+                
+                <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10">
+                    
+                    <!-- Nhánh Ưu Điểm (Trái) -->
+                    <div class="flex flex-col gap-4 w-full md:w-1/3 relative z-10">
+                        <div class="absolute right-0 top-1/2 w-10 h-0.5 bg-green-300 hidden md:block z-[-1]"></div>
+                        
+                        <div class="node-hover bg-white p-3 rounded-xl border-l-4 border-green-500 shadow-sm relative group">
+                            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-clock"></i></div><b class="text-gray-700">Thực hiện thuận tiện</b></div>
+                            <div class="tooltip-custom absolute z-20 left-0 top-full mt-2 w-64 bg-gray-800 text-white text-xs p-3 rounded-lg shadow-xl pointer-events-none">
+                                <b class="text-green-300">Mô phỏng:</b> Bạn có thể tham gia lớp học trực tuyến ngay tại nhà lúc 8h tối mà không cần phải chạy xe đến trung tâm.
+                            </div>
+                        </div>
+                        
+                        <div class="node-hover bg-white p-3 rounded-xl border-l-4 border-green-500 shadow-sm relative group">
+                            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-piggy-bank"></i></div><b class="text-gray-700">Tiết kiệm</b></div>
+                            <div class="tooltip-custom absolute z-20 left-0 top-full mt-2 w-64 bg-gray-800 text-white text-xs p-3 rounded-lg shadow-xl pointer-events-none">
+                                <b class="text-green-300">Mô phỏng:</b> Một hội nghị truyền hình giúp công ty không tốn tiền vé máy bay và khách sạn cho nhân viên.
+                            </div>
+                        </div>
+                        
+                        <div class="node-hover bg-white p-3 rounded-xl border-l-4 border-green-500 shadow-sm relative group">
+                            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-people-group"></i></div><b class="text-gray-700">Mở rộng kết nối</b></div>
+                            <div class="tooltip-custom absolute z-20 left-0 top-full mt-2 w-64 bg-gray-800 text-white text-xs p-3 rounded-lg shadow-xl pointer-events-none">
+                                <b class="text-green-300">Mô phỏng:</b> Nhờ tham gia diễn đàn lập trình, bạn quen được một người bạn chung sở thích ở tận nước ngoài.
+                            </div>
+                        </div>
+                        
+                        <div class="node-hover bg-white p-3 rounded-xl border-l-4 border-green-500 shadow-sm relative group">
+                            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-toolbox"></i></div><b class="text-gray-700">Công cụ đa dạng</b></div>
+                            <div class="tooltip-custom absolute z-20 left-0 bottom-full mb-2 w-64 bg-gray-800 text-white text-xs p-3 rounded-lg shadow-xl pointer-events-none">
+                                <b class="text-green-300">Mô phỏng:</b> Gọi FaceTime, chat Messenger, gửi Email bài tập, đăng bài Blog cá nhân.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lõi Trung Tâm -->
+                    <div class="w-40 h-40 shrink-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex flex-col items-center justify-center text-white text-center p-4 pulse-core relative z-20 shadow-lg border-4 border-white">
+                        <i class="fa-solid fa-globe text-3xl mb-1"></i>
+                        <b class="text-sm">GIAO TIẾP<br>TRỰC TUYẾN</b>
+                    </div>
+
+                    <!-- Nhánh Nhược Điểm (Phải) -->
+                    <div class="flex flex-col gap-4 w-full md:w-1/3 relative z-10">
+                        <div class="absolute left-0 top-1/2 w-10 h-0.5 bg-pink-300 hidden md:block z-[-1]"></div>
+                        
+                        <div class="node-hover bg-white p-3 rounded-xl border-r-4 border-pink-500 shadow-sm relative group flex justify-end">
+                            <div class="flex flex-row-reverse items-center gap-3"><div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600"><i class="fa-solid fa-face-meh-blank"></i></div><b class="text-gray-700 text-right">Thiếu phi ngôn ngữ</b></div>
+                            <div class="tooltip-custom absolute z-20 right-0 top-full mt-2 w-64 bg-gray-800 text-white text-xs p-3 rounded-lg shadow-xl pointer-events-none text-right">
+                                <b class="text-pink-300">Mô phỏng:</b> Tin nhắn chỉ có chữ, không có giọng điệu nên không biết người kia đang đùa hay đang cáu.
+                            </div>
+                        </div>
+
+                        <div class="node-hover bg-white p-3 rounded-xl border-r-4 border-pink-500 shadow-sm relative group flex justify-end">
+                            <div class="flex flex-row-reverse items-center gap-3"><div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600"><i class="fa-solid fa-shield-halved"></i></div><b class="text-gray-700 text-right">Nguy cơ bảo mật</b></div>
+                            <div class="tooltip-custom absolute z-20 right-0 top-full mt-2 w-64 bg-gray-800 text-white text-xs p-3 rounded-lg shadow-xl pointer-events-none text-right">
+                                <b class="text-pink-300">Mô phỏng:</b> Rủi ro bị hack tài khoản mạng xã hội hoặc bị rò rỉ dữ liệu cá nhân nhạy cảm.
+                            </div>
+                        </div>
+
+                        <div class="node-hover bg-white p-3 rounded-xl border-r-4 border-pink-500 shadow-sm relative group flex justify-end">
+                            <div class="flex flex-row-reverse items-center gap-3"><div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600"><i class="fa-solid fa-user-secret"></i></div><b class="text-gray-700 text-right">Thiếu liên kết chặt</b></div>
+                            <div class="tooltip-custom absolute z-20 right-0 top-full mt-2 w-64 bg-gray-800 text-white text-xs p-3 rounded-lg shadow-xl pointer-events-none text-right">
+                                <b class="text-pink-300">Mô phỏng:</b> Việc dùng nick ẩn danh (clone) khiến ta khó đánh giá tính chân thật của mối quan hệ.
+                            </div>
+                        </div>
+
+                        <div class="node-hover bg-white p-3 rounded-xl border-r-4 border-pink-500 shadow-sm relative group flex justify-end">
+                            <div class="flex flex-row-reverse items-center gap-3"><div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600"><i class="fa-solid fa-wifi"></i></div><b class="text-gray-700 text-right">Sự cố kĩ thuật</b></div>
+                            <div class="tooltip-custom absolute z-20 right-0 bottom-full mb-2 w-64 bg-gray-800 text-white text-xs p-3 rounded-lg shadow-xl pointer-events-none text-right">
+                                <b class="text-pink-300">Mô phỏng:</b> Đang thi trực tuyến hoặc đang gọi video quan trọng thì bị rớt mạng, phần mềm bị lỗi.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 2. Mô Hình 4 Khía Cạnh Trực Quan (Interactive Carousel) -->
+            <div class="study-card p-6 mb-8 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100">
+                <h3 class="text-2xl font-bold text-center text-gray-800 mb-2">Mô Hình 4 Khía Cạnh Ứng Xử</h3>
+                <p class="text-center text-gray-500 mb-6 text-sm">Nhấp vào từng biểu tượng để xem nội dung và mô phỏng thực tế</p>
+                
+                <!-- Tab Buttons -->
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button onclick="showAspect(0)" class="aspect-btn active border-blue-400 bg-white p-3 rounded-2xl shadow-sm flex flex-col items-center w-24" id="btn-asp-0">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 text-xl mb-2"><i class="fa-solid fa-handshake"></i></div>
+                        <span class="font-bold text-xs text-blue-800">Tôn Trọng</span>
+                    </button>
+                    <button onclick="showAspect(1)" class="aspect-btn border-purple-400 bg-white p-3 rounded-2xl shadow-sm flex flex-col items-center w-24" id="btn-asp-1">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-500 text-xl mb-2"><i class="fa-solid fa-user-tie"></i></div>
+                        <span class="font-bold text-xs text-purple-800">Lịch Sự</span>
+                    </button>
+                    <button onclick="showAspect(2)" class="aspect-btn border-pink-400 bg-white p-3 rounded-2xl shadow-sm flex flex-col items-center w-24" id="btn-asp-2">
+                        <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-pink-500 text-xl mb-2"><i class="fa-solid fa-ear-listen"></i></div>
+                        <span class="font-bold text-xs text-pink-800">Thấu Hiểu</span>
+                    </button>
+                    <button onclick="showAspect(3)" class="aspect-btn border-green-400 bg-white p-3 rounded-2xl shadow-sm flex flex-col items-center w-24" id="btn-asp-3">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-500 text-xl mb-2"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                        <span class="font-bold text-xs text-green-800">Hỗ Trợ</span>
+                    </button>
+                </div>
+
+                <!-- Display Box -->
+                <div class="bg-white rounded-2xl p-6 shadow-md min-h-[180px] flex flex-col justify-center border-l-4 transition-all duration-300" id="aspect-display">
+                    <!-- Content injected by JS -->
+                </div>
+            </div>
+
+            <!-- 3. Hành Trình 5 Bước "Mở Khóa" (Gamification Roadmap) -->
+            <div class="study-card p-6 bg-white border border-gray-100 relative overflow-hidden">
+                <h3 class="text-2xl font-bold text-center text-gray-800 mb-2">Hành Trình Rèn Luyện 5 Bước</h3>
+                <p class="text-center text-gray-500 mb-8 text-sm">Hoàn thành từng bước để mở khóa chặng đường nhân văn</p>
+                
+                <div class="max-w-xl mx-auto relative pl-10 md:pl-0">
+                    <!-- Progress Line (Background) -->
+                    <div class="absolute left-[38px] md:left-1/2 top-4 bottom-4 w-1 bg-gray-200 transform md:-translate-x-1/2 z-0 rounded-full"></div>
+                    <!-- Progress Line (Fill) -->
+                    <div id="timeline-fill" class="progress-line-fill absolute left-[38px] md:left-1/2 top-4 w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-green-500 transform md:-translate-x-1/2 z-0 rounded-full" style="height: 0%;"></div>
+
+                    <!-- Steps Container -->
+                    <div class="space-y-6 relative z-10" id="timeline-steps">
+                        <!-- Steps injected by JS -->
+                    </div>
+                </div>
+                
+                <!-- Action Button -->
+                <div class="text-center mt-10">
+                    <button id="btn-unlock-next" onclick="unlockNextStep()" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:-translate-y-1">
+                        Thực hành Bước 1 <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                    <div id="timeline-success" class="hidden mt-4 text-green-600 font-bold text-lg animate-pulse">
+                        <i class="fa-solid fa-medal text-2xl mb-1 block"></i> Bạn đã nắm vững 5 nguyên tắc!
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 3: TÌNH HUỐNG & MÔ PHỎNG (Interactive Scenarios) -->
+        <section id="tinhhuong" class="tab-content">
+            <h3 class="text-2xl font-bold text-center text-gray-800 mb-2">Tình Huống & Mô Phỏng Thực Tế</h3>
+            <p class="text-center text-gray-500 mb-8 text-sm">Thực hành nhận diện và xử lý các tình huống giao tiếp trên không gian mạng</p>
+            
+            <!-- Phần 1: Phân biệt hành vi -->
+            <div class="mb-10">
+                <h4 class="font-bold text-xl text-blue-700 mb-4 border-b-2 border-blue-100 pb-2"><i class="fa-solid fa-list-check"></i> 1. Trắc nghiệm nhanh: Phân biệt hành vi</h4>
+                <p class="text-gray-600 mb-4 text-sm">Nhấp vào thẻ để xem hành vi này là <b>Nhân văn (Nên làm)</b> hay <b>Thiếu nhân văn (Cần tránh)</b> dựa theo nguồn.</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="scenario-container">
+                    <!-- Data populated by JS -->
+                </div>
+            </div>
+
+            <!-- Phần 2: Mô phỏng chi tiết -->
+            <div class="mb-10">
+                <h4 class="font-bold text-xl text-purple-700 mb-6 border-b-2 border-purple-100 pb-2"><i class="fa-solid fa-masks-theater"></i> 2. Nhập vai: Xử lý tình huống thực tế</h4>
+                
+                <!-- Mô phỏng 1: Thiếu phi ngôn ngữ -->
+                <div class="study-card p-6 mb-8 border-2 border-pink-200 bg-gradient-to-b from-white to-pink-50">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 text-xl"><i class="fa-solid fa-face-meh-blank"></i></div>
+                        <h4 class="font-bold text-xl text-gray-800">Tình huống A: Thiếu Tín Hiệu Phi Ngôn Ngữ</h4>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">Trải nghiệm cách một tin nhắn văn bản dễ gây hiểu lầm như thế nào khi không có giọng nói hay nét mặt.</p>
+                    
+                    <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
+                        <!-- Phone mock -->
+                        <div class="phone-mockup w-64 h-96 flex flex-col relative bg-gray-50 shrink-0">
+                            <div class="bg-gray-200 h-12 flex items-center px-4 font-bold text-sm text-gray-700 border-b border-gray-300">
+                                <i class="fa-solid fa-chevron-left mr-2"></i> Bạn Thân
+                            </div>
+                            <div class="flex-1 p-3 flex flex-col gap-3">
+                                <div class="chat-bubble me">Đi ăn bún đậu không m?</div>
+                                <div class="chat-bubble them" id="sim1-msg">Sao cũng được.</div>
+                            </div>
+                            <!-- Video call overlay (hidden initially) -->
+                            <div id="sim1-video" class="absolute inset-0 bg-black/80 hidden flex-col items-center justify-center text-white p-4 text-center z-10 transition-all duration-300">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Happy&mouth=smile" alt="Happy Face" class="w-24 h-24 bg-white rounded-full mb-4">
+                                <p class="font-bold text-lg mb-2">"Sao cũng được. Ăn bún đậu cũng ngon á, haha!"</p>
+                                <p class="text-sm text-gray-300">Giọng nói vui vẻ, hào hứng.</p>
+                                <button onclick="resetSim1()" class="mt-6 px-4 py-2 bg-white text-black rounded-lg text-sm font-bold shadow-lg">Đóng</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Interaction panel -->
+                        <div class="flex-1 max-w-sm">
+                            <p class="font-bold text-gray-700 mb-3">Theo bạn, người gửi đang cảm thấy thế nào khi nhắn "Sao cũng được"?</p>
+                            <div class="grid grid-cols-1 gap-2 mb-4" id="sim1-options">
+                                <button onclick="guessEmotion('Giận dỗi')" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-left"><i class="fa-regular fa-face-angry text-red-500 mr-2 text-lg"></i> Đang giận dỗi, không muốn đi</button>
+                                <button onclick="guessEmotion('Buồn bã')" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-left"><i class="fa-regular fa-face-frown text-blue-500 mr-2 text-lg"></i> Đang buồn, chán nản</button>
+                                <button onclick="guessEmotion('Vui vẻ')" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-left"><i class="fa-regular fa-face-smile text-green-500 mr-2 text-lg"></i> Dễ tính, ăn gì cũng vui</button>
+                            </div>
+                            <div id="sim1-feedback" class="hidden p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg text-sm font-medium mb-4 shadow-sm">
+                                Bạn chọn: <span id="sim1-choice" class="font-bold"></span>.<br>Nhưng thực ra, chỉ đọc chữ, chúng ta <b>không thể biết chắc chắn</b>!
+                            </div>
+                            <button onclick="showVideoCall()" id="btn-show-video" class="hidden w-full px-4 py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 transform hover:-translate-y-1">
+                                <i class="fa-solid fa-video"></i> Bật Video Call để xem sự thật
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mô phỏng 2: Quyền riêng tư -->
+                <div class="study-card p-6 mb-8 border-2 border-blue-200 bg-gradient-to-b from-white to-blue-50">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-xl"><i class="fa-solid fa-user-shield"></i></div>
+                        <h4 class="font-bold text-xl text-gray-800">Tình huống B: Tôn Trọng Quyền Riêng Tư</h4>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-start">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Binh" class="w-12 h-12 bg-blue-100 rounded-full shrink-0" alt="Avatar">
+                        <div>
+                            <p class="font-bold text-gray-800">Bình nhắn tin cho bạn:</p>
+                            <div class="chat-bubble them mt-2 mb-2 italic shadow-sm">"Ê nhìn ảnh này buồn cười không? Sáng nay tớ vô tình chụp được lúc Hoa đang ngủ gật chảy dãi trong lớp nè =))"</div>
+                            <p class="text-sm text-gray-500 font-medium"><i class="fa-solid fa-image text-blue-400"></i> [Đính kèm 1 hình ảnh của Hoa]</p>
+                        </div>
+                    </div>
+
+                    <p class="font-bold text-center text-gray-700 mb-4">Bạn sẽ xử lý như thế nào?</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center" id="sim2-actions">
+                        <button onclick="handlePrivacy(false)" class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 px-4 rounded-xl border border-red-300 transition flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+                            <i class="fa-solid fa-share"></i> Lưu ảnh & Gửi cho nhóm khác
+                        </button>
+                        <button onclick="handlePrivacy(true)" class="flex-1 bg-green-100 hover:bg-green-200 text-green-700 font-bold py-3 px-4 rounded-xl border border-green-300 transition flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+                            <i class="fa-solid fa-hand-paper"></i> Khuyên Bình xóa ảnh ngay
+                        </button>
+                    </div>
+
+                    <div id="sim2-result" class="hidden mt-6 p-4 rounded-xl text-center font-medium border-2 transition-all">
+                        <!-- Result inserted by JS -->
+                    </div>
+                </div>
+
+                <!-- Mô phỏng 3: Thước đo văn minh -->
+                <div class="study-card p-6 border-2 border-purple-200 bg-gradient-to-b from-white to-purple-50">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-500 text-xl"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <h4 class="font-bold text-xl text-gray-800">Tình huống C: Bộ Lọc Ngôn Từ</h4>
+                    </div>
+                    <p class="text-gray-600 mb-6 text-sm">Cùng một ý định phản bác, cách bạn chọn từ ngữ sẽ quyết định tính "Nhân văn" của bạn trên diễn đàn.</p>
+
+                    <div class="bg-gray-100 p-4 rounded-xl mb-6 border border-gray-200 shadow-inner">
+                        <p class="text-xs text-gray-500 font-bold mb-1 uppercase tracking-wide">Bài đăng trên diễn đàn công khai:</p>
+                        <p class="font-medium text-gray-800">"Chơi game là hoàn toàn vô bổ và tốn thời gian, những người chơi game đều là người lười biếng!"</p>
+                    </div>
+
+                    <p class="font-bold text-gray-700 mb-3">Xây dựng câu trả lời phản biện của bạn:</p>
+                    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+                        <select id="sim3-part1" onchange="updateMeter()" class="flex-1 p-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-purple-500 shadow-sm font-medium text-gray-700 cursor-pointer">
+                            <option value="0">-- Chọn cách mở đầu --</option>
+                            <option value="-20">Bạn bị ảo à / Ăn nói hàm hồ</option>
+                            <option value="10">Mình không đồng ý với bạn</option>
+                            <option value="30">Theo góc nhìn của mình thì</option>
+                        </select>
+                        
+                        <select id="sim3-part2" onchange="updateMeter()" class="flex-1 p-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-purple-500 shadow-sm font-medium text-gray-700 cursor-pointer">
+                            <option value="0">-- Chọn lý lẽ --</option>
+                            <option value="-30">chỉ có kẻ ngốc mới nghĩ thế.</option>
+                            <option value="10">game cũng có lợi ích của nó.</option>
+                            <option value="40">nó giúp rèn tư duy chiến thuật rất tốt nếu biết điều độ.</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-purple-100 rounded-full -mr-12 -mt-12 opacity-50"></div>
+                        <div class="flex justify-between items-center mb-2 relative z-10">
+                            <span class="font-bold text-gray-700">Chỉ số Lịch Sự & Tôn Trọng:</span>
+                            <span id="meter-text" class="font-bold text-gray-400 text-xl">0%</span>
+                        </div>
+                        <div class="meter-container mb-3 relative z-10 shadow-inner">
+                            <div id="meter-bar" class="meter-fill bg-gray-400" style="width: 0%;"></div>
+                        </div>
+                        <p id="meter-feedback" class="text-sm text-gray-500 italic text-center relative z-10">Hãy chọn các phần của câu để xem AI đánh giá mức độ nhân văn.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phần 3: Lưu ý hoàn cảnh (ĐÃ NÂNG CẤP THÀNH MÔ PHỎNG) -->
+            <div class="study-card p-6 bg-blue-50 border border-blue-100">
+                <h4 class="font-bold text-lg text-blue-800 mb-2"><i class="fa-solid fa-circle-info"></i> 3. Mô phỏng: Ứng xử theo hoàn cảnh cụ thể</h4>
+                <p class="text-sm text-gray-600 mb-6">Nhấp vào từng hoàn cảnh để đối mặt với tình huống giả định và chọn cách giải quyết đúng đắn nhất.</p>
+                
+                <!-- Nút chọn hoàn cảnh -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <button onclick="openContextSim(0)" id="btn-ctx-0" class="ctx-btn bg-white border-2 border-blue-200 hover:border-blue-400 text-blue-600 rounded-xl p-3 flex flex-col items-center gap-2 transition-all shadow-sm">
+                        <i class="fa-regular fa-envelope text-2xl"></i>
+                        <span class="font-bold text-xs text-center">Email/Tin nhắn</span>
+                    </button>
+                    <button onclick="openContextSim(1)" id="btn-ctx-1" class="ctx-btn bg-white border-2 border-purple-200 hover:border-purple-400 text-purple-600 rounded-xl p-3 flex flex-col items-center gap-2 transition-all shadow-sm">
+                        <i class="fa-solid fa-video text-2xl"></i>
+                        <span class="font-bold text-xs text-center">Video Call</span>
+                    </button>
+                    <button onclick="openContextSim(2)" id="btn-ctx-2" class="ctx-btn bg-white border-2 border-pink-200 hover:border-pink-400 text-pink-600 rounded-xl p-3 flex flex-col items-center gap-2 transition-all shadow-sm">
+                        <i class="fa-regular fa-comments text-2xl"></i>
+                        <span class="font-bold text-xs text-center">Diễn đàn</span>
+                    </button>
+                    <button onclick="openContextSim(3)" id="btn-ctx-3" class="ctx-btn bg-white border-2 border-green-200 hover:border-green-400 text-green-600 rounded-xl p-3 flex flex-col items-center gap-2 transition-all shadow-sm">
+                        <i class="fa-solid fa-share-nodes text-2xl"></i>
+                        <span class="font-bold text-xs text-center">Đăng bài/Chia sẻ</span>
+                    </button>
+                </div>
+
+                <!-- Khu vực hiển thị mô phỏng -->
+                <div id="context-sim-display" class="hidden bg-white p-5 rounded-2xl shadow-md border-l-4 transition-all duration-300">
+                    <!-- Nội dung JS sẽ chèn vào đây -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: TRẮC NGHIỆM (Quiz) -->
+        <section id="quiz" class="tab-content">
+            <div class="study-card p-6 max-w-3xl mx-auto">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h3 class="text-2xl font-bold text-gray-800">Trắc Nghiệm Ôn Tập</h3>
+                    <span id="quiz-score" class="bg-purple-100 text-purple-800 font-bold px-4 py-2 rounded-full hidden">Điểm: 0/5</span>
+                </div>
+                
+                <div id="quiz-container" class="space-y-8">
+                    <!-- Questions will be injected here by JS -->
+                </div>
+
+                <div class="mt-8 text-center hidden" id="quiz-result-container">
+                    <h4 class="text-xl font-bold text-gray-800 mb-2" id="quiz-feedback"></h4>
+                    <button onclick="resetQuiz()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full transition">Làm Lại</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // --- 1. TAB LOGIC ---
+        function openTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active class from buttons
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            // Add active class to clicked button
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // --- 2. SCENARIO LOGIC (TÌNH HUỐNG) ---
+        const scenarios = [
+            { text: "Đăng ảnh dìm hàng của bạn ở tư thế xấu", isGood: false },
+            { text: "Ngăn bạn gửi video bạo lực học đường lên mạng", isGood: true },
+            { text: "Dùng ngôn từ khiếm nhã phê phán bạn trên mạng xã hội", isGood: false },
+            { text: "Tự ý chụp ảnh nhật kí cá nhân của bạn rồi phát tán", isGood: false },
+            { text: "Gửi thư điện tử lịch sự để mượn vở bạn khi bị ốm", isGood: true },
+            { text: "Trao đổi trên tinh thần tôn trọng sự khác biệt trên mạng xã hội", isGood: true }
+        ];
+
+        const scenarioContainer = document.getElementById('scenario-container');
+        scenarios.forEach((sc, index) => {
+            const div = document.createElement('div');
+            div.className = "bg-white p-4 rounded-xl border border-gray-200 cursor-pointer transition shadow-sm hover:shadow-md flex justify-between items-center";
+            div.innerHTML = `<span class="font-medium flex-1">${sc.text}</span> <span class="status w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 text-gray-400"><i class="fa-solid fa-question"></i></span>`;
+            
+            div.onclick = function() {
+                const statusSpan = this.querySelector('.status');
+                if (sc.isGood) {
+                    this.classList.add('bg-green-50', 'border-green-300');
+                    statusSpan.className = 'status w-8 h-8 rounded-full flex items-center justify-center bg-green-500 text-white';
+                    statusSpan.innerHTML = '<i class="fa-solid fa-check"></i>';
+                } else {
+                    this.classList.add('bg-red-50', 'border-red-300');
+                    statusSpan.className = 'status w-8 h-8 rounded-full flex items-center justify-center bg-red-500 text-white';
+                    statusSpan.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                }
+            };
+            scenarioContainer.appendChild(div);
+        });
+
+        // --- 3. QUIZ LOGIC ---
+        const quizData = [
+            {
+                q: "1. Trong không gian mạng, môi trường nào được coi là lớn nhất?",
+                options: ["A. Mạng xã hội", "B. Internet", "C. Thư điện tử", "D. Diễn đàn trực tuyến"],
+                correct: 1
+            },
+            {
+                q: "2. Theo tài liệu, đặc điểm nào KHÔNG phải là ưu điểm của giao tiếp trực tuyến?",
+                options: ["A. Tiết kiệm thời gian và chi phí", "B. Mở rộng kết nối xã hội", "C. Thực hiện thuận tiện mọi lúc mọi nơi", "D. Đầy đủ tín hiệu phi ngôn ngữ như nét mặt"],
+                correct: 3
+            },
+            {
+                q: "3. Việc thiếu các tín hiệu phi ngôn ngữ trong giao tiếp trực tuyến dễ dẫn đến hậu quả gì?",
+                options: ["A. Tiết kiệm thời gian", "B. Tăng tính bảo mật", "C. Dễ gây hiểu lầm và cản trở truyền đạt cảm xúc", "D. Mở rộng mạng lưới quan hệ nhanh hơn"],
+                correct: 2
+            },
+            {
+                q: "4. Hành động nào sau đây là KHÔNG thể hiện tính nhân văn trên không gian mạng?",
+                options: ["A. Bảo vệ quyền riêng tư của người khác", "B. Ép buộc người khác phải chấp nhận quan điểm của mình", "C. Sử dụng ngôn từ đúng mực, lịch sự", "D. Đặt mình vào hoàn cảnh người khác để thấu hiểu"],
+                correct: 1
+            },
+            {
+                q: "5. Khi trò chuyện qua video (Video call), ứng xử nào sau đây là đúng chuẩn mực?",
+                options: ["A. Để lộ những vật dụng không phù hợp xung quanh", "B. Mặc trang phục tùy ý, thoải mái nhất có thể", "C. Mặc trang phục lịch sự, duy trì thái độ chuẩn mực", "D. Vừa trò chuyện vừa chia sẻ tin nhắn riêng tư cho người khác"],
+                correct: 2
+            }
+        ];
+
+        let currentScore = 0;
+        let answeredQuestions = 0;
+        const quizContainer = document.getElementById('quiz-container');
+        const scoreDisplay = document.getElementById('quiz-score');
+        const resultContainer = document.getElementById('quiz-result-container');
+        const feedbackText = document.getElementById('quiz-feedback');
+
+        function renderQuiz() {
+            quizContainer.innerHTML = '';
+            quizData.forEach((q, qIndex) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "mb-6";
+                qDiv.innerHTML = `<h4 class="font-bold text-gray-800 mb-3">${q.q}</h4>`;
+                
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-3";
+
+                q.options.forEach((opt, oIndex) => {
+                    const optBtn = document.createElement('div');
+                    optBtn.className = "quiz-option p-3 rounded-xl text-sm font-medium";
+                    optBtn.textContent = opt;
+                    optBtn.onclick = () => checkAnswer(optBtn, optionsGrid, oIndex, q.correct);
+                    optionsGrid.appendChild(optBtn);
+                });
+
+                qDiv.appendChild(optionsGrid);
+                quizContainer.appendChild(qDiv);
+            });
+        }
+
+        function checkAnswer(selectedElement, container, selectedIdx, correctIdx) {
+            // Prevent multiple clicks
+            if (container.classList.contains('answered')) return;
+            container.classList.add('answered');
+
+            const options = container.children;
+            for (let i = 0; i < options.length; i++) {
+                options[i].classList.add('disabled');
+                if (i === correctIdx) {
+                    options[i].classList.add('correct');
+                }
+            }
+
+            if (selectedIdx === correctIdx) {
+                currentScore++;
+            } else {
+                selectedElement.classList.add('wrong');
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function updateScore() {
+            scoreDisplay.classList.remove('hidden');
+            scoreDisplay.textContent = `Điểm: ${currentScore}/${quizData.length}`;
+            
+            if (answeredQuestions === quizData.length) {
+                resultContainer.classList.remove('hidden');
+                if (currentScore === quizData.length) {
+                    feedbackText.innerHTML = "🎉 Tuyệt vời! Bạn nắm rất vững kiến thức bài học!";
+                    feedbackText.className = "text-xl font-bold text-green-600 mb-2";
+                } else if (currentScore >= 3) {
+                    feedbackText.innerHTML = "👍 Khá tốt! Hãy ôn lại các điểm nhầm lẫn nhé.";
+                    feedbackText.className = "text-xl font-bold text-blue-600 mb-2";
+                } else {
+                    feedbackText.innerHTML = "💡 Hãy xem lại phần 'Khái Niệm' và 'Sơ Đồ' để hiểu rõ hơn.";
+                    feedbackText.className = "text-xl font-bold text-orange-500 mb-2";
+                }
+            }
+        }
+
+        function resetQuiz() {
+            currentScore = 0;
+            answeredQuestions = 0;
+            scoreDisplay.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            renderQuiz();
+        }
+
+        // Initialize quiz
+        renderQuiz();
+
+        // --- 4. SIMULATION LOGIC ---
+        // Sim 1: Non-verbal cues
+        function guessEmotion(emotion) {
+            const options = document.getElementById('sim1-options').children;
+            for(let btn of options) {
+                btn.classList.add('opacity-50', 'pointer-events-none');
+            }
+            
+            document.getElementById('sim1-choice').textContent = emotion;
+            document.getElementById('sim1-feedback').classList.remove('hidden');
+            document.getElementById('btn-show-video').classList.remove('hidden');
+        }
+
+        function showVideoCall() {
+            document.getElementById('sim1-video').classList.remove('hidden');
+            document.getElementById('sim1-video').classList.add('flex');
+        }
+
+        function resetSim1() {
+            document.getElementById('sim1-video').classList.add('hidden');
+            document.getElementById('sim1-video').classList.remove('flex');
+            
+            const options = document.getElementById('sim1-options').children;
+            for(let btn of options) {
+                btn.classList.remove('opacity-50', 'pointer-events-none');
+            }
+            document.getElementById('sim1-feedback').classList.add('hidden');
+            document.getElementById('btn-show-video').classList.add('hidden');
+        }
+
+        // Sim 2: Privacy
+        function handlePrivacy(isGood) {
+            const resultBox = document.getElementById('sim2-result');
+            resultBox.classList.remove('hidden', 'bg-red-50', 'border-red-300', 'text-red-700', 'bg-green-50', 'border-green-300', 'text-green-700');
+            
+            if (isGood) {
+                resultBox.classList.add('bg-green-50', 'border-green-300', 'text-green-700');
+                resultBox.innerHTML = '<i class="fa-solid fa-check-circle text-3xl mb-3"></i><br><b>Ứng xử tuyệt vời!</b><br><span class="text-sm">Bạn đã thể hiện sự <b>Tôn trọng quyền riêng tư</b> của Hoa, đồng thời giúp Bình nhận ra hành động phát tán ảnh nhạy cảm của người khác là sai trái.</span>';
+            } else {
+                resultBox.classList.add('bg-red-50', 'border-red-300', 'text-red-700');
+                resultBox.innerHTML = '<i class="fa-solid fa-xmark-circle text-3xl mb-3"></i><br><b>Hành vi thiếu nhân văn!</b><br><span class="text-sm">Việc lưu và phát tán hình ảnh của người khác khi chưa được phép là vi phạm quyền riêng tư, có thể gây tổn thương tâm lý nghiêm trọng cho Hoa.</span>';
+            }
+        }
+
+        // Sim 3: Toxicity Meter
+        function updateMeter() {
+            const val1 = parseInt(document.getElementById('sim3-part1').value) || 0;
+            const val2 = parseInt(document.getElementById('sim3-part2').value) || 0;
+            
+            const bar = document.getElementById('meter-bar');
+            const text = document.getElementById('meter-text');
+            const feedback = document.getElementById('meter-feedback');
+
+            if (val1 === 0 || val2 === 0) {
+                text.textContent = "...";
+                bar.style.width = '0%';
+                bar.className = 'meter-fill bg-gray-400';
+                feedback.textContent = "Hãy chọn đủ cả mở đầu và lý lẽ để xem đánh giá.";
+                feedback.className = "text-sm text-gray-500 italic text-center relative z-10";
+                return;
+            }
+
+            let total = val1 + val2;
+            let percentage = 50 + (total * 1.0); 
+            if (percentage < 5) percentage = 5;
+            if (percentage > 100) percentage = 100;
+
+            text.textContent = percentage + "%";
+            bar.style.width = percentage + '%';
+
+            if (percentage < 40) {
+                bar.className = 'meter-fill bg-red-500';
+                text.className = 'font-bold text-red-500 text-xl';
+                feedback.innerHTML = "<b class='text-red-500'>Thiếu Lịch Sự & Tôn Trọng!</b> Lời lẽ mang tính công kích cá nhân, dễ gây cãi vã lớn thay vì giải quyết vấn đề.";
+            } else if (percentage < 70) {
+                bar.className = 'meter-fill bg-yellow-500';
+                text.className = 'font-bold text-yellow-600 text-xl';
+                feedback.innerHTML = "<b class='text-yellow-600'>Chấp nhận được.</b> Câu văn chưa quá mềm mỏng nhưng đã nêu được ý kiến trái chiều mà không xúc phạm nặng nề.";
+            } else {
+                bar.className = 'meter-fill bg-green-500';
+                text.className = 'font-bold text-green-600 text-xl';
+                feedback.innerHTML = "<b class='text-green-600'>Rất Nhân Văn!</b> Bạn áp dụng rất tốt quy tắc: Lắng nghe, tôn trọng sự khác biệt và phản bác lịch sự có lí do rõ ràng.";
+            }
+        }
+        
+        // --- 5. MINDMAP & INTERACTIVE INFOGRAPHIC LOGIC (MỚI) ---
+        
+        // Logic 4 Khía cạnh
+        const aspectsData = [
+            {
+                title: "Tôn Trọng", color: "blue", icon: "fa-handshake",
+                desc: "Bảo vệ quyền riêng tư cá nhân. Tôn trọng quan điểm, suy nghĩ riêng; không châm chọc hay ép buộc người khác.",
+                sim: `<div class="bg-gray-50 p-3 rounded-lg text-sm"><b class="text-blue-600"><i class="fa-solid fa-comment-dots"></i> Bạn:</b> "Cậu xóa ảnh dìm của Hoa đi, làm vậy xâm phạm quyền riêng tư của bạn ấy đó."<br><b class="text-gray-600"><i class="fa-solid fa-reply"></i> Bình:</b> "Oke tớ hiểu rồi, tớ xóa ngay đây."</div>`
+            },
+            {
+                title: "Lịch Sự", color: "purple", icon: "fa-user-tie",
+                desc: "Sử dụng ngôn từ đúng mực. Không lăng mạ, phân biệt. Chia sẻ thông tin chính xác, đáng tin cậy.",
+                sim: `<div class="bg-gray-50 p-3 rounded-lg text-sm"><b class="text-purple-600"><i class="fa-solid fa-shield-cat"></i> Hành động:</b> Trước khi Share (chia sẻ) một bản tin giật gân, bạn đã lên Google kiểm tra lại tính chính xác để tránh lan truyền tin giả.</div>`
+            },
+            {
+                title: "Thấu Hiểu", color: "pink", icon: "fa-ear-listen",
+                desc: "Biết cảm thông, đặt mình vào hoàn cảnh của người khác để thấu hiểu tâm tư và vấn đề họ đang gặp phải.",
+                sim: `<div class="bg-gray-50 p-3 rounded-lg text-sm"><b class="text-pink-600"><i class="fa-solid fa-comment-dots"></i> Bạn:</b> "Dạo này trên lớp thấy cậu ít nói, có chuyện gì buồn cứ tâm sự với tớ nhé."</div>`
+            },
+            {
+                title: "Hỗ Trợ", color: "green", icon: "fa-hand-holding-heart",
+                desc: "Sẵn lòng giúp đỡ bằng những hành động thiết thực, lời động viên chân thành hoặc tin nhắn an ủi.",
+                sim: `<div class="bg-gray-50 p-3 rounded-lg text-sm"><b class="text-green-600"><i class="fa-solid fa-comment-dots"></i> Bạn:</b> "Nghe nói cậu bị ốm, tớ gửi file bài tập hôm nay qua email rồi, cậu nghỉ ngơi mau khỏe nha!"</div>`
+            }
+        ];
+
+        function showAspect(index) {
+            // Reset buttons
+            document.querySelectorAll('.aspect-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-asp-${index}`).classList.add('active');
+            
+            // Update content
+            const data = aspectsData[index];
+            const displayBox = document.getElementById('aspect-display');
+            
+            // Dynamic styling based on selected color
+            let borderColor = 'border-blue-400';
+            let titleColor = 'text-blue-700';
+            if (data.color === 'purple') { borderColor = 'border-purple-400'; titleColor = 'text-purple-700'; }
+            if (data.color === 'pink') { borderColor = 'border-pink-400'; titleColor = 'text-pink-700'; }
+            if (data.color === 'green') { borderColor = 'border-green-400'; titleColor = 'text-green-700'; }
+            
+            displayBox.className = `bg-white rounded-2xl p-6 shadow-md min-h-[180px] flex flex-col justify-center border-l-4 transition-all duration-300 ${borderColor}`;
+            
+            displayBox.innerHTML = `
+                <h4 class="text-xl font-bold ${titleColor} mb-2"><i class="fa-solid ${data.icon} mr-2"></i> ${data.title}</h4>
+                <p class="text-gray-600 mb-4 text-sm">${data.desc}</p>
+                <div class="border-t border-gray-100 pt-3">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Ví dụ mô phỏng:</span>
+                    ${data.sim}
+                </div>
+            `;
+        }
+        
+        // Init first aspect
+        showAspect(0);
+
+        // Logic 5 Bước Timeline
+        const stepsData = [
+            { title: "Tự kiểm tra", desc: "Đánh giá lại hành vi để sửa đổi nếu thiếu đúng mực.", color: "blue-500", bg: "bg-blue-50", border: "border-blue-200" },
+            { title: "Lắng nghe & Tôn trọng", desc: "Tôn trọng ý kiến trái chiều, phản bác lịch sự có lí do.", color: "purple-500", bg: "bg-purple-50", border: "border-purple-200" },
+            { title: "Xử lí tình huống khó", desc: "Rèn luyện giải quyết đúng mực, tìm kiếm sự giúp đỡ.", color: "pink-500", bg: "bg-pink-50", border: "border-pink-200" },
+            { title: "Cẩn trọng ngôn từ", desc: "Tránh gây hiểu lầm hoặc mang tính khiêu khích.", color: "yellow-500", bg: "bg-yellow-50", border: "border-yellow-200" },
+            { title: "Nguyên tắc vàng", desc: "Đối xử với người khác theo cách mà mình muốn.", color: "green-500", bg: "bg-green-50", border: "border-green-200" }
+        ];
+
+        let currentStep = 0; // 0 means first step unlocked
+        
+        function renderTimeline() {
+            const container = document.getElementById('timeline-steps');
+            container.innerHTML = '';
+            
+            stepsData.forEach((step, index) => {
+                const isUnlocked = index <= currentStep;
+                const alignment = index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse text-left md:text-right";
+                const dotPos = index % 2 === 0 ? "md:-right-4" : "md:-left-4";
+                
+                container.innerHTML += `
+                    <div class="flex flex-col ${alignment} items-center w-full relative">
+                        <div class="hidden md:block w-5/12"></div>
+                        <!-- Cục mốc -->
+                        <div class="absolute left-0 md:relative md:left-auto z-20 flex items-center justify-center bg-${isUnlocked ? step.color.split('-')[0]+'-500' : 'gray-300'} shadow-md w-8 h-8 rounded-full text-white font-bold transition-colors duration-500 border-2 border-white">
+                            ${isUnlocked ? '<i class="fa-solid fa-check text-sm"></i>' : index + 1}
+                        </div>
+                        <!-- Nội dung -->
+                        <div class="ml-12 md:ml-0 w-full md:w-5/12 timeline-box ${isUnlocked ? 'unlocked ' + step.bg + ' ' + step.border : 'bg-gray-50 border-gray-200'} p-4 rounded-xl relative">
+                            <h4 class="font-bold text-gray-800 text-base mb-1">Bước ${index + 1}: ${step.title}</h4>
+                            <p class="text-sm text-gray-600">${step.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Cập nhật thanh tiến trình (chiều cao)
+            const heightPercent = currentStep === 0 ? 0 : (currentStep / (stepsData.length - 1)) * 100;
+            document.getElementById('timeline-fill').style.height = heightPercent + '%';
+        }
+
+        function unlockNextStep() {
+            if (currentStep < stepsData.length - 1) {
+                currentStep++;
+                renderTimeline();
+                
+                const btn = document.getElementById('btn-unlock-next');
+                if (currentStep === stepsData.length - 1) {
+                    btn.classList.add('hidden');
+                    document.getElementById('timeline-success').classList.remove('hidden');
+                } else {
+                    btn.innerHTML = `Thực hành Bước ${currentStep + 1} <i class="fa-solid fa-arrow-right ml-2"></i>`;
+                }
+            }
+        }
+        
+        // Init timeline
+        renderTimeline();
+
+        // --- 6. CONTEXT SIMULATION LOGIC (MÔ PHỎNG HOÀN CẢNH) ---
+        const contextSims = [
+            {
+                id: 'email',
+                color: 'blue',
+                icon: 'fa-envelope',
+                rule: 'Lịch sự, tôn trọng riêng tư, KHÔNG chia sẻ trò chuyện cho bên thứ ba khi chưa phép.',
+                situation: 'Hoa vừa nhắn tin tâm sự riêng với bạn về việc bạn ấy đang có chuyện buồn ở nhà. Lát sau, Lan (một người bạn khác) nhắn tin hỏi bạn: "Nãy Hoa nhắn gì cho cậu thế, kể nghe coi?"',
+                options: [
+                    { text: 'Chụp màn hình tin nhắn của Hoa gửi qua cho Lan xem để đỡ phải gõ lại.', isCorrect: false },
+                    { text: 'Bảo Lan: "Hoa đang có chuyện buồn chút thôi, chuyện riêng tư nên tớ không tiện kể đâu."', isCorrect: true }
+                ],
+                feedbackCorrect: 'Tuyệt vời! Bạn đã giữ đúng nguyên tắc "Không chia sẻ trò chuyện cho bên thứ ba khi chưa được phép".',
+                feedbackWrong: 'Sai lầm! Việc này vi phạm nghiêm trọng quyền riêng tư. Hãy nhớ quy tắc: "Không chia sẻ trò chuyện cho bên thứ ba khi chưa phép".'
+            },
+            {
+                id: 'videocall',
+                color: 'purple',
+                icon: 'fa-video',
+                rule: 'Mặc trang phục lịch sự, bối cảnh phù hợp, thái độ chuẩn mực.',
+                situation: 'Chỉ còn 5 phút nữa là đến buổi học nhóm trực tuyến qua Zoom với thầy giáo. Bạn vừa ngủ dậy, đang mặc đồ ngủ và phía sau lưng là giường ngủ chưa gấp chăn màn.',
+                options: [
+                    { text: 'Cứ thế bật Camera luôn, vì học online ở nhà nên cần gì phải cầu kỳ.', isCorrect: false },
+                    { text: 'Nhanh chóng thay chiếc áo lịch sự, và bật tính năng "Background ảo" (Nền ảo) che đi giường ngủ.', isCorrect: true }
+                ],
+                feedbackCorrect: 'Rất chuẩn mực! Thay áo và dùng nền ảo thể hiện sự tôn trọng với thầy giáo và các bạn.',
+                feedbackWrong: 'Chưa đúng mực! Dù học ở nhà, bạn vẫn cần tuân thủ quy tắc: "Trang phục lịch sự, bối cảnh phù hợp".'
+            },
+            {
+                id: 'forum',
+                color: 'pink',
+                icon: 'fa-comments',
+                rule: 'Tuyệt đối không khiêu khích, phân biệt. Giữ bình tĩnh nếu bị xúc phạm.',
+                situation: 'Bạn đăng một bài chia sẻ cách giải Toán lên Group trường. Một tài khoản lạ vào bình luận: "Giải thế này mà cũng đăng, đúng là đồ ngu dốt, bài dễ ợt!".',
+                options: [
+                    { text: 'Tức giận bình luận chửi lại: "Mày giỏi thì giải đi, loại anh hùng bàn phím!"', isCorrect: false },
+                    { text: 'Giữ bình tĩnh bỏ qua, hoặc báo cáo (report) bình luận đó với quản trị viên nhóm.', isCorrect: true }
+                ],
+                feedbackCorrect: 'Ứng xử rất nhân văn! Giữ bình tĩnh là vũ khí tốt nhất để không biến diễn đàn thành nơi cãi vã.',
+                feedbackWrong: 'Thiếu nhân văn! Cãi vã chỉ làm tình hình tồi tệ hơn. Quy tắc là: "Giữ bình tĩnh nếu bị xúc phạm".'
+            },
+            {
+                id: 'share',
+                color: 'green',
+                icon: 'fa-share-nodes',
+                rule: 'Kiểm tra kĩ tính chính xác, không làm hại danh tiếng ai.',
+                situation: 'Bạn lướt Facebook thấy một Fanpage chia sẻ tin giật gân: "Học sinh trường XYZ bị bắt cóc trước cổng trường", kèm hình ảnh mờ ảo.',
+                options: [
+                    { text: 'Kiểm tra lại trên các trang báo chính thống, nếu không thấy tin tức xác thực thì tuyệt đối không chia sẻ.', isCorrect: true },
+                    { text: 'Bấm Share (Chia sẻ) ngay lập tức lên trang cá nhân để cảnh báo cho bạn bè cẩn thận.', isCorrect: false }
+                ]
+            }
+        ];
+
+        // Ensure the last item in contextSims has feedbacks (fixing a potential missing property in setup)
+        contextSims[3].feedbackCorrect = 'Rất tỉnh táo! Kiểm tra tính chính xác giúp ngăn chặn tin giả (Fake news) lây lan trên mạng.';
+        contextSims[3].feedbackWrong = 'Quá vội vàng! Chia sẻ tin tức chưa kiểm chứng có thể gây hoang mang dư luận và vi phạm pháp luật.';
+
+        function openContextSim(index) {
+            // Active button styling
+            document.querySelectorAll('.ctx-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-50', 'bg-purple-50', 'bg-pink-50', 'bg-green-50', 'scale-105', 'shadow-md');
+            });
+            
+            const btn = document.getElementById(`btn-ctx-${index}`);
+            const data = contextSims[index];
+            
+            btn.classList.add(`bg-${data.color}-50`, 'scale-105', 'shadow-md');
+
+            const display = document.getElementById('context-sim-display');
+            display.classList.remove('hidden');
+            display.className = `bg-white p-6 rounded-2xl shadow-md border-l-4 border-${data.color}-400 transition-all duration-300 block`;
+
+            let optionsHtml = '';
+            data.options.forEach((opt, optIndex) => {
+                optionsHtml += `
+                    <button onclick="checkContextSim(${index}, ${optIndex})" class="sim-opt-btn w-full text-left p-4 rounded-xl border-2 border-gray-100 hover:bg-gray-50 transition mb-3 font-medium text-gray-700 shadow-sm">
+                        ${opt.text}
+                    </button>
+                `;
+            });
+
+            display.innerHTML = `
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-${data.color}-100 rounded-full flex items-center justify-center text-${data.color}-600 text-xl"><i class="fa-solid ${data.icon}"></i></div>
+                    <div>
+                        <h5 class="font-bold text-${data.color}-700 text-lg uppercase tracking-wide">Quy tắc vàng</h5>
+                        <p class="text-sm font-semibold text-gray-800">${data.rule}</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-5">
+                    <p class="font-bold text-gray-800 mb-1">Tình huống giả định:</p>
+                    <p class="text-gray-600 text-sm italic">"${data.situation}"</p>
+                </div>
+                <p class="font-bold text-gray-700 mb-3">Bạn sẽ làm gì?</p>
+                <div id="sim-options-container-${index}">
+                    ${optionsHtml}
+                </div>
+                <div id="sim-feedback-${index}" class="hidden mt-4 p-4 rounded-xl text-sm font-bold animate-fadeIn"></div>
+            `;
+        }
+
+        function checkContextSim(contextIndex, optionIndex) {
+            const data = contextSims[contextIndex];
+            const isCorrect = data.options[optionIndex].isCorrect;
+            
+            const container = document.getElementById(`sim-options-container-${contextIndex}`);
+            const buttons = container.querySelectorAll('.sim-opt-btn');
+            const feedbackBox = document.getElementById(`sim-feedback-${contextIndex}`);
+
+            // Disable all buttons and show colors
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-gray-50', 'border-gray-100');
+                
+                if (data.options[idx].isCorrect) {
+                    btn.classList.add('bg-green-50', 'border-green-400', 'text-green-800');
+                } else if (idx === optionIndex && !isCorrect) {
+                    btn.classList.add('bg-red-50', 'border-red-400', 'text-red-800');
+                } else {
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            // Show feedback
+            feedbackBox.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackBox.className = 'mt-4 p-4 rounded-xl text-sm font-bold bg-green-100 text-green-800 border border-green-300';
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-lg mr-2"></i> ${data.feedbackCorrect}`;
+            } else {
+                feedbackBox.className = 'mt-4 p-4 rounded-xl text-sm font-bold bg-red-100 text-red-800 border border-red-300';
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-lg mr-2"></i> ${data.feedbackWrong}`;
+            }
+        }
+
+    </script>
+</body>
+</html>

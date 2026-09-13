@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 12: Tạo Biểu Mẫu</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        /* Tiêu chí tiêu đề: Quicksand, Bold, 28px, Gradient (Blue -> Purple), Title Case */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700; /* Bold */
+            font-size: 28px; /* 28px */
+            text-transform: capitalize; /* Title Case */
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Blue to Purple */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .studygram-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .studygram-card:hover {
+            border-color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        /* Tùy chỉnh thanh cuộn cho đẹp */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .code-block {
+            font-family: monospace;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        /* Hiệu ứng hiển thị mượt mà */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // SVG Icons Component
+        const Icons = {
+            Target: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>,
+            BookOpen: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>,
+            Code: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>,
+            AlertCircle: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>,
+            CheckCircle: () => <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>,
+            XCircle: () => <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>,
+            Bookmark: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>,
+            Server: () => <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>,
+            User: () => <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>,
+            ArrowRight: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = React.useState('tongquan');
+
+            const tabs = [
+                { id: 'tongquan', label: '1. Tổng quan & Khái niệm', icon: <Icons.BookOpen /> },
+                { id: 'tudien', label: '2. Từ điển Thẻ HTML', icon: <Icons.Bookmark /> },
+                { id: 'sosanh', label: '3. Phân tích & So sánh', icon: <Icons.AlertCircle /> },
+                { id: 'thuchanh', label: '4. Thực hành (Ví dụ)', icon: <Icons.Target /> },
+                { id: 'tracnghiem', label: '5. Quiz Ôn tập', icon: <Icons.CheckCircle /> },
+            ];
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
+                    {/* Header */}
+                    <header className="mb-8 text-center bg-white p-6 rounded-3xl shadow-sm border border-blue-50">
+                        <h1 className="title-gradient">Bài 12: Tạo Biểu Mẫu</h1>
+                        <p className="text-slate-500 mt-2 font-medium">Xây dựng giao diện thu thập dữ liệu trên Web</p>
+                    </header>
+
+                    <div className="flex flex-col md:flex-row gap-6">
+                        {/* Sidebar Navigation */}
+                        <div className="w-full md:w-64 shrink-0 flex flex-col gap-2">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex items-center gap-3 p-4 rounded-xl font-semibold transition-all duration-200 text-left
+                                        ${activeTab === tab.id 
+                                            ? 'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 shadow-sm border-l-4 border-blue-500' 
+                                            : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+                                >
+                                    {tab.icon}
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Main Content Area */}
+                        <div className="flex-1">
+                            {activeTab === 'tongquan' && <TabTongQuan />}
+                            {activeTab === 'tudien' && <TabTuDien />}
+                            {activeTab === 'sosanh' && <TabSoSanh />}
+                            {activeTab === 'thuchanh' && <TabThucHanh />}
+                            {activeTab === 'tracnghiem' && <TabTracNghiem />}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- TAB 1: TỔNG QUAN ---
+        const TabTongQuan = () => (
+            <div className="space-y-6 animate-fade-in">
+                {/* Mục tiêu */}
+                <div className="studygram-card bg-emerald-50 p-6 border border-emerald-100">
+                    <h2 className="text-xl font-bold text-emerald-700 mb-2 flex items-center gap-2">
+                        <Icons.Target /> Mục tiêu bài học
+                    </h2>
+                    <ul className="list-disc list-inside text-emerald-900 font-medium">
+                        <li>Sử dụng thẻ HTML tạo được biểu mẫu.</li>
+                    </ul>
+                </div>
+
+                {/* Khái niệm */}
+                <div className="studygram-card p-6 border border-blue-100 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-bl-full -z-10 opacity-50"></div>
+                    <h2 className="text-xl font-bold text-blue-700 mb-4">Biểu mẫu Web (Form) là gì?</h2>
+                    <p className="text-slate-700 mb-6">
+                        Là công cụ dùng để thu thập dữ liệu do người dùng nhập vào. <br/>
+                        <b>Ví dụ:</b> Đăng kí tài khoản, mua hàng, tìm kiếm thông tin...
+                    </p>
+                    
+                    {/* Infographic: 2 Thành phần */}
+                    <h3 className="font-bold text-slate-800 mb-4 text-center">Biểu mẫu đầy đủ gồm 2 thành phần</h3>
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+                        <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 w-full md:w-1/3">
+                            <div className="flex justify-center mb-2 text-blue-500"><Icons.User /></div>
+                            <h4 className="font-bold text-blue-700">1. Thành phần Hiển thị</h4>
+                            <p className="text-sm text-slate-600 mt-2">Tạo bởi <b>HTML</b>. Để người dùng nhìn thấy, nhập và gửi.</p>
+                        </div>
+                        
+                        <div className="text-slate-400 hidden md:block">
+                            <Icons.ArrowRight />
+                        </div>
+                        <div className="text-slate-400 md:hidden">
+                            <svg className="w-6 h-6 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+
+                        <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 w-full md:w-1/3">
+                            <div className="flex justify-center mb-2 text-purple-500"><Icons.Server /></div>
+                            <h4 className="font-bold text-purple-700">2. Thành phần Xử lý</h4>
+                            <p className="text-sm text-slate-600 mt-2">Nằm trên <b>Máy chủ</b> (App/Script). Không thuộc phạm vi HTML.</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Cấu trúc chung */}
+                <div className="studygram-card p-6 bg-slate-800 text-white">
+                    <h2 className="text-xl font-bold text-yellow-400 mb-4">Cấu trúc chung của Biểu mẫu</h2>
+                    <div className="bg-slate-900 p-4 rounded-lg font-mono text-green-400 text-lg shadow-inner">
+                        <span className="text-pink-400">&lt;form&gt;</span><br/>
+                        &nbsp;&nbsp;<span className="text-slate-400 italic">/* Các phần tử của biểu mẫu: input, select, textarea... */</span><br/>
+                        <span className="text-pink-400">&lt;/form&gt;</span>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- TAB 2: TỪ ĐIỂN THẺ ---
+        const TabTuDien = () => {
+            const inputs = [
+                { type: "text", html: '<input type="text" name="hoten">', desc: "Trường nhập văn bản.", ex: <input type="text" placeholder="Nhập nội dung ở đây" className="border border-slate-300 rounded p-1.5 w-full text-sm focus:border-indigo-500 outline-none" /> },
+                { type: "password", html: '<input type="password" name="matkhau">', desc: "Trường nhập mật khẩu (che kí tự).", ex: <input type="password" defaultValue="secret" className="border border-slate-300 rounded p-1.5 w-full text-sm focus:border-indigo-500 outline-none" readOnly /> },
+                { type: "radio", html: '<input type="radio" name="gt" value="Nam"> Nam', desc: "Ô chọn 1 giá trị duy nhất. Cần value.", ex: <div className="flex gap-4 text-sm"><label className="flex items-center gap-1 cursor-pointer"><input type="radio" name="r1" defaultChecked /> Nam</label> <label className="flex items-center gap-1 cursor-pointer"><input type="radio" name="r1" /> Nữ</label></div> },
+                { type: "checkbox", html: '<input type="checkbox" name="mon" value="Toán"> Toán', desc: "Ô lựa chọn (có/không). Cần value.", ex: <div className="flex gap-4 text-sm"><label className="flex items-center gap-1 cursor-pointer"><input type="checkbox" defaultChecked /> Toán</label> <label className="flex items-center gap-1 cursor-pointer"><input type="checkbox" /> Văn</label></div> },
+                { type: "button", html: '<input type="button" value="Nút">', desc: "Nút bấm. Dùng value để đặt tên.", ex: <input type="button" value="Nút" className="bg-slate-200 hover:bg-slate-300 border border-slate-300 rounded px-3 py-1 cursor-pointer text-sm transition-colors" /> },
+                { type: "file", html: '<input type="file" name="teptin">', desc: "Nút chọn tệp tin.", ex: <input type="file" className="text-xs file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer w-full" /> },
+                { type: "submit", html: '<input type="submit" value="Gửi">', desc: "Nút gửi thông tin đến máy chủ.", ex: <input type="submit" value="Gửi thông tin" className="bg-blue-500 hover:bg-blue-600 text-white rounded px-3 py-1 cursor-pointer text-sm shadow-sm transition-colors" /> },
+            ];
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl text-yellow-800 shadow-sm">
+                        <b>Kiến thức cốt lõi:</b> <code>&lt;input&gt;</code> là thẻ đơn, được định nghĩa bởi thuộc tính <code>type</code>. Thuộc tính <code>name</code> dùng để máy chủ tham chiếu dữ liệu.
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Bảng 12.1 */}
+                        <div className="studygram-card p-6 md:col-span-2">
+                            <h3 className="font-bold text-lg mb-4 text-indigo-700 flex items-center gap-2">
+                                <span className="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-full flex items-center justify-center shrink-0">1</span> 
+                                Các loại &lt;input type="..."&gt;
+                            </h3>
+                            <div className="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-indigo-50 text-indigo-900 text-sm">
+                                            <th className="p-3 border-b-2 border-indigo-200 w-24">Type</th>
+                                            <th className="p-3 border-b-2 border-indigo-200 min-w-[200px]">Mã HTML minh hoạ</th>
+                                            <th className="p-3 border-b-2 border-indigo-200">Ý nghĩa</th>
+                                            <th className="p-3 border-b-2 border-indigo-200 w-64">Giao diện tương tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {inputs.map((item, idx) => (
+                                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                                <td className="p-3">
+                                                    <span className="font-mono text-pink-600 bg-pink-50 rounded px-2 py-1 text-sm font-bold block text-center border border-pink-100">{item.type}</span>
+                                                </td>
+                                                <td className="p-3">
+                                                    <code className="bg-slate-800 text-green-400 px-2 py-1.5 rounded text-xs block overflow-hidden shadow-inner">{item.html}</code>
+                                                </td>
+                                                <td className="p-3 text-slate-700 text-sm">{item.desc}</td>
+                                                <td className="p-3 bg-white border-l border-slate-100">{item.ex}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Select */}
+                        <div className="studygram-card p-5 bg-orange-50 border border-orange-100 md:col-span-2">
+                            <h3 className="font-bold text-orange-700 mb-3 text-lg flex items-center gap-2">
+                                <span className="bg-orange-200 text-orange-800 w-8 h-8 rounded-full flex items-center justify-center shrink-0">2</span>
+                                Thẻ &lt;select&gt; & &lt;option&gt;
+                            </h3>
+                            <p className="text-sm mb-4 text-orange-900">Tạo danh sách thả xuống. <code>&lt;select&gt;</code> chứa nhiều <code>&lt;option&gt;</code>, mỗi <code>&lt;option&gt;</code> là một lựa chọn.</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-slate-800 p-4 rounded-xl text-xs sm:text-sm font-mono text-green-400 overflow-x-auto shadow-inner leading-relaxed">
+                                    <span className="text-pink-400">&lt;label</span> <span className="text-blue-300">for</span>=<span className="text-yellow-300">"lop"</span><span className="text-pink-400">&gt;</span>Lớp:<span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                    <span className="text-pink-400">&lt;select</span> <span className="text-blue-300">id</span>=<span className="text-yellow-300">"lop"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"class"</span><span className="text-pink-400">&gt;</span><br/>
+                                    &nbsp;&nbsp;<span className="text-pink-400">&lt;option</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"10"</span><span className="text-pink-400">&gt;</span>Lớp 10<span className="text-pink-400">&lt;/option&gt;</span><br/>
+                                    &nbsp;&nbsp;<span className="text-pink-400">&lt;option</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"11"</span><span className="text-pink-400">&gt;</span>Lớp 11<span className="text-pink-400">&lt;/option&gt;</span><br/>
+                                    &nbsp;&nbsp;<span className="text-pink-400">&lt;option</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"12"</span><span className="text-pink-400">&gt;</span>Lớp 12<span className="text-pink-400">&lt;/option&gt;</span><br/>
+                                    <span className="text-pink-400">&lt;/select&gt;</span>
+                                </div>
+                                <div className="bg-white p-6 rounded-xl border border-orange-200 flex flex-col justify-center items-center gap-3 shadow-sm">
+                                    <div className="flex items-center gap-3">
+                                        <label className="text-sm font-bold text-slate-700" htmlFor="demo-select">Lớp:</label>
+                                        <select id="demo-select" className="border-2 border-orange-300 p-2 rounded-lg w-40 focus:border-orange-500 outline-none transition-colors text-slate-700 font-medium cursor-pointer">
+                                            <option value="10">Lớp 10</option>
+                                            <option value="11">Lớp 11</option>
+                                            <option value="12">Lớp 12</option>
+                                        </select>
+                                    </div>
+                                    <p className="text-xs text-slate-500 mt-2 italic">Click vào ô trên để xem hiệu ứng thả xuống.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Textarea */}
+                        <div className="studygram-card p-5 bg-green-50 border border-green-100 md:col-span-2">
+                            <h3 className="font-bold text-green-700 mb-3 text-lg flex items-center gap-2">
+                                <span className="bg-green-200 text-green-800 w-8 h-8 rounded-full flex items-center justify-center shrink-0">3</span>
+                                Thẻ &lt;textarea&gt;
+                            </h3>
+                            <p className="text-sm mb-4 text-green-900">Tạo vùng nhập văn bản nhiều dòng và cột. Sử dụng thuộc tính <code>rows</code> (số dòng hiển thị) và <code>cols</code> (số cột).</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-slate-800 p-4 rounded-xl text-xs sm:text-sm font-mono text-green-400 overflow-x-auto shadow-inner leading-relaxed">
+                                    <span className="text-pink-400">&lt;textarea</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"noidung"</span> <span className="text-blue-300">rows</span>=<span className="text-yellow-300">"3"</span> <span className="text-blue-300">cols</span>=<span className="text-yellow-300">"40"</span><span className="text-pink-400">&gt;</span><br/>
+                                    <span className="text-white">Nội_dung_mặc_định</span><br/>
+                                    <span className="text-pink-400">&lt;/textarea&gt;</span>
+                                </div>
+                                <div className="bg-white p-5 rounded-xl border border-green-200 flex flex-col shadow-sm">
+                                    <textarea rows="3" className="border-2 border-green-300 p-3 rounded-lg w-full focus:border-green-500 outline-none transition-colors text-sm text-slate-700 resize-y" defaultValue="Nội_dung_mặc_định" />
+                                    <p className="text-xs text-red-500 mt-3 font-medium bg-red-50 p-2 rounded flex items-start gap-1">
+                                        <span className="shrink-0 mt-0.5 text-red-500"><Icons.AlertCircle /></span>
+                                        <span>* Lưu ý: Không để khoảng trắng thừa giữa cặp thẻ mở/đóng, nếu không văn bản sẽ có vùng trắng.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Fieldset */}
+                        <div className="studygram-card p-5 bg-purple-50 border border-purple-100 md:col-span-2">
+                            <h3 className="font-bold text-purple-700 mb-3 text-lg flex items-center gap-2">
+                                <span className="bg-purple-200 text-purple-800 w-8 h-8 rounded-full flex items-center justify-center shrink-0">4</span>
+                                Nhóm phần tử: &lt;fieldset&gt; & &lt;legend&gt;
+                            </h3>
+                            <p className="text-sm mb-4 text-purple-900"><code>&lt;fieldset&gt;</code> dùng để vẽ hình chữ nhật bao quanh nhóm các phần tử liên quan. <code>&lt;legend&gt;</code> đặt tiêu đề (nhãn) cho nhóm phần tử đó.</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-slate-800 p-4 rounded-xl text-xs sm:text-sm font-mono text-green-400 overflow-x-auto shadow-inner leading-relaxed">
+                                    <span className="text-pink-400">&lt;fieldset&gt;</span><br/>
+                                    &nbsp;&nbsp;<span className="text-pink-400">&lt;legend&gt;</span><span className="text-white">Thông tin cá nhân</span><span className="text-pink-400">&lt;/legend&gt;</span><br/>
+                                    &nbsp;&nbsp;<span className="text-pink-400">&lt;label&gt;</span>Họ tên:<span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                    &nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"text"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"ten"</span><span className="text-pink-400">&gt;</span><br/>
+                                    <span className="text-pink-400">&lt;/fieldset&gt;</span>
+                                </div>
+                                <div className="bg-white p-5 rounded-xl border border-purple-200 flex items-center justify-center shadow-sm">
+                                    <fieldset className="border-2 border-purple-300 p-4 rounded-lg w-full max-w-sm hover:border-purple-500 transition-colors">
+                                        <legend className="px-2 font-bold text-purple-700 bg-white ml-2 text-sm">Thông tin cá nhân</legend>
+                                        <div className="flex items-center gap-3">
+                                            <label className="text-sm text-slate-700 font-medium whitespace-nowrap">Họ tên:</label> 
+                                            <input type="text" className="border-2 border-slate-200 p-2 rounded-lg flex-1 focus:border-purple-500 outline-none text-sm transition-colors" placeholder="Nhập tên..." />
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- TAB 3: PHÂN TÍCH & SO SÁNH ---
+        const TabSoSanh = () => {
+            const [activeLabel, setActiveLabel] = React.useState(false);
+            const [showCode, setShowCode] = React.useState({ radio: false, checkbox: false, select: false });
+
+            const toggleCode = (type) => {
+                setShowCode(prev => ({ ...prev, [type]: !prev[type] }));
+            };
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    {/* Label và Input */}
+                    <div className="studygram-card p-6 border-l-4 border-blue-500">
+                        <h2 className="text-xl font-bold text-blue-800 mb-4">1. Mối liên hệ: Label & Input</h2>
+                        <p className="mb-4 text-slate-700">Phần tử <code>&lt;input&gt;</code> chỉ dùng để nhập, muốn có thông tin về nội dung nhập phải tạo kèm <code>&lt;label&gt;</code>.</p>
+                        
+                        <div className="bg-slate-100 p-6 rounded-xl flex flex-col md:flex-row gap-8 items-center">
+                            {/* Infographic Logic */}
+                            <div className="flex-1 space-y-4">
+                                <div className="bg-white p-3 rounded shadow-sm border border-slate-200 text-center font-mono">
+                                    <code className="text-pink-600">&lt;label <span className="text-blue-600 font-bold bg-blue-50 px-1 rounded">for="ma_id"</span>&gt;</code>
+                                </div>
+                                <div className="flex justify-center text-slate-400">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> Liên kết
+                                </div>
+                                <div className="bg-white p-3 rounded shadow-sm border border-slate-200 text-center font-mono">
+                                    <code className="text-pink-600">&lt;input <span className="text-blue-600 font-bold bg-blue-50 px-1 rounded">id="ma_id"</span>&gt;</code>
+                                </div>
+                            </div>
+
+                            {/* Demo */}
+                            <div className="flex-1 bg-white p-6 rounded-xl border border-blue-200 text-center relative overflow-hidden w-full">
+                                <h4 className="font-bold mb-4 text-slate-600 text-sm">Thử Click vào chữ "Tên người dùng":</h4>
+                                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                                    <label 
+                                        htmlFor="demo-input" 
+                                        className="cursor-pointer font-bold text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 whitespace-nowrap"
+                                        onClick={() => setActiveLabel(true)}
+                                    >
+                                        Tên người dùng:
+                                    </label>
+                                    <input 
+                                        id="demo-input" 
+                                        type="text" 
+                                        className={`border-2 p-2 rounded-lg transition-all duration-300 w-full sm:w-auto outline-none ${activeLabel ? 'border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)] bg-blue-50/30' : 'border-slate-300'}`}
+                                        placeholder="Nhập tên..."
+                                        onBlur={() => setActiveLabel(false)}
+                                    />
+                                </div>
+                                <p className="text-xs text-slate-500 mt-4 leading-relaxed">Con trỏ chuột sẽ tự động nhảy vào ô nhập liệu nhờ thuộc tính <b>for</b> và <b>id</b>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* So sánh Lựa chọn */}
+                    <div className="studygram-card p-6 border-l-4 border-purple-500">
+                        <h2 className="text-xl font-bold text-purple-800 mb-6">2. Trả lời câu hỏi: Điểm khác biệt giữa radio, checkbox và select?</h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Radio */}
+                            <div 
+                                className="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer text-center flex flex-col items-center group"
+                                onClick={() => toggleCode('radio')}
+                            >
+                                <div className="bg-purple-100 text-purple-700 font-bold py-1.5 px-6 rounded-full inline-block mb-4 text-sm pointer-events-none">Radio</div>
+                                <div className="w-full h-20 flex items-center justify-center gap-6 bg-slate-50/80 rounded-xl mb-4" onClick={e => e.stopPropagation()}>
+                                    <label className="flex items-center gap-2 cursor-pointer text-slate-700"><input type="radio" name="gioitinh_demo" className="w-4 h-4 cursor-pointer" /> Nam</label>
+                                    <label className="flex items-center gap-2 cursor-pointer text-slate-700"><input type="radio" name="gioitinh_demo" className="w-4 h-4 cursor-pointer" defaultChecked /> Nữ</label>
+                                </div>
+                                <p className="text-sm text-slate-600 leading-relaxed pointer-events-none">Chỉ được chọn <b>1</b> giá trị duy nhất trong nhóm (cùng tên).</p>
+                                
+                                {showCode.radio && (
+                                    <div className="w-full mt-4 bg-slate-800 p-3 rounded-xl text-left text-xs font-mono text-green-400 overflow-x-auto shadow-inner cursor-text animate-fade-in" onClick={e => e.stopPropagation()}>
+                                        <span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"radio"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"gt"</span><span className="text-pink-400">&gt;</span> Nam<br/>
+                                        <span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"radio"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"gt"</span> <span className="text-blue-300">checked</span><span className="text-pink-400">&gt;</span> Nữ
+                                    </div>
+                                )}
+                                <div className="mt-4 text-[11px] font-semibold text-purple-500 bg-purple-50 px-3 py-1 rounded-full opacity-70 group-hover:opacity-100 transition-opacity">
+                                    {showCode.radio ? '▲ Ẩn mã HTML' : '▼ Click xem mã HTML'}
+                                </div>
+                            </div>
+
+                            {/* Checkbox */}
+                            <div 
+                                className="bg-white border border-pink-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer text-center flex flex-col items-center group"
+                                onClick={() => toggleCode('checkbox')}
+                            >
+                                <div className="bg-pink-100 text-pink-700 font-bold py-1.5 px-6 rounded-full inline-block mb-4 text-sm pointer-events-none">Checkbox</div>
+                                <div className="w-full h-20 flex items-center justify-center gap-6 bg-slate-50/80 rounded-xl mb-4" onClick={e => e.stopPropagation()}>
+                                    <label className="flex items-center gap-2 cursor-pointer text-slate-700"><input type="checkbox" className="w-4 h-4 cursor-pointer" defaultChecked /> Toán</label>
+                                    <label className="flex items-center gap-2 cursor-pointer text-slate-700"><input type="checkbox" className="w-4 h-4 cursor-pointer" defaultChecked /> Văn</label>
+                                </div>
+                                <p className="text-sm text-slate-600 leading-relaxed pointer-events-none">Chọn lựa <b>có hoặc không</b>. Có thể chọn nhiều ô cùng lúc.</p>
+
+                                {showCode.checkbox && (
+                                    <div className="w-full mt-4 bg-slate-800 p-3 rounded-xl text-left text-xs font-mono text-green-400 overflow-x-auto shadow-inner cursor-text animate-fade-in" onClick={e => e.stopPropagation()}>
+                                        <span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"checkbox"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"mon"</span> <span className="text-blue-300">checked</span><span className="text-pink-400">&gt;</span> Toán<br/>
+                                        <span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"checkbox"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"mon"</span> <span className="text-blue-300">checked</span><span className="text-pink-400">&gt;</span> Văn
+                                    </div>
+                                )}
+                                <div className="mt-4 text-[11px] font-semibold text-pink-500 bg-pink-50 px-3 py-1 rounded-full opacity-70 group-hover:opacity-100 transition-opacity">
+                                    {showCode.checkbox ? '▲ Ẩn mã HTML' : '▼ Click xem mã HTML'}
+                                </div>
+                            </div>
+
+                            {/* Select */}
+                            <div 
+                                className="bg-white border border-orange-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer text-center flex flex-col items-center group"
+                                onClick={() => toggleCode('select')}
+                            >
+                                <div className="bg-orange-100 text-orange-700 font-bold py-1.5 px-6 rounded-full inline-block mb-4 text-sm pointer-events-none">Select</div>
+                                <div className="w-full h-20 flex items-center justify-center bg-slate-50/80 rounded-xl mb-4" onClick={e => e.stopPropagation()}>
+                                    <select className="border border-slate-200 rounded-md p-1.5 text-slate-700 bg-white shadow-sm cursor-pointer outline-none focus:border-orange-300">
+                                        <option>Khoa học Tự nhiên</option>
+                                        <option>Khoa học Xã hội</option>
+                                    </select>
+                                </div>
+                                <p className="text-sm text-slate-600 leading-relaxed pointer-events-none">Chọn 1 lựa chọn từ <b>danh sách thả xuống</b> (tiết kiệm không gian).</p>
+
+                                {showCode.select && (
+                                    <div className="w-full mt-4 bg-slate-800 p-3 rounded-xl text-left text-xs font-mono text-green-400 overflow-x-auto shadow-inner cursor-text animate-fade-in" onClick={e => e.stopPropagation()}>
+                                        <span className="text-pink-400">&lt;select</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"tohop"</span><span className="text-pink-400">&gt;</span><br/>
+                                        &nbsp;&nbsp;<span className="text-pink-400">&lt;option&gt;</span>Khoa học Tự nhiên<span className="text-pink-400">&lt;/option&gt;</span><br/>
+                                        &nbsp;&nbsp;<span className="text-pink-400">&lt;option&gt;</span>Khoa học Xã hội<span className="text-pink-400">&lt;/option&gt;</span><br/>
+                                        <span className="text-pink-400">&lt;/select&gt;</span>
+                                    </div>
+                                )}
+                                <div className="mt-4 text-[11px] font-semibold text-orange-500 bg-orange-50 px-3 py-1 rounded-full opacity-70 group-hover:opacity-100 transition-opacity">
+                                    {showCode.select ? '▲ Ẩn mã HTML' : '▼ Click xem mã HTML'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Câu hỏi tương tác */}
+                    <div className="studygram-card p-6 bg-slate-800 text-white shadow-md">
+                        <h3 className="font-bold text-yellow-400 mb-3 flex items-center gap-2 text-lg"><Icons.Target /> Câu hỏi tương tác (Câu 2 - Tr. 69 SGK):</h3>
+                        <p className="mb-3 text-slate-200">Hãy viết câu lệnh để thêm một nút có tên "Quên mật khẩu" vào biểu mẫu.</p>
+                        <div className="bg-slate-900 p-4 rounded-xl font-mono text-sm text-green-400 shadow-inner border border-slate-700">
+                            <span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"button"</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"Quên mật khẩu"</span><span className="text-pink-400">&gt;</span>
+                        </div>
+                        <div className="mt-4 flex justify-center p-3 bg-white/5 rounded-lg border border-white/10">
+                            <input type="button" value="Quên mật khẩu" className="bg-gray-200 text-slate-800 font-medium px-5 py-2 rounded-md cursor-pointer hover:bg-gray-300 transition-colors shadow-sm" />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- TAB 4: THỰC HÀNH ---
+        const TabThucHanh = () => {
+            const [showNv2Code, setShowNv2Code] = React.useState(false);
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    <p className="text-slate-600 italic text-center">Dưới đây là mô phỏng 2 nhiệm vụ trong SGK. Bạn có thể tương tác trực tiếp với Form kết quả.</p>
+                    
+                    {/* Nhiệm vụ 1 */}
+                    <div className="studygram-card border-t-4 border-blue-500 overflow-hidden">
+                        <div className="bg-blue-50 p-4 border-b border-blue-100">
+                            <h2 className="font-bold text-blue-800 text-lg">Nhiệm vụ 1: Form Thông tin món ăn (Hình 12.2)</h2>
+                        </div>
+                        <div className="flex flex-col md:flex-row">
+                            <div className="p-5 md:w-1/2 border-r border-slate-100 bg-slate-800 font-mono text-sm overflow-x-auto text-green-400">
+                                <div className="text-slate-300 mb-3 font-sans font-bold text-xs uppercase tracking-wider">Mã HTML:</div>
+                                <span className="text-pink-400">&lt;h2&gt;</span><span className="text-white">Thông tin món ăn</span><span className="text-pink-400">&lt;/h2&gt;</span><br/>
+                                <span className="text-pink-400">&lt;form&gt;</span><br/>
+                                &nbsp;&nbsp;<span className="text-pink-400">&lt;label</span> <span className="text-blue-300">for</span>=<span className="text-yellow-300">"tenmon"</span><span className="text-pink-400">&gt;</span><span className="text-white">Tên món ăn</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                &nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">id</span>=<span className="text-yellow-300">"tenmon"</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"text"</span><span className="text-pink-400">&gt;</span><span className="text-pink-400">&lt;br&gt;</span><br/>
+                                <br/>
+                                &nbsp;&nbsp;<span className="text-pink-400">&lt;label</span> <span className="text-blue-300">for</span>=<span className="text-yellow-300">"dongia"</span><span className="text-pink-400">&gt;</span><span className="text-white">Đơn giá</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                &nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">id</span>=<span className="text-yellow-300">"dongia"</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"text"</span><span className="text-pink-400">&gt;</span><span className="text-pink-400">&lt;br&gt;</span><br/>
+                                <br/>
+                                &nbsp;&nbsp;<span className="text-pink-400">&lt;label</span> <span className="text-blue-300">for</span>=<span className="text-yellow-300">"soluong"</span><span className="text-pink-400">&gt;</span><span className="text-white">Số lượng</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                &nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">id</span>=<span className="text-yellow-300">"soluong"</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"text"</span><span className="text-pink-400">&gt;</span><span className="text-pink-400">&lt;br&gt;</span><br/>
+                                <span className="text-pink-400">&lt;/form&gt;</span>
+                            </div>
+                            <div className="p-8 md:w-1/2 flex justify-center items-center bg-slate-50">
+                                {/* Form Hiển thị */}
+                                <div className="border border-slate-300 bg-white p-6 shadow-sm rounded-lg w-full max-w-sm">
+                                    <h2 className="font-bold text-lg mb-4 text-slate-800">Thông tin món ăn</h2>
+                                    <form className="space-y-3">
+                                        <div className="grid grid-cols-[100px_1fr] items-center gap-2 text-sm">
+                                            <label htmlFor="nv1_tenmon" className="text-slate-600">Tên món ăn</label>
+                                            <input type="text" id="nv1_tenmon" className="border border-slate-300 px-2 py-1 outline-none focus:border-blue-400 rounded-sm" />
+                                        </div>
+                                        <div className="grid grid-cols-[100px_1fr] items-center gap-2 text-sm">
+                                            <label htmlFor="nv1_dongia" className="text-slate-600">Đơn giá</label>
+                                            <input type="text" id="nv1_dongia" className="border border-slate-300 px-2 py-1 outline-none focus:border-blue-400 rounded-sm" />
+                                        </div>
+                                        <div className="grid grid-cols-[100px_1fr] items-center gap-2 text-sm">
+                                            <label htmlFor="nv1_soluong" className="text-slate-600">Số lượng</label>
+                                            <input type="text" id="nv1_soluong" className="border border-slate-300 px-2 py-1 outline-none focus:border-blue-400 rounded-sm" />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Nhiệm vụ 2 */}
+                    <div className="studygram-card border-t-4 border-purple-500 overflow-hidden">
+                        <div className="bg-purple-50 p-4 border-b border-purple-100 flex justify-between items-center">
+                            <h2 className="font-bold text-purple-800 text-lg">Nhiệm vụ 2: Form Đăng kí môn thi (Hình 12.3)</h2>
+                            <span className="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded-full font-bold">Thực hành &lt;fieldset&gt;</span>
+                        </div>
+                        <div className="p-6 bg-slate-50 flex flex-col items-center">
+                            {/* Form container */}
+                            <div className="border border-slate-300 p-6 shadow-sm w-full max-w-md bg-white rounded-lg">
+                                <h1 className="text-xl font-bold mb-4 text-center text-slate-800">Đăng kí môn thi tốt nghiệp</h1>
+                                <form>
+                                    <fieldset className="border border-slate-400 p-5 rounded-sm">
+                                        
+                                        <div className="grid grid-cols-[80px_1fr] items-center gap-2 text-sm mb-3">
+                                            <label className="text-slate-600">Họ và tên:</label>
+                                            <input type="text" className="border border-slate-300 px-2 py-1.5 w-full outline-none focus:border-purple-400 rounded-sm" />
+                                        </div>
+
+                                        <div className="grid grid-cols-[80px_1fr] items-center gap-2 text-sm mb-3">
+                                            <label className="text-slate-600">CCCD:</label>
+                                            <input type="number" className="border border-slate-300 px-2 py-1.5 w-full outline-none focus:border-purple-400 rounded-sm" />
+                                        </div>
+
+                                        <div className="grid grid-cols-[80px_1fr] items-center gap-2 text-sm mb-3">
+                                            <label className="text-slate-600">Ngày sinh:</label>
+                                            <input type="date" className="border border-slate-300 px-2 py-1.5 w-full outline-none focus:border-purple-400 rounded-sm text-slate-600" />
+                                        </div>
+
+                                        <div className="grid grid-cols-[80px_1fr] items-center gap-2 text-sm mb-3">
+                                            <label className="text-slate-600">Giới tính:</label>
+                                            <div className="flex gap-4">
+                                                <label className="flex items-center gap-1 cursor-pointer text-slate-700"><input type="radio" name="nv2_gt" className="w-4 h-4 cursor-pointer" /> Nam</label>
+                                                <label className="flex items-center gap-1 cursor-pointer text-slate-700"><input type="radio" name="nv2_gt" className="w-4 h-4 cursor-pointer" /> Nữ</label>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-[80px_1fr] gap-2 text-sm mb-3">
+                                            <label className="text-slate-600">Môn thi:</label>
+                                            <div className="flex flex-col gap-2 mt-0.5">
+                                                <label className="flex items-center gap-2 cursor-pointer text-slate-700"><input type="checkbox" className="w-4 h-4 cursor-pointer" /> Toán</label>
+                                                <label className="flex items-center gap-2 cursor-pointer text-slate-700"><input type="checkbox" className="w-4 h-4 cursor-pointer" /> Văn</label>
+                                                <label className="flex items-center gap-2 cursor-pointer text-slate-700"><input type="checkbox" className="w-4 h-4 cursor-pointer" /> Ngoại ngữ</label>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-[80px_1fr] items-center gap-2 text-sm mb-6">
+                                            <label className="text-slate-600">Tổ hợp:</label>
+                                            <select className="border border-slate-300 px-2 py-1.5 w-full outline-none focus:border-purple-400 rounded-sm text-slate-700 bg-white cursor-pointer">
+                                                <option>Khoa học tự nhiên</option>
+                                                <option>Khoa học xã hội</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="flex justify-start">
+                                            {/* NÚT TƯƠNG TÁC XEM MÃ HTML */}
+                                            <button 
+                                                onClick={(e) => { e.preventDefault(); setShowNv2Code(!showNv2Code); }}
+                                                className={`border px-4 py-1.5 text-sm cursor-pointer transition-all flex items-center gap-2 shadow-sm rounded-sm font-medium
+                                                    ${showNv2Code 
+                                                        ? 'bg-purple-100 border-purple-300 text-purple-800 hover:bg-purple-200' 
+                                                        : 'bg-gray-100 border-slate-300 text-slate-700 hover:bg-gray-200'}`}
+                                            >
+                                                Gửi thông tin {showNv2Code ? <span className="text-[10px]">▲</span> : <span className="text-[10px]">▼</span>}
+                                            </button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+
+                            {/* MÃ HTML HIỂN THỊ KHI CLICK NÚT "GỬI THÔNG TIN" */}
+                            {showNv2Code && (
+                                <div className="mt-6 w-full max-w-2xl bg-slate-800 p-5 rounded-xl text-left text-sm font-mono text-green-400 overflow-x-auto shadow-inner animate-fade-in border border-slate-700">
+                                    <div className="text-slate-300 mb-4 font-sans font-bold flex justify-between items-center border-b border-slate-700 pb-2">
+                                        <span className="text-purple-300 uppercase tracking-wider text-xs">Mã HTML của Form (Nhiệm vụ 2):</span>
+                                        <button onClick={() => setShowNv2Code(false)} className="text-slate-400 hover:text-white transition-colors text-xs bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded">✕ Đóng</button>
+                                    </div>
+                                    <div className="leading-relaxed">
+                                        <span className="text-pink-400">&lt;h1&gt;</span><span className="text-white">Đăng kí môn thi tốt nghiệp</span><span className="text-pink-400">&lt;/h1&gt;</span><br/>
+                                        <span className="text-pink-400">&lt;form&gt;</span><br/>
+                                        &nbsp;&nbsp;<span className="text-pink-400">&lt;fieldset&gt;</span><br/>
+                                        
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;label&gt;</span><span className="text-white">Họ và tên:</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"text"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"hoten"</span><span className="text-pink-400">&gt;</span><span className="text-pink-400">&lt;br&gt;</span><br/><br/>
+
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;label&gt;</span><span className="text-white">CCCD:</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"number"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"cccd"</span><span className="text-pink-400">&gt;</span><span className="text-pink-400">&lt;br&gt;</span><br/><br/>
+
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;label&gt;</span><span className="text-white">Ngày sinh:</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"date"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"ngaysinh"</span><span className="text-pink-400">&gt;</span><span className="text-pink-400">&lt;br&gt;</span><br/><br/>
+
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;label&gt;</span><span className="text-white">Giới tính:</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"radio"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"gioitinh"</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"Nam"</span><span className="text-pink-400">&gt;</span> <span className="text-white">Nam</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"radio"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"gioitinh"</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"Nu"</span><span className="text-pink-400">&gt;</span> <span className="text-white">Nữ</span><span className="text-pink-400">&lt;br&gt;</span><br/><br/>
+
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;label&gt;</span><span className="text-white">Môn thi:</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"checkbox"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"monthi"</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"Toan"</span><span className="text-pink-400">&gt;</span> <span className="text-white">Toán</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"checkbox"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"monthi"</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"Van"</span><span className="text-pink-400">&gt;</span> <span className="text-white">Văn</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"checkbox"</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"monthi"</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"NgoaiNgu"</span><span className="text-pink-400">&gt;</span> <span className="text-white">Ngoại ngữ</span><span className="text-pink-400">&lt;br&gt;</span><br/><br/>
+
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;label&gt;</span><span className="text-white">Tổ hợp:</span><span className="text-pink-400">&lt;/label&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;select</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"tohop"</span><span className="text-pink-400">&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;option</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"KHTN"</span><span className="text-pink-400">&gt;</span><span className="text-white">Khoa học tự nhiên</span><span className="text-pink-400">&lt;/option&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;option</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"KHXH"</span><span className="text-pink-400">&gt;</span><span className="text-white">Khoa học xã hội</span><span className="text-pink-400">&lt;/option&gt;</span><br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;/select&gt;</span><span className="text-pink-400">&lt;br&gt;</span><br/><br/>
+
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">&lt;input</span> <span className="text-blue-300">type</span>=<span className="text-yellow-300">"submit"</span> <span className="text-blue-300">value</span>=<span className="text-yellow-300">"Gửi thông tin"</span><span className="text-pink-400">&gt;</span><br/>
+                                        
+                                        &nbsp;&nbsp;<span className="text-pink-400">&lt;/fieldset&gt;</span><br/>
+                                        <span className="text-pink-400">&lt;/form&gt;</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- TAB 5: TRẮC NGHIỆM ---
+        const TabTracNghiem = () => {
+            const questions = [
+                {
+                    q: "1. Trong HTML, phần tử nào được sử dụng để tạo biểu mẫu (form)?",
+                    opts: ["<fieldset>", "<input>", "<form>", "<select>"],
+                    ans: 2
+                },
+                {
+                    q: "2. Thuộc tính nào của thẻ <label> dùng để liên kết với thuộc tính 'id' của thẻ <input>?",
+                    opts: ["name", "type", "value", "for"],
+                    ans: 3
+                },
+                {
+                    q: "3. Thẻ <input type=\"radio\"> có chức năng gì?",
+                    opts: ["Tạo ô nhập văn bản nhiều dòng", "Tạo nút chọn nhiều giá trị (có/không)", "Tạo ô chọn 1 giá trị duy nhất trong nhóm", "Tạo danh sách thả xuống"],
+                    ans: 2
+                },
+                {
+                    q: "4. Thẻ nào sau đây chứa các thẻ <option> bên trong để định nghĩa các lựa chọn?",
+                    opts: ["<select>", "<textarea>", "<fieldset>", "<legend>"],
+                    ans: 0
+                },
+                {
+                    q: "5. Thẻ <fieldset> dùng để làm gì trong biểu mẫu?",
+                    opts: ["Đặt tên cho một nhãn", "Nhóm các phần tử có liên quan lại với nhau (vẽ hình chữ nhật bao quanh)", "Tạo một nút gửi thông tin về máy chủ", "Tạo trường nhập mật khẩu"],
+                    ans: 1
+                }
+            ];
+
+            const [selected, setSelected] = React.useState({});
+            const [submitted, setSubmitted] = React.useState(false);
+
+            const handleSelect = (qIdx, optIdx) => {
+                if(!submitted) {
+                    setSelected({...selected, [qIdx]: optIdx});
+                }
+            };
+
+            const calcScore = () => {
+                let score = 0;
+                questions.forEach((q, idx) => {
+                    if (selected[idx] === q.ans) score++;
+                });
+                return score;
+            };
+
+            return (
+                <div className="studygram-card p-6 bg-white max-w-3xl mx-auto animate-fade-in">
+                    <h2 className="text-2xl font-bold text-center text-indigo-800 mb-6 flex justify-center items-center gap-2">
+                        <Icons.CheckCircle /> Trắc nghiệm Ôn tập
+                    </h2>
+                    
+                    <div className="space-y-8">
+                        {questions.map((q, qIdx) => (
+                            <div key={qIdx} className="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                <h3 className="font-bold text-slate-800 mb-4">{q.q}</h3>
+                                <div className="space-y-2">
+                                    {q.opts.map((opt, optIdx) => {
+                                        const isSelected = selected[qIdx] === optIdx;
+                                        const isCorrect = submitted && optIdx === q.ans;
+                                        const isWrong = submitted && isSelected && optIdx !== q.ans;
+                                        
+                                        let btnClass = "w-full text-left p-3 rounded-lg border transition-all duration-200 flex items-center gap-3 ";
+                                        
+                                        if (submitted) {
+                                            if (isCorrect) btnClass += "bg-green-100 border-green-500 text-green-800 font-bold";
+                                            else if (isWrong) btnClass += "bg-red-100 border-red-500 text-red-800";
+                                            else btnClass += "bg-white border-slate-200 opacity-50";
+                                        } else {
+                                            if (isSelected) btnClass += "bg-indigo-100 border-indigo-500 text-indigo-800 shadow-sm";
+                                            else btnClass += "bg-white border-slate-200 hover:border-indigo-300 hover:bg-slate-50";
+                                        }
+
+                                        return (
+                                            <button 
+                                                key={optIdx}
+                                                onClick={() => handleSelect(qIdx, optIdx)}
+                                                className={btnClass}
+                                                disabled={submitted}
+                                            >
+                                                <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center
+                                                    ${isSelected && !submitted ? 'border-indigo-500 bg-indigo-500' : 'border-slate-300'}
+                                                    ${isCorrect ? 'border-green-500 bg-green-500' : ''}
+                                                    ${isWrong ? 'border-red-500 bg-red-500' : ''}
+                                                `}>
+                                                    {(isSelected || isCorrect) && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                                                </div>
+                                                {opt}
+                                                {isCorrect && <span className="ml-auto text-green-600"><Icons.CheckCircle /></span>}
+                                                {isWrong && <span className="ml-auto text-red-600"><Icons.XCircle /></span>}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-8 text-center border-t border-slate-200 pt-6">
+                        {!submitted ? (
+                            <button 
+                                onClick={() => setSubmitted(true)}
+                                disabled={Object.keys(selected).length < questions.length}
+                                className={`px-8 py-3 rounded-full font-bold text-white text-lg transition-all
+                                    ${Object.keys(selected).length < questions.length 
+                                        ? 'bg-slate-300 cursor-not-allowed' 
+                                        : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-lg hover:-translate-y-1'}`}
+                            >
+                                Nộp bài kiểm tra
+                            </button>
+                        ) : (
+                            <div className="animate-fade-in">
+                                <div className="text-3xl font-bold mb-4">
+                                    Điểm của bạn: <span className={calcScore() >= 4 ? 'text-green-500' : 'text-orange-500'}>{calcScore()} / {questions.length}</span>
+                                </div>
+                                <button 
+                                    onClick={() => { setSubmitted(false); setSelected({}); }}
+                                    className="px-6 py-2 rounded-full bg-slate-200 text-slate-700 font-bold hover:bg-slate-300"
+                                >
+                                    Làm lại
+                                </button>
+                            </div>
+                        )}
+                        {!submitted && Object.keys(selected).length < questions.length && (
+                            <p className="text-sm text-slate-500 mt-3">Hãy trả lời tất cả các câu hỏi để nộp bài.</p>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

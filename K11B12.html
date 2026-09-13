@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ quản trị CSDL và Hệ CSDL - Tin học 11</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background-color: #f7f9fc; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { background-color: #818cf8; color: white; border-color: #818cf8; }
+    </style>
+</head>
+<body class="text-slate-700 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-100 border-b border-indigo-200 py-6 px-4 shadow-sm">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="bg-indigo-200 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Tin Học 11 - Kết Nối Tri Thức</span>
+                <h1 class="text-3xl font-bold text-indigo-900 mt-2 flex items-center gap-2">
+                    <i class="fa-solid fa-database text-indigo-500"></i> Bài 12: Hệ Quản Trị CSDL và Hệ CSDL
+                </h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto gap-2 py-3 no-scrollbar">
+            <button onclick="switchTab(event, 'tab-overview')" class="tab-btn active px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-compass"></i> Mục tiêu & Khái quát
+            </button>
+            <button onclick="switchTab(event, 'tab-qtcsdl')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-server"></i> 1. Khái niệm QTCSDL
+            </button>
+            <button onclick="switchTab(event, 'tab-csdl')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-network-wired"></i> 2. Hệ Cơ Sở Dữ Liệu
+            </button>
+            <button onclick="switchTab(event, 'tab-distribute')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-globe"></i> 3. CSDL Tập Trung & Phân Tán
+            </button>
+            <button onclick="switchTab(event, 'tab-interactive')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-gamepad"></i> Tương Tác & Mô Phỏng
+            </button>
+            <button onclick="switchTab(event, 'tab-quiz')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-clipboard-question"></i> Trắc Nghiệm 5 Câu
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto p-4 md:p-6 flex-grow w-full">
+
+        <!-- TAB 1: Mục tiêu & Khái quát -->
+        <div id="tab-overview" class="tab-content active space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
+                    <h2 class="text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-flag-checkered text-pink-500"></i> Sau bài học này em sẽ:
+                    </h2>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3 bg-indigo-50/50 p-3 rounded-xl">
+                            <i class="fa-solid fa-check text-indigo-600 mt-1"></i>
+                            <span>Hiểu được khái niệm hệ quản trị CSDL (QTCSDL).</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-indigo-50/50 p-3 rounded-xl">
+                            <i class="fa-solid fa-check text-indigo-600 mt-1"></i>
+                            <span>Hiểu được khái niệm hệ cơ sở dữ liệu (Hệ CSDL).</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-indigo-50/50 p-3 rounded-xl">
+                            <i class="fa-solid fa-check text-indigo-600 mt-1"></i>
+                            <span>Phân biệt được CSDL tập trung và CSDL phân tán.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
+                    <h2 class="text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i> Đặt vấn đề thực tế
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed bg-amber-50/50 p-4 rounded-xl border border-amber-100">
+                        Một CSDL lưu trữ dữ liệu trên hệ thống máy tính dưới dạng các tệp có cấu trúc được thiết kế để nhiều người dùng có thể cùng khai thác dữ liệu trong CSDL đó. Tuy nhiên không phải tất cả người dùng đều biết về cấu trúc các tệp lưu dữ liệu và tự viết chương trình khai thác dữ liệu. 
+                    </p>
+                    <div class="mt-4 text-indigo-600 font-semibold text-sm">
+                        <i class="fa-solid fa-arrow-right"></i> Giải pháp: Xây dựng các phần mềm chuyên dụng gọi là <b>Hệ quản trị cơ sở dữ liệu (QTCSDL)</b>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Map Infographic -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
+                <h3 class="text-lg font-bold text-indigo-900 mb-4 text-center"><i class="fa-solid fa-sitemap text-indigo-500"></i> Sơ đồ tư duy cốt lõi bài học</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                        <div class="text-indigo-700 font-bold mb-1">Phần 1</div>
+                        <div class="text-sm font-semibold">Hệ Quản Trị CSDL (QTCSDL)</div>
+                        <div class="text-xs text-slate-500 mt-2">4 Nhóm chức năng chính</div>
+                    </div>
+                    <div class="bg-pink-50 p-4 rounded-xl border border-pink-100">
+                        <div class="text-pink-700 font-bold mb-1">Phần 2</div>
+                        <div class="text-sm font-semibold">Hệ Cơ Sở Dữ Liệu</div>
+                        <div class="text-xs text-slate-500 mt-2">Mô hình khách - chủ (Client - Server)</div>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                        <div class="text-emerald-700 font-bold mb-1">Phần 3</div>
+                        <div class="text-sm font-semibold">CSDL Tập Trung & Phân Tán</div>
+                        <div class="text-xs text-slate-500 mt-2">So sánh ưu điểm và phạm vi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 1: Khái niệm Hệ QTCSDL -->
+        <div id="tab-qtcsdl" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-server text-indigo-500"></i> 1. Khái niệm Hệ Quản Trị CSDL
+                </h2>
+                <div class="bg-indigo-50/70 p-4 rounded-xl text-slate-700 font-medium mb-6 border-l-4 border-indigo-500">
+                    Hệ QTCSDL là phần mềm cung cấp phương thức để lưu trữ, cập nhật và truy xuất dữ liệu của CSDL, bảo mật và an toàn dữ liệu. Đồng thời cung cấp giao diện lập trình ứng dụng cho nhà phát triển và người dùng.
+                </div>
+
+                <h3 class="text-lg font-bold text-indigo-900 mb-4"><i class="fa-solid fa-cubes text-pink-500"></i> 4 Nhóm chức năng chính của Hệ QTCSDL:</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white border border-slate-100 shadow-sm p-5 rounded-xl hover:border-indigo-200 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">a</span>
+                            <h4 class="font-bold text-indigo-900">Nhóm định nghĩa dữ liệu</h4>
+                        </div>
+                        <p class="text-sm text-slate-600">Khai báo CSDL, tạo lập, sửa đổi cấu trúc bên trong CSDL, cài đặt các ràng buộc toàn vẹn dữ liệu.</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-100 shadow-sm p-5 rounded-xl hover:border-indigo-200 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">b</span>
+                            <h4 class="font-bold text-indigo-900">Nhóm cập nhật và truy xuất dữ liệu</h4>
+                        </div>
+                        <p class="text-sm text-slate-600">Thêm, xoá, sửa dữ liệu (cập nhật) và truy xuất dữ liệu theo những tiêu chí khác nhau.</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-100 shadow-sm p-5 rounded-xl hover:border-indigo-200 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold">c</span>
+                            <h4 class="font-bold text-indigo-900">Nhóm bảo mật và an toàn CSDL</h4>
+                        </div>
+                        <p class="text-sm text-slate-600">Kiểm soát quyền truy cập, kiểm soát giao dịch tránh tranh chấp, thực hiện sao lưu dự phòng (backup).</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-100 shadow-sm p-5 rounded-xl hover:border-indigo-200 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">d</span>
+                            <h4 class="font-bold text-indigo-900">Nhóm giao diện lập trình ứng dụng</h4>
+                        </div>
+                        <p class="text-sm text-slate-600">Cung cấp công cụ cho nhà phát triển gửi truy vấn từ ứng dụng đến CSDL.</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <span class="font-bold text-indigo-900 block mb-4"><i class="fa-solid fa-star text-amber-400"></i> Các hệ QTCSDL phổ biến và thương hiệu đại diện:</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-center">
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
+                            <i class="devicon-oracle-original colored text-3xl"></i>
+                            <span class="text-xs font-semibold text-slate-700">Oracle</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
+                            <i class="devicon-mysql-original colored text-3xl"></i>
+                            <span class="text-xs font-semibold text-slate-700">MySQL</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
+                            <i class="devicon-microsoftsqlserver-plain colored text-3xl"></i>
+                            <span class="text-xs font-semibold text-slate-700">SQL Server</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
+                            <i class="devicon-postgresql-plain colored text-3xl"></i>
+                            <span class="text-xs font-semibold text-slate-700">PostgreSQL</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
+                            <i class="devicon-sqlite-plain colored text-3xl"></i>
+                            <span class="text-xs font-semibold text-slate-700">SQLite</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-excel text-emerald-600 text-3xl"></i>
+                            <span class="text-xs font-semibold text-slate-700">MS Access</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Hệ Cơ Sở Dữ Liệu -->
+        <div id="tab-csdl" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired text-indigo-500"></i> 2. Hệ Cơ Sở Dữ Liệu (Hệ CSDL)
+                </h2>
+                <p class="text-slate-600 mb-4">
+                    Một hệ thống gồm ba thành phần: <b>CSDL</b>, <b>Hệ QTCSDL</b> và các <b>phần mềm ứng dụng CSDL</b> được gọi là một <b>hệ CSDL</b>.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+                    <div class="bg-indigo-50/70 p-5 rounded-xl border border-indigo-100 text-center">
+                        <div class="text-3xl text-indigo-600 mb-2"><i class="fa-solid fa-database"></i></div>
+                        <h4 class="font-bold text-indigo-900 mb-1">Cơ Sở Dữ Liệu</h4>
+                        <p class="text-xs text-slate-600">Nơi lưu trữ dữ liệu tập trung, có cấu trúc.</p>
+                    </div>
+                    <div class="bg-pink-50/70 p-5 rounded-xl border border-pink-100 text-center">
+                        <div class="text-3xl text-pink-600 mb-2"><i class="fa-solid fa-cogs"></i></div>
+                        <h4 class="font-bold text-indigo-900 mb-1">Hệ QTCSDL</h4>
+                        <p class="text-xs text-slate-600">Phần mềm quản lý, xử lý và bảo mật CSDL (phần "chủ").</p>
+                    </div>
+                    <div class="bg-emerald-50/70 p-5 rounded-xl border border-emerald-100 text-center">
+                        <div class="text-3xl text-emerald-600 mb-2"><i class="fa-solid fa-window-maximize"></i></div>
+                        <h4 class="font-bold text-indigo-900 mb-1">Phần mềm ứng dụng CSDL</h4>
+                        <p class="text-xs text-slate-600">Giao diện tương tác với người dùng (phần "khách").</p>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-sm text-amber-900">
+                    <b>Phân biệt:</b> Hệ QTCSDL là phần mềm quản trị, còn Hệ CSDL là hệ thống lớn bao gồm cả CSDL, hệ QTCSDL và các ứng dụng kết nối.
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CSDL Tập Trung và Phân Tán -->
+        <div id="tab-distribute" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-indigo-500"></i> 3. Hệ CSDL Tập Trung và Phân Tán
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Tập trung -->
+                    <div class="bg-indigo-50/50 p-5 rounded-xl border border-indigo-100">
+                        <h3 class="font-bold text-indigo-900 text-lg mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-building text-indigo-600"></i> Hệ CSDL Tập Trung
+                        </h3>
+                        <p class="text-sm text-slate-600 mb-3">
+                            CSDL được lưu trữ tập trung trên một máy tính (hoặc máy chủ duy nhất).
+                        </p>
+                        <div class="text-xs bg-white p-3 rounded-lg border border-indigo-100">
+                            <b>Ví dụ:</b> CSDL dùng cho một người dùng trên một máy tính (Microsoft Access cá nhân), hoặc hệ thống quản lý nhỏ gọn.
+                        </div>
+                    </div>
+
+                    <!-- Phân tán -->
+                    <div class="bg-pink-50/50 p-5 rounded-xl border border-pink-100">
+                        <h3 class="font-bold text-indigo-900 text-lg mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-network-wired text-pink-600"></i> Hệ CSDL Phân Tán
+                        </h3>
+                        <p class="text-sm text-slate-600 mb-3">
+                            Dữ liệu được lưu trữ ở nhiều máy tính khác nhau trên mạng máy tính (ví dụ: các chi nhánh Hà Nội, Đà Nẵng, Cần Thơ, TP. Hồ Chí Minh).
+                        </p>
+                        <div class="text-xs bg-white p-3 rounded-lg border border-pink-100">
+                            <b>Ưu điểm vượt trội:</b> Dễ dàng mở rộng, tính sẵn sàng và độ tin cậy cao, tối ưu hóa tốc độ truy xuất cho các tổ chức lớn (Facebook, Google, Amazon...).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600">
+                    <b>Lưu ý quan trọng:</b> Cần phân biệt <i>Hệ CSDL phân tán</i> với <i>Hệ CSDL tập trung nhưng xử lý phân tán</i> (mô hình máy chủ tệp).
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Tương tác & Mô phỏng -->
+        <div id="tab-interactive" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad text-indigo-500"></i> Mô Phỏng Tương Tác: Khám phá hoạt động Hệ CSDL
+                </h2>
+                <p class="text-slate-600 text-sm mb-6">Chọn các thành phần bên dưới để xem mô tả chi tiết hoạt động giao tiếp trong Hệ CSDL.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <button onclick="showSim('user')" class="p-4 rounded-xl border-2 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-left transition font-semibold text-indigo-900 flex items-center gap-3">
+                        <i class="fa-solid fa-user text-2xl text-indigo-600"></i>
+                        <div>
+                            <div class="text-sm">1. Người Dùng</div>
+                            <div class="text-xs font-normal text-slate-500">Gửi yêu cầu tra cứu</div>
+                        </div>
+                    </button>
+
+                    <button onclick="showSim('client')" class="p-4 rounded-xl border-2 border-pink-200 bg-pink-50 hover:bg-pink-100 text-left transition font-semibold text-indigo-900 flex items-center gap-3">
+                        <i class="fa-solid fa-window-restore text-2xl text-pink-600"></i>
+                        <div>
+                            <div class="text-sm">2. Phần mềm ứng dụng (Khách)</div>
+                            <div class="text-xs font-normal text-slate-500">Nhận giao diện, kết nối chủ</div>
+                        </div>
+                    </button>
+
+                    <button onclick="showSim('server')" class="p-4 rounded-xl border-2 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-left transition font-semibold text-indigo-900 flex items-center gap-3">
+                        <i class="fa-solid fa-server text-2xl text-emerald-600"></i>
+                        <div>
+                            <div class="text-sm">3. Hệ QTCSDL & CSDL (Chủ)</div>
+                            <div class="text-xs font-normal text-slate-500">Xử lý dữ liệu và trả về kết quả</div>
+                        </div>
+                    </button>
+                </div>
+
+                <div id="sim-result-box" class="bg-indigo-900 text-white p-6 rounded-2xl shadow-inner min-h-[120px] flex items-center justify-center text-center font-medium">
+                    👉 Hãy click vào một thành phần ở trên để xem mô phỏng hoạt động chi tiết!
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Trắc nghiệm -->
+        <div id="tab-quiz" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-question text-indigo-500"></i> Bộ câu hỏi trắc nghiệm ôn tập (5 câu)
+                </h2>
+
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Question 1 -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="1">
+                        <p class="font-bold text-slate-800 mb-3">Câu 1: Hệ quản trị cơ sở dữ liệu (QTCSDL) là gì?</p>
+                        <div class="space-y-2 text-sm">
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q1" value="A" class="mr-2"> A. Là thiết bị phần cứng dùng để lưu trữ dữ liệu máy tính.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q1" value="B" class="mr-2"> B. Là phần mềm cung cấp phương thức lưu trữ, cập nhật, truy xuất, bảo mật và an toàn dữ liệu.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q1" value="C" class="mr-2"> C. Là một bảng tính điện tử đơn giản trên máy tính cá nhân.
+                            </label>
+                        </div>
+                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: B</div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="2">
+                        <p class="font-bold text-slate-800 mb-3">Câu 2: Một hệ CSDL đầy đủ bao gồm những thành phần nào?</p>
+                        <div class="space-y-2 text-sm">
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q2" value="A" class="mr-2"> A. CSDL và máy chủ mạng.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q2" value="B" class="mr-2"> B. CSDL, hệ QTCSDL và các phần mềm ứng dụng CSDL.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q2" value="C" class="mr-2"> C. Hệ QTCSDL và hệ điều hành Windows.
+                            </label>
+                        </div>
+                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: B</div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="3">
+                        <p class="font-bold text-slate-800 mb-3">Câu 3: Chức năng tạo lập cấu trúc CSDL thuộc nhóm chức năng nào của hệ QTCSDL?</p>
+                        <div class="space-y-2 text-sm">
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q3" value="A" class="mr-2"> A. Nhóm định nghĩa dữ liệu.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q3" value="B" class="mr-2"> B. Nhóm cập nhật và truy xuất dữ liệu.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q3" value="C" class="mr-2"> C. Nhóm bảo mật và an toàn CSDL.
+                            </label>
+                        </div>
+                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: A</div>
+                    </div>
+
+                    <!-- Question 4 -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="4">
+                        <p class="font-bold text-slate-800 mb-3">Câu 4: Ưu điểm nổi bật của hệ CSDL phân tán so với tập trung là gì?</p>
+                        <div class="space-y-2 text-sm">
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q4" value="A" class="mr-2"> A. Chi phí lắp đặt và duy trì luôn rẻ hơn.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q4" value="B" class="mr-2"> B. Không bao giờ xảy ra lỗi mạng.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q4" value="C" class="mr-2"> C. Dễ dàng mở rộng, tính sẵn sàng và độ tin cậy cao, tối ưu hóa tốc độ truy xuất trên diện rộng.
+                            </label>
+                        </div>
+                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: C</div>
+                    </div>
+
+                    <!-- Question 5 -->
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="5">
+                        <p class="font-bold text-slate-800 mb-3">Câu 5: Trong mô hình khách - chủ, phần mềm "khách" có nhiệm vụ chính là gì?</p>
+                        <div class="space-y-2 text-sm">
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q5" value="A" class="mr-2"> A. Tổ chức giao diện tương tác với người dùng, gửi yêu cầu đến phần "chủ".
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q5" value="B" class="mr-2"> B. Trực tiếp lưu trữ toàn bộ đĩa cứng chứa tệp CSDL.
+                            </label>
+                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
+                                <input type="radio" name="q5" value="C" class="mr-2"> C. Quản lý toàn bộ bảo mật cấp cao của hệ thống máy chủ.
+                            </label>
+                        </div>
+                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: A</div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button onclick="checkQuiz()" class="bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition">
+                        <i class="fa-solid fa-square-check mr-2"></i> Kiểm Tra Kết Quả
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 text-center py-4 text-xs text-slate-500 mt-10">
+        Được biên soạn theo SGK Tin Học 11 - Bộ sách Kết nối tri thức với cuộc sống.
+    </footer>
+
+    <!-- Script tương tác -->
+    <script>
+        function switchTab(evt, tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function showSim(type) {
+            const box = document.getElementById('sim-result-box');
+            if(type === 'user') {
+                box.innerHTML = "👤 <b>Người dùng:</b> Nhập số báo danh hoặc thông tin cần tra cứu (ví dụ: điểm thi vào lớp 10) thông qua giao diện thiết bị.";
+            } else if(type === 'client') {
+                box.innerHTML = "💻 <b>Phần mềm ứng dụng (Khách):</b> Tiếp nhận thông tin từ người dùng, đóng gói yêu cầu và gửi thông qua mạng kết nối đến hệ QTCSDL (phần chủ).";
+            } else if(type === 'server') {
+                box.innerHTML = "🖧 <b>Hệ QTCSDL & CSDL (Chủ):</b> Nhận yêu cầu từ phần 'khách', tìm kiếm, xử lý dữ liệu trong CSDL và gửi trả kết quả hiển thị cho người dùng.";
+            }
+        }
+
+        function checkQuiz() {
+            const answers = { q1: 'B', q2: 'B', q3: 'A', q4: 'C', q5: 'A' };
+            let score = 0;
+            for(let q in answers) {
+                const selected = document.querySelector(`input[name="${q}"]:checked`);
+                const qBlock = document.querySelector(`[data-q="${q.replace('q','')}"]`);
+                const feedback = qBlock.querySelector('.ans-feedback');
+                feedback.classList.remove('hidden');
+                if(selected && selected.value === answers[q]) {
+                    score++;
+                    qBlock.classList.add('bg-emerald-50/50');
+                    qBlock.classList.remove('bg-slate-50');
+                } else {
+                    qBlock.classList.add('bg-pink-50/50');
+                    qBlock.classList.remove('bg-slate-50');
+                }
+            }
+            alert(`Bạn đã hoàn thành bài trắc nghiệm! Số câu đúng: ${score}/5`);
+        }
+    </script>
+</body>
+</html>

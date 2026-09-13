@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 22: Kết Nối Thiết Bị Số</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --pastel-blue: #e0f2fe;
+            --pastel-purple: #f3e8ff;
+            --pastel-pink: #fce7f3;
+            --pastel-green: #dcfce7;
+            --pastel-yellow: #fef9c3;
+        }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            overflow-x: hidden;
+        }
+        
+        /* Typography Header Customization */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(to right, #2563eb, #9333ea);
+            -webkit-background-clip: text;
+            color: transparent;
+            text-transform: capitalize;
+        }
+
+        /* Studygram Card Style */
+        .study-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .study-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Animations */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .radar-scan {
+            position: relative;
+        }
+        .radar-scan::before {
+            content: '';
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        @keyframes flow {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 0; }
+        }
+        .data-line {
+            background: linear-gradient(90deg, transparent 0%, #3b82f6 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: flow 1.5s infinite linear;
+        }
+
+        @keyframes drop {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(40px) scale(0.5); opacity: 0; }
+        }
+        .water-drop {
+            animation: drop 1s infinite;
+        }
+
+        @keyframes flyFile {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            50% { transform: translate(150px, -50px) scale(1.2); opacity: 0.8; }
+            100% { transform: translate(300px, 0) scale(0.5); opacity: 0; }
+        }
+        .flying-file {
+            animation: flyFile 2s ease-in-out forwards;
+        }
+
+        @keyframes flyFileReverse {
+            0% { transform: translate(300px, 0) scale(0.5); opacity: 1; }
+            50% { transform: translate(150px, -50px) scale(1.2); opacity: 0.8; }
+            100% { transform: translate(0, 0) scale(1); opacity: 0; }
+        }
+        .flying-file-reverse {
+            animation: flyFileReverse 2s ease-in-out forwards;
+        }
+
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10B981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10B981;
+        }
+        
+        /* Win + P Flyout */
+        .win-p-menu {
+            transition: all 0.3s ease;
+            transform: translateX(100%);
+        }
+        .win-p-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a5b4fc; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .monitor-bg { transition: all 0.5s ease; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="text-center mb-10">
+        <h1 class="title-gradient mb-2">Bài 22: Kết Nối Thiết Bị Số</h1>
+        <p class="text-slate-500 font-medium"><i class="fas fa-book-open mr-2 text-blue-400"></i>Chủ đề 6: Máy tính & Xã hội tri thức</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="flex justify-center mb-8 gap-4 flex-wrap">
+        <button onclick="openTab('overview')" id="btn-overview" class="px-6 py-3 rounded-full bg-blue-500 text-white font-bold shadow-md transition-all">
+            <i class="fas fa-sitemap mr-2"></i>Tổng Quan Lý Thuyết
+        </button>
+        <button onclick="openTab('simulation')" id="btn-simulation" class="px-6 py-3 rounded-full bg-white text-slate-600 font-bold shadow-md hover:bg-slate-50 transition-all">
+            <i class="fas fa-gamepad mr-2 text-purple-500"></i>Mô Phỏng Tương Tác
+        </button>
+        <button onclick="openTab('quiz')" id="btn-quiz" class="px-6 py-3 rounded-full bg-white text-slate-600 font-bold shadow-md hover:bg-slate-50 transition-all">
+            <i class="fas fa-check-circle mr-2 text-green-500"></i>Luyện Tập
+        </button>
+    </div>
+
+    <!-- TAB 1: TỔNG QUAN -->
+    <div id="overview" class="tab-content active max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Mục tiêu & Cốt lõi -->
+            <div class="study-card p-6 bg-[var(--pastel-blue)] col-span-1 md:col-span-2">
+                <h3 class="text-xl font-bold text-blue-800 mb-4"><i class="fas fa-bullseye mr-2"></i>Mục Tiêu & Cốt Lõi</h3>
+                <div class="flex flex-col gap-3">
+                    <div class="flex items-center bg-white p-3 rounded-xl shadow-sm">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mr-4 shrink-0"><i class="fas fa-plug"></i></div>
+                        <p class="font-medium text-slate-700">Kết nối máy tính với thiết bị hiển thị (VGA, HDMI).</p>
+                    </div>
+                    <div class="flex items-center bg-white p-3 rounded-xl shadow-sm">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mr-4 shrink-0"><i class="fab fa-bluetooth"></i></div>
+                        <p class="font-medium text-slate-700">Truyền tệp qua lại giữa Điện thoại & Máy tính bằng Bluetooth.</p>
+                    </div>
+                    <div class="flex items-center bg-white p-3 rounded-xl shadow-sm">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mr-4 shrink-0"><i class="fas fa-home"></i></div>
+                        <p class="font-medium text-slate-700">Thiết lập điều khiển nhà thông minh qua Internet (App -> Router -> Cloud -> Device).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dễ nhầm lẫn -->
+            <div class="study-card p-6 bg-[var(--pastel-pink)]">
+                <h3 class="text-xl font-bold text-pink-800 mb-4"><i class="fas fa-exclamation-triangle mr-2"></i>Dễ Nhầm Lẫn!</h3>
+                <ul class="space-y-4">
+                    <li class="bg-white p-3 rounded-xl shadow-sm text-sm border-l-4 border-pink-400">
+                        <strong>Bluetooth vs Wi-Fi/Internet:</strong> Bluetooth chỉ ở khoảng cách <span class="text-pink-600 font-bold">GẦN</span>, không cần Internet. Smart Home cần mạng <span class="text-pink-600 font-bold">XA</span> (Internet/Cloud).
+                    </li>
+                    <li class="bg-white p-3 rounded-xl shadow-sm text-sm border-l-4 border-pink-400">
+                        <strong>Duplicate vs Extend:</strong> Duplicate là màn hình 2 <span class="font-bold">GIỐNG HỆT</span> màn 1. Extend là <span class="font-bold">MỞ RỘNG</span> (chuột kéo qua lại được).
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sơ đồ quan hệ (Infographic) -->
+            <div class="study-card p-6 col-span-1 md:col-span-3">
+                <h3 class="text-xl font-bold text-slate-800 mb-6 text-center"><i class="fas fa-project-diagram mr-2 text-purple-500"></i>Sơ đồ nguyên lý kết nối Nhà Thông Minh (Smart Home)</h3>
+                
+                <div class="flex flex-col md:flex-row items-center justify-between bg-slate-50 p-6 rounded-2xl gap-4 relative">
+                    <!-- App -->
+                    <div class="text-center z-10 w-full md:w-1/4">
+                        <div class="w-20 h-20 bg-white rounded-2xl shadow-md mx-auto flex items-center justify-center text-3xl text-blue-500 mb-2 border-2 border-blue-100">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <p class="font-bold text-slate-700">Smartphone (App)</p>
+                        <p class="text-xs text-slate-500">Ra lệnh điều khiển</p>
+                    </div>
+                    
+                    <div class="hidden md:block w-1/4 h-1 data-line rounded"></div>
+                    <i class="fas fa-arrow-down block md:hidden text-2xl text-blue-400"></i>
+
+                    <!-- Cloud -->
+                    <div class="text-center z-10 w-full md:w-1/4">
+                        <div class="w-24 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl shadow-lg mx-auto flex items-center justify-center text-4xl text-white mb-2">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <p class="font-bold text-slate-700">Máy chủ Đám mây</p>
+                        <p class="text-xs text-slate-500">Lưu trạng thái & Đồng bộ</p>
+                    </div>
+
+                    <div class="hidden md:block w-1/4 h-1 data-line rounded"></div>
+                    <i class="fas fa-arrow-down block md:hidden text-2xl text-blue-400"></i>
+
+                    <!-- Router & Device -->
+                    <div class="text-center z-10 w-full md:w-1/4 relative">
+                        <div class="w-20 h-20 bg-white rounded-full shadow-md mx-auto flex items-center justify-center text-3xl text-green-500 mb-2 border-2 border-green-100">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div class="absolute -right-4 -bottom-4 w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-white text-xl">
+                            <i class="fas fa-lightbulb text-yellow-400"></i>
+                        </div>
+                        <p class="font-bold text-slate-700 mt-4">Wi-Fi Router & Thiết bị</p>
+                        <p class="text-xs text-slate-500">Thực thi lệnh</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Góc khám phá -->
+            <div class="study-card p-6 bg-[var(--pastel-yellow)] col-span-1 md:col-span-3">
+                <h3 class="text-xl font-bold text-yellow-700 mb-2"><i class="fas fa-lightbulb mr-2"></i>Góc Khám Phá (Có thể bạn chưa biết)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="bg-white/60 p-4 rounded-xl">
+                        <h4 class="font-bold text-slate-700"><i class="fab fa-bluetooth-b text-blue-600 mr-1"></i> Tên gọi "Bluetooth"</h4>
+                        <p class="text-sm text-slate-600 mt-2">Được đặt theo tên vua Harald Bluetooth của Đan Mạch thế kỷ thứ 10, người đã hợp nhất các bộ tộc rải rác, giống như cách công nghệ này hợp nhất các thiết bị giao tiếp!</p>
+                    </div>
+                    <div class="bg-white/60 p-4 rounded-xl">
+                        <h4 class="font-bold text-slate-700"><i class="fas fa-vr-cardboard text-purple-600 mr-1"></i> Kính VR đánh lừa não bộ</h4>
+                        <p class="text-sm text-slate-600 mt-2">Kính VR hiển thị hai hình ảnh hơi khác nhau cho mỗi mắt (Stereoscopy). Não bộ sẽ gộp chúng lại, tạo ra ảo giác về chiều sâu 3D chân thực.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: MÔ PHỎNG TƯƠNG TÁC -->
+    <div id="simulation" class="tab-content max-w-6xl mx-auto">
+        
+        <!-- Mô phỏng 1: Win + P -->
+        <div class="study-card p-0 overflow-hidden mb-8">
+            <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg"><i class="fas fa-desktop mr-2 text-blue-400"></i>Nhiệm vụ 1: Chế độ hiển thị màn hình (Win + P)</h3>
+                <span class="bg-slate-600 text-xs px-2 py-1 rounded">Tương tác</span>
+            </div>
+            <div class="p-6 bg-slate-100 flex flex-col md:flex-row gap-6 relative overflow-hidden h-[400px]">
+                
+                <!-- Khu vực thao tác -->
+                <div class="w-full md:w-1/3 flex flex-col justify-center items-center relative z-10">
+                    <p class="mb-4 text-slate-600 font-medium text-center">Bấm tổ hợp phím trên bàn phím ảo:</p>
+                    <div class="flex gap-2 mb-6">
+                        <button id="btn-win" class="w-16 h-16 bg-slate-300 rounded-lg shadow-md border-b-4 border-slate-400 active:border-b-0 active:translate-y-1 font-bold text-xl flex items-center justify-center transition-all">
+                            <i class="fab fa-windows text-slate-700"></i>
+                        </button>
+                        <span class="text-2xl text-slate-400 mt-4">+</span>
+                        <button id="btn-p" class="w-16 h-16 bg-slate-300 rounded-lg shadow-md border-b-4 border-slate-400 active:border-b-0 active:translate-y-1 font-bold text-xl flex items-center justify-center transition-all text-slate-700">
+                            P
+                        </button>
+                    </div>
+                    <div class="text-sm text-center bg-blue-100 text-blue-700 p-3 rounded-lg w-full">
+                        <i class="fas fa-info-circle mr-1"></i> Click vào 2 phím trên để mở menu Project.
+                    </div>
+                </div>
+
+                <!-- Khu vực màn hình -->
+                <div class="w-full md:w-2/3 flex gap-4 justify-center items-center bg-slate-200 p-4 rounded-xl shadow-inner relative">
+                    <!-- Monitor 1 -->
+                    <div class="w-48 h-32 bg-black rounded-lg border-4 border-slate-700 relative overflow-hidden shadow-lg flex flex-col">
+                        <div class="bg-slate-800 text-xs text-white text-center py-1">PC Screen (Màn 1)</div>
+                        <div id="screen-1" class="flex-1 bg-blue-500 monitor-bg flex flex-col items-center justify-center p-2">
+                            <i class="fab fa-windows text-white/50 text-3xl mb-1"></i>
+                            <div class="text-[8px] bg-white/20 p-1 rounded text-white text-center">Trang Slide Thuyết Trình</div>
+                        </div>
+                    </div>
+                    <!-- Monitor 2 -->
+                    <div class="w-48 h-32 bg-black rounded-lg border-4 border-slate-700 relative overflow-hidden shadow-lg flex flex-col">
+                        <div class="bg-slate-800 text-xs text-white text-center py-1">Projector/TV (Màn 2)</div>
+                        <div id="screen-2" class="flex-1 bg-black monitor-bg flex items-center justify-center">
+                            <span class="text-slate-500 text-xs">No Signal</span>
+                        </div>
+                    </div>
+
+                    <!-- Flyout Menu (Windows Style) -->
+                    <div id="win-p-menu" class="absolute right-0 top-0 bottom-0 w-48 bg-slate-800/95 backdrop-blur shadow-2xl win-p-menu p-3 flex flex-col gap-2 z-20">
+                        <h4 class="text-white text-sm font-bold mb-2">Project</h4>
+                        <button onclick="setMode('pc')" class="text-left text-white text-xs bg-slate-700 hover:bg-blue-600 p-2 rounded transition-colors focus:ring-2 focus:ring-blue-400">
+                            <i class="fas fa-laptop mr-2"></i>PC screen only
+                        </button>
+                        <button onclick="setMode('dup')" class="text-left text-white text-xs bg-slate-700 hover:bg-blue-600 p-2 rounded transition-colors focus:ring-2 focus:ring-blue-400">
+                            <i class="fas fa-clone mr-2"></i>Duplicate
+                        </button>
+                        <button onclick="setMode('ext')" class="text-left text-white text-xs bg-slate-700 hover:bg-blue-600 p-2 rounded transition-colors focus:ring-2 focus:ring-blue-400">
+                            <i class="fas fa-arrows-alt-h mr-2"></i>Extend
+                        </button>
+                        <button onclick="setMode('sec')" class="text-left text-white text-xs bg-slate-700 hover:bg-blue-600 p-2 rounded transition-colors focus:ring-2 focus:ring-blue-400">
+                            <i class="fas fa-tv mr-2"></i>Second screen only
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mô phỏng 2: Bluetooth -->
+        <div class="study-card p-0 overflow-hidden mb-8">
+            <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg"><i class="fab fa-bluetooth mr-2"></i>Nhiệm vụ 2: Truyền/Nhận tệp qua Bluetooth</h3>
+            </div>
+            
+            <div class="bg-blue-50 border-b border-blue-100 p-3 text-center text-sm font-bold text-blue-800" id="bt-instruction">
+                Bước 1: Bấm để Bật công tắc Bluetooth trên cả Máy tính (PC) và Điện thoại.
+            </div>
+
+            <div class="p-6 flex flex-col md:flex-row gap-6 bg-slate-100 relative">
+                
+                <!-- PC Interface -->
+                <div class="w-full md:w-1/2 bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden flex flex-col h-[380px]">
+                    <div class="bg-slate-200 px-3 py-1 text-xs text-slate-600 font-bold flex justify-between">
+                        <span>Windows PC</span> <i class="fas fa-times"></i>
+                    </div>
+                    
+                    <div class="flex-1 p-4 relative" id="pc-screen">
+                        <div class="flex justify-between items-center mb-4 pb-2 border-b">
+                            <h4 class="font-bold">Bluetooth & devices</h4>
+                            <!-- PC Toggle -->
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="pc-bt-toggle" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300"/>
+                                <label for="pc-bt-toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300"></label>
+                            </div>
+                        </div>
+
+                        <!-- Add device button -->
+                        <button id="btn-add-device" class="hidden w-full bg-slate-100 hover:bg-slate-200 text-left p-3 rounded-lg border border-slate-300 mb-2 transition-colors">
+                            <i class="fas fa-plus text-blue-600 mr-2"></i> Add device
+                        </button>
+
+                        <!-- Scanning State -->
+                        <div id="pc-scanning" class="hidden flex-col items-center justify-center mt-8">
+                            <div class="radar-scan mb-4"></div>
+                            <p class="text-sm text-slate-500">Scanning for devices...</p>
+                        </div>
+
+                        <!-- Found Device -->
+                        <div id="pc-found-device" class="hidden cursor-pointer bg-blue-50 border border-blue-200 p-3 rounded-lg flex items-center hover:bg-blue-100 transition-colors mt-2">
+                            <i class="fas fa-mobile-alt text-2xl text-slate-700 mr-3"></i>
+                            <div>
+                                <p class="font-bold text-sm">Galaxy S23</p>
+                                <p class="text-xs text-slate-500">Ready to pair</p>
+                            </div>
+                        </div>
+
+                        <!-- PIN screen -->
+                        <div id="pc-pin-screen" class="hidden flex-col items-center justify-center mt-4 text-center">
+                            <p class="text-sm font-bold">Compare PIN with Galaxy S23</p>
+                            <p class="text-3xl font-mono tracking-widest text-blue-600 my-2">649568</p>
+                            <p class="text-xs text-slate-500">Waiting for phone...</p>
+                        </div>
+
+                        <!-- Paired Device List (NEW) -->
+                        <div id="pc-paired-device" class="hidden bg-slate-50 border border-slate-200 p-3 rounded-lg flex justify-between items-center mt-2">
+                            <div class="flex items-center">
+                                <i class="fas fa-mobile-alt text-2xl text-blue-600 mr-3"></i>
+                                <div>
+                                    <p class="font-bold text-sm">Galaxy S23</p>
+                                    <p class="text-xs text-green-600"><i class="fas fa-check-circle mr-1"></i>Paired</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-400 cursor-not-allowed">Remove</span>
+                        </div>
+
+                        <!-- Action Buttons (NEW) -->
+                        <div id="pc-action-buttons" class="hidden flex gap-2 mt-6">
+                            <button id="btn-pc-send" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 rounded-lg text-sm font-bold transition-colors border border-blue-200"><i class="fas fa-upload mr-1"></i> Send files</button>
+                            <button id="btn-pc-recv" class="flex-1 bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-lg text-sm font-bold transition-colors border border-green-200"><i class="fas fa-download mr-1"></i> Receive files</button>
+                        </div>
+
+                        <!-- Send File Screen -->
+                        <div id="pc-send-screen" class="hidden flex-col h-full justify-center mt-2">
+                            <div class="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center bg-slate-50 cursor-pointer hover:bg-slate-100" id="btn-browse">
+                                <i class="fas fa-file-image text-3xl text-slate-400 mb-2"></i>
+                                <p class="text-sm font-bold">Click to Browse File</p>
+                                <p class="text-xs text-slate-500 mt-1" id="file-name-display">No file selected</p>
+                            </div>
+                            <button id="btn-send-next" class="mt-4 bg-blue-600 text-white w-full py-2 rounded-lg font-bold opacity-50 cursor-not-allowed" disabled>Next</button>
+                        </div>
+
+                        <!-- Receive Screen (NEW) -->
+                        <div id="pc-recv-screen" class="hidden flex-col h-full justify-center items-center text-center mt-4">
+                            <i class="fas fa-satellite-dish text-4xl text-blue-400 mb-4 animate-pulse"></i>
+                            <p class="font-bold text-sm">Waiting for a connection...</p>
+                            <p class="text-xs text-slate-500 mt-2">Please send the file from your phone.</p>
+                        </div>
+                        
+                        <!-- PC Receiving Progress (NEW) -->
+                        <div id="pc-receiving-progress" class="hidden mt-4 bg-white p-4 rounded shadow-sm border border-slate-200 w-full">
+                            <p class="text-xs font-bold mb-2">Receiving 'photo_from_phone.jpg'...</p>
+                            <div class="w-full bg-slate-200 rounded-full h-2 mb-2">
+                                <div class="bg-green-500 h-2 rounded-full transition-all" id="pc-progress-bar-fill" style="width: 0%"></div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 text-right font-bold" id="pc-progress-text">0%</p>
+                        </div>
+                    </div>
+
+                    <!-- PC Taskbar -->
+                    <div class="bg-slate-800 h-10 flex items-center justify-end px-4 gap-3 text-white/80 shrink-0">
+                        <i class="fas fa-wifi text-sm"></i>
+                        <i class="fab fa-bluetooth text-sm transition-colors" id="tb-bt-icon"></i>
+                        <span class="text-xs">10:30 AM</span>
+                    </div>
+                </div>
+
+                <!-- File flying animation container -->
+                <i class="fas fa-file-image text-blue-500 text-3xl absolute top-1/2 left-1/3 z-50 hidden" id="flying-file-icon"></i>
+
+                <!-- Phone Interface -->
+                <div class="w-full md:w-64 mx-auto bg-slate-800 rounded-[2rem] shadow-2xl border-[6px] border-slate-800 overflow-hidden flex flex-col h-[400px] md:h-[380px] relative">
+                    <!-- Notch -->
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-4 bg-slate-800 rounded-b-xl z-20"></div>
+                    <!-- Status Bar -->
+                    <div class="bg-black text-white text-[10px] flex justify-between px-4 py-1 z-10">
+                        <span>10:30</span>
+                        <div class="flex gap-1">
+                            <i class="fas fa-wifi"></i>
+                            <i class="fas fa-battery-full"></i>
+                        </div>
+                    </div>
+                    <!-- Phone Screen -->
+                    <div class="flex-1 bg-slate-50 relative p-3">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-sm">Bluetooth</h4>
+                            <div class="relative inline-block w-8 mr-2 align-middle select-none">
+                                <input type="checkbox" name="toggle" id="phone-bt-toggle" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300"/>
+                                <label for="phone-bt-toggle" class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300"></label>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">Device Name: Galaxy S23</p>
+
+                        <!-- Phone Paired Status (NEW) -->
+                        <div id="phone-paired-status" class="hidden mt-4">
+                            <p class="text-xs font-bold border-b pb-1 mb-2">Paired Devices</p>
+                            <div class="flex items-center justify-between bg-blue-50 p-2 rounded">
+                                <span class="text-xs font-medium"><i class="fas fa-laptop text-blue-600 mr-2"></i>Windows PC</span>
+                                <i class="fas fa-cog text-slate-400 text-xs"></i>
+                            </div>
+                            <button id="btn-phone-share" class="w-full mt-4 bg-slate-800 text-white text-xs py-2 rounded-lg font-bold hover:bg-slate-700 transition-colors hidden"><i class="fas fa-share-alt mr-1"></i> Share Photo to PC</button>
+                        </div>
+
+                        <!-- Phone Modals Overlay -->
+                        <div id="phone-modal-bg" class="absolute inset-0 bg-black/50 z-30 hidden flex items-center justify-center p-2">
+                            
+                            <!-- Pair Modal -->
+                            <div id="phone-pair-modal" class="bg-white rounded-lg p-3 w-full shadow-lg hidden">
+                                <p class="text-sm font-bold mb-1">Pair with PC?</p>
+                                <p class="text-xs text-slate-600 mb-2">Passkey: 649568</p>
+                                <div class="flex justify-end gap-2">
+                                    <button class="text-xs px-3 py-1 text-slate-500">Cancel</button>
+                                    <button id="btn-phone-pair" class="text-xs px-3 py-1 bg-blue-600 text-white rounded">Pair</button>
+                                </div>
+                            </div>
+
+                            <!-- Receive File Modal -->
+                            <div id="phone-receive-modal" class="bg-white rounded-lg p-3 w-full shadow-lg hidden">
+                                <p class="text-sm font-bold mb-1">Receive file?</p>
+                                <p class="text-xs text-slate-600 mb-2">PC wants to send <br> 'image_bai22.jpg'</p>
+                                <div class="flex justify-end gap-2">
+                                    <button class="text-xs px-3 py-1 text-slate-500">Decline</button>
+                                    <button id="btn-phone-accept" class="text-xs px-3 py-1 bg-blue-600 text-white rounded">Accept</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div id="phone-progress" class="hidden mt-8 bg-white p-3 rounded shadow-sm border border-slate-200">
+                            <p class="text-xs font-bold mb-2">Receiving file...</p>
+                            <div class="w-full bg-slate-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full transition-all" id="progress-bar-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- Reset Button -->
+            <div class="bg-slate-100 p-2 text-center border-t border-slate-200">
+                <button onclick="resetBluetooth()" class="text-xs text-slate-500 hover:text-blue-600 underline"><i class="fas fa-sync-alt mr-1"></i>Làm lại mô phỏng Bluetooth</button>
+            </div>
+        </div>
+
+        <!-- Mô phỏng 3: Nhà thông minh -->
+        <div class="study-card p-0 overflow-hidden mb-8">
+            <div class="bg-green-600 text-white p-4">
+                <h3 class="font-bold text-lg"><i class="fas fa-home mr-2"></i>Nhiệm vụ 3: Thiết lập Smart Home (Kết nối & Điều khiển)</h3>
+            </div>
+            
+            <div class="p-6 bg-slate-50 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- App (Cột 1) -->
+                <div class="border bg-white rounded-xl shadow-sm overflow-hidden flex flex-col items-center py-4">
+                    <h4 class="font-bold text-slate-700 mb-2 text-sm">Smart App</h4>
+                    <div class="w-48 h-80 bg-slate-100 border-4 border-slate-300 rounded-2xl p-2 flex flex-col relative overflow-hidden">
+                        
+                        <!-- Screen: Add Device -->
+                        <div id="sh-screen-add" class="flex-1 flex flex-col items-center justify-center text-center">
+                            <i class="fas fa-plus-circle text-4xl text-slate-300 mb-2"></i>
+                            <p class="text-xs text-slate-500">Chưa có thiết bị</p>
+                            <p class="text-[10px] text-slate-400 mt-2 px-2">Hãy nhấn GIỮ nút trên công tắc vật lý 3 giây để kích hoạt Pairing Mode.</p>
+                        </div>
+
+                        <!-- Screen: Wi-Fi Setup -->
+                        <div id="sh-screen-wifi" class="hidden flex-1 flex flex-col items-center justify-center w-full">
+                            <p class="text-xs font-bold mb-2">Nhập Wi-Fi nhà bạn</p>
+                            <input type="text" value="MyHome_Network" class="text-xs p-1 border rounded w-full mb-1 bg-slate-50" readonly>
+                            <input type="password" value="********" class="text-xs p-1 border rounded w-full mb-2 bg-slate-50" readonly>
+                            <button id="btn-sh-connect" class="bg-green-500 text-white text-xs px-4 py-1 rounded w-full">Kết nối</button>
+                        </div>
+
+                        <!-- Screen: Connecting animation -->
+                        <div id="sh-screen-loading" class="hidden flex-1 flex flex-col items-center justify-center">
+                            <i class="fas fa-spinner fa-spin text-2xl text-green-500 mb-2"></i>
+                            <p class="text-xs">Đang đăng ký lên Cloud...</p>
+                        </div>
+
+                        <!-- Screen: Control Panel -->
+                        <div id="sh-screen-control" class="hidden flex-1 flex flex-col w-full gap-2 mt-2">
+                            <p class="text-xs font-bold text-center border-b pb-1">Bảng Điều Khiển</p>
+                            
+                            <!-- Toggle Light -->
+                            <div class="bg-white p-2 rounded shadow-sm flex justify-between items-center border-l-2 border-yellow-400">
+                                <span class="text-xs font-medium"><i class="fas fa-lightbulb text-yellow-500 mr-1"></i>Đèn bảo vệ</span>
+                                <div class="relative inline-block w-8 align-middle select-none">
+                                    <input type="checkbox" id="sh-toggle-light" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 appearance-none cursor-pointer transition-all duration-300"/>
+                                    <label for="sh-toggle-light" class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300"></label>
+                                </div>
+                            </div>
+
+                            <!-- Toggle Water -->
+                            <div class="bg-white p-2 rounded shadow-sm flex justify-between items-center border-l-2 border-blue-400">
+                                <span class="text-xs font-medium"><i class="fas fa-faucet text-blue-500 mr-1"></i>Van tưới cây</span>
+                                <div class="relative inline-block w-8 align-middle select-none">
+                                    <input type="checkbox" id="sh-toggle-water" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 appearance-none cursor-pointer transition-all duration-300"/>
+                                    <label for="sh-toggle-water" class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Hạ tầng Mạng (Cột 2) -->
+                <div class="flex flex-col justify-center items-center gap-4 py-4">
+                    <div class="text-center">
+                        <i class="fas fa-cloud text-5xl text-blue-300 relative">
+                            <i class="fas fa-sync-alt fa-spin text-sm text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0" id="sh-cloud-sync"></i>
+                        </i>
+                        <p class="text-xs font-bold text-slate-500 mt-1">Cloud Server</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="h-10 border-l-2 border-dashed border-blue-300 mb-2 relative">
+                            <div id="sh-data-flow" class="absolute inset-0 bg-blue-500 w-[2px] -left-[1px] transform scale-y-0 origin-top transition-transform duration-1000"></div>
+                        </div>
+                        <i class="fas fa-wifi text-4xl text-slate-400" id="sh-router-icon"></i>
+                        <p class="text-xs font-bold text-slate-500 mt-1">Wi-Fi Router (WAP)</p>
+                    </div>
+                </div>
+
+                <!-- Thiết bị vật lý & Hiện trường (Cột 3) -->
+                <div class="border bg-white rounded-xl shadow-sm p-4 flex flex-col items-center">
+                    <h4 class="font-bold text-slate-700 mb-4 text-sm">Thiết bị & Hiện trường</h4>
+                    
+                    <!-- Smart Switch (Physical) -->
+                    <div class="w-32 bg-slate-100 p-2 rounded-lg border-2 border-slate-200 shadow-inner flex flex-col items-center relative select-none">
+                        <p class="text-[10px] text-slate-400 mb-1">Công tắc Wi-Fi</p>
+                        <!-- Nút vật lý để giữ -->
+                        <button id="btn-physical-switch" class="w-16 h-16 rounded-full bg-white border shadow-md active:bg-slate-200 transition-colors flex items-center justify-center mb-2 relative">
+                            <i class="fas fa-power-off text-slate-400"></i>
+                            <!-- Vòng loading khi ấn giữ -->
+                            <svg class="absolute inset-0 w-full h-full -rotate-90 hidden" id="hold-progress">
+                                <circle cx="32" cy="32" r="30" fill="none" stroke="#10B981" stroke-width="4" stroke-dasharray="188" stroke-dashoffset="188" class="transition-all duration-300"></circle>
+                            </svg>
+                        </button>
+                        <!-- Đèn LED trạng thái -->
+                        <div class="flex gap-2">
+                            <div class="w-2 h-2 rounded-full bg-slate-300" id="led-wifi"></div>
+                            <div class="w-2 h-2 rounded-full bg-slate-300" id="led-pwr"></div>
+                        </div>
+                        <p class="text-[8px] text-slate-400 mt-1">Giữ 3s để Reset</p>
+                    </div>
+
+                    <!-- Scene (Hiện trường ảo) - Hiện ra sau khi cài đặt xong -->
+                    <div id="sh-scene" class="w-full mt-4 h-32 bg-slate-800 rounded-lg relative overflow-hidden transition-all duration-1000 opacity-20 grayscale pointer-events-none border-2 border-slate-600">
+                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                        
+                        <!-- Cửa & Đèn -->
+                        <div class="absolute left-4 bottom-0 w-12 h-20 bg-slate-700 border-t border-r border-slate-600"></div>
+                        <div class="absolute left-6 top-4 text-yellow-500 opacity-0 transition-opacity duration-300" id="scene-light">
+                            <i class="fas fa-lightbulb text-xl filter drop-shadow-[0_0_8px_rgba(234,179,8,1)]"></i>
+                            <!-- Chùm sáng -->
+                            <div class="absolute top-4 -left-6 w-16 h-24 bg-gradient-to-b from-yellow-400/40 to-transparent clip-path-polygon"></div>
+                        </div>
+
+                        <!-- Vườn & Van nước -->
+                        <div class="absolute right-4 bottom-0 w-20 h-6 bg-green-900 rounded-t border-t border-green-700"></div>
+                        <div class="absolute right-10 top-10 text-blue-400 opacity-0 transition-opacity duration-300" id="scene-water">
+                            <i class="fas fa-shower text-lg"></i>
+                            <!-- Giọt nước -->
+                            <div class="absolute top-4 left-1 text-[8px] text-blue-300 flex flex-col gap-1">
+                                <i class="fas fa-tint water-drop" style="animation-delay: 0s;"></i>
+                                <i class="fas fa-tint water-drop" style="animation-delay: 0.3s; margin-left: 8px;"></i>
+                                <i class="fas fa-tint water-drop" style="animation-delay: 0.6s; margin-left: -4px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 p-3 text-xs text-center border-t border-green-200 font-medium text-green-800" id="sh-status-text">
+                Hãy click và <span class="font-bold text-red-500">GIỮ</span> nút nguồn trên công tắc vật lý khoảng 3 giây.
+            </div>
+            <div class="bg-slate-100 p-2 text-center border-t border-slate-200">
+                <button onclick="resetSmartHome()" class="text-xs text-slate-500 hover:text-green-600 underline"><i class="fas fa-sync-alt mr-1"></i>Reset Hệ thống Smart Home</button>
+            </div>
+        </div>
+
+        <!-- Mô phỏng 4: Vòng đeo tay thông minh -->
+        <div class="study-card p-0 overflow-hidden">
+            <div class="bg-purple-600 text-white p-4">
+                <h3 class="font-bold text-lg"><i class="fas fa-heartbeat mr-2"></i>Nhiệm vụ 4: Đồng bộ Vòng đeo tay (Smart Band)</h3>
+            </div>
+            <div class="p-6 bg-slate-50 flex flex-col md:flex-row items-center justify-center gap-12">
+                
+                <!-- Smart Band -->
+                <div class="relative">
+                    <!-- Dây đeo -->
+                    <div class="w-16 h-48 bg-slate-800 rounded-[2rem] mx-auto shadow-xl relative overflow-hidden border-4 border-slate-900">
+                        <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-24 bg-black flex flex-col items-center justify-center">
+                            <p class="text-[10px] text-slate-400">Nhịp tim</p>
+                            <p class="text-2xl text-white font-mono mt-1 flex items-center">
+                                <span id="band-bpm">--</span> 
+                                <i class="fas fa-heart text-red-500 text-sm ml-1" id="band-heart"></i>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Đèn cảm biến mặt dưới (mô phỏng) -->
+                    <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-2 bg-green-500 rounded-full blur-[4px] opacity-0 transition-opacity" id="band-sensor"></div>
+                    
+                    <button id="btn-measure-hr" class="mt-6 bg-red-100 text-red-600 hover:bg-red-200 px-4 py-2 rounded-full font-bold text-sm w-full transition-colors border border-red-200">
+                        Đeo & Đo nhịp tim
+                    </button>
+                </div>
+
+                <!-- Data Flow (Nút đồng bộ) -->
+                <div class="flex flex-col items-center">
+                    <button id="btn-sync-band" class="bg-purple-100 text-purple-700 hover:bg-purple-200 w-16 h-16 rounded-full flex items-center justify-center shadow transition-colors border border-purple-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-sync-alt text-2xl" id="sync-icon"></i>
+                    </button>
+                    <p class="text-xs font-bold text-purple-600 mt-2">Đồng bộ (Sync)</p>
+                </div>
+
+                <!-- Phone Health App -->
+                <div class="w-48 h-80 bg-white border-[6px] border-slate-800 rounded-3xl shadow-xl p-3 flex flex-col">
+                    <h4 class="text-xs font-bold text-slate-800 border-b pb-2 mb-2"><i class="fas fa-notes-medical text-red-500 mr-1"></i>Health App</h4>
+                    
+                    <div class="bg-red-50 p-3 rounded-xl flex-1">
+                        <p class="text-[10px] text-slate-500">Lịch sử nhịp tim</p>
+                        <div class="text-3xl font-bold text-red-600 mb-2 mt-1"><span id="app-bpm">--</span><span class="text-xs text-slate-500 font-normal ml-1">bpm</span></div>
+                        
+                        <!-- Biểu đồ giả lập -->
+                        <div class="h-24 border-b border-l border-slate-300 flex items-end justify-around pb-1 relative">
+                            <div class="w-4 bg-red-200 rounded-t h-1/3"></div>
+                            <div class="w-4 bg-red-200 rounded-t h-1/2"></div>
+                            <div class="w-4 bg-red-200 rounded-t h-2/5"></div>
+                            <div class="w-4 bg-red-300 rounded-t h-[10%]" id="chart-new-bar"></div>
+                            
+                            <!-- Thông báo đồng bộ nổi lên -->
+                            <div id="sync-toast" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white text-[10px] px-2 py-1 rounded-full opacity-0 transition-opacity">Đã cập nhật!</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: LUYỆN TẬP (QUIZ) -->
+    <div id="quiz" class="tab-content max-w-3xl mx-auto">
+        <div class="study-card p-8">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2"><i class="fas fa-tasks text-blue-500 mr-2"></i>Kiểm Tra Kiến Thức</h2>
+            <p class="text-slate-500 mb-6">Trắc nghiệm nhanh 5 câu dựa trên nội dung Bài 22.</p>
+            
+            <form id="quiz-form" class="space-y-6">
+                <!-- Q1 -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">1. Để mở giao diện lựa chọn chế độ hiển thị đa màn hình trên Windows, ta nhấn tổ hợp phím nào?</p>
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q1" value="A" class="form-radio text-blue-500 focus:ring-blue-500"><span>A. Windows + D</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q1" value="B" class="form-radio text-blue-500 focus:ring-blue-500"><span>B. Windows + P</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q1" value="C" class="form-radio text-blue-500 focus:ring-blue-500"><span>C. Alt + Tab</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q1" value="D" class="form-radio text-blue-500 focus:ring-blue-500"><span>D. Ctrl + P</span></label>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">2. Chế độ hiển thị nào cho phép sử dụng màn hình ngoài làm phần mở rộng (kéo cửa sổ từ màn hình này sang màn hình kia)?</p>
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q2" value="A" class="form-radio"><span>A. PC screen only</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q2" value="B" class="form-radio"><span>B. Duplicate</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q2" value="C" class="form-radio"><span>C. Extend</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q2" value="D" class="form-radio"><span>D. Second screen only</span></label>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">3. Đặc điểm nào sau đây KHÔNG đúng về kết nối Bluetooth?</p>
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q3" value="A" class="form-radio"><span>A. Là kết nối không dây tầm gần.</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q3" value="B" class="form-radio"><span>B. Truyền tải được cả âm thanh và hình ảnh.</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q3" value="C" class="form-radio"><span>C. Yêu cầu phải có mạng Internet để hoạt động.</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q3" value="D" class="form-radio"><span>D. Dùng sóng vô tuyến điện.</span></label>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">4. Bước đầu tiên để thiết lập thiết bị nhà thông minh (chưa có màn hình) kết nối vào mạng Internet là gì?</p>
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q4" value="A" class="form-radio"><span>A. Cắm cáp mạng LAN trực tiếp vào thiết bị.</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q4" value="B" class="form-radio"><span>B. Điện thoại kết nối gần với thiết bị qua Wi-Fi/Bluetooth để chuyển cấu hình mạng (nhập pass Wi-Fi).</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q4" value="C" class="form-radio"><span>C. Mang thiết bị ra nhà cung cấp dịch vụ Internet.</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q4" value="D" class="form-radio"><span>D. Đăng ký thiết bị lên Cloud ngay lập tức.</span></label>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">5. Trong nhiệm vụ gửi tệp qua Bluetooth từ Máy tính sang Điện thoại, sau khi chọn file và bấm Gửi (Send), điều gì xảy ra tiếp theo?</p>
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q5" value="A" class="form-radio"><span>A. File tự động lưu vào điện thoại không cần xác nhận.</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q5" value="B" class="form-radio"><span>B. Điện thoại phải kết nối Internet mới tải được.</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q5" value="C" class="form-radio"><span>C. Điện thoại nhận được thông báo yêu cầu, người dùng cần chọn "Chấp nhận" để nhận tệp.</span></label>
+                        <label class="flex items-center space-x-3 cursor-pointer"><input type="radio" name="q5" value="D" class="form-radio"><span>D. Máy tính yêu cầu nhập lại mã PIN một lần nữa.</span></label>
+                    </div>
+                </div>
+
+                <button type="button" onclick="submitQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-md">Nộp Bài & Chấm Điểm</button>
+            </form>
+
+            <div id="quiz-result" class="hidden mt-6 text-center p-6 rounded-xl border-2">
+                <h3 class="text-2xl font-bold mb-2" id="result-score"></h3>
+                <p class="text-slate-600" id="result-msg"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT TỔNG HỢP LOGIC -->
+    <script>
+        // --- Tab Navigation ---
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            // Update button styles
+            document.querySelectorAll('button[id^="btn-"]').forEach(btn => {
+                btn.classList.remove('bg-blue-500', 'text-white');
+                btn.classList.add('bg-white', 'text-slate-600');
+            });
+            let activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('bg-white', 'text-slate-600');
+            activeBtn.classList.add('bg-blue-500', 'text-white');
+        }
+
+        // --- Mô phỏng 1: Win + P ---
+        const keys = { win: false, p: false };
+        document.getElementById('btn-win').addEventListener('click', function() {
+            keys.win = !keys.win;
+            this.classList.toggle('bg-blue-400'); this.classList.toggle('text-white');
+            checkWinP();
+        });
+        document.getElementById('btn-p').addEventListener('click', function() {
+            keys.p = !keys.p;
+            this.classList.toggle('bg-blue-400'); this.classList.toggle('text-white');
+            checkWinP();
+        });
+        function checkWinP() {
+            if(keys.win && keys.p) {
+                document.getElementById('win-p-menu').classList.add('active');
+            } else {
+                document.getElementById('win-p-menu').classList.remove('active');
+            }
+        }
+        function setMode(mode) {
+            const sc1 = document.getElementById('screen-1');
+            const sc2 = document.getElementById('screen-2');
+            
+            sc1.innerHTML = ''; sc2.innerHTML = '';
+            let slideHTML = `<i class="fab fa-windows text-white/50 text-3xl mb-1"></i><div class="text-[8px] bg-white/20 p-1 rounded text-white text-center">Trang Slide Thuyết Trình</div>`;
+            let emptyHTML = `<span class="text-slate-500 text-xs">No Signal</span>`;
+            let notesHTML = `<i class="fas fa-list text-white/50 text-2xl mb-1"></i><div class="text-[8px] bg-white/20 p-1 rounded text-white text-center">Ghi chú diễn giả</div>`;
+
+            if(mode === 'pc') {
+                sc1.className = 'flex-1 bg-blue-500 monitor-bg flex flex-col items-center justify-center p-2';
+                sc1.innerHTML = slideHTML;
+                sc2.className = 'flex-1 bg-black monitor-bg flex items-center justify-center';
+                sc2.innerHTML = emptyHTML;
+            } else if (mode === 'dup') {
+                sc1.className = 'flex-1 bg-blue-500 monitor-bg flex flex-col items-center justify-center p-2';
+                sc1.innerHTML = slideHTML;
+                sc2.className = 'flex-1 bg-blue-500 monitor-bg flex flex-col items-center justify-center p-2';
+                sc2.innerHTML = slideHTML; // Same content
+            } else if (mode === 'ext') {
+                sc1.className = 'flex-1 bg-indigo-600 monitor-bg flex flex-col items-center justify-center p-2';
+                sc1.innerHTML = notesHTML; // Main screen shows notes
+                sc2.className = 'flex-1 bg-blue-500 monitor-bg flex flex-col items-center justify-center p-2';
+                sc2.innerHTML = slideHTML; // Second screen shows presentation
+            } else if (mode === 'sec') {
+                sc1.className = 'flex-1 bg-black monitor-bg flex items-center justify-center';
+                sc1.innerHTML = emptyHTML;
+                sc2.className = 'flex-1 bg-blue-500 monitor-bg flex flex-col items-center justify-center p-2';
+                sc2.innerHTML = slideHTML;
+            }
+            
+            // Auto close menu and reset keys after selection
+            document.getElementById('win-p-menu').classList.remove('active');
+            keys.win = false; keys.p = false;
+            document.getElementById('btn-win').className = 'w-16 h-16 bg-slate-300 rounded-lg shadow-md border-b-4 border-slate-400 font-bold text-xl flex items-center justify-center transition-all text-slate-700';
+            document.getElementById('btn-p').className = 'w-16 h-16 bg-slate-300 rounded-lg shadow-md border-b-4 border-slate-400 font-bold text-xl flex items-center justify-center transition-all text-slate-700';
+        }
+        setMode('pc'); // Init state
+
+        // --- Mô phỏng 2: Bluetooth State Machine ---
+        let btState = 0; // 0: Off, 1: Both On, 2: Scanning, 3: Pairing, 4: Paired, '5A'...'7A' (Send), '5B'...'6B' (Recv)
+        const pcToggle = document.getElementById('pc-bt-toggle');
+        const phoneToggle = document.getElementById('phone-bt-toggle');
+        const instr = document.getElementById('bt-instruction');
+        const btnAddDev = document.getElementById('btn-add-device');
+        const tbIcon = document.getElementById('tb-bt-icon');
+
+        // Check if both are on
+        function checkBtStatus() {
+            if(pcToggle.checked && phoneToggle.checked) {
+                if(btState === 0) {
+                    btState = 1;
+                    instr.innerHTML = "Bước 2: Trên máy tính, chọn <strong>Add device</strong> để quét tìm.";
+                    btnAddDev.classList.remove('hidden');
+                    tbIcon.classList.add('text-blue-400'); // Taskbar icon active
+                }
+            } else {
+                if(btState > 0) {
+                    resetBluetooth();
+                }
+            }
+        }
+        pcToggle.addEventListener('change', checkBtStatus);
+        phoneToggle.addEventListener('change', checkBtStatus);
+
+        // Add Device -> Scan
+        btnAddDev.addEventListener('click', () => {
+            if(btState === 1) {
+                btState = 2;
+                btnAddDev.classList.add('hidden');
+                document.getElementById('pc-scanning').classList.remove('hidden');
+                document.getElementById('pc-scanning').classList.add('flex');
+                
+                setTimeout(() => {
+                    document.getElementById('pc-scanning').classList.add('hidden');
+                    document.getElementById('pc-scanning').classList.remove('flex');
+                    document.getElementById('pc-found-device').classList.remove('hidden');
+                    instr.innerHTML = "Bước 3: Nháy chọn thiết bị <strong>Galaxy S23</strong> được tìm thấy.";
+                }, 2000);
+            }
+        });
+
+        // Click Found Device -> Show PIN
+        document.getElementById('pc-found-device').addEventListener('click', () => {
+            if(btState === 2) {
+                btState = 3;
+                document.getElementById('pc-found-device').classList.add('hidden');
+                document.getElementById('pc-pin-screen').classList.remove('hidden');
+                document.getElementById('pc-pin-screen').classList.add('flex');
+                
+                // Show Phone Modal
+                document.getElementById('phone-modal-bg').classList.remove('hidden');
+                document.getElementById('phone-pair-modal').classList.remove('hidden');
+                instr.innerHTML = "Bước 4: Đối chiếu mã PIN. Phía điện thoại bấm <strong>Ghép đôi (Pair)</strong>.";
+            }
+        });
+
+        // Phone Accept Pair
+        document.getElementById('btn-phone-pair').addEventListener('click', () => {
+            if(btState === 3) {
+                btState = 4;
+                document.getElementById('phone-modal-bg').classList.add('hidden');
+                document.getElementById('phone-pair-modal').classList.add('hidden');
+                document.getElementById('pc-pin-screen').classList.add('hidden');
+                document.getElementById('pc-pin-screen').classList.remove('flex');
+                
+                // Show paired list & actions on PC
+                document.getElementById('pc-paired-device').classList.remove('hidden');
+                document.getElementById('pc-action-buttons').classList.remove('hidden');
+
+                // Show paired status on Phone
+                document.getElementById('phone-paired-status').classList.remove('hidden');
+
+                instr.innerHTML = "Bước 5: Ghép đôi thành công! Chọn <strong>Gửi tệp (Send)</strong> hoặc <strong>Nhận tệp (Receive)</strong> trên Máy tính.";
+            }
+        });
+
+        // PC Action: Send File (Flow A)
+        document.getElementById('btn-pc-send').addEventListener('click', () => {
+            if(btState === 4) {
+                btState = '5A';
+                document.getElementById('pc-paired-device').classList.add('hidden');
+                document.getElementById('pc-action-buttons').classList.add('hidden');
+                document.getElementById('pc-send-screen').classList.remove('hidden');
+                instr.innerHTML = "GỬI TỆP: Bấm <strong>Click to Browse File</strong> để giả lập chọn tệp tin ảnh.";
+            }
+        });
+
+        // Browse File (Flow A)
+        document.getElementById('btn-browse').addEventListener('click', () => {
+            if(btState === '5A') {
+                btState = '6A';
+                document.getElementById('file-name-display').innerText = "image_bai22.jpg (2.5MB)";
+                document.getElementById('btn-browse').classList.add('border-blue-500', 'bg-blue-50');
+                const btnNext = document.getElementById('btn-send-next');
+                btnNext.disabled = false;
+                btnNext.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnNext.classList.add('hover:bg-blue-700');
+                instr.innerHTML = "GỬI TỆP: Bấm <strong>Next</strong> để bắt đầu gửi sang Điện thoại.";
+            }
+        });
+
+        // Send Next (Flow A)
+        document.getElementById('btn-send-next').addEventListener('click', () => {
+            if(btState === '6A') {
+                btState = '7A';
+                document.getElementById('phone-modal-bg').classList.remove('hidden');
+                document.getElementById('phone-receive-modal').classList.remove('hidden');
+                instr.innerHTML = "GỬI TỆP: Điện thoại hiện thông báo, bấm <strong>Accept (Chấp nhận)</strong>.";
+            }
+        });
+
+        // Phone Accept File (Flow A)
+        document.getElementById('btn-phone-accept').addEventListener('click', () => {
+            if(btState === '7A') {
+                document.getElementById('phone-modal-bg').classList.add('hidden');
+                document.getElementById('phone-receive-modal').classList.add('hidden');
+                document.getElementById('phone-progress').classList.remove('hidden');
+                instr.innerHTML = "Đang truyền dữ liệu từ Máy tính sang Điện thoại...";
+                
+                const flyingIcon = document.getElementById('flying-file-icon');
+                flyingIcon.className = 'fas fa-file-image text-blue-500 text-3xl absolute top-1/2 left-1/3 z-50 flying-file';
+                
+                simulateProgress(document.getElementById('progress-bar-fill'), null, () => {
+                    document.getElementById('phone-progress').innerHTML = '<p class="text-xs text-green-600 font-bold"><i class="fas fa-check-circle"></i> Tệp đã được lưu!</p>';
+                    instr.innerHTML = "<span class='text-green-700 font-bold'>Thành công! Đã gửi tệp từ PC sang Điện thoại.</span>";
+                    flyingIcon.classList.add('hidden');
+                });
+            }
+        });
+
+        // PC Action: Receive File (Flow B)
+        document.getElementById('btn-pc-recv').addEventListener('click', () => {
+            if(btState === 4) {
+                btState = '5B';
+                document.getElementById('pc-paired-device').classList.add('hidden');
+                document.getElementById('pc-action-buttons').classList.add('hidden');
+                document.getElementById('pc-recv-screen').classList.remove('hidden');
+                document.getElementById('pc-recv-screen').classList.add('flex');
+                
+                // Show share button on phone
+                const btnShare = document.getElementById('btn-phone-share');
+                btnShare.classList.remove('hidden');
+                btnShare.classList.add('animate-bounce');
+                
+                instr.innerHTML = "NHẬN TỆP: PC đang chờ. Trên điện thoại, bấm <strong>Share Photo to PC</strong> để gửi.";
+            }
+        });
+
+        // Phone sends to PC (Flow B)
+        document.getElementById('btn-phone-share').addEventListener('click', () => {
+            if(btState === '5B') {
+                btState = '6B';
+                document.getElementById('btn-phone-share').classList.remove('animate-bounce');
+                document.getElementById('btn-phone-share').innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Sending...';
+                
+                document.getElementById('pc-recv-screen').classList.add('hidden');
+                document.getElementById('pc-recv-screen').classList.remove('flex');
+                document.getElementById('pc-receiving-progress').classList.remove('hidden');
+                
+                instr.innerHTML = "Đang truyền dữ liệu từ Điện thoại sang Máy tính...";
+                
+                const flyingIcon = document.getElementById('flying-file-icon');
+                flyingIcon.className = 'fas fa-file-image text-green-500 text-3xl absolute top-1/2 left-2/3 z-50 flying-file-reverse';
+                
+                simulateProgress(document.getElementById('pc-progress-bar-fill'), document.getElementById('pc-progress-text'), () => {
+                    document.getElementById('pc-receiving-progress').innerHTML = '<p class="text-xs text-green-600 font-bold text-center"><i class="fas fa-check-circle"></i> File received and saved!</p>';
+                    document.getElementById('btn-phone-share').innerHTML = '<i class="fas fa-check mr-1"></i> Sent';
+                    document.getElementById('btn-phone-share').classList.replace('bg-slate-800', 'bg-green-600');
+                    instr.innerHTML = "<span class='text-green-700 font-bold'>Thành công! Đã gửi tệp từ Điện thoại sang PC.</span>";
+                    flyingIcon.classList.add('hidden');
+                });
+            }
+        });
+
+        // Helper function for progress bar
+        function simulateProgress(barElement, textElement, callback) {
+            let progress = 0;
+            let interval = setInterval(() => {
+                progress += 5;
+                barElement.style.width = progress + '%';
+                if(textElement) textElement.innerText = progress + '%';
+                if(progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(callback, 500);
+                }
+            }, 100);
+        }
+
+        function resetBluetooth() {
+            btState = 0;
+            pcToggle.checked = false; phoneToggle.checked = false;
+            tbIcon.classList.remove('text-blue-400');
+            instr.innerHTML = "Bước 1: Bấm để Bật công tắc Bluetooth trên cả Máy tính (PC) và Điện thoại.";
+            
+            // Reset PC UI
+            document.getElementById('btn-add-device').classList.add('hidden');
+            document.getElementById('pc-scanning').classList.add('hidden');
+            document.getElementById('pc-scanning').classList.remove('flex');
+            document.getElementById('pc-found-device').classList.add('hidden');
+            document.getElementById('pc-pin-screen').classList.add('hidden');
+            document.getElementById('pc-pin-screen').classList.remove('flex');
+            document.getElementById('pc-paired-device').classList.add('hidden');
+            document.getElementById('pc-action-buttons').classList.add('hidden');
+            document.getElementById('pc-send-screen').classList.add('hidden');
+            document.getElementById('pc-recv-screen').classList.add('hidden');
+            document.getElementById('pc-recv-screen').classList.remove('flex');
+            document.getElementById('pc-receiving-progress').classList.add('hidden');
+            
+            // Reset contents PC
+            document.getElementById('btn-add-device').innerHTML = '<i class="fas fa-plus text-blue-600 mr-2"></i> Add device';
+            document.getElementById('pc-receiving-progress').innerHTML = '<p class="text-xs font-bold mb-2">Receiving \'photo_from_phone.jpg\'...</p><div class="w-full bg-slate-200 rounded-full h-2 mb-2"><div class="bg-green-500 h-2 rounded-full transition-all" id="pc-progress-bar-fill" style="width: 0%"></div></div><p class="text-[10px] text-slate-500 text-right font-bold" id="pc-progress-text">0%</p>';
+            document.getElementById('btn-browse').classList.remove('border-blue-500', 'bg-blue-50');
+            document.getElementById('file-name-display').innerText = "No file selected";
+            let btnNext = document.getElementById('btn-send-next');
+            btnNext.disabled = true; btnNext.className = "mt-4 bg-blue-600 text-white w-full py-2 rounded-lg font-bold opacity-50 cursor-not-allowed";
+            
+            // Reset Phone UI
+            document.getElementById('phone-modal-bg').classList.add('hidden');
+            document.getElementById('phone-pair-modal').classList.add('hidden');
+            document.getElementById('phone-receive-modal').classList.add('hidden');
+            document.getElementById('phone-paired-status').classList.add('hidden');
+            
+            // Reset contents Phone
+            const btnShare = document.getElementById('btn-phone-share');
+            btnShare.classList.add('hidden');
+            btnShare.classList.remove('animate-bounce');
+            btnShare.className = "w-full mt-4 bg-slate-800 text-white text-xs py-2 rounded-lg font-bold hover:bg-slate-700 transition-colors hidden";
+            btnShare.innerHTML = '<i class="fas fa-share-alt mr-1"></i> Share Photo to PC';
+            
+            document.getElementById('phone-progress').classList.add('hidden');
+            document.getElementById('phone-progress').innerHTML = '<p class="text-xs font-bold mb-2">Receiving file...</p><div class="w-full bg-slate-200 rounded-full h-2"><div class="bg-blue-600 h-2 rounded-full transition-all" id="progress-bar-fill" style="width: 0%"></div></div>';
+            
+            // Reset animation
+            const flyingIcon = document.getElementById('flying-file-icon');
+            flyingIcon.className = 'hidden';
+        }
+
+        // --- Mô phỏng 3: Smart Home State Machine ---
+        let shState = 0; // 0: Idle, 1: Holding, 2: Pairing mode (blink), 3: Setup Wifi, 4: Cloud syncing, 5: Ready
+        let holdTimer;
+        
+        const btnPhysical = document.getElementById('btn-physical-switch');
+        const holdProg = document.getElementById('hold-progress');
+        const holdCircle = holdProg.querySelector('circle');
+        const ledWifi = document.getElementById('led-wifi');
+        const statusText = document.getElementById('sh-status-text');
+
+        // Logic giữ nút 3s
+        btnPhysical.addEventListener('mousedown', startHold);
+        btnPhysical.addEventListener('touchstart', startHold);
+        btnPhysical.addEventListener('mouseup', endHold);
+        btnPhysical.addEventListener('mouseleave', endHold);
+        btnPhysical.addEventListener('touchend', endHold);
+
+        function startHold(e) {
+            e.preventDefault(); // Prevent touch scroll
+            if(shState !== 0) return;
+            shState = 1;
+            holdProg.classList.remove('hidden');
+            // Animate stroke dashoffset to 0 over 3s
+            holdCircle.style.transitionDuration = '3000ms';
+            setTimeout(() => { holdCircle.style.strokeDashoffset = '0'; }, 10);
+            
+            statusText.innerHTML = "Đang giữ... tiếp tục giữ.";
+
+            holdTimer = setTimeout(() => {
+                // Success 3s
+                shState = 2;
+                holdProg.classList.add('hidden');
+                ledWifi.classList.remove('bg-slate-300');
+                ledWifi.classList.add('bg-blue-500', 'animate-ping'); // Blinking
+                
+                statusText.innerHTML = "Thiết bị đang phát sóng Wi-Fi tạm thời. Trên App Điện thoại, hãy <strong>chọn thiết bị và kết nối mạng</strong>.";
+                
+                // Show App Wifi Screen
+                document.getElementById('sh-screen-add').classList.add('hidden');
+                document.getElementById('sh-screen-wifi').classList.remove('hidden');
+
+            }, 3000);
+        }
+
+        function endHold() {
+            if(shState === 1) { // Cancelled before 3s
+                shState = 0;
+                clearTimeout(holdTimer);
+                holdProg.classList.add('hidden');
+                holdCircle.style.transitionDuration = '0ms';
+                holdCircle.style.strokeDashoffset = '188';
+                statusText.innerHTML = "Chưa đủ 3 giây! Hãy click và <span class='font-bold text-red-500'>GIỮ</span> nút nguồn 3 giây.";
+            }
+        }
+
+        // App Connect Button
+        document.getElementById('btn-sh-connect').addEventListener('click', () => {
+            if(shState === 2) {
+                shState = 3;
+                document.getElementById('sh-screen-wifi').classList.add('hidden');
+                document.getElementById('sh-screen-loading').classList.remove('hidden');
+                
+                statusText.innerHTML = "Ứng dụng đang gửi thông tin mạng cho thiết bị và Đăng ký lên máy chủ Đám mây (Cloud).";
+                
+                // Animations
+                document.getElementById('sh-router-icon').classList.add('text-green-500');
+                document.getElementById('sh-data-flow').style.transform = 'scaleY(1)'; // Flow line Router -> Cloud
+                document.getElementById('sh-cloud-sync').style.opacity = '1';
+
+                setTimeout(() => {
+                    // Success setup
+                    shState = 5;
+                    document.getElementById('sh-screen-loading').classList.add('hidden');
+                    document.getElementById('sh-screen-control').classList.remove('hidden');
+                    document.getElementById('sh-cloud-sync').style.opacity = '0';
+                    ledWifi.classList.remove('animate-ping'); // Stop blink, solid blue
+                    document.getElementById('led-pwr').classList.remove('bg-slate-300');
+                    document.getElementById('led-pwr').classList.add('bg-green-500'); // Power on
+                    
+                    // Hiện scene
+                    document.getElementById('sh-scene').classList.remove('opacity-20', 'grayscale', 'pointer-events-none');
+                    document.getElementById('sh-scene').classList.add('border-green-500');
+                    
+                    statusText.innerHTML = "<span class='text-green-700 font-bold'>Kết nối thành công!</span> Bây giờ bạn có thể thử Bật/Tắt thiết bị ảo trên App để xem hiện trường thật.";
+                }, 2500);
+            }
+        });
+
+        // App Toggles -> Real World
+        document.getElementById('sh-toggle-light').addEventListener('change', function() {
+            if(shState === 5) {
+                const sceneLight = document.getElementById('scene-light');
+                if(this.checked) sceneLight.classList.remove('opacity-0');
+                else sceneLight.classList.add('opacity-0');
+                simulateCloudRequest();
+            }
+        });
+
+        document.getElementById('sh-toggle-water').addEventListener('change', function() {
+            if(shState === 5) {
+                const sceneWater = document.getElementById('scene-water');
+                if(this.checked) sceneWater.classList.remove('opacity-0');
+                else sceneWater.classList.add('opacity-0');
+                simulateCloudRequest();
+            }
+        });
+
+        function simulateCloudRequest() {
+            // Flash data line
+            const flow = document.getElementById('sh-data-flow');
+            flow.style.transform = 'scaleY(0)';
+            setTimeout(() => { flow.style.transform = 'scaleY(1)'; }, 100);
+        }
+
+        function resetSmartHome() {
+            shState = 0;
+            // Reset UI
+            holdCircle.style.transitionDuration = '0ms';
+            holdCircle.style.strokeDashoffset = '188';
+            holdProg.classList.add('hidden');
+            ledWifi.className = 'w-2 h-2 rounded-full bg-slate-300';
+            document.getElementById('led-pwr').className = 'w-2 h-2 rounded-full bg-slate-300';
+            
+            document.getElementById('sh-screen-add').classList.remove('hidden');
+            document.getElementById('sh-screen-wifi').classList.add('hidden');
+            document.getElementById('sh-screen-loading').classList.add('hidden');
+            document.getElementById('sh-screen-control').classList.add('hidden');
+            
+            document.getElementById('sh-toggle-light').checked = false;
+            document.getElementById('sh-toggle-water').checked = false;
+            
+            document.getElementById('sh-router-icon').classList.remove('text-green-500');
+            document.getElementById('sh-data-flow').style.transform = 'scaleY(0)';
+            
+            const scene = document.getElementById('sh-scene');
+            scene.classList.add('opacity-20', 'grayscale', 'pointer-events-none');
+            scene.classList.remove('border-green-500');
+            document.getElementById('scene-light').classList.add('opacity-0');
+            document.getElementById('scene-water').classList.add('opacity-0');
+
+            statusText.innerHTML = "Hãy click và <span class='font-bold text-red-500'>GIỮ</span> nút nguồn trên công tắc vật lý khoảng 3 giây.";
+        }
+
+        // --- Mô phỏng 4: Smart Band ---
+        let bandBPM = 0;
+        document.getElementById('btn-measure-hr').addEventListener('click', () => {
+            const btn = document.getElementById('btn-measure-hr');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đo...';
+            document.getElementById('band-sensor').classList.remove('opacity-0'); // Turn on green LED
+            
+            // Simulate reading
+            let count = 0;
+            let measureInterval = setInterval(() => {
+                document.getElementById('band-bpm').innerText = Math.floor(Math.random() * (120 - 70) + 70);
+                count++;
+                if(count > 15) {
+                    clearInterval(measureInterval);
+                    bandBPM = Math.floor(Math.random() * (110 - 75) + 75); // Final value
+                    document.getElementById('band-bpm').innerText = bandBPM;
+                    
+                    // Heartbeat animation
+                    document.getElementById('band-heart').classList.add('animate-ping');
+                    setTimeout(() => document.getElementById('band-heart').classList.remove('animate-ping'), 1000);
+                    
+                    document.getElementById('band-sensor').classList.add('opacity-0');
+                    btn.innerHTML = 'Đo lại nhịp tim';
+                    
+                    // Enable sync button
+                    const syncBtn = document.getElementById('btn-sync-band');
+                    syncBtn.disabled = false;
+                    syncBtn.classList.add('animate-bounce');
+                }
+            }, 100);
+        });
+
+        document.getElementById('btn-sync-band').addEventListener('click', () => {
+            const syncIcon = document.getElementById('sync-icon');
+            syncIcon.classList.add('fa-spin');
+            
+            setTimeout(() => {
+                syncIcon.classList.remove('fa-spin');
+                document.getElementById('btn-sync-band').classList.remove('animate-bounce');
+                
+                // Update App UI
+                document.getElementById('app-bpm').innerText = bandBPM;
+                
+                // Animate bar chart
+                const barHeight = Math.min((bandBPM / 150) * 100, 100); // map BPM to % height
+                const bar = document.getElementById('chart-new-bar');
+                bar.style.height = barHeight + '%';
+                bar.classList.add('bg-red-500'); // Highlight new data
+                setTimeout(() => bar.classList.remove('bg-red-500'), 1500);
+
+                // Show toast
+                const toast = document.getElementById('sync-toast');
+                toast.classList.remove('opacity-0');
+                setTimeout(() => toast.classList.add('opacity-0'), 2000);
+                
+            }, 1000);
+        });
+
+        // --- Quiz Logic ---
+        function submitQuiz() {
+            const answers = {
+                q1: 'B',
+                q2: 'C',
+                q3: 'C',
+                q4: 'B',
+                q5: 'C'
+            };
+            
+            let score = 0;
+            const form = document.getElementById('quiz-form');
+            const data = new FormData(form);
+            
+            for (let [question, correctAnswer] of Object.entries(answers)) {
+                let parentDiv = document.querySelector(`input[name="${question}"]`).closest('.bg-slate-50');
+                // Reset styles
+                parentDiv.classList.remove('border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50');
+                
+                let userAnswer = data.get(question);
+                if (userAnswer === correctAnswer) {
+                    score++;
+                    parentDiv.classList.add('border-green-500', 'bg-green-50');
+                } else {
+                    parentDiv.classList.add('border-red-500', 'bg-red-50');
+                }
+            }
+            
+            // Show result
+            const resultDiv = document.getElementById('quiz-result');
+            const scoreEl = document.getElementById('result-score');
+            const msgEl = document.getElementById('result-msg');
+            
+            resultDiv.classList.remove('hidden', 'border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50', 'border-yellow-500', 'bg-yellow-50');
+            
+            if (score === 5) {
+                resultDiv.classList.add('border-green-500', 'bg-green-50');
+                scoreEl.innerHTML = `<span class="text-green-600">${score}/5 Điểm - Xuất sắc!</span>`;
+                msgEl.innerText = "Bạn đã nắm vững hoàn toàn kiến thức Bài 22.";
+            } else if (score >= 3) {
+                resultDiv.classList.add('border-yellow-500', 'bg-yellow-50');
+                scoreEl.innerHTML = `<span class="text-yellow-600">${score}/5 Điểm - Khá Tốt!</span>`;
+                msgEl.innerText = "Xem lại phần lý thuyết được tô đỏ để hoàn thiện nhé.";
+            } else {
+                resultDiv.classList.add('border-red-500', 'bg-red-50');
+                scoreEl.innerHTML = `<span class="text-red-600">${score}/5 Điểm - Cần Cố Gắng!</span>`;
+                msgEl.innerText = "Hãy thực hành lại các mô phỏng và đọc kỹ Sơ đồ tư duy ở tab Tổng Quan.";
+            }
+        }
+    </script>
+</body>
+</html>

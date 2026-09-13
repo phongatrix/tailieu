@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiết Bị Mạng Thông Dụng</title>
+    <!-- Google Fonts: Quicksand (Gốc) & Be Vietnam Pro (Mới - Giống hình ảnh) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'], // Font mặc định cho Tiêu đề, Menu, Nổi bật
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            purple: '#f3e8ff',
+                            pink: '#fce7f3',
+                            green: '#dcfce7',
+                            yellow: '#fef9c3',
+                            gray: '#f3f4f6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fafafa;
+            color: #334155;
+        }
+
+        /* ----- CLASS MỚI: Định dạng văn bản giải thích giống hình ảnh mẫu ----- */
+        .text-explanation {
+            font-family: 'Be Vietnam Pro', sans-serif !important;
+            font-size: 17px !important; /* Kích thước tương đương trong hình */
+            font-weight: 500 !important; /* Độ dày vừa phải */
+            color: #64748b !important; /* Màu xám xanh slate giống mẫu */
+            line-height: 1.6 !important; /* Khoảng cách dòng thoáng */
+        }
+        
+        .quiz-question {
+            font-family: 'Be Vietnam Pro', sans-serif !important;
+            font-size: 17px !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            line-height: 1.5 !important;
+        }
+        /* ----------------------------------------------------------------- */
+        
+        /* Tiêu đề theo yêu cầu */
+        .gradient-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            color: transparent;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animation cho Mô phỏng Hub/Switch */
+        .packet {
+            width: 15px;
+            height: 15px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%); 
+            opacity: 0;
+            z-index: 10;
+        }
+
+        @keyframes movePcToDevice {
+            0% { top: 50%; left: 10%; opacity: 1; }
+            90% { top: 50%; left: 50%; opacity: 1; }
+            100% { top: 50%; left: 50%; opacity: 0; }
+        }
+
+        @keyframes moveDeviceToPc2 {
+            0% { top: 50%; left: 50%; opacity: 1; }
+            90% { top: 20%; left: 90%; opacity: 1; }
+            100% { top: 20%; left: 90%; opacity: 0; }
+        }
+
+        @keyframes moveDeviceToPc3 {
+            0% { top: 50%; left: 50%; opacity: 1; }
+            90% { top: 80%; left: 90%; opacity: 1; }
+            100% { top: 80%; left: 90%; opacity: 0; }
+        }
+
+        .anim-pc-to-dev { animation: movePcToDevice 1s forwards; }
+        .anim-dev-to-pc2 { animation: moveDeviceToPc2 1s forwards; animation-delay: 1s; }
+        .anim-dev-to-pc3 { animation: moveDeviceToPc3 1s forwards; animation-delay: 1s; }
+        
+        .collision-mark {
+            display: none;
+            position: absolute;
+            top: 20%; left: 90%;
+            transform: translate(-50%, -50%); 
+            color: red;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 30;
+        }
+
+        /* Flowchart styles */
+        .flow-node {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .flow-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom scrollbar cho menu Wifi Windows */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <h1 class="gradient-title mb-2">Bài 3: Mạng Máy Tính & Internet - Một Số Thiết Bị Mạng Thông Dụng</h1>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex flex-wrap justify-center gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm">
+        <button onclick="openTab('tongquan')" class="tab-btn active px-4 py-2 rounded-xl font-bold text-gray-600 transition-all"><i class="fa-solid fa-map"></i> Tổng Quan</button>
+        <button onclick="openTab('hubswitch')" class="tab-btn px-4 py-2 rounded-xl font-bold text-gray-600 transition-all"><i class="fa-solid fa-network-wired"></i> Hub & Switch</button>
+        <button onclick="openTab('internet')" class="tab-btn px-4 py-2 rounded-xl font-bold text-gray-600 transition-all"><i class="fa-solid fa-globe"></i> Router & Modem</button>
+        <button onclick="openTab('thuchanh')" class="tab-btn px-4 py-2 rounded-xl font-bold text-gray-600 transition-all"><i class="fa-solid fa-laptop-code"></i> Thực Hành</button>
+        <button onclick="openTab('luyentap')" class="tab-btn px-4 py-2 rounded-xl font-bold text-gray-600 transition-all"><i class="fa-solid fa-gamepad"></i> Luyện Tập</button>
+    </nav>
+
+    <!-- TAB 1: TỔNG QUAN -->
+    <div id="tongquan" class="tab-content active">
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Mục tiêu -->
+            <div class="bg-pastel-blue p-6 rounded-3xl shadow-sm border border-blue-100 flex flex-col justify-center">
+                <h3 class="text-xl font-bold text-blue-700 mb-4 font-sans"><i class="fa-solid fa-bullseye"></i> Mục Tiêu Bài Học</h3>
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-blue-500 mt-1.5"></i> <span class="text-explanation">Nêu được chức năng chính của một số thiết bị mạng.</span></li>
+                    <li class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-blue-500 mt-1.5"></i> <span class="text-explanation">Biết cách kết nối máy tính với thiết bị mạng.</span></li>
+                </ul>
+            </div>
+            <!-- Sơ đồ tư duy -->
+            <div class="md:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center">
+                <h3 class="text-xl font-bold text-gray-700 mb-6 font-sans"><i class="fa-solid fa-sitemap text-purple-500"></i> Bản Đồ Khái Niệm Cốt Lõi</h3>
+                <div class="flex flex-col items-center gap-4">
+                    <div class="bg-gradient-to-r from-blue-400 to-purple-400 text-white font-bold py-2 px-6 rounded-full shadow-md font-sans">THIẾT BỊ MẠNG THÔNG DỤNG</div>
+                    <div class="w-1 h-6 bg-gray-300"></div>
+                    <div class="flex flex-wrap justify-center gap-4 md:gap-12 w-full relative">
+                        <!-- Cột Mạng Nội Bộ -->
+                        <div class="flex flex-col items-center bg-pastel-green p-4 rounded-2xl w-48 border border-green-200">
+                            <span class="font-bold text-green-700 mb-2 font-sans">Mạng Cục Bộ (LAN)</span>
+                            <div class="bg-white px-3 py-2 rounded-lg text-sm font-semibold mb-2 shadow-sm w-full font-sans group cursor-pointer">
+                                <i class="fa-solid fa-project-diagram text-gray-500 group-hover:text-blue-500 transition-colors"></i> Hub
+                                <!-- Hiệu ứng hình ảnh hiện ra giữa màn hình khi hover -->
+                                <div class="fixed inset-0 z-50 flex items-center justify-center opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
+                                    <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+                                    <img src="images/hub.jpg" alt="Mô hình Hub" class="relative z-10 max-w-[80vw] max-h-[80vh] rounded-2xl shadow-2xl border-4 border-white transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                                </div>
+                            </div>
+                            <div class="bg-white px-3 py-2 rounded-lg text-sm font-semibold mb-2 shadow-sm w-full font-sans group cursor-pointer">
+                                <i class="fa-solid fa-server text-blue-500 group-hover:text-blue-700 transition-colors"></i> Switch
+                                <div class="fixed inset-0 z-50 flex items-center justify-center opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
+                                    <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+                                    <img src="images/switch.jpg" alt="Mô hình Switch" class="relative z-10 max-w-[80vw] max-h-[80vh] rounded-2xl shadow-2xl border-4 border-white transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                                </div>
+                            </div>
+                            <div class="bg-white px-3 py-2 rounded-lg text-sm font-semibold shadow-sm w-full font-sans group cursor-pointer">
+                                <i class="fa-solid fa-wifi text-green-500 group-hover:text-green-700 transition-colors"></i> WAP (Wi-Fi)
+                                <div class="fixed inset-0 z-50 flex items-center justify-center opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
+                                    <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+                                    <img src="images/wifi.jpg" alt="Mô hình WAP" class="relative z-10 max-w-[80vw] max-h-[80vh] rounded-2xl shadow-2xl border-4 border-white transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Cột Internet -->
+                        <div class="flex flex-col items-center bg-pastel-pink p-4 rounded-2xl w-48 border border-pink-200">
+                            <span class="font-bold text-pink-700 mb-2 font-sans">Mạng Diện Rộng / Internet</span>
+                            <div class="bg-white px-3 py-2 rounded-lg text-sm font-semibold mb-2 shadow-sm w-full font-sans group cursor-pointer">
+                                <i class="fa-solid fa-route text-orange-500 group-hover:text-orange-700 transition-colors"></i> Router
+                                <div class="fixed inset-0 z-50 flex items-center justify-center opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
+                                    <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+                                    <img src="images/router.jpg" alt="Mô hình Router" class="relative z-10 max-w-[80vw] max-h-[80vh] rounded-2xl shadow-2xl border-4 border-white transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                                </div>
+                            </div>
+                            <div class="bg-white px-3 py-2 rounded-lg text-sm font-semibold shadow-sm w-full font-sans group cursor-pointer">
+                                <i class="fa-solid fa-exchange-alt text-purple-500 group-hover:text-purple-700 transition-colors"></i> Modem
+                                <div class="fixed inset-0 z-50 flex items-center justify-center opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
+                                    <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+                                    <img src="images/modem.jpg" alt="Mô hình Modem" class="relative z-10 max-w-[80vw] max-h-[80vh] rounded-2xl shadow-2xl border-4 border-white transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: HUB & SWITCH -->
+    <div id="hubswitch" class="tab-content">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 bg-pastel-purple border-b border-purple-100 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-purple-800 font-sans"><i class="fa-solid fa-network-wired"></i> Phân biệt Hub và Switch (Mạng LAN)</h2>
+            </div>
+            
+            <div class="p-6 grid md:grid-cols-2 gap-8">
+                <!-- Nội dung lý thuyết -->
+                <div class="space-y-4">
+                    <div class="bg-pastel-gray p-4 rounded-xl border-l-4 border-gray-400">
+                        <p class="font-semibold text-gray-700 font-sans mb-1">Chức năng chung:</p>
+                        <p class="text-explanation">Kết nối các máy tính trong cùng mạng cục bộ (LAN).</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                            <h4 class="font-bold text-red-600 text-center font-sans"><i class="fa-solid fa-circle-xmark"></i> HUB</h4>
+                            <p class="text-explanation mt-3 text-justify">Gửi tín hiệu đến <b class="font-sans text-red-700">tất cả</b> các cổng còn lại. Dễ gây xung đột tín hiệu. Phù hợp mạng nhỏ, gia đình (rẻ).</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                            <h4 class="font-bold text-green-600 text-center font-sans"><i class="fa-solid fa-check-circle"></i> SWITCH</h4>
+                            <p class="text-explanation mt-3 text-justify">Xác định đúng cổng đích và <b class="font-sans text-green-700">thiết lập kênh truyền riêng</b>. Không xung đột. Phù hợp mạng lớn (nhiều máy).</p>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-50 p-5 rounded-xl border border-yellow-200">
+                        <p class="font-bold text-yellow-700 font-sans mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Ví dụ dễ hiểu:</p>
+                        <p class="text-explanation italic mt-1">Giống như trong một buổi họp. <b class="font-sans text-yellow-800">Hub</b> là lúc mọi người cùng hét lên (ồn, không ai nghe được - xung đột). <b class="font-sans text-yellow-800">Switch</b> là khi hai người được sắp xếp vào phòng riêng để nói chuyện (rõ ràng).</p>
+                    </div>
+                </div>
+
+                <!-- Mô phỏng tương tác -->
+                <div class="bg-pastel-blue rounded-2xl p-4 relative border border-blue-200 flex flex-col items-center">
+                    <h3 class="font-bold text-blue-800 mb-4 text-center font-sans">Trình Mô Phỏng Truyền Dữ Liệu</h3>
+                    
+                    <!-- Control -->
+                    <div class="flex gap-2 mb-6 bg-white p-1 rounded-full shadow-inner font-sans">
+                        <button id="btnHub" onclick="setDevice('hub')" class="px-4 py-1 rounded-full bg-blue-500 text-white font-bold text-sm transition">Chế độ Hub</button>
+                        <button id="btnSwitch" onclick="setDevice('switch')" class="px-4 py-1 rounded-full text-gray-500 font-bold text-sm transition hover:bg-gray-100">Chế độ Switch</button>
+                    </div>
+
+                    <!-- Canvas -->
+                    <div class="relative w-full h-48 bg-white rounded-xl shadow-inner border border-gray-200 font-sans" id="simContainer">
+                        <!-- PCs -->
+                        <div class="absolute top-1/2 left-[10%] transform -translate-y-1/2 -translate-x-1/2 text-center">
+                            <i class="fa-solid fa-computer text-3xl text-gray-700"></i><br><span class="text-xs font-bold">Máy Gửi (A)</span>
+                        </div>
+                        <div class="absolute top-[20%] left-[90%] transform -translate-y-1/2 -translate-x-1/2 text-center">
+                            <i class="fa-solid fa-computer text-3xl text-gray-700"></i><br><span class="text-xs font-bold text-red-500">Máy Khác (B)</span>
+                        </div>
+                        <div class="absolute top-[80%] left-[90%] transform -translate-y-1/2 -translate-x-1/2 text-center">
+                            <i class="fa-solid fa-computer text-3xl text-gray-700"></i><br><span class="text-xs font-bold text-green-600">Máy Nhận (C)</span>
+                        </div>
+                        
+                        <!-- Device -->
+                        <div class="absolute top-1/2 left-[50%] transform -translate-y-1/2 -translate-x-1/2 text-center bg-gray-800 p-2 rounded-lg text-white shadow-md z-20" id="centerDevice">
+                            <i class="fa-solid fa-server text-2xl"></i><br><span class="text-xs font-bold" id="deviceName">HUB</span>
+                        </div>
+
+                        <!-- Lines -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                            <line x1="10%" y1="50%" x2="50%" y2="50%" stroke="#d1d5db" stroke-width="2" />
+                            <line x1="50%" y1="50%" x2="90%" y2="20%" stroke="#d1d5db" stroke-width="2" />
+                            <line x1="50%" y1="50%" x2="90%" y2="80%" stroke="#d1d5db" stroke-width="2" />
+                        </svg>
+
+                        <!-- Packets -->
+                        <div id="packet1" class="packet bg-blue-500"></div>
+                        <div id="packet2" class="packet bg-red-400"></div>
+                        <div id="packet3" class="packet bg-green-500"></div>
+
+                        <!-- Collision Mark -->
+                        <div id="collision" class="collision-mark"><i class="fa-solid fa-ban"></i></div>
+                    </div>
+
+                    <button onclick="runSimulation()" class="mt-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-2 px-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:scale-105 font-sans">
+                        <i class="fa-solid fa-paper-plane"></i> Gửi dữ liệu từ A -> C
+                    </button>
+                    <p id="simStatus" class="mt-3 font-semibold text-gray-600 h-4 font-sans text-sm"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: ROUTER, MODEM & WAP -->
+    <div id="internet" class="tab-content">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 bg-pastel-pink border-b border-pink-100 text-center">
+                <h2 class="text-xl font-bold text-pink-800 font-sans"><i class="fa-solid fa-globe"></i> Hành trình ra Internet (WAP - Router - Modem)</h2>
+                <p class="text-explanation mt-2">Khởi chạy mô phỏng để xem chi tiết quá trình xử lý dữ liệu qua từng thiết bị!</p>
+            </div>
+            
+            <div class="p-6">
+                <!-- Mô phỏng tương tác động -->
+                <div class="relative w-full">
+                    <!-- Control Button -->
+                    <div class="text-center mb-6">
+                         <button onclick="startInternetSim()" id="btnStartInternet" class="font-sans bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105">
+                             <i class="fa-solid fa-play mr-2"></i> Khởi chạy mô phỏng gửi dữ liệu
+                         </button>
+                    </div>
+
+                    <!-- Area Mô Phỏng -->
+                    <div id="internetSimArea" class="flex flex-col md:flex-row justify-between items-center bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-200 relative gap-8 md:gap-4 overflow-hidden font-sans">
+                        
+                        <!-- Đường line mờ chạy nền ngang cho giao diện PC -->
+                        <div class="hidden md:block absolute top-1/2 left-[10%] right-[10%] h-1 bg-gray-300 -translate-y-1/2 z-0"></div>
+                        <!-- Đường line mờ chạy nền dọc cho Mobile -->
+                        <div class="md:hidden absolute left-1/2 top-[10%] bottom-[10%] w-1 bg-gray-300 -translate-x-1/2 z-0"></div>
+
+                        <!-- 1. Thiết bị di động -->
+                        <div id="node-phone" class="flex flex-col items-center z-10 relative">
+                            <div class="bg-white p-4 rounded-xl border-2 border-gray-300 shadow-sm transition-all duration-300" id="icon-phone">
+                                <i class="fa-solid fa-mobile-screen-button text-4xl text-gray-600"></i>
+                            </div>
+                            <span class="text-xs font-bold mt-2 text-gray-700">Điện thoại</span>
+                        </div>
+
+                        <!-- 2. WAP -->
+                        <div id="node-wap" class="flex flex-col items-center z-10 relative cursor-pointer" onclick="showInfo('wap')">
+                            <div class="bg-white p-4 rounded-full border-4 border-green-400 shadow-md transition-all duration-300" id="icon-wap">
+                                <i class="fa-solid fa-wifi text-3xl text-green-500"></i>
+                            </div>
+                            <span class="text-xs font-bold mt-2 text-green-700">WAP</span>
+                        </div>
+
+                        <!-- 3. Router -->
+                        <div id="node-router" class="flex flex-col items-center z-10 relative cursor-pointer" onclick="showInfo('router')">
+                            <div class="bg-white p-4 rounded-2xl border-4 border-orange-400 shadow-md transition-all duration-300" id="icon-router">
+                                <i class="fa-solid fa-route text-3xl text-orange-500"></i>
+                            </div>
+                            <span class="text-xs font-bold mt-2 text-orange-700">Router</span>
+                        </div>
+
+                        <!-- 4. Modem -->
+                        <div id="node-modem" class="flex flex-col items-center z-10 relative cursor-pointer" onclick="showInfo('modem')">
+                            <div class="bg-white p-4 rounded-xl border-4 border-purple-400 shadow-md transition-all duration-300" id="icon-modem">
+                                <i class="fa-solid fa-exchange-alt text-3xl text-purple-500"></i>
+                            </div>
+                            <span class="text-xs font-bold mt-2 text-purple-700">Modem</span>
+                        </div>
+
+                        <!-- 5. Internet -->
+                        <div id="node-cloud" class="flex flex-col items-center z-10 relative">
+                            <div class="bg-blue-50 p-4 rounded-full border-2 border-blue-200 shadow-sm transition-all duration-300" id="icon-cloud">
+                                <i class="fa-solid fa-cloud text-5xl text-blue-400"></i>
+                            </div>
+                            <span class="text-xs font-bold mt-2 text-blue-600">Internet</span>
+                        </div>
+
+                        <!-- Khối Dữ Liệu (Packet) -->
+                        <div id="wanPacket" class="absolute z-20 hidden items-center justify-center text-white font-bold text-[10px] shadow-lg transition-all duration-1000 ease-in-out" style="top: 0; left: 0; transform: translate(-50%, -50%);">
+                        </div>
+
+                    </div>
+
+                    <!-- Bảng Trạng Thái Mô Phỏng -->
+                    <div id="simStatusPanel" class="mt-6 bg-slate-800 text-white p-6 rounded-2xl shadow-inner min-h-[140px] flex items-center justify-center text-center transition-all border border-slate-700">
+                        <p class="text-explanation text-gray-400"><i class="fa-solid fa-circle-info mr-2"></i> Nhấn nút "Khởi chạy mô phỏng" bên trên để theo dõi cách các thiết bị xử lý dữ liệu.</p>
+                    </div>
+                </div>
+
+                <!-- Dễ nhầm lẫn -->
+                <div class="mt-8 bg-red-50 p-5 rounded-2xl border border-red-100 flex gap-5 items-start shadow-sm">
+                    <div class="bg-red-100 p-3 rounded-full mt-1">
+                        <i class="fa-solid fa-lightbulb text-xl text-red-500"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-red-700 text-lg mb-2 font-sans">Điểm dễ nhầm lẫn thường gặp!</h4>
+                        <ul class="text-explanation list-disc list-inside space-y-3">
+                            <li><b class="font-sans text-red-900">Router Wi-Fi ở nhà:</b> Thực chất là thiết bị "3 trong 1". Nó tích hợp cả định tuyến (Router), thu phát sóng không dây (WAP), và đôi khi cả chuyển đổi tín hiệu (Modem) vào cùng một hộp.</li>
+                            <li><b class="font-sans text-red-900">Chức năng Router vs Modem:</b> 
+                                <br> - <b class="font-sans text-red-900">Router</b> dùng để <i>tìm đường (định tuyến)</i> gói tin đi từ mạng LAN này sang mạng LAN khác.
+                                <br> - <b class="font-sans text-red-900">Modem</b> dùng để <i>đổi ngôn ngữ (chuyển đổi tín hiệu)</i> từ SỐ (Digital) sang TƯƠNG TỰ (Analog) để chạy trên cáp quang/cáp đồng và ngược lại.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: THỰC HÀNH -->
+    <div id="thuchanh" class="tab-content">
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Nhận biết Cổng cáp -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center">
+                <div class="w-full text-center border-b border-gray-100 pb-4 mb-4">
+                    <h3 class="text-xl font-bold text-blue-700 font-sans"><i class="fa-solid fa-plug"></i> 1. Cáp mạng & Cổng kết nối</h3>
+                    <p class="text-explanation mt-2">Mô phỏng thao tác cắm cáp mạng vào thiết bị</p>
+                </div>
+                
+                <!-- Hình ảnh minh họa Cáp & Cổng -->
+                <div class="relative w-full h-64 bg-gray-50 rounded-xl overflow-hidden border border-gray-200 flex items-center justify-center p-4">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3vIaZH5b5QTmgv0lIi82Aji7l_cNHAT5e8SKoNiQibA&s=10" alt="Minh hoạ cắm cáp RJ45" class="w-full h-full object-contain rounded-lg shadow-sm">
+                </div>
+
+                <!-- Controls -->
+                <div class="flex gap-4 mt-6">
+                    <a href="https://www.youtube.com/watch?v=tsmv2yYsx0U" target="_blank" class="font-sans bg-blue-600 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-blue-500 transition transform hover:scale-105 inline-flex items-center">
+                        <i class="fa-solid fa-plug mr-2"></i>Cắm cáp RJ45
+                    </a>
+                </div>
+
+                <div class="mt-6 space-y-5 text-left w-full bg-blue-50 p-5 rounded-2xl border border-blue-100">
+                    <div>
+                        <p class="text-explanation"><b class="text-blue-800 font-sans">Cáp UTP (Unshielded Twisted Pair):</b> Loại cáp mạng phổ biến nhất dùng trong mạng LAN, cấu tạo gồm 4 cặp dây đồng xoắn vào nhau để chống nhiễu.</p>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBCZ5r05CdZnqJNvPpnN_6DkaqysPsuJFIXmRbT1IGig&s=10" alt="Cáp UTP" class="w-40 mt-3 rounded-lg shadow-sm border border-blue-200 bg-white p-1">
+                    </div>
+                    <!-- Đã xóa phần giải thích về cổng LAN/RJ45 theo yêu cầu -->
+                </div>
+            </div>
+
+            <!-- Mô phỏng kết nối Wi-Fi -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center">
+                <div class="w-full text-center border-b border-gray-100 pb-4 mb-4">
+                    <h3 class="text-xl font-bold text-green-600 font-sans"><i class="fa-solid fa-wifi"></i> 2. Thực hành kết nối Wi-Fi</h3>
+                    <p class="text-explanation mt-2">Trải nghiệm thiết lập trên các hệ điều hành</p>
+                </div>
+
+                <!-- OS Toggle -->
+                <div class="flex gap-2 mb-6 bg-gray-100 p-1.5 rounded-full w-full max-w-[300px] font-sans">
+                    <button id="btnOsWin" onclick="switchOs('win')" class="flex-1 bg-white shadow-sm py-1.5 rounded-full text-sm font-bold text-blue-600 transition flex justify-center items-center gap-2"><i class="fa-brands fa-windows"></i> Windows</button>
+                    <button id="btnOsMob" onclick="switchOs('mob')" class="flex-1 text-gray-500 py-1.5 rounded-full text-sm font-bold transition hover:bg-gray-200 flex justify-center items-center gap-2"><i class="fa-solid fa-mobile-screen"></i> Điện thoại</button>
+                </div>
+                
+                <!-- === WINDOWS 11 SIMULATION AREA (Giữ nguyên) === -->
+                <div id="simWin" class="w-full h-[360px] bg-cover bg-center rounded-2xl overflow-hidden relative shadow-inner text-white font-sans border-[6px] border-gray-800" style="background-image: url('https://images.unsplash.com/photo-1617042375876-a13e36732a04?auto=format&fit=crop&w=800&q=80');">
+                    <!-- Taskbar -->
+                    <div class="absolute bottom-0 w-full h-12 bg-slate-900/90 backdrop-blur-md flex justify-between items-center px-4 border-t border-slate-700/50">
+                        <div class="flex gap-4 items-center">
+                            <i class="fa-brands fa-windows text-blue-400 text-xl hover:text-white cursor-pointer"></i>
+                            <div class="w-4 h-4 bg-white/20 rounded-sm"></div>
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <span class="text-xs font-semibold hidden sm:inline">ENG</span>
+                            <div class="flex gap-3 items-center p-2 rounded-md hover:bg-white/10 cursor-pointer transition bg-white/5" onclick="toggleWifiMenu()">
+                                <i class="fa-solid fa-volume-high text-xs"></i>
+                                <!-- Biểu tượng quả địa cầu (chưa có mạng) -->
+                                <i id="taskbarWifiIcon" class="fa-solid fa-globe text-gray-300 text-sm"></i>
+                                <i class="fa-solid fa-battery-full text-sm"></i>
+                            </div>
+                            <div class="text-[10px] text-right leading-tight font-semibold">
+                                10:00 AM<br>10/10/2024
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel Wi-Fi ảo (Win 11 Style) -->
+                    <div id="wifiMenu" class="absolute bottom-14 right-2 w-72 bg-slate-800/95 backdrop-blur-xl border border-slate-600/50 rounded-xl shadow-2xl hidden flex-col z-20 transition-all">
+                        <!-- Quick Actions -->
+                        <div class="p-4 grid grid-cols-3 gap-3 border-b border-slate-600/50">
+                            <div class="flex flex-col items-center gap-1 cursor-pointer group">
+                                <div class="w-12 h-10 bg-blue-500 rounded-md flex items-center justify-center group-hover:bg-blue-400 transition shadow-inner">
+                                    <i class="fa-solid fa-wifi text-white"></i>
+                                </div>
+                                <span class="text-[10px] font-semibold">Wi-Fi</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1 cursor-pointer group">
+                                <div class="w-12 h-10 bg-slate-700 rounded-md flex items-center justify-center group-hover:bg-slate-600 transition">
+                                    <i class="fa-brands fa-bluetooth text-white"></i>
+                                </div>
+                                <span class="text-[10px] font-semibold text-gray-300">Bluetooth</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1 cursor-pointer group">
+                                <div class="w-12 h-10 bg-slate-700 rounded-md flex items-center justify-center group-hover:bg-slate-600 transition">
+                                    <i class="fa-solid fa-plane text-white"></i>
+                                </div>
+                                <span class="text-[10px] font-semibold text-gray-300">Airplane mode</span>
+                            </div>
+                        </div>
+                        <!-- Networks -->
+                        <div class="p-2 h-48 overflow-y-auto custom-scrollbar">
+                            <p class="text-xs font-bold text-gray-400 px-2 pt-1 mb-2">Available networks</p>
+                            <!-- Network 1 -->
+                            <div class="p-2 hover:bg-white/10 rounded-lg cursor-pointer transition-colors" onclick="selectNetwork('TruongHoc_5G')">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-wifi text-lg text-white"></i>
+                                    <div class="flex-1">
+                                        <span class="text-sm font-semibold">TruongHoc_5G</span>
+                                        <p class="text-[10px] text-gray-400">Secured</p>
+                                    </div>
+                                    <i class="fa-solid fa-lock text-xs text-gray-500"></i>
+                                </div>
+                                <!-- Vùng nhập Password -->
+                                <div id="ui_TruongHoc_5G" class="hidden mt-3 flex-col gap-2 pl-7 pb-1" onclick="event.stopPropagation()">
+                                    <label class="flex items-center gap-2 text-xs text-gray-200 cursor-pointer">
+                                        <input type="checkbox" checked class="rounded border-gray-600 cursor-pointer"> Connect automatically
+                                    </label>
+                                    <input type="password" id="pass_TruongHoc_5G" placeholder="Enter network security key" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-xs outline-none focus:border-blue-500 transition">
+                                    <div class="flex justify-between items-center mt-1">
+                                        <span class="text-[10px] text-gray-400 hover:text-blue-400 cursor-pointer">Phím tắt</span>
+                                        <button onclick="connectWifi('TruongHoc_5G')" class="bg-blue-600 text-white text-xs py-1.5 px-4 rounded hover:bg-blue-500 font-bold transition">Connect</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Network 2 (Dummy) -->
+                            <div class="p-2 hover:bg-white/10 rounded-lg cursor-pointer transition-colors mt-1 opacity-60">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-wifi text-lg"></i>
+                                    <div class="flex-1">
+                                        <span class="text-sm font-semibold">GUEST_WIFI</span>
+                                        <p class="text-[10px] text-gray-400">Open</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hướng dẫn nổi -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-black/60 p-4 rounded-xl backdrop-blur-md border border-white/10 shadow-xl" id="winInstruction">
+                        <i class="fa-solid fa-hand-pointer text-3xl text-blue-400 animate-bounce mb-3 block"></i>
+                        <p class="text-sm font-semibold">1. Nhấn vào góc phải Taskbar<br>2. Chọn tên Wi-Fi & Nhập mật khẩu</p>
+                    </div>
+                </div>
+
+                <!-- === MOBILE SIMULATION AREA (Giữ nguyên) === -->
+                <div id="simMob" class="hidden w-full max-w-[240px] h-[450px] bg-black rounded-[2.5rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden text-gray-800 font-sans mx-auto">
+                    <!-- Notch / Dynamic Island -->
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-gray-800 rounded-b-2xl z-30 flex justify-center items-end pb-1 gap-4">
+                        <div class="w-2 h-2 rounded-full bg-blue-900/50 shadow-[inset_0_0_2px_#000]"></div>
+                        <div class="w-1 h-1 rounded-full bg-green-500 opacity-50"></div>
+                    </div>
+                    
+                    <!-- Status Bar -->
+                    <div class="bg-gray-50 h-7 flex justify-between items-end px-5 pb-1 z-20 relative text-[10px] font-bold">
+                        <span>10:00</span>
+                        <div class="flex gap-1.5 text-gray-800">
+                            <i class="fa-solid fa-signal"></i>
+                            <i id="mobStatusWifi" class="fa-solid fa-wifi opacity-20"></i>
+                            <i class="fa-solid fa-battery-full"></i>
+                        </div>
+                    </div>
+
+                    <!-- Screen Content -->
+                    <div class="bg-gray-50 h-full w-full relative flex flex-col pt-2">
+                        <div class="px-4 pb-2 border-b border-gray-200 flex items-center gap-2">
+                            <i class="fa-solid fa-chevron-left text-blue-500"></i>
+                            <h4 class="font-bold text-lg">Wi-Fi</h4>
+                        </div>
+                        
+                        <!-- Toggle -->
+                        <div class="flex justify-between items-center px-4 py-3 bg-white mt-4 border-y border-gray-200 shadow-sm">
+                            <span class="font-semibold text-sm">Wi-Fi</span>
+                            <div class="w-11 h-6 bg-green-500 rounded-full flex items-center justify-end px-1 cursor-pointer transition-colors">
+                                <div class="w-5 h-5 bg-white rounded-full shadow-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- Networks list -->
+                        <div class="px-4 py-2 mt-4">
+                            <p class="text-[10px] text-gray-500 font-bold mb-2 ml-2">MẠNG CỦA TÔI / KHẢ DỤNG</p>
+                            
+                            <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm divide-y divide-gray-100">
+                                <!-- Mobile Network 1 -->
+                                <div class="flex justify-between items-center p-3.5 cursor-pointer hover:bg-blue-50 transition" onclick="showMobPassPrompt()">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fa-solid fa-wifi text-gray-700"></i>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">TruongHoc_5G</p>
+                                            <p class="text-[10px] text-gray-500">Bảo mật WPA3</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-lock text-xs text-gray-400"></i>
+                                        <i class="fa-solid fa-circle-info text-blue-500 text-xs"></i>
+                                    </div>
+                                </div>
+                                
+                                <!-- Mobile Network 2 -->
+                                <div class="flex justify-between items-center p-3.5 opacity-60">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fa-solid fa-wifi text-gray-700"></i>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">NhaCuaToi</p>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-lock text-xs text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Password Prompt (Dạng Bottom Sheet) -->
+                        <div id="mobPassPrompt" class="hidden absolute bottom-0 left-0 w-full bg-white rounded-t-3xl shadow-[0_-15px_40px_rgba(0,0,0,0.15)] p-5 z-40 transform transition-transform border-t border-gray-200">
+                            <div class="w-10 h-1.5 bg-gray-300 rounded-full mx-auto mb-4"></div> <!-- Swipe handle -->
+                            <h5 class="font-bold text-center text-lg mb-1">Nhập mật khẩu</h5>
+                            <p class="text-xs text-center text-gray-500 mb-4">Mạng: <span class="font-semibold text-gray-800">TruongHoc_5G</span></p>
+                            
+                            <input type="password" id="mobPassInput" placeholder="Mật khẩu" class="w-full border bg-gray-50 border-gray-300 rounded-xl px-4 py-3 text-sm outline-none mb-5 focus:border-blue-500 focus:bg-white transition">
+                            
+                            <div class="flex gap-3">
+                                <button onclick="hideMobPassPrompt()" class="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm hover:bg-gray-200 transition">Hủy</button>
+                                <button onclick="connectMobWifi()" class="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm shadow hover:bg-blue-500 transition">Kết nối</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: LUYỆN TẬP -->
+    <div id="luyentap" class="tab-content">
+        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-8 font-sans"><i class="fa-solid fa-clipboard-check text-green-500"></i> Trắc nghiệm củng cố kiến thức</h2>
+            
+            <div class="space-y-8" id="quizContainer">
+                <!-- Câu 1 -->
+                <div class="quiz-q" data-ans="A">
+                    <p class="quiz-question mb-3">Câu 1: Chức năng chính của Hub và Switch là gì?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'A')">A. Kết nối các máy tính trong cùng mạng cục bộ (LAN).</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'B')">B. Nối các mạng LAN khác nhau lại.</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'C')">C. Chuyển đổi tín hiệu số sang tương tự.</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'D')">D. Phát sóng 5G cho điện thoại.</button>
+                    </div>
+                </div>
+
+                <!-- Câu 2 -->
+                <div class="quiz-q" data-ans="B">
+                    <p class="quiz-question mb-3">Câu 2: Tại sao Switch lại hoạt động hiệu quả hơn Hub trong mạng lớn?</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'A')">A. Vì Switch rẻ hơn Hub.</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'B')">B. Vì Switch xác định được cổng đích, không phát tán tín hiệu ra tất cả cổng, giảm xung đột.</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'C')">C. Vì Switch kết nối được với cáp quang trực tiếp.</button>
+                    </div>
+                </div>
+
+                <!-- Câu 3 -->
+                <div class="quiz-q" data-ans="B">
+                    <p class="quiz-question mb-3">Câu 3: WAP (Wireless Access Point) là thiết bị gì?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'A')">A. Dây cáp mạng.</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'B')">B. Điểm truy cập không dây (Bộ thu phát Wi-Fi).</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'C')">C. Bộ định tuyến.</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'D')">D. Cổng kết nối RJ45.</button>
+                    </div>
+                </div>
+
+                <!-- Câu 4 -->
+                <div class="quiz-q" data-ans="C">
+                    <p class="quiz-question mb-3">Câu 4: Khi cần kết nối hai máy tính thuộc hai LAN khác nhau qua Internet, ta cần thiết bị nào?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'A')">A. Hub</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'B')">B. Switch</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'C')">C. Router (Bộ định tuyến)</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'D')">D. Cáp mạng</button>
+                    </div>
+                </div>
+
+                <!-- Câu 5 -->
+                <div class="quiz-q" data-ans="C">
+                    <p class="quiz-question mb-3">Câu 5: Chức năng của Modem là gì?</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'A')">A. Cung cấp mật khẩu Wi-Fi.</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'B')">B. Chọn đường truyền tốt nhất (Routing).</button>
+                        <button class="opt-btn bg-gray-50 border border-gray-200 p-4 rounded-xl text-left hover:bg-blue-50 transition text-explanation" onclick="checkAnswer(this, 'C')">C. Chuyển đổi tín hiệu số (của máy tính) thành tín hiệu tương tự (để truyền xa) và ngược lại.</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIC CHUYỂN TAB ---
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'bg-blue-500', 'text-white');
+                el.classList.add('bg-white', 'text-gray-600');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            
+            const btn = document.querySelector(`button[onclick="openTab('${tabId}')"]`);
+            btn.classList.add('active');
+            btn.style.backgroundColor = '#3b82f6';
+            btn.style.color = 'white';
+        }
+
+        // Khởi tạo tab
+        document.querySelector('.tab-btn.active').style.backgroundColor = '#3b82f6';
+        document.querySelector('.tab-btn.active').style.color = 'white';
+
+
+        // --- LOGIC MÔ PHỎNG HUB & SWITCH ---
+        let simMode = 'hub'; // Mặc định là Hub
+
+        function setDevice(mode) {
+            simMode = mode;
+            const btnHub = document.getElementById('btnHub');
+            const btnSwitch = document.getElementById('btnSwitch');
+            const deviceName = document.getElementById('deviceName');
+
+            // Reset anims
+            resetSimulation();
+
+            if (mode === 'hub') {
+                btnHub.className = "px-4 py-1 rounded-full bg-blue-500 text-white font-bold text-sm transition";
+                btnSwitch.className = "px-4 py-1 rounded-full text-gray-500 font-bold text-sm transition hover:bg-gray-100";
+                deviceName.innerText = "HUB";
+                document.getElementById('simStatus').innerText = "Chế độ Hub: Sẵn sàng.";
+            } else {
+                btnSwitch.className = "px-4 py-1 rounded-full bg-green-500 text-white font-bold text-sm transition";
+                btnHub.className = "px-4 py-1 rounded-full text-gray-500 font-bold text-sm transition hover:bg-gray-100";
+                deviceName.innerText = "SWITCH";
+                document.getElementById('simStatus').innerText = "Chế độ Switch: Sẵn sàng.";
+            }
+        }
+
+        function resetSimulation() {
+            const p1 = document.getElementById('packet1');
+            const p2 = document.getElementById('packet2');
+            const p3 = document.getElementById('packet3');
+            const col = document.getElementById('collision');
+            
+            p1.classList.remove('anim-pc-to-dev');
+            p2.classList.remove('anim-dev-to-pc2');
+            p3.classList.remove('anim-dev-to-pc3');
+            col.style.display = 'none';
+
+            // Trigger reflow to restart animation later
+            void p1.offsetWidth;
+            void p2.offsetWidth;
+            void p3.offsetWidth;
+        }
+
+        function runSimulation() {
+            resetSimulation();
+            const p1 = document.getElementById('packet1');
+            const p2 = document.getElementById('packet2');
+            const p3 = document.getElementById('packet3');
+            const status = document.getElementById('simStatus');
+            const col = document.getElementById('collision');
+
+            // Bước 1: Máy A gửi đến Thiết bị trung tâm
+            p1.classList.add('anim-pc-to-dev');
+            status.innerText = "Máy A đang gửi dữ liệu đến thiết bị trung tâm...";
+
+            setTimeout(() => {
+                // Bước 2: Xử lý tại thiết bị trung tâm
+                if (simMode === 'hub') {
+                    status.innerHTML = "Hub phát tán dữ liệu đến <b>TẤT CẢ</b> các cổng!";
+                    p2.classList.add('anim-dev-to-pc2');
+                    p3.classList.add('anim-dev-to-pc3');
+                    
+                    // Hiện dấu hiệu xung đột/dư thừa ở máy B
+                    setTimeout(() => {
+                        col.style.display = 'block';
+                        status.innerHTML = "<span class='text-red-500'>Máy B nhận rác (Xung đột/Dư thừa)! Máy C nhận được dữ liệu.</span>";
+                    }, 900);
+
+                } else if (simMode === 'switch') {
+                    status.innerHTML = "Switch xác định cổng đích và tạo kênh <b>RIÊNG</b> đến Máy C.";
+                    p3.classList.add('anim-dev-to-pc3');
+                    setTimeout(() => {
+                        status.innerHTML = "<span class='text-green-600'>Máy C nhận thành công! Mạng thông thoáng.</span>";
+                    }, 900);
+                }
+            }, 1000);
+        }
+
+        // --- LOGIC TAB ROUTER / MODEM (Infographic) ---
+        function showInfo(device) {
+            const panel = document.getElementById('simStatusPanel');
+            let content = "";
+            
+            // Xóa background dark của panel mô phỏng để hiển thị info thường
+            panel.classList.remove('bg-slate-800', 'text-white', 'border-slate-700');
+            panel.classList.add('bg-blue-50', 'text-gray-800', 'border-blue-100');
+
+            if (device === 'wap') {
+                content = `
+                    <div class="text-left w-full">
+                        <h3 class="text-lg font-bold text-green-700 mb-2 font-sans"><i class="fa-solid fa-wifi"></i> WAP (Wireless Access Point)</h3>
+                        <p class="text-explanation">Điểm truy cập không dây. Kết nối các thiết bị không dây (điện thoại, laptop) vào mạng LAN nội bộ thông qua sóng vô tuyến thay vì cáp.</p>
+                    </div>`;
+            } else if (device === 'router') {
+                content = `
+                    <div class="text-left w-full">
+                        <h3 class="text-lg font-bold text-orange-700 mb-2 font-sans"><i class="fa-solid fa-route"></i> Router (Bộ định tuyến)</h3>
+                        <p class="text-explanation">Kết nối các LAN khác nhau lại với nhau qua Internet. Phân tích địa chỉ đích và quyết định (routing) đường đi tốt nhất cho dữ liệu.</p>
+                    </div>`;
+            } else if (device === 'modem') {
+                content = `
+                    <div class="text-left w-full">
+                        <h3 class="text-lg font-bold text-purple-700 mb-2 font-sans"><i class="fa-solid fa-exchange-alt"></i> Modem (Modulator - Demodulator)</h3>
+                        <p class="text-explanation">Chuyển đổi tín hiệu. Chuyển tín hiệu SỐ (Digital) của LAN thành tín hiệu TƯƠNG TỰ (Analog) để truyền xa qua cáp viễn thông, và ngược lại.</p>
+                    </div>`;
+            }
+            panel.innerHTML = content;
+        }
+
+        // --- HÀM MÔ PHỎNG HÀNH TRÌNH INTERNET ---
+        async function startInternetSim() {
+            const btn = document.getElementById('btnStartInternet');
+            const packet = document.getElementById('wanPacket');
+            const statusPanel = document.getElementById('simStatusPanel');
+            const area = document.getElementById('internetSimArea');
+
+            // Prevent multiple clicks
+            if(btn.disabled) return;
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Reset Panel Style to Dark Mode for Simulation
+            statusPanel.classList.remove('bg-blue-50', 'text-gray-800', 'border-blue-100');
+            statusPanel.classList.add('bg-slate-800', 'text-white', 'border-slate-700');
+
+            // Hàm tính toán tọa độ chính giữa của thiết bị để gói tin bay tới
+            function getCenterCoords(nodeId) {
+                const el = document.getElementById(nodeId);
+                const containerRect = area.getBoundingClientRect();
+                const elRect = el.getBoundingClientRect();
+                return {
+                    x: elRect.left - containerRect.left + (elRect.width / 2),
+                    y: elRect.top - containerRect.top + (elRect.height / 2)
+                };
+            }
+
+            const ids = ['node-phone', 'node-wap', 'node-router', 'node-modem', 'node-cloud'];
+            const icons = ['icon-phone', 'icon-wap', 'icon-router', 'icon-modem', 'icon-cloud'];
+            const coords = ids.map(getCenterCoords);
+
+            // Hàm delay
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+            // Hàm làm nổi bật thiết bị đang xử lý
+            const highlightNode = (iconId) => {
+                icons.forEach(id => {
+                    document.getElementById(id).classList.remove('ring-4', 'ring-yellow-400', 'scale-110');
+                });
+                if(iconId) {
+                    document.getElementById(iconId).classList.add('ring-4', 'ring-yellow-400', 'scale-110');
+                }
+            };
+
+            // 0. KHỞI TẠO: Gói tin tại Điện thoại (Tín hiệu số)
+            packet.className = 'absolute z-30 flex items-center justify-center text-white text-[10px] shadow-lg transition-all duration-1000 ease-in-out w-8 h-8 rounded bg-blue-500 font-mono border border-blue-300 font-sans';
+            packet.innerHTML = '01<br>10'; // Mô phỏng dữ liệu nhị phân (Số/Digital)
+            packet.style.left = `${coords[0].x}px`;
+            packet.style.top = `${coords[0].y}px`;
+            packet.style.display = 'flex';
+            packet.style.opacity = '1';
+            
+            // 1. ĐIỆN THOẠI -> WAP
+            highlightNode('icon-phone');
+            statusPanel.innerHTML = `<div class="text-left animate-fade-in"><span class="text-blue-400 font-bold text-lg font-sans"><i class="fa-solid fa-mobile-screen-button"></i> 1. Điện thoại:</span><br><p class="mt-3 text-gray-200" style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 500; line-height: 1.6;">Phát dữ liệu nhị phân (tín hiệu số) vào không gian dưới dạng <b class="text-yellow-300 font-sans">sóng vô tuyến (Wi-Fi)</b> hướng tới điểm truy cập.</p></div>`;
+            await sleep(1500);
+            
+            packet.style.left = `${coords[1].x}px`;
+            packet.style.top = `${coords[1].y}px`;
+            await sleep(1000);
+
+            // 2. TẠI WAP
+            highlightNode('icon-wap');
+            statusPanel.innerHTML = `<div class="text-left animate-fade-in"><span class="text-green-400 font-bold text-lg font-sans"><i class="fa-solid fa-wifi"></i> 2. WAP (Điểm truy cập):</span><br><p class="mt-3 text-gray-200" style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 500; line-height: 1.6;">Thu sóng vô tuyến, chuyển đổi thành xung điện và đẩy vào <b class="text-green-300 font-sans">cáp mạng LAN (có dây)</b> để gửi đến Router.</p></div>`;
+            await sleep(2000);
+
+            // 3. WAP -> ROUTER
+            packet.style.left = `${coords[2].x}px`;
+            packet.style.top = `${coords[2].y}px`;
+            await sleep(1000);
+
+            // 4. TẠI ROUTER
+            highlightNode('icon-router');
+            statusPanel.innerHTML = `<div class="text-left animate-fade-in"><span class="text-orange-400 font-bold text-lg font-sans"><i class="fa-solid fa-route"></i> 3. Router (Bộ định tuyến):</span><br><p class="mt-3 text-gray-200" style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 500; line-height: 1.6;">Đọc địa chỉ mạng đích, suy nghĩ và <b class="text-orange-300 font-sans">TÌM ĐƯỜNG (Routing)</b> tối ưu nhất để gói tin rời khỏi mạng nội bộ, đi tới Modem.</p></div>`;
+            await sleep(2500);
+
+            // 5. ROUTER -> MODEM
+            packet.style.left = `${coords[3].x}px`;
+            packet.style.top = `${coords[3].y}px`;
+            await sleep(1000);
+
+            // 6. TẠI MODEM (Bước quan trọng nhất - Thay đổi hình dạng gói tin)
+            highlightNode('icon-modem');
+            statusPanel.innerHTML = `<div class="text-left animate-fade-in"><span class="text-purple-400 font-bold text-lg font-sans"><i class="fa-solid fa-exchange-alt"></i> 4. Modem (Điều chế / Giải điều chế):</span><br><p class="mt-3 text-gray-200" style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 500; line-height: 1.6;">Đường truyền Internet xa không dùng tín hiệu số (0110). Modem đang <b class="text-purple-300 font-sans">CHUYỂN ĐỔI</b> dữ liệu từ dạng <b class="text-white bg-blue-500 px-1 rounded font-sans">SỐ</b> sang dạng sóng <b class="text-white bg-pink-500 px-1 rounded font-sans">TƯƠNG TỰ</b> (ánh sáng/điện áp) để truyền đi.</p></div>`;
+            
+            await sleep(1000);
+            // BIẾN HÌNH GÓI TIN: Số -> Tương tự (Sóng)
+            packet.className = 'absolute z-30 flex items-center justify-center text-white shadow-lg transition-all duration-1000 ease-in-out w-12 h-6 rounded-full bg-pink-500 border-2 border-pink-300';
+            packet.innerHTML = '<i class="fa-solid fa-wave-square text-lg animate-pulse"></i>';
+            await sleep(2500);
+
+            // 7. MODEM -> INTERNET
+            packet.style.left = `${coords[4].x}px`;
+            packet.style.top = `${coords[4].y}px`;
+            await sleep(1000);
+
+            // 8. KẾT THÚC
+            highlightNode('icon-cloud');
+            statusPanel.innerHTML = `<div class="text-center animate-fade-in"><p class="text-2xl text-green-400 font-bold font-sans"><i class="fa-solid fa-check-circle mr-2 mb-2"></i> Thành Công!</p><p class="text-gray-300" style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 500; line-height: 1.6;">Tín hiệu tương tự đã được hòa vào đường truyền Internet tốc độ cao.</p></div>`;
+            
+            packet.style.opacity = '0';
+            packet.style.transform = 'translate(-50%, -50%) scale(2)'; // Hiệu ứng tan biến
+            await sleep(1000);
+            
+            // Cleanup
+            packet.style.display = 'none';
+            highlightNode(null); 
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        // --- LOGIC THỰC HÀNH WI-FI (OS TOGGLE) ---
+        function switchOs(os) {
+            const winSim = document.getElementById('simWin');
+            const mobSim = document.getElementById('simMob');
+            const btnWin = document.getElementById('btnOsWin');
+            const btnMob = document.getElementById('btnOsMob');
+
+            if(os === 'win') {
+                winSim.classList.remove('hidden');
+                mobSim.classList.add('hidden');
+                
+                btnWin.className = "flex-1 bg-white shadow-sm py-1.5 rounded-full text-sm font-bold text-blue-600 transition flex justify-center items-center gap-2";
+                btnMob.className = "flex-1 text-gray-500 py-1.5 rounded-full text-sm font-bold transition hover:bg-gray-200 flex justify-center items-center gap-2";
+            } else {
+                winSim.classList.add('hidden');
+                mobSim.classList.remove('hidden');
+                mobSim.classList.add('block');
+                
+                btnMob.className = "flex-1 bg-white shadow-sm py-1.5 rounded-full text-sm font-bold text-blue-600 transition flex justify-center items-center gap-2";
+                btnWin.className = "flex-1 text-gray-500 py-1.5 rounded-full text-sm font-bold transition hover:bg-gray-200 flex justify-center items-center gap-2";
+            }
+        }
+
+        // -- LOGIC WIFI: WINDOWS --
+        function toggleWifiMenu() {
+            const menu = document.getElementById('wifiMenu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+            document.getElementById('winInstruction').classList.add('hidden');
+        }
+
+        function selectNetwork(netName) {
+            const ui = document.getElementById(`ui_${netName}`);
+            if(ui.classList.contains('hidden')){
+                ui.classList.remove('hidden');
+                ui.classList.add('flex');
+            } else {
+                ui.classList.add('hidden');
+                ui.classList.remove('flex');
+            }
+        }
+
+        function connectWifi(netName) {
+            const pass = document.getElementById(`pass_${netName}`).value;
+            if (pass.length > 0) {
+                // Đóng menu
+                toggleWifiMenu();
+                
+                // Thay đổi icon quả địa cầu -> icon wifi báo hiệu có mạng
+                const icon = document.getElementById('taskbarWifiIcon');
+                icon.className = "fa-solid fa-wifi text-white text-sm animate-pulse";
+                
+                // Tùy chỉnh thông báo thay thế alert
+                console.log("Đã kết nối Wi-Fi (Windows) thành công!");
+                // Không dùng alert theo yêu cầu, có thể thay bằng modal hoặc toast message nếu muốn
+                // alert("✅ Chúc mừng! Bạn đã mô phỏng cấu hình thành công kết nối Wi-Fi trên máy tính (Windows).");
+            } else {
+                console.log("Vui lòng nhập mật khẩu");
+                // alert("⚠️ Vui lòng nhập Security Key (mật khẩu) để kết nối!");
+            }
+        }
+
+        // -- LOGIC WIFI: MOBILE --
+        function showMobPassPrompt() {
+            document.getElementById('mobPassPrompt').classList.remove('hidden');
+            document.getElementById('mobPassPrompt').style.transform = 'translateY(0)';
+        }
+
+        function hideMobPassPrompt() {
+            document.getElementById('mobPassPrompt').classList.add('hidden');
+            document.getElementById('mobPassInput').value = '';
+        }
+
+        function connectMobWifi() {
+            const pass = document.getElementById('mobPassInput').value;
+            if (pass.length > 0) {
+                hideMobPassPrompt();
+                
+                // Sáng icon wifi trên status bar
+                const wifiIcon = document.getElementById('mobStatusWifi');
+                wifiIcon.classList.remove('opacity-20');
+                wifiIcon.classList.add('text-gray-800', 'animate-pulse');
+                
+                console.log("Đã kết nối Wi-Fi (Mobile) thành công!");
+                // Không dùng alert theo yêu cầu
+                // setTimeout(() => {
+                //     wifiIcon.classList.remove('animate-pulse');
+                //     alert("✅ Chúc mừng! Bạn đã mô phỏng thiết lập thành công kết nối Wi-Fi trên Thiết bị di động.");
+                // }, 1000);
+            } else {
+                console.log("Vui lòng nhập mật khẩu");
+                // alert("⚠️ Vui lòng nhập mật khẩu Wi-Fi để kết nối!");
+            }
+        }
+
+
+        // --- LOGIC TRẮC NGHIỆM ---
+        function checkAnswer(btn, chosen) {
+            // Lấy ra container của câu hỏi hiện tại
+            const questionDiv = btn.closest('.quiz-q');
+            const correctAns = questionDiv.getAttribute('data-ans');
+            
+            // Tắt tất cả nút trong câu này
+            const buttons = questionDiv.querySelectorAll('.opt-btn');
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('hover:bg-blue-50');
+            });
+
+            if (chosen === correctAns) {
+                btn.classList.add('bg-green-100', 'border-green-400', 'text-green-800');
+                btn.innerHTML = `<i class="fa-solid fa-check-circle text-green-600 mr-2"></i>` + btn.innerHTML;
+            } else {
+                btn.classList.add('bg-red-100', 'border-red-400', 'text-red-800');
+                btn.innerHTML = `<i class="fa-solid fa-times-circle text-red-600 mr-2"></i>` + btn.innerHTML;
+                
+                // Đánh dấu câu đúng
+                buttons.forEach(b => {
+                    if(b.getAttribute('onclick').includes(`'${correctAns}'`)) {
+                         b.classList.add('bg-green-50', 'border-green-300', 'text-green-700');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

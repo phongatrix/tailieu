@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 6: Lưu trữ và chia sẻ tệp tin trên Internet</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans cho Typography rõ ràng -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#E0F2FE', // sky-100
+                            pink: '#FCE7F3', // pink-100
+                            green: '#DCFCE7', // green-100
+                            yellow: '#FEF9C3', // yellow-100
+                            purple: '#F3E8FF', // purple-100
+                            dark: '#334155'  // slate-700
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #334155;
+        }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Node in mindmap */
+        .mindmap-node {
+            transition: all 0.3s ease;
+        }
+        .mindmap-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
+        
+        <!-- Header -->
+        <header class="bg-pastel-blue p-8 text-center border-b-4 border-sky-200 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-32 h-32 bg-white opacity-20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-40 h-40 bg-white opacity-20 rounded-full translate-x-1/4 translate-y-1/4"></div>
+            <span class="inline-block bg-white text-sky-600 font-bold px-4 py-1 rounded-full text-sm mb-3 shadow-sm">Chủ đề 2 | Bài 6</span>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-cloud-arrow-up text-sky-500"></i>
+                LƯU TRỮ VÀ CHIA SẺ TỆP TIN
+            </h1>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <nav class="flex flex-wrap justify-center gap-2 md:gap-4 p-4 bg-slate-50 border-b border-slate-100">
+            <button onclick="openTab('tong-quan')" class="tab-btn active px-6 py-2.5 rounded-full font-bold text-sm transition-all bg-sky-500 text-white shadow-md">
+                <i class="fa-solid fa-map-location-dot mr-2"></i>Tổng quan
+            </button>
+            <button onclick="openTab('thuc-hanh')" class="tab-btn px-6 py-2.5 rounded-full font-bold text-sm text-slate-500 bg-white hover:bg-slate-100 transition-all">
+                <i class="fa-solid fa-laptop-code mr-2"></i>Thực hành
+            </button>
+            <button onclick="openTab('phan-tich')" class="tab-btn px-6 py-2.5 rounded-full font-bold text-sm text-slate-500 bg-white hover:bg-slate-100 transition-all">
+                <i class="fa-solid fa-magnifying-glass-chart mr-2"></i>Phân tích
+            </button>
+            <button onclick="openTab('trac-nghiem')" class="tab-btn px-6 py-2.5 rounded-full font-bold text-sm text-slate-500 bg-white hover:bg-slate-100 transition-all">
+                <i class="fa-solid fa-gamepad mr-2"></i>Ôn tập
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="p-6 md:p-8">
+
+            <!-- TAB 1: TỔNG QUAN -->
+            <section id="tong-quan" class="tab-content active">
+                
+                <!-- Mục tiêu & Ví dụ -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    <div class="bg-pastel-pink p-6 rounded-2xl border-2 border-pink-100">
+                        <h3 class="text-xl font-bold text-pink-600 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye"></i> Mục tiêu bài học
+                        </h3>
+                        <p class="text-lg font-semibold text-slate-700">
+                            Sử dụng được một số công cụ trực tuyến như <span class="text-blue-600 bg-white px-2 py-1 rounded-md">Google Drive</span> hay <span class="text-blue-600 bg-white px-2 py-1 rounded-md">Dropbox</span>,... để lưu trữ và chia sẻ tệp tin.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-pastel-yellow p-6 rounded-2xl border-2 border-yellow-100 flex flex-col justify-center items-center text-center">
+                         <h3 class="text-xl font-bold text-yellow-600 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb"></i> Tình huống thực tế
+                        </h3>
+                        <div class="w-full h-24 bg-white rounded-lg flex items-center justify-center text-slate-400 mb-2 border border-yellow-200 overflow-hidden">
+                                                     </div>
+                        <p class="text-sm font-medium">Làm sao để chia sẻ "Kế hoạch nhóm" cho tất cả các thành viên cùng xem?</p>
+                    </div>
+                </div>
+
+                <!-- Sơ đồ tư duy Kiến thức cốt lõi (Mô phỏng infographic) -->
+                <div class="bg-white p-6 rounded-2xl shadow-[0_0_15px_rgba(0,0,0,0.05)] border border-slate-100">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 text-center">INFOGRAPHIC: TỔNG QUAN VỀ Ổ ĐĨA TRỰC TUYẾN</h3>
+                    
+                    <div class="relative w-full max-w-3xl mx-auto py-10">
+                        <!-- Center Node -->
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 mindmap-node">
+                            <div class="bg-sky-500 text-white w-32 h-32 rounded-full flex flex-col items-center justify-center shadow-lg border-4 border-sky-200 text-center p-2">
+                                <i class="fa-solid fa-cloud text-3xl mb-1"></i>
+                                <span class="font-bold text-sm leading-tight">Lưu trữ đám mây</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-x-32 gap-y-16">
+                            <!-- Top Left -->
+                            <div class="bg-pastel-green p-4 rounded-xl shadow-sm text-right mindmap-node relative">
+                                <div class="absolute top-1/2 right-[-3rem] w-12 h-1 bg-green-200"></div>
+                                <h4 class="font-bold text-green-700"><i class="fa-solid fa-upload"></i> Tải lên</h4>
+                                <p class="text-xs mt-1">Từ máy tính lên ổ đĩa</p>
+                            </div>
+                            <!-- Top Right -->
+                            <div class="bg-pastel-pink p-4 rounded-xl shadow-sm text-left mindmap-node relative">
+                                <div class="absolute top-1/2 left-[-3rem] w-12 h-1 bg-pink-200"></div>
+                                <h4 class="font-bold text-pink-700"><i class="fa-solid fa-folder-tree"></i> Quản lí</h4>
+                                <p class="text-xs mt-1">Tạo mới thư mục/tệp</p>
+                            </div>
+                            <!-- Bottom Left -->
+                            <div class="bg-pastel-purple p-4 rounded-xl shadow-sm text-right mindmap-node relative">
+                                <div class="absolute top-1/2 right-[-3rem] w-12 h-1 bg-purple-200"></div>
+                                <h4 class="font-bold text-purple-700"><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa</h4>
+                                <p class="text-xs mt-1">Bằng ứng dụng văn phòng</p>
+                            </div>
+                            <!-- Bottom Right -->
+                            <div class="bg-pastel-yellow p-4 rounded-xl shadow-sm text-left mindmap-node relative">
+                                <div class="absolute top-1/2 left-[-3rem] w-12 h-1 bg-yellow-200"></div>
+                                <h4 class="font-bold text-yellow-700"><i class="fa-solid fa-share-nodes"></i> Chia sẻ</h4>
+                                <p class="text-xs mt-1">Cho phép người khác truy cập</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Các nhà cung cấp -->
+                    <div class="mt-8">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase text-center mb-4">Các nhà cung cấp phổ biến</h4>
+                        <div class="flex justify-center flex-wrap gap-4">
+                            <div class="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-lg border"><i class="fa-brands fa-google text-blue-500"></i> Google Drive</div>
+                            <div class="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-lg border"><i class="fa-brands fa-microsoft text-blue-400"></i> One Drive</div>
+                            <div class="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-lg border"><i class="fa-brands fa-apple text-gray-800"></i> iCloud</div>
+                            <div class="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-lg border"><i class="fa-brands fa-dropbox text-blue-600"></i> Dropbox</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: THỰC HÀNH (MÔ PHỎNG) -->
+            <section id="thuc-hanh" class="tab-content">
+                <div class="bg-pastel-blue p-4 rounded-xl mb-6 text-center border border-blue-200">
+                    <p class="font-bold text-sky-800"><i class="fa-solid fa-hand-pointer animate-bounce"></i> Tương tác trực tiếp với giao diện mô phỏng bên dưới!</p>
+                </div>
+
+                <!-- Simulation Container -->
+                <div class="border-2 border-slate-200 rounded-lg overflow-hidden shadow-lg bg-white h-[500px] flex flex-col font-sans">
+                    <!-- Fake Browser Bar -->
+                    <div class="bg-slate-100 px-4 py-2 flex items-center border-b">
+                        <div class="flex gap-2 mr-4">
+                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                        </div>
+                        <div class="bg-white text-xs px-3 py-1 rounded-full flex-grow text-slate-500 border">
+                            <i class="fa-solid fa-lock mr-1"></i> drive.google.com
+                        </div>
+                    </div>
+
+                    <!-- Fake Drive Layout -->
+                    <div class="flex flex-grow relative">
+                        <!-- Sidebar -->
+                        <div class="w-48 bg-white border-r p-4 hidden md:block">
+                            <button id="sim-btn-new" class="bg-white border shadow-sm text-slate-700 px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-slate-50 transition-colors">
+                                <i class="fa-solid fa-plus text-red-500"></i> Mới
+                            </button>
+                            <!-- Dropdown Mới -->
+                            <div id="sim-dropdown-new" class="hidden absolute top-16 left-4 bg-white border rounded-lg shadow-xl w-48 py-2 z-20 text-sm">
+                                <button id="sim-btn-upload" class="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-3">
+                                    <i class="fa-solid fa-file-arrow-up text-slate-500"></i> Tải tệp lên
+                                </button>
+                                <hr class="my-1">
+                                <button class="w-full text-left px-4 py-2 text-slate-400 flex items-center gap-3 cursor-not-allowed">
+                                    <i class="fa-solid fa-folder-plus"></i> Thư mục mới
+                                </button>
+                            </div>
+
+                            <ul class="mt-6 space-y-3 text-sm text-slate-600">
+                                <li class="font-bold text-blue-600 bg-blue-50 p-2 rounded"><i class="fa-solid fa-hard-drive mr-2"></i> Drive của tôi</li>
+                                <li class="p-2"><i class="fa-solid fa-users mr-2"></i> Được chia sẻ</li>
+                                <li class="p-2"><i class="fa-regular fa-clock mr-2"></i> Gần đây</li>
+                            </ul>
+                        </div>
+
+                        <!-- Main Content -->
+                        <div class="flex-grow p-6 bg-white relative">
+                            <h2 class="text-xl font-normal text-slate-800 mb-6">Drive của tôi</h2>
+                            
+                            <!-- Area to show files -->
+                            <div id="sim-file-area" class="flex flex-wrap gap-4">
+                                <div class="w-full text-center text-slate-400 mt-20" id="sim-empty-state">
+                                    <i class="fa-solid fa-cloud-arrow-up text-6xl mb-4 opacity-50"></i>
+                                    <p>Chưa có tệp nào. Hãy click "Mới" để tải lên.</p>
+                                </div>
+                                <!-- File item (hidden initially) -->
+                                <div id="sim-file-item" class="hidden w-40 bg-slate-50 border rounded-lg p-3 cursor-pointer hover:bg-blue-50 transition-colors relative group">
+                                    <div class="text-blue-500 text-4xl mb-2 text-center"><i class="fa-solid fa-file-word"></i></div>
+                                    <div class="text-sm font-medium text-center truncate">Ke hoach Nhom.docx</div>
+                                    
+                                    <!-- Context Menu Button -->
+                                    <button onclick="toggleShareMenu(event)" class="absolute top-2 right-2 text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    
+                                    <!-- Context Menu (Chia sẻ) -->
+                                    <div id="sim-context-menu" class="hidden absolute top-8 right-[-100px] bg-white border rounded shadow-lg py-1 w-32 z-30 text-sm">
+                                        <button onclick="openShareDialog()" class="w-full text-left px-3 py-2 hover:bg-slate-100 flex items-center gap-2">
+                                            <i class="fa-solid fa-user-plus text-slate-500"></i> Chia sẻ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Overlay & Modals -->
+                        
+                        <!-- Upload Dialog (Hộp thoại Open) -->
+                        <div id="sim-upload-dialog" class="hidden absolute inset-0 bg-black bg-opacity-20 z-40 flex items-center justify-center backdrop-blur-sm">
+                            <div class="bg-white w-96 rounded-lg shadow-2xl overflow-hidden border">
+                                <div class="bg-slate-100 px-4 py-2 font-semibold border-b flex justify-between">
+                                    <span>Open</span>
+                                    <button onclick="closeUploadDialog()" class="text-red-500"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                                <div class="p-4 bg-slate-50 flex gap-4 h-48 border-b">
+                                    <div class="w-1/3 border-r pr-2 text-sm text-slate-600">
+                                        <ul>
+                                            <li><i class="fa-regular fa-desktop mr-1"></i> Desktop</li>
+                                            <li class="bg-blue-100 text-blue-700 rounded"><i class="fa-regular fa-folder mr-1"></i> Nhom 1</li>
+                                        </ul>
+                                    </div>
+                                    <div class="w-2/3 flex gap-2">
+                                         <div onclick="selectFile(this)" class="w-16 h-20 bg-white border border-blue-400 bg-blue-50 rounded flex flex-col items-center justify-center cursor-pointer">
+                                            <i class="fa-solid fa-file-word text-blue-600 text-2xl"></i>
+                                            <span class="text-[10px] mt-1 text-center">Ke hoach...</span>
+                                         </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 flex justify-end gap-2 bg-slate-100">
+                                    <button onclick="closeUploadDialog()" class="px-4 py-1 text-sm bg-white border rounded">Cancel</button>
+                                    <button onclick="finishUpload()" class="px-4 py-1 text-sm bg-blue-500 text-white rounded">Open</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Share Dialog -->
+                        <div id="sim-share-dialog" class="hidden absolute inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center backdrop-blur-sm">
+                            <div class="bg-white w-[400px] rounded-xl shadow-2xl p-6">
+                                <h3 class="text-lg font-normal mb-4">Chia sẻ "Ke hoach Nhom.docx"</h3>
+                                
+                                <div class="flex items-center gap-2 mb-4 border rounded p-2 focus-within:border-blue-500">
+                                    <input type="text" value="Minh Quang Lê, Bình Minh Đặng" class="w-full text-sm outline-none" readonly>
+                                </div>
+
+                                <div class="flex justify-between items-center bg-slate-50 p-2 rounded mb-4">
+                                    <div class="text-sm font-medium">Quyền:</div>
+                                    <select id="sim-share-permission" class="bg-white border rounded text-sm p-1">
+                                        <option value="view">Người xem (Chỉ xem)</option>
+                                        <option value="comment">Người nhận xét</option>
+                                        <option value="edit" selected>Người chỉnh sửa (Mọi thao tác)</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <textarea class="w-full border rounded p-2 text-sm text-slate-600" rows="2" readonly>Chào các bạn! Mình gửi bản Kế hoạch chung. Các bạn đọc và cho ý kiến nhé!</textarea>
+                                </div>
+
+                                <div class="flex justify-end gap-2 mt-4">
+                                    <button onclick="closeShareDialog()" class="px-4 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 rounded-full">Hủy</button>
+                                    <button onclick="finishShare()" class="px-6 py-2 text-sm bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 shadow-md">Gửi</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Toast Notification -->
+                        <div id="sim-toast" class="hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded shadow-lg text-sm transition-opacity">
+                            Đã chia sẻ tệp thành công!
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: PHÂN TÍCH -->
+            <section id="phan-tich" class="tab-content">
+                
+                <!-- Mối quan hệ -->
+                <div class="mb-10">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-link text-sky-500"></i> Sự chuyển dịch lưu trữ
+                    </h3>
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border">
+                        
+                        <div class="flex-1 text-center bg-slate-50 p-4 rounded-xl border-2 border-dashed border-slate-300">
+                            <i class="fa-solid fa-computer text-4xl text-slate-400 mb-2"></i>
+                            <h4 class="font-bold text-slate-600">Trước đây</h4>
+                            <p class="text-xs text-slate-500 mt-1">Lưu trữ vật lý (Ổ cứng, USB). Giới hạn dung lượng, khó chia sẻ.</p>
+                        </div>
+
+                        <div class="text-sky-400 text-2xl"><i class="fa-solid fa-arrow-right-arrow-left"></i> Internet</div>
+
+                        <div class="flex-1 text-center bg-pastel-blue p-4 rounded-xl border-2 border-sky-200">
+                            <i class="fa-solid fa-cloud-arrow-up text-4xl text-sky-500 mb-2"></i>
+                            <h4 class="font-bold text-sky-700">Ngày nay</h4>
+                            <p class="text-xs text-sky-600 mt-1">Ổ đĩa trực tuyến. Dung lượng lớn, dễ dàng chia sẻ, chỉnh sửa mọi lúc.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phân biệt quyền (Dễ nhầm lẫn) -->
+                <div class="mb-10">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> Phân biệt các chế độ chia sẻ
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Quyền 1 -->
+                        <div class="bg-white border rounded-xl p-5 shadow-sm text-center">
+                            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-500 text-xl">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2">Người xem</h4>
+                            <div class="text-sm text-left space-y-2">
+                                <p><i class="fa-solid fa-check text-green-500 w-5"></i> Xem nội dung tệp</p>
+                                <p><i class="fa-solid fa-check text-green-500 w-5"></i> Tải tệp xuống</p>
+                                <p class="text-slate-400"><i class="fa-solid fa-xmark text-red-300 w-5"></i> Không thể bình luận</p>
+                                <p class="text-slate-400"><i class="fa-solid fa-xmark text-red-300 w-5"></i> Không thể thay đổi nội dung</p>
+                            </div>
+                        </div>
+
+                        <!-- Quyền 2 -->
+                        <div class="bg-white border rounded-xl p-5 shadow-sm text-center border-t-4 border-t-yellow-400">
+                            <div class="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-3 text-yellow-600 text-xl">
+                                <i class="fa-solid fa-comment-dots"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2">Người nhận xét</h4>
+                            <div class="text-sm text-left space-y-2">
+                                <p><i class="fa-solid fa-check text-green-500 w-5"></i> Xem nội dung tệp</p>
+                                <p><i class="fa-solid fa-check text-green-500 w-5"></i> Tải tệp xuống</p>
+                                <p class="font-bold text-yellow-600"><i class="fa-solid fa-check text-green-500 w-5"></i> Thêm nhận xét/bình luận</p>
+                                <p class="text-slate-400"><i class="fa-solid fa-xmark text-red-300 w-5"></i> Không thể sửa trực tiếp</p>
+                            </div>
+                        </div>
+
+                        <!-- Quyền 3 -->
+                        <div class="bg-white border rounded-xl p-5 shadow-md text-center border-t-4 border-t-sky-500 transform md:-translate-y-2 relative">
+                            <div class="absolute -top-3 right-[-10px] bg-sky-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow">Cao nhất</div>
+                            <div class="w-12 h-12 bg-sky-50 rounded-full flex items-center justify-center mx-auto mb-3 text-sky-600 text-xl">
+                                <i class="fa-solid fa-pen-nib"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2 text-sky-700">Người chỉnh sửa</h4>
+                            <div class="text-sm text-left space-y-2">
+                                <p><i class="fa-solid fa-check text-green-500 w-5"></i> Xem, Tải, Nhận xét</p>
+                                <p class="font-bold text-sky-600"><i class="fa-solid fa-check text-green-500 w-5"></i> Sửa nội dung trực tiếp</p>
+                                <p class="font-bold text-sky-600"><i class="fa-solid fa-check text-green-500 w-5"></i> Xóa tệp/thư mục</p>
+                                <p class="font-bold text-sky-600"><i class="fa-solid fa-check text-green-500 w-5"></i> Tạo mới, đổi tên</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi tương tác -->
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-question text-pink-500"></i> Suy nghĩ & Khám phá
+                    </h3>
+                    <div class="space-y-3">
+                        <details class="bg-white border rounded-xl p-4 cursor-pointer group shadow-sm">
+                            <summary class="font-bold text-slate-700 outline-none list-none flex justify-between items-center">
+                                Tại sao dịch vụ lưu trữ trên Internet còn được gọi là "Lưu trữ đám mây"?
+                                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="mt-3 pt-3 border-t text-sm text-slate-600 flex gap-3">
+                                <div class="text-sky-500 text-2xl"><i class="fa-solid fa-cloud"></i></div>
+                                <div>Bởi vì dữ liệu của bạn không nằm trên một thiết bị vật lý cụ thể nào ở nhà bạn (như ổ cứng, USB). Nó được lưu trên một hệ thống máy chủ rộng lớn kết nối qua Internet (được hình tượng hóa bằng hình ảnh "đám mây"), bạn có thể truy cập từ bất cứ đâu, thiết bị nào.</div>
+                            </div>
+                        </details>
+                        
+                        <details class="bg-white border rounded-xl p-4 cursor-pointer group shadow-sm">
+                            <summary class="font-bold text-slate-700 outline-none list-none flex justify-between items-center">
+                                Nhóm em đang làm một bài tập lớn. Có những cách nào để chia sẻ văn bản này?
+                                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="mt-3 pt-3 border-t text-sm text-slate-600 flex gap-3">
+                                <div class="text-green-500 text-2xl"><i class="fa-solid fa-lightbulb"></i></div>
+                                <div>Có thể gửi qua email, copy ra USB (cách cũ). Nhưng cách tốt nhất hiện nay là tải tệp lên <b>Ổ đĩa trực tuyến</b> (như Google Drive) rồi <b>Chia sẻ tệp</b> đó cho các bạn qua email với quyền "Người chỉnh sửa" hoặc "Người nhận xét".</div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 4: TRẮC NGHIỆM -->
+            <section id="trac-nghiem" class="tab-content">
+                <div class="bg-white rounded-2xl border p-6 shadow-sm max-w-2xl mx-auto" id="quiz-container">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-extrabold text-slate-800">CÂU HỎI ÔN TẬP</h2>
+                        <p class="text-sm text-slate-500">Kiểm tra kiến thức cốt lõi của bài học</p>
+                    </div>
+                    
+                    <div id="quiz-question-area">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-pastel-pink text-pink-700 font-bold px-3 py-1 rounded-full text-xs" id="q-counter">Câu 1/5</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-4" id="q-text">Câu hỏi hiển thị ở đây?</h3>
+                        
+                        <div class="space-y-3" id="q-options">
+                            <!-- Options injected by JS -->
+                        </div>
+                    </div>
+
+                    <div id="quiz-result-area" class="hidden text-center py-8">
+                        <div class="text-6xl mb-4" id="r-icon">🎉</div>
+                        <h3 class="text-2xl font-bold mb-2">Hoàn thành!</h3>
+                        <p class="text-lg text-slate-600 mb-6">Điểm số: <span id="r-score" class="font-bold text-sky-600 text-3xl">0/5</span></p>
+                        <button onclick="resetQuiz()" class="bg-sky-500 text-white font-bold px-6 py-2 rounded-full hover:bg-sky-600 transition">
+                            <i class="fa-solid fa-rotate-right mr-2"></i> Làm lại
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Tab Switching Logic
+        function openTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Reset all buttons style
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-sky-500', 'text-white', 'shadow-md', 'active');
+                el.classList.add('bg-white', 'text-slate-500');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            // Style active button
+            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
+            activeBtn.classList.remove('bg-white', 'text-slate-500');
+            activeBtn.classList.add('bg-sky-500', 'text-white', 'shadow-md', 'active');
+        }
+
+        // --- SIMULATION LOGIC (Google Drive) ---
+        const btnNew = document.getElementById('sim-btn-new');
+        const dropdownNew = document.getElementById('sim-dropdown-new');
+        const btnUpload = document.getElementById('sim-btn-upload');
+        const uploadDialog = document.getElementById('sim-upload-dialog');
+        const emptyState = document.getElementById('sim-empty-state');
+        const fileItem = document.getElementById('sim-file-item');
+        const contextMenu = document.getElementById('sim-context-menu');
+        const shareDialog = document.getElementById('sim-share-dialog');
+        const toast = document.getElementById('sim-toast');
+
+        // Toggle "Mới" menu
+        btnNew.addEventListener('click', (e) => {
+            dropdownNew.classList.toggle('hidden');
+            e.stopPropagation();
+        });
+
+        // Click outside to close menus
+        document.addEventListener('click', () => {
+            dropdownNew.classList.add('hidden');
+            contextMenu.classList.add('hidden');
+        });
+
+        // Open Upload Dialog
+        btnUpload.addEventListener('click', (e) => {
+            uploadDialog.classList.remove('hidden');
+            dropdownNew.classList.add('hidden');
+            e.stopPropagation();
+        });
+
+        function closeUploadDialog() {
+            uploadDialog.classList.add('hidden');
+        }
+
+        function selectFile(el) {
+            // Remove selection from others if any, add to this
+            el.classList.add('ring-2', 'ring-blue-500');
+        }
+
+        function finishUpload() {
+            closeUploadDialog();
+            // Show loading simulated
+            emptyState.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-4xl mb-4 text-sky-500"></i><p>Đang tải lên...</p>';
+            
+            setTimeout(() => {
+                emptyState.classList.add('hidden');
+                fileItem.classList.remove('hidden');
+            }, 800);
+        }
+
+        function toggleShareMenu(e) {
+            e.stopPropagation();
+            contextMenu.classList.toggle('hidden');
+        }
+
+        function openShareDialog() {
+            shareDialog.classList.remove('hidden');
+            contextMenu.classList.add('hidden');
+        }
+
+        function closeShareDialog() {
+            shareDialog.classList.add('hidden');
+        }
+
+        function finishShare() {
+            closeShareDialog();
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2000);
+        }
+
+
+        // --- QUIZ LOGIC ---
+        const quizData = [
+            {
+                q: "Theo tài liệu, một trong những mục tiêu của bài học là gì?",
+                options: [
+                    "Biết cách sửa chữa ổ cứng máy tính.",
+                    "Sử dụng được một số công cụ trực tuyến như Google Drive, Dropbox để lưu trữ, chia sẻ tệp.",
+                    "Học cách thiết kế trang web để chia sẻ thông tin.",
+                    "Viết chương trình phần mềm quản lý tệp tin."
+                ],
+                ans: 1
+            },
+            {
+                q: "Nhà cung cấp dịch vụ trực tuyến Google Drive là của hãng nào?",
+                options: ["Microsoft", "Apple", "Google", "Dropbox"],
+                ans: 2
+            },
+            {
+                q: "Để đưa một tệp từ máy tính lên ổ đĩa trực tuyến (VD: Google Drive), ta sử dụng tính năng nào?",
+                options: ["Tải tệp xuống (Download)", "Tải tệp lên (Upload)", "Chia sẻ (Share)", "Tạo mới (New Folder)"],
+                ans: 1
+            },
+            {
+                q: "Khi chia sẻ thư mục/tệp, chủ sở hữu quyết định một trong ba chế độ chia sẻ. Đó là những chế độ nào?",
+                options: [
+                    "Chỉ xem; Nhận xét; Chỉnh sửa.",
+                    "Chỉ xem; Tải xuống; Xóa.",
+                    "Công khai; Riêng tư; Ẩn danh.",
+                    "Xem một lần; Xem mãi mãi; Không cho xem."
+                ],
+                ans: 0
+            },
+            {
+                q: "Quyền nào là quyền cao nhất, cho phép xem, nhận xét, thực hiện mọi thao tác (sửa, xóa, tạo mới) đối với tệp được chia sẻ?",
+                options: ["Quyền của người xem", "Quyền của người nhận xét", "Quyền quản trị viên hệ thống", "Quyền chỉnh sửa"],
+                ans: 3
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        const qText = document.getElementById('q-text');
+        const qOptions = document.getElementById('q-options');
+        const qCounter = document.getElementById('q-counter');
+        const quizArea = document.getElementById('quiz-question-area');
+        const resultArea = document.getElementById('quiz-result-area');
+        const scoreSpan = document.getElementById('r-score');
+        const rIcon = document.getElementById('r-icon');
+
+        function loadQuiz() {
+            const data = quizData[currentQ];
+            qCounter.textContent = `Câu ${currentQ + 1}/${quizData.length}`;
+            qText.textContent = data.q;
+            qOptions.innerHTML = '';
+            
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 bg-slate-50 border border-slate-200 rounded-xl hover:bg-sky-50 hover:border-sky-300 transition duration-200 font-medium text-slate-700 flex items-center group";
+                btn.innerHTML = `<span class="w-6 h-6 rounded-full border-2 border-slate-300 inline-flex items-center justify-center mr-3 text-xs group-hover:border-sky-400 group-hover:text-sky-500 font-bold">${String.fromCharCode(65 + index)}</span> ${opt}`;
+                btn.onclick = () => checkAns(index);
+                qOptions.appendChild(btn);
+            });
+        }
+
+        function checkAns(selected) {
+            const correct = quizData[currentQ].ans;
+            const btns = qOptions.querySelectorAll('button');
+            
+            // Disable all clicks
+            btns.forEach(b => b.onclick = null);
+
+            // Style answers
+            if (selected === correct) {
+                btns[selected].classList.replace('bg-slate-50', 'bg-green-100');
+                btns[selected].classList.replace('border-slate-200', 'border-green-400');
+                btns[selected].querySelector('span').classList.add('bg-green-500', 'text-white', 'border-green-500');
+                score++;
+            } else {
+                btns[selected].classList.replace('bg-slate-50', 'bg-red-100');
+                btns[selected].classList.replace('border-slate-200', 'border-red-400');
+                btns[selected].querySelector('span').classList.add('bg-red-500', 'text-white', 'border-red-500');
+                
+                // Show correct
+                btns[correct].classList.replace('bg-slate-50', 'bg-green-100');
+                btns[correct].classList.replace('border-slate-200', 'border-green-400');
+            }
+
+            setTimeout(() => {
+                currentQ++;
+                if (currentQ < quizData.length) {
+                    loadQuiz();
+                } else {
+                    showResult();
+                }
+            }, 1200);
+        }
+
+        function showResult() {
+            quizArea.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+            scoreSpan.textContent = `${score}/${quizData.length}`;
+            
+            if(score === 5) rIcon.textContent = '🏆';
+            else if (score >= 3) rIcon.textContent = '👍';
+            else rIcon.textContent = '💪';
+        }
+
+        function resetQuiz() {
+            currentQ = 0;
+            score = 0;
+            quizArea.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+            loadQuiz();
+        }
+
+        // Init
+        loadQuiz();
+
+    </script>
+</body>
+</html>

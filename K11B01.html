@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 1: Hệ Điều Hành - Tin học 11</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fcfcfc;
+            color: #4a4a4a;
+        }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Pastel Colors */
+        .bg-pastel-pink { background-color: #ffe5ec; }
+        .bg-pastel-blue { background-color: #e5f0ff; }
+        .bg-pastel-green { background-color: #e5ffe8; }
+        .bg-pastel-yellow { background-color: #fff9e5; }
+        .bg-pastel-purple { background-color: #f0e5ff; }
+        
+        .text-pastel-pink { color: #ff8fab; }
+        .text-pastel-blue { color: #8eb3ff; }
+        .text-pastel-green { color: #73d686; }
+        .text-pastel-yellow { color: #f2c75c; }
+        .text-pastel-purple { color: #b78eff; }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 10px 32px 0 rgba(31, 38, 135, 0.06);
+            border-radius: 24px;
+        }
+
+        /* 3D Flip Card */
+        .flip-card { perspective: 1000px; min-height: 220px; height: auto; }
+        .flip-card-inner {
+            position: relative; width: 100%; height: 100%; min-height: 220px; text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.25rem;
+            box-shadow: 0 4px 15px 0 rgba(31, 38, 135, 0.05); border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+        .flip-card-back { transform: rotateY(180deg); background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); }
+        
+        .hover-spin:hover i { transform: rotate(360deg) scale(1.2); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .hover-spin i { transition: transform 0.5s ease-in-out; }
+
+        @keyframes subtlePulse {
+            0% { box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1); }
+            50% { box-shadow: 0 4px 30px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
+            100% { box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1); transform: translateY(0); }
+        }
+        .animate-banner { animation: subtlePulse 3s infinite ease-in-out; }
+
+        .stack-flip-x-container { perspective: 1500px; width: 100%; cursor: pointer; }
+        .stack-flip-x-inner {
+            position: relative; width: 100%; display: grid; grid-template-columns: 1fr;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d; border-radius: 1rem;
+        }
+        .stack-flip-x-container.is-flipped .stack-flip-x-inner { transform: rotateX(180deg); }
+        
+        .stack-flip-x-front, .stack-flip-x-back {
+            grid-area: 1 / 1; width: 100%; backface-visibility: hidden;
+            border-radius: 1rem; box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .stack-flip-x-back { transform: rotateX(180deg); }
+
+        /* Data packet flow */
+        .data-packet {
+            width: 18px; height: 18px; border-radius: 50%;
+            position: absolute; left: 50%; transform: translateX(-50%); z-index: 50;
+            opacity: 0; box-shadow: 0 0 18px currentColor;
+            display: flex; align-items: center; justify-content: center;
+        }
+        @keyframes flowStepDown {
+            0% { top: 6%; opacity: 1; transform: translateX(-50%) scale(1.2); }
+            28% { top: 32%; transform: translateX(-50%) scale(1); }
+            62% { top: 58%; transform: translateX(-50%) scale(1.3); }
+            92% { top: 88%; opacity: 1; transform: translateX(-50%) scale(1.1); }
+            100% { top: 94%; opacity: 0; transform: translateX(-50%) scale(0.6); }
+        }
+        @keyframes flowStepError {
+            0% { top: 6%; opacity: 1; }
+            35% { top: 32%; }
+            58% { top: 58%; transform: translateX(-50%) scale(1.7); }
+            80% { top: 32%; }
+            100% { top: 8%; opacity: 0; transform: translateX(-50%) scale(0.7); }
+        }
+        .animate-flow-down { animation: flowStepDown 2.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .animate-flow-error { animation: flowStepError 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+        .confetti { position: absolute; width: 10px; height: 10px; z-index: 1000; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+        @keyframes clockTick {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-clock { animation: clockTick 60s linear infinite; }
+
+        /* Mobile App Icon Styling */
+        .phone-app-icon {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s;
+        }
+        .phone-app-icon:active {
+            transform: scale(0.9);
+            filter: brightness(0.9);
+        }
+
+        /* Camera shutter flash */
+        @keyframes cameraFlash {
+            0% { opacity: 0.9; }
+            100% { opacity: 0; }
+        }
+        .camera-flash-active {
+            animation: cameraFlash 0.35s ease-out forwards;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b3b3b3; }
+    </style>
+</head>
+<body class="bg-[url('https://www.transparenttextures.com/patterns/notebook.png')] min-h-screen pb-12">
+
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-8 pt-4">
+            <div class="inline-block bg-white px-6 py-2 rounded-full shadow-sm mb-3 border border-gray-100 text-sm font-bold text-gray-500 uppercase tracking-wider">
+                Tin học 11 - Kết nối tri thức
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-laptop-code text-pastel-purple mr-2"></i> Hệ Điều Hành
+            </h1>
+            <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Khám phá bộ não điều phối máy tính & thiết bị di động ✨</p>
+        </header>
+
+        <div class="flex flex-wrap justify-center gap-2 mb-8 bg-white/80 backdrop-blur p-2 rounded-3xl shadow-sm border border-gray-100 sticky top-4 z-50">
+            <button onclick="openTab('tongquan')" class="tab-btn active px-5 py-2.5 rounded-2xl font-semibold transition-all bg-pastel-blue text-blue-800 shadow-sm" id="btn-tongquan">
+                <i class="fas fa-bullseye mr-1"></i> Tổng quan
+            </button>
+            <button onclick="openTab('hcnpc')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-hcnpc">
+                <i class="fas fa-desktop mr-1"></i> HĐH Máy tính
+            </button>
+            <button onclick="openTab('hdhmobile')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-hdhmobile">
+                <i class="fas fa-mobile-alt mr-1"></i> HĐH Di động
+            </button>
+            <button onclick="openTab('cautruc')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-cautruc">
+                <i class="fas fa-layer-group mr-1"></i> Mối quan hệ
+            </button>
+            <button onclick="openTab('luyentap')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-luyentap">
+                <i class="fas fa-pen-fancy mr-1"></i> Luyện tập
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: TỔNG QUAN ================= -->
+        <div id="tongquan" class="tab-content active">
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <!-- Card Mục tiêu -->
+                <div class="glass-card p-6 hover-spin transition-transform hover:-translate-y-1">
+                    <h3 class="text-xl font-bold mb-4 flex items-center text-gray-700">
+                        <div class="w-10 h-10 rounded-full bg-pastel-pink flex items-center justify-center mr-3 text-pink-500 shadow-sm"><i class="fas fa-flag text-lg"></i></div> 
+                        Mục tiêu bài học
+                    </h3>
+                    <ul class="space-y-3 text-[15px] text-gray-600 font-medium leading-relaxed">
+                        <li class="flex items-start"><i class="fas fa-check-circle text-pastel-pink mt-1 mr-3"></i> Lịch sử phát triển HĐH máy tính cá nhân.</li>
+                        <li class="flex items-start"><i class="fas fa-check-circle text-pastel-pink mt-1 mr-3"></i> Đặc điểm của HĐH thiết bị di động.</li>
+                        <li class="flex items-start"><i class="fas fa-check-circle text-pastel-pink mt-1 mr-3"></i> Mối quan hệ: Phần cứng - HĐH - Phần mềm.</li>
+                    </ul>
+                </div>
+
+                <!-- Card Định nghĩa -->
+                <div class="flip-card h-auto min-h-[220px]">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-gradient-to-br from-white to-blue-50 cursor-pointer">
+                            <div class="w-16 h-16 rounded-full bg-pastel-blue flex items-center justify-center text-blue-500 shadow-sm mb-4">
+                                <i class="fas fa-question-circle text-4xl animate-bounce"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-700 mb-2">Hệ điều hành là gì?</h3>
+                            <p class="text-[15px] text-gray-600 font-medium leading-relaxed bg-white/60 px-3 py-1 rounded-full">(Lướt chuột để lật thẻ tìm đáp án ✨)</p>
+                        </div>
+                        <div class="flip-card-back text-left p-6 flex flex-col justify-center bg-gradient-to-br from-blue-50 to-white">
+                            <h4 class="font-bold text-blue-600 mb-3 border-b border-blue-200 pb-2 flex items-center"><i class="fas fa-lightbulb mr-2 text-xl text-yellow-400"></i>Vai trò cốt lõi</h4>
+                            <p class="text-[15px] text-gray-600 font-medium leading-relaxed">
+                                Là <strong class="text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">môi trường trung gian</strong> điều phối phần cứng và cung cấp dịch vụ để chạy các phần mềm ứng dụng.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mindmap 5 Chức năng -->
+            <h3 class="text-2xl font-bold text-center mb-2 text-gray-700"><i class="fas fa-sitemap text-pastel-purple mr-2"></i> 5 Nhóm Chức Năng Của HĐH</h3>
+            <p class="text-center text-[15px] text-gray-600 font-medium leading-relaxed mb-6 animate-pulse">Lướt chuột qua từng thẻ để xem chi tiết</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-blue border-b-4 border-blue-200">
+                            <i class="fas fa-microchip text-4xl text-blue-500 mb-3 drop-shadow-sm"></i>
+                            <p class="font-bold text-gray-700 text-sm">Quản lí thiết bị</p>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-blue-400">
+                            <i class="fas fa-cogs text-blue-400 mb-2 text-2xl"></i>
+                            <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Điều phối CPU, chia sẻ bộ nhớ (RAM), quản lí máy in, bàn phím.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-green border-b-4 border-green-200">
+                            <i class="fas fa-folder-open text-4xl text-green-500 mb-3 drop-shadow-sm"></i>
+                            <p class="font-bold text-gray-700 text-sm">Quản lí lưu trữ</p>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-green-400">
+                            <i class="fas fa-hdd text-green-400 mb-2 text-2xl"></i>
+                            <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Tổ chức lưu trữ dữ liệu (tạo, xóa, copy tệp và thư mục trên đĩa).</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-yellow border-b-4 border-yellow-200">
+                            <i class="fas fa-tasks text-4xl text-yellow-500 mb-3 drop-shadow-sm"></i>
+                            <p class="font-bold text-gray-700 text-sm">Tổ chức thực hiện</p>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-yellow-400">
+                            <i class="fas fa-project-diagram text-yellow-400 mb-2 text-2xl"></i>
+                            <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Cấp phát tài nguyên để chạy nhiều ứng dụng cùng lúc (Đa nhiệm).</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-pink border-b-4 border-pink-200">
+                            <i class="fas fa-desktop text-4xl text-pink-500 mb-3 drop-shadow-sm"></i>
+                            <p class="font-bold text-gray-700 text-sm">Giao tiếp</p>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-pink-400">
+                            <i class="fas fa-mouse-pointer text-pink-400 mb-2 text-2xl"></i>
+                            <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Cung cấp môi trường giao tiếp đồ họa (GUI) thân thiện cho người dùng.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-purple border-b-4 border-purple-200">
+                            <i class="fas fa-toolbox text-4xl text-purple-500 mb-3 drop-shadow-sm"></i>
+                            <p class="font-bold text-gray-700 text-sm">Cung cấp tiện ích</p>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-purple-400">
+                            <i class="fas fa-shield-alt text-purple-400 mb-2 text-2xl"></i>
+                            <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Công cụ định dạng đĩa, nén tệp, kiểm tra lỗi, cấu hình kết nối mạng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khái niệm mở rộng -->
+            <div class="glass-card p-6 border-t-4 border-indigo-400">
+                <h3 class="text-lg font-bold text-gray-700 mb-5 flex items-center"><i class="fas fa-book-open text-indigo-500 mr-2 text-xl"></i> Từ khóa quan trọng cần nhớ</h3>
+                <div class="grid md:grid-cols-3 gap-5">
+                    <div class="flex items-start hover-spin p-4 rounded-2xl bg-white border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all cursor-default group">
+                        <div class="w-12 h-12 rounded-xl bg-pastel-blue flex justify-center items-center mr-4 text-blue-600 shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-colors"><i class="fas fa-terminal text-xl"></i></div>
+                        <div>
+                            <strong class="block text-base text-gray-800 mb-1 font-bold">CLI (Giao diện dòng lệnh)</strong>
+                            <span class="text-[15px] text-gray-600 font-medium leading-relaxed block">Phương thức cũ, giao tiếp bằng cách gõ văn bản. Đòi hỏi phải nhớ cú pháp (như MS-DOS).</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start hover-spin p-4 rounded-2xl bg-white border border-gray-100 hover:border-pink-200 hover:shadow-md transition-all cursor-default group">
+                        <div class="w-12 h-12 rounded-xl bg-pastel-pink flex justify-center items-center mr-4 text-pink-600 shrink-0 group-hover:bg-pink-500 group-hover:text-white transition-colors"><i class="far fa-window-maximize text-xl"></i></div>
+                        <div>
+                            <strong class="block text-base text-gray-800 mb-1 font-bold">GUI (Giao diện đồ họa)</strong>
+                            <span class="text-[15px] text-gray-600 font-medium leading-relaxed block">Giao tiếp hiện đại bằng cửa sổ, biểu tượng (icon) và chuột. Trực quan, dễ sử dụng.</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start hover-spin p-4 rounded-2xl bg-white border border-gray-100 hover:border-yellow-200 hover:shadow-md transition-all cursor-default group">
+                        <div class="w-12 h-12 rounded-xl bg-pastel-yellow flex justify-center items-center mr-4 text-yellow-600 shrink-0 group-hover:bg-yellow-500 group-hover:text-white transition-colors"><i class="fas fa-layer-group text-xl"></i></div>
+                        <div>
+                            <strong class="block text-base text-gray-800 mb-1 font-bold">Đa nhiệm (Multitasking)</strong>
+                            <span class="text-[15px] text-gray-600 font-medium leading-relaxed block">Khả năng của hệ điều hành cho phép máy tính chạy đồng thời nhiều chương trình cùng lúc.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= TAB 2: HĐH MÁY TÍNH CÁ NHÂN ================= -->
+        <div id="hcnpc" class="tab-content">
+            
+            <!-- Banner Plug & Play -->
+            <div class="glass-card p-8 mb-10 text-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 border-2 border-white animate-banner relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-pink-400 to-purple-400 opacity-70"></div>
+                <h3 class="text-2xl md:text-3xl font-extrabold text-slate-800 mb-3 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-800 to-slate-600">
+                    Tiêu chí quan trọng nhất: Sự thân thiện & Dễ sử dụng
+                </h3>
+                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Dành cho người dùng phổ thông, khác biệt với máy chủ kĩ thuật.</p>
+                
+                <div class="mt-6 inline-block bg-white p-4 rounded-2xl shadow-sm border border-gray-100 z-10 relative">
+                    <p class="font-bold mb-3 text-xs text-gray-400 uppercase tracking-wider">Trải nghiệm tính năng</p>
+                    <button onclick="simulateDetailedPlugAndPlay()" id="btn-pnp" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-6 rounded-xl transition-all flex items-center mx-auto shadow-md hover:shadow-lg active:scale-95 text-sm">
+                        <i class="fab fa-usb mr-2 text-lg"></i> Mô phỏng Plug & Play
+                    </button>
+                    <div id="pnp-simulator" class="hidden mt-4 w-full max-w-md mx-auto text-left">
+                        <div class="bg-slate-100 rounded-xl border border-slate-300 h-32 flex flex-col items-center justify-center relative overflow-hidden p-4 mb-2 shadow-inner w-full">
+                            <div id="os-notification" class="absolute top-2 right-2 bg-white border-l-4 border-blue-500 shadow-md p-2 rounded-lg text-xs w-48 transform translate-x-[150%] transition-transform duration-500 z-20">
+                                <strong class="text-slate-800 block mb-1">Cảnh báo hệ thống</strong>
+                                <span id="os-noti-text" class="text-slate-500">Phát hiện thiết bị mới...</span>
+                            </div>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-20 bg-slate-800 rounded-l-lg flex items-center justify-center border-l-4 border-slate-600 shadow-xl z-0">
+                                <div class="w-2 h-10 bg-black rounded-sm border border-gray-700 shadow-inner"></div>
+                            </div>
+                            <div id="usb-device" class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center z-10" style="transition: left 1s cubic-bezier(0.25, 1, 0.5, 1);">
+                                <div class="w-16 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-l-md flex items-center justify-center text-white text-xs font-bold shadow-lg border-y border-l border-indigo-400">USB</div>
+                                <div class="w-8 h-6 bg-gray-300 rounded-r-sm border-2 border-gray-400 border-l-0 relative shadow-md">
+                                    <div class="absolute top-1 left-1.5 w-2 h-1 bg-white rounded-sm"></div>
+                                    <div class="absolute bottom-1 left-1.5 w-2 h-1 bg-white rounded-sm"></div>
+                                </div>
+                            </div>
+                            <div id="scan-waves" class="absolute right-12 top-1/2 -translate-y-1/2 hidden z-10">
+                                <i class="fas fa-wifi text-blue-400 animate-ping opacity-75 transform -rotate-90 text-2xl"></i>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 text-green-400 text-xs font-mono p-3 rounded-lg h-24 overflow-y-auto flex-col gap-1.5 shadow-inner border border-slate-700 flex" id="pnp-log"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOS vs GUI Interactive Comparison -->
+            <h3 class="text-xl font-bold mb-2 text-gray-700"><i class="fas fa-exchange-alt text-pastel-blue mr-2"></i> Trải nghiệm: Dòng lệnh vs Đồ họa</h3>
+            <p class="text-[15px] text-gray-600 font-medium leading-relaxed mb-4">Nhiệm vụ: Hãy xóa tệp <strong class="text-red-500">danhsach.txt</strong></p>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="glass-card overflow-hidden flex flex-col relative border-2 hover:border-green-300 transition-colors">
+                    <div class="bg-gray-900 p-4 h-48 flex flex-col font-mono text-sm shadow-inner" onclick="document.getElementById('dos-input').focus()">
+                        <div class="text-gray-400 mb-2 text-xs">Microsoft(R) MS-DOS(R)<br>Gõ lệnh <span class="text-yellow-300">erase C:\dulieu\danhsach.txt</span> rồi nhấn Enter</div>
+                        <div class="flex-1 overflow-y-auto" id="dos-history"></div>
+                        <div class="flex text-green-400 mt-1">
+                            <span class="mr-2">C:\></span>
+                            <input type="text" id="dos-input" class="bg-transparent border-none outline-none text-green-400 flex-1 font-mono" autocomplete="off" onkeypress="handleDosEnter(event)">
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white">
+                        <h4 class="font-bold text-lg mb-2">Giao diện dòng lệnh (CLI)</h4>
+                        <span class="inline-block bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-times"></i> Phải nhớ cú pháp</span>
+                    </div>
+                </div>
+
+                <div class="glass-card overflow-hidden flex flex-col relative border-2 hover:border-blue-300 transition-colors">
+                    <div class="bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-blue-50 p-4 h-48 relative border-b border-blue-100 shadow-inner">
+                        <div class="bg-blue-600 absolute top-0 left-0 right-0 h-6 flex items-center px-2 shadow">
+                            <span class="text-white text-[10px] font-bold font-sans">C:\dulieu</span>
+                        </div>
+                        <div id="gui-file" class="absolute top-10 left-4 flex flex-col items-center cursor-pointer group w-20" onclick="selectGuiFile()">
+                            <i class="fas fa-file-alt text-4xl text-slate-400 mb-1 group-hover:text-blue-500 transition"></i>
+                            <span class="text-xs bg-transparent px-1 rounded text-center leading-tight font-medium">danhsach.txt</span>
+                        </div>
+                        <button id="gui-delete-btn" onclick="deleteGuiFile()" class="absolute bottom-4 right-4 bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded-lg shadow-md hidden flex items-center transition-transform hover:scale-105">
+                            <i class="fas fa-trash-alt mr-1"></i> Xóa
+                        </button>
+                        <div id="gui-success" class="absolute inset-0 bg-white/90 backdrop-blur-sm hidden flex-col items-center justify-center z-10">
+                            <i class="fas fa-check-circle text-4xl text-green-500 mb-2"></i>
+                            <span class="font-bold text-slate-700 text-sm">Đã xóa bằng chuột!</span>
+                            <button onclick="resetGui()" class="mt-2 text-xs text-blue-500 underline font-medium">Khôi phục</button>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white">
+                        <h4 class="font-bold text-lg mb-2">Giao diện đồ họa (GUI)</h4>
+                        <span class="inline-block bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-check"></i> Trực quan, dễ sử dụng</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Timeline -->
+            <div class="glass-card p-6 mt-8">
+                <div class="text-center mb-8">
+                    <h4 class="font-bold text-2xl text-gray-800 flex justify-center items-center gap-2">
+                        <i class="fas fa-history text-indigo-500"></i> Lịch sử phát triển HĐH tiêu biểu
+                    </h4>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    
+                    <!-- Windows Timeline Card -->
+                    <div class="bg-white rounded-3xl p-6 relative shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 pl-8">
+                        <div class="absolute left-0 top-6 bottom-6 w-1.5 bg-blue-500 rounded-r-full"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex justify-center items-center">
+                                <i class="fab fa-windows text-2xl"></i>
+                            </div>
+                            <h5 class="font-bold text-gray-800 text-xl">Nhánh Windows</h5>
+                        </div>
+                        <div class="space-y-4 text-[15px] text-gray-600 font-medium leading-relaxed">
+                            <div><strong class="text-gray-800">1985:</strong> Bản Windows 1 có GUI.</div>
+                            <div><strong class="text-gray-800">1990:</strong> Bản Windows 3 có đa nhiệm.</div>
+                            <div><strong class="text-gray-800">Trước 1995:</strong> Windows chỉ là vỏ bọc đồ họa chạy trên nền DOS.</div>
+                            <div><strong class="text-gray-800">1995:</strong> Tích hợp các tính năng cốt lõi trực tiếp, áp dụng Plug & Play.</div>
+                            <div><strong class="text-gray-800">Sự tiến hóa và Thị phần:</strong> Trải qua nhiều phiên bản nâng cấp (Windows XP, 7, 8, 10, 11) và hiện chiếm hơn <strong class="text-gray-800">86% thị phần PC</strong>.</div>
+                        </div>
+                    </div>
+
+                    <!-- LINUX Timeline Card -->
+                    <div class="bg-white rounded-3xl p-6 relative shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 pl-8">
+                        <div class="absolute left-0 top-6 bottom-6 w-1.5 bg-orange-500 rounded-r-full"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex justify-center items-center">
+                                <i class="fab fa-linux text-2xl"></i>
+                            </div>
+                            <h5 class="font-bold text-gray-800 text-xl">Nhánh LINUX</h5>
+                        </div>
+                        <div class="space-y-4 text-[15px] text-gray-600 font-medium leading-relaxed">
+                            <div><strong class="text-gray-800">1969:</strong> Kế thừa từ UNIX (đa nhiệm, đa người dùng).</div>
+                            <div><strong class="text-gray-800">1991:</strong> Linus Torvalds viết lõi LINUX.</div>
+                            <div><strong class="text-gray-800">1994:</strong> Công bố bản LINUX 1.0 mã nguồn mở, cộng đồng phát triển.</div>
+                            <div><strong class="text-gray-800">Biến thể:</strong> Ubuntu, RedHat, và hệ điều hành <strong class="text-gray-800">Android</strong>.</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: HĐH THIẾT BỊ DI ĐỘNG ================= -->
+        <div id="hdhmobile" class="tab-content">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2 flex justify-center items-center gap-2">
+                    <i class="fas fa-gamepad text-pink-500"></i> Trình giả lập HĐH Di động Thông minh
+                </h3>
+                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">
+                    <span class="inline-block bg-green-100 text-green-800 font-semibold px-3 py-1 rounded-full text-xs">
+                        <i class="fas fa-hand-pointer mr-1"></i> Chạm trực tiếp vào các ứng dụng trên màn hình điện thoại bên dưới để trải nghiệm!
+                    </span>
+                </p>
+            </div>
+            
+            <div class="flex flex-col lg:flex-row justify-center items-center lg:items-stretch gap-10 mb-10">
+                <!-- Phone Mockup -->
+                <div id="virtual-phone" class="w-[310px] h-[610px] bg-slate-900 rounded-[3rem] p-3 shadow-2xl relative border-[6px] border-slate-700 transition-all duration-700 flex-shrink-0 select-none z-10">
+                    
+                    <!-- Proximity Sensor Detection Area (Tai thỏ) -->
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-10 z-40 cursor-pointer" onmouseenter="simulateProximity(true)" onmouseleave="simulateProximity(false)" title="Rê chuột vào đây để thử Cảm biến tiệm cận (tắt màn hình khi áp tai)"></div>
+                    
+                    <!-- Notch (Dynamic Island / Ear Speaker) -->
+                    <div class="absolute top-3 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-xl z-30 flex justify-center items-center gap-2 pointer-events-none shadow-md">
+                        <div class="w-2 h-2 rounded-full bg-slate-800/80"></div>
+                        <div class="w-12 h-1.5 rounded-full bg-slate-800/80"></div>
+                    </div>
+                    
+                    <!-- Phone Screen Container -->
+                    <div id="phone-screen" class="w-full h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 rounded-[2.2rem] overflow-hidden relative flex flex-col transition-all duration-300" onclick="simulateTouch(event)">
+                        
+                        <!-- Status Bar -->
+                        <div class="flex justify-between items-center px-5 pt-3.5 text-white text-xs font-bold drop-shadow-md z-30 relative transition-colors duration-300 pointer-events-none" id="status-bar">
+                            <span id="phone-clock-status">09:41</span>
+                            <div class="flex items-center gap-1.5">
+                                <i id="status-nfc" class="fas fa-credit-card text-[9px] text-amber-300 hidden" title="NFC Bật"></i>
+                                <i id="status-bluetooth" class="fab fa-bluetooth-b text-[10px] text-indigo-300 hidden" title="Bluetooth Bật"></i>
+                                <i id="status-wifi" class="fas fa-wifi text-[10px] hidden" title="Wi-Fi Bật"></i>
+                                <i id="status-network" class="fas fa-signal text-[10px]" title="Mạng 5G"></i>
+                                <i class="fas fa-battery-full text-xs text-emerald-400"></i>
+                            </div>
+                        </div>
+
+                        <!-- App 0: Phone Home Screen (Trực tiếp hiển thị các Tiện ích cá nhân) -->
+                        <div id="app-home" class="phone-app flex-1 p-3.5 relative z-10 flex flex-col justify-between overflow-y-auto">
+                            
+                            <!-- Widget Thông minh: Ngày giờ & Thời tiết -->
+                            <div class="mt-2 bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-3 text-white shadow-lg">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <div class="text-[11px] font-medium text-purple-200" id="home-widget-date">Thứ Hai, 7 tháng 9</div>
+                                        <div class="text-2xl font-extrabold tracking-tight" id="home-widget-time">09:41</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <i class="fas fa-cloud-sun text-yellow-300 text-xl"></i>
+                                        <div class="text-[11px] font-bold text-white/90">29°C Nắng nhẹ</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nhóm Tiện Ích Cá Nhân: Hiển thị trực tiếp các icon ứng dụng -->
+                            <div class="my-auto py-2">
+                                <div class="flex items-center justify-between mb-2.5 px-1">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-pink-200/90 flex items-center gap-1">
+                                        <i class="fas fa-toolbox text-xs text-pink-300"></i> Tiện ích cá nhân
+                                    </span>
+                                    <span class="text-[9px] bg-pink-500/30 text-pink-200 px-1.5 py-0.5 rounded-full border border-pink-400/40">Chạm để mở</span>
+                                </div>
+
+                                <!-- Grid 8 Tiện ích cá nhân chính -->
+                                <div class="grid grid-cols-4 gap-2 text-center">
+                                    
+                                    <!-- 1. Ứng dụng Camera -->
+                                    <div class="flex flex-col items-center phone-app-icon cursor-pointer group" onclick="switchUtilityMode('camera'); event.stopPropagation();">
+                                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg border border-white/30 group-hover:scale-105 transition-transform">
+                                            <i class="fas fa-camera text-xl"></i>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-white mt-1 drop-shadow">Camera</span>
+                                    </div>
+
+                                    <!-- 2. Ứng dụng Đồng hồ -->
+                                    <div class="flex flex-col items-center phone-app-icon cursor-pointer group" onclick="switchUtilityMode('clock'); event.stopPropagation();">
+                                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-lg border border-white/30 group-hover:scale-105 transition-transform">
+                                            <i class="far fa-clock text-xl"></i>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-white mt-1 drop-shadow">Đồng hồ</span>
+                                    </div>
+
+                                    <!-- 3. Ứng dụng Máy tính -->
+                                    <div class="flex flex-col items-center phone-app-icon cursor-pointer group" onclick="switchUtilityMode('calc'); event.stopPropagation();">
+                                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-lg border border-white/30 group-hover:scale-105 transition-transform">
+                                            <i class="fas fa-calculator text-xl"></i>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-white mt-1 drop-shadow">Máy tính</span>
+                                    </div>
+
+                                    <!-- 4. Ứng dụng Lịch -->
+                                    <div class="flex flex-col items-center phone-app-icon cursor-pointer group" onclick="switchUtilityMode('calendar'); event.stopPropagation();">
+                                        <div class="w-12 h-12 rounded-2xl bg-white text-rose-600 flex flex-col items-center justify-center shadow-lg border border-white/40 group-hover:scale-105 transition-transform overflow-hidden">
+                                            <div class="w-full bg-rose-500 text-white text-[8px] font-bold py-0.5 leading-none">TH.9</div>
+                                            <span class="text-sm font-extrabold text-slate-800 leading-tight">7</span>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-white mt-1 drop-shadow">Lịch</span>
+                                    </div>
+
+                                    <!-- 5. Ứng dụng Ghi chú tiện ích -->
+                                    <div class="flex flex-col items-center phone-app-icon cursor-pointer group mt-2" onclick="switchUtilityMode('notes'); event.stopPropagation();">
+                                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 to-amber-300 text-amber-950 flex items-center justify-center shadow-lg border border-white/30 group-hover:scale-105 transition-transform">
+                                            <i class="fas fa-sticky-note text-xl"></i>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-white mt-1 drop-shadow">Ghi chú</span>
+                                    </div>
+
+                                    <!-- 6. Ghi âm tiện ích -->
+                                    <div class="flex flex-col items-center phone-app-icon cursor-pointer group mt-2" onclick="switchUtilityMode('recorder'); event.stopPropagation();">
+                                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-red-500 flex items-center justify-center text-white shadow-lg border border-white/30 group-hover:scale-105 transition-transform">
+                                            <i class="fas fa-microphone-alt text-xl"></i>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-white mt-1 drop-shadow">Ghi âm</span>
+                                    </div>
+
+                                    <!-- 7. Thử Cảm biến (Sensors) -->
+                                    <div class="flex flex-col items-center phone-app-icon cursor-pointer group mt-2" onclick="openPhoneApp('app-sensors'); event.stopPropagation();">
+                                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg border border-white/30 group-hover:scale-105 transition-transform">
+                                            <i class="fas fa-fingerprint text-xl"></i>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-white mt-1 drop-shadow">Cảm biến</span>
+                                    </div>
+
+                                    <!-- 8. Cài đặt Mạng di động -->
+                                    <div class="flex flex-col items-center phone-app-icon cursor-pointer group mt-2" onclick="openPhoneApp('app-network'); event.stopPropagation();">
+                                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white shadow-lg border border-white/30 group-hover:scale-105 transition-transform">
+                                            <i class="fas fa-wifi text-xl"></i>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-white mt-1 drop-shadow">Kết nối</span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Dock dưới cùng của điện thoại: 4 ứng dụng truy cập nhanh -->
+                            <div class="mb-4 bg-white/20 backdrop-blur-lg border border-white/25 rounded-3xl p-2 px-2.5 flex justify-between items-center shadow-xl">
+                                <div onclick="switchUtilityMode('camera'); event.stopPropagation();" title="Mở Camera" class="w-11 h-11 bg-emerald-500 text-white rounded-2xl flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-transform shadow-md">
+                                    <i class="fas fa-camera text-lg"></i>
+                                </div>
+                                <div onclick="switchUtilityMode('clock'); event.stopPropagation();" title="Mở Đồng hồ" class="w-11 h-11 bg-indigo-600 text-white rounded-2xl flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-transform shadow-md">
+                                    <i class="far fa-clock text-lg"></i>
+                                </div>
+                                <div onclick="switchUtilityMode('calc'); event.stopPropagation();" title="Mở Máy tính" class="w-11 h-11 bg-orange-500 text-white rounded-2xl flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-transform shadow-md">
+                                    <i class="fas fa-calculator text-lg"></i>
+                                </div>
+                                <div onclick="switchUtilityMode('calendar'); event.stopPropagation();" title="Mở Lịch" class="w-11 h-11 bg-white text-rose-500 rounded-2xl flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-transform shadow-md">
+                                    <i class="far fa-calendar-alt text-lg font-bold"></i>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- App 1: Sensors Demo -->
+                        <div id="app-sensors" class="phone-app hidden absolute inset-0 bg-slate-900 z-20 flex-col pt-10 px-4">
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-white mb-3">
+                                <button onclick="openPhoneApp('app-home');" class="text-xs font-bold text-pink-400 hover:text-pink-300 flex items-center gap-1">
+                                    <i class="fas fa-chevron-left"></i> Về Menu
+                                </button>
+                                <span class="font-bold text-xs">Cảm biến phần cứng</span>
+                                <div class="w-6"></div>
+                            </div>
+                            
+                            <div class="text-center text-white space-y-3 flex-1 overflow-y-auto">
+                                <div class="bg-slate-800/90 rounded-2xl p-3 border border-slate-700 text-pink-400 shadow-sm">
+                                    <i class="fas fa-hand-pointer text-2xl mb-1.5 animate-bounce"></i>
+                                    <p class="text-[11px] font-bold">Cảm biến Màn hình Cảm ứng đa điểm</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 font-medium">Chạm hoặc click bất kỳ đâu để tạo hiệu ứng gợn sóng xúc giác</p>
+                                </div>
+                                <div class="bg-slate-800/90 rounded-2xl p-3 border border-slate-700 text-indigo-400 group relative shadow-sm">
+                                    <i class="fas fa-arrow-up text-2xl mb-1.5"></i>
+                                    <p class="text-[11px] font-bold">Cảm biến Tiệm cận (Proximity)</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 font-medium">Rê chuột vào loa "tai thỏ" trên cùng để giả lập áp tai nghe (tắt màn hình tiết kiệm pin)</p>
+                                </div>
+                                <button onclick="triggerPhoneRotate(); event.stopPropagation();" class="bg-slate-800/90 rounded-2xl p-3 w-full border border-slate-700 text-amber-300 hover:bg-slate-700 transition shadow-sm">
+                                    <i class="fas fa-sync text-2xl mb-1.5 pointer-events-none"></i>
+                                    <p class="text-[11px] font-bold pointer-events-none">Cảm biến Gia tốc & Con quay (Gyroscope)</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 pointer-events-none font-medium">Bấm nút này để xoay ngang/dọc điện thoại tự động</p>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- App 2: Network Settings -->
+                        <div id="app-network" class="phone-app hidden absolute inset-0 bg-gray-100 z-20 flex-col pt-10">
+                            <div class="px-4 py-2.5 bg-white flex items-center justify-between border-b border-gray-200">
+                                <button onclick="openPhoneApp('app-home');" class="text-xs font-bold text-blue-600 hover:text-blue-500 flex items-center gap-1">
+                                    <i class="fas fa-chevron-left"></i> Về Menu
+                                </button>
+                                <span class="font-bold text-xs text-slate-800">Cài đặt Kết nối</span>
+                                <div class="w-6"></div>
+                            </div>
+                            <div class="p-3.5 space-y-2.5 flex-1 overflow-y-auto">
+                                <div class="bg-white p-3 rounded-xl flex justify-between items-center shadow-sm">
+                                    <div class="flex items-center"><div class="w-8 h-8 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mr-2.5"><i class="fas fa-wifi text-sm"></i></div><span class="font-bold text-xs text-slate-700">Wi-Fi</span></div>
+                                    <button onclick="togglePhoneSetting('wifi'); event.stopPropagation();" id="toggle-wifi" class="w-10 h-6 rounded-full bg-gray-300 relative transition-colors"><div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow transform transition-transform pointer-events-none"></div></button>
+                                </div>
+                                <div class="bg-white p-3 rounded-xl flex justify-between items-center shadow-sm">
+                                    <div class="flex items-center"><div class="w-8 h-8 bg-green-100 text-green-500 rounded-full flex items-center justify-center mr-2.5"><i class="fas fa-signal text-sm"></i></div><span class="font-bold text-xs text-slate-700">Mạng 5G / 4G</span></div>
+                                    <button onclick="togglePhoneSetting('cellular'); event.stopPropagation();" id="toggle-cellular" class="w-10 h-6 rounded-full bg-green-500 relative transition-colors"><div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow transform transition-transform translate-x-4 pointer-events-none"></div></button>
+                                </div>
+                                <div class="bg-white p-3 rounded-xl flex justify-between items-center shadow-sm">
+                                    <div class="flex items-center"><div class="w-8 h-8 bg-indigo-100 text-indigo-500 rounded-full flex items-center justify-center mr-2.5"><i class="fab fa-bluetooth-b text-sm"></i></div><span class="font-bold text-xs text-slate-700">Bluetooth</span></div>
+                                    <button onclick="togglePhoneSetting('bluetooth'); event.stopPropagation();" id="toggle-bluetooth" class="w-10 h-6 rounded-full bg-gray-300 relative transition-colors"><div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow transform transition-transform pointer-events-none"></div></button>
+                                </div>
+                                <div class="bg-white p-3 rounded-xl flex justify-between items-center shadow-sm">
+                                    <div class="flex items-center"><div class="w-8 h-8 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mr-2.5"><i class="fas fa-credit-card text-sm"></i></div><span class="font-bold text-xs text-slate-700">NFC (Thanh toán chạm)</span></div>
+                                    <button onclick="togglePhoneSetting('nfc'); event.stopPropagation();" id="toggle-nfc" class="w-10 h-6 rounded-full bg-gray-300 relative transition-colors"><div class="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow transform transition-transform pointer-events-none"></div></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- App 3: Personal Utilities Screen (Camera, Đồng hồ, Máy tính, Lịch, Ghi chú) -->
+                        <div id="app-utilities" class="phone-app hidden absolute inset-0 bg-slate-900 z-20 flex-col relative overflow-hidden transition-all duration-300">
+                            
+                            <!-- 1. Màn hình Ứng dụng Camera -->
+                            <div id="util-camera" class="absolute inset-0 bg-black flex flex-col transition-opacity duration-300">
+                                <div class="px-4 pt-10 pb-2 flex justify-between items-center text-white z-20">
+                                    <button onclick="openPhoneApp('app-home');" class="text-xs bg-black/40 hover:bg-black/70 px-2.5 py-1 rounded-full backdrop-blur flex items-center gap-1 border border-white/20">
+                                        <i class="fas fa-chevron-left"></i> Thoát
+                                    </button>
+                                    <span class="text-xs font-bold tracking-widest uppercase">ẢNH CHỤP</span>
+                                    <button onclick="triggerFlashEffect();" class="text-xs bg-black/40 px-2 py-1 rounded-full border border-white/20 text-yellow-300">
+                                        <i class="fas fa-bolt"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="flex-1 bg-[url('https://images.unsplash.com/photo-1516307365426-bea591f05011?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center relative overflow-hidden flex items-center justify-center">
+                                    <div class="absolute inset-4 border border-white/20 rounded-2xl pointer-events-none grid grid-cols-3 grid-rows-3">
+                                        <div class="border-r border-b border-white/10"></div>
+                                        <div class="border-r border-b border-white/10"></div>
+                                        <div class="border-b border-white/10"></div>
+                                        <div class="border-r border-b border-white/10"></div>
+                                        <div class="border-r border-b border-white/10"></div>
+                                        <div class="border-b border-white/10"></div>
+                                        <div class="border-r border-b border-white/10"></div>
+                                        <div class="border-r border-b border-white/10"></div>
+                                        <div></div>
+                                    </div>
+                                    <div id="camera-flash" class="absolute inset-0 bg-white opacity-0 pointer-events-none"></div>
+                                    <div id="photo-count-badge" class="absolute bottom-3 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/20">
+                                        Đã chụp: <span id="snap-count">0</span> ảnh
+                                    </div>
+                                </div>
+
+                                <div class="h-24 bg-black/95 pb-4 flex items-center justify-around px-6">
+                                    <div class="w-10 h-10 rounded-full border-2 border-white/40 overflow-hidden bg-cover bg-center bg-[url('https://images.unsplash.com/photo-1516307365426-bea591f05011?auto=format&fit=crop&w=150&q=80')] cursor-pointer" title="Xem ảnh vừa chụp"></div>
+                                    <button onclick="takeSnapshot();" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" title="Bấm để chụp">
+                                        <div class="w-12 h-12 bg-white rounded-full"></div>
+                                    </button>
+                                    <button onclick="takeSnapshot();" class="w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition">
+                                        <i class="fas fa-sync text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 2. Màn hình Ứng dụng Đồng hồ -->
+                            <div id="util-clock" class="absolute inset-0 bg-slate-950 hidden opacity-0 transition-opacity duration-300 flex-col pt-10 px-4">
+                                <div class="flex items-center justify-between pb-2 text-white">
+                                    <button onclick="openPhoneApp('app-home');" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                                        <i class="fas fa-chevron-left"></i> Menu
+                                    </button>
+                                    <h4 class="text-white font-bold text-xs">Đồng hồ & Báo thức</h4>
+                                    <div class="w-6"></div>
+                                </div>
+
+                                <div class="flex-1 flex flex-col items-center justify-center">
+                                    <div class="relative w-36 h-36 rounded-full border-4 border-slate-700 bg-slate-900 flex items-center justify-center shadow-[0_0_25px_rgba(0,0,0,0.6)] mb-4">
+                                        <div class="absolute w-3 h-3 bg-white rounded-full z-20 shadow"></div>
+                                        <div class="absolute w-1.5 h-11 bg-slate-400 rounded-full bottom-1/2 origin-bottom transform rotate-45 z-10"></div>
+                                        <div class="absolute w-1 h-14 bg-indigo-400 rounded-full bottom-1/2 origin-bottom transform rotate-[130deg] z-10"></div>
+                                        <div class="absolute w-0.5 h-16 bg-red-500 rounded-full bottom-1/2 origin-bottom animate-clock z-10"></div>
+                                        <div class="absolute top-1.5 w-1 h-2.5 bg-slate-500 rounded"></div>
+                                        <div class="absolute bottom-1.5 w-1 h-2.5 bg-slate-500 rounded"></div>
+                                        <div class="absolute left-1.5 w-2.5 h-1 bg-slate-500 rounded"></div>
+                                        <div class="absolute right-1.5 w-2.5 h-1 bg-slate-500 rounded"></div>
+                                    </div>
+
+                                    <div class="text-3xl font-extrabold text-white tracking-widest font-mono" id="clock-live-time">09:41:28</div>
+                                    <div class="text-slate-400 text-xs mt-1 font-medium">Hà Nội (GMT+7)</div>
+
+                                    <div class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-3 mt-4 text-left flex justify-between items-center shadow-inner">
+                                        <div>
+                                            <span class="text-lg font-bold text-white block">06:00</span>
+                                            <span class="text-[10px] text-slate-400">Báo thức dậy học Tin học 11</span>
+                                        </div>
+                                        <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2.5 py-1 rounded-full font-bold border border-indigo-500/30">BẬT</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. Màn hình Ứng dụng Máy tính tương tác hoàn chỉnh -->
+                            <div id="util-calc" class="absolute inset-0 bg-black hidden opacity-0 transition-opacity duration-300 flex-col px-3 pt-10 pb-4">
+                                <div class="flex items-center justify-between pb-1 text-white">
+                                    <button onclick="openPhoneApp('app-home');" class="text-xs font-bold text-orange-400 hover:text-orange-300 flex items-center gap-1">
+                                        <i class="fas fa-chevron-left"></i> Menu
+                                    </button>
+                                    <h4 class="text-slate-400 font-bold text-[11px]">Máy tính cá nhân</h4>
+                                    <div class="w-6"></div>
+                                </div>
+
+                                <div class="flex-1 flex flex-col justify-end items-end pb-2">
+                                    <div class="text-slate-400 text-sm font-mono h-5" id="calc-sub-display"></div>
+                                    <div class="text-white text-4xl font-light tracking-tight font-mono truncate max-w-full" id="calc-main-display">0</div>
+                                </div>
+
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button onclick="calcClear();" class="aspect-square bg-slate-300 hover:bg-slate-200 rounded-full flex items-center justify-center text-black font-bold text-base transition active:scale-95">AC</button>
+                                    <button onclick="calcToggleSign();" class="aspect-square bg-slate-300 hover:bg-slate-200 rounded-full flex items-center justify-center text-black font-bold text-base transition active:scale-95">±</button>
+                                    <button onclick="calcPercent();" class="aspect-square bg-slate-300 hover:bg-slate-200 rounded-full flex items-center justify-center text-black font-bold text-base transition active:scale-95">%</button>
+                                    <button onclick="calcOp('÷');" class="aspect-square bg-orange-500 hover:bg-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">÷</button>
+                                    
+                                    <button onclick="calcNum('7');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">7</button>
+                                    <button onclick="calcNum('8');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">8</button>
+                                    <button onclick="calcNum('9');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">9</button>
+                                    <button onclick="calcOp('×');" class="aspect-square bg-orange-500 hover:bg-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">×</button>
+                                    
+                                    <button onclick="calcNum('4');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">4</button>
+                                    <button onclick="calcNum('5');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">5</button>
+                                    <button onclick="calcNum('6');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">6</button>
+                                    <button onclick="calcOp('-');" class="aspect-square bg-orange-500 hover:bg-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">-</button>
+                                    
+                                    <button onclick="calcNum('1');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">1</button>
+                                    <button onclick="calcNum('2');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">2</button>
+                                    <button onclick="calcNum('3');" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">3</button>
+                                    <button onclick="calcOp('+');" class="aspect-square bg-orange-500 hover:bg-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">+</button>
+                                    
+                                    <button onclick="calcNum('0');" class="col-span-2 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center pl-5 text-white font-bold text-lg h-11 transition active:scale-95">0</button>
+                                    <button onclick="calcDot();" class="aspect-square bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">.</button>
+                                    <button onclick="calcEquals();" class="aspect-square bg-orange-500 hover:bg-orange-400 rounded-full flex items-center justify-center text-white font-bold text-lg transition active:scale-95">=</button>
+                                </div>
+                            </div>
+
+                            <!-- 4. Màn hình Ứng dụng Lịch tương tác -->
+                            <div id="util-calendar" class="absolute inset-0 bg-white hidden opacity-0 transition-opacity duration-300 flex-col pt-10 px-3.5 pb-3">
+                                <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+                                    <button onclick="openPhoneApp('app-home');" class="text-xs font-bold text-red-500 hover:text-red-400 flex items-center gap-1">
+                                        <i class="fas fa-chevron-left"></i> Menu
+                                    </button>
+                                    <div>
+                                        <h2 class="text-lg font-bold text-red-500 inline">Tháng 9</h2>
+                                        <span class="text-xs text-gray-500 font-bold ml-1">2026</span>
+                                    </div>
+                                    <div class="text-red-500 text-sm">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-7 gap-1 text-center my-2">
+                                    <div class="text-[10px] text-gray-400 font-bold">T2</div>
+                                    <div class="text-[10px] text-gray-400 font-bold">T3</div>
+                                    <div class="text-[10px] text-gray-400 font-bold">T4</div>
+                                    <div class="text-[10px] text-gray-400 font-bold">T5</div>
+                                    <div class="text-[10px] text-gray-400 font-bold">T6</div>
+                                    <div class="text-[10px] text-gray-400 font-bold">T7</div>
+                                    <div class="text-[10px] text-red-400 font-bold">CN</div>
+                                </div>
+                                <div class="grid grid-cols-7 gap-y-2 text-center text-xs font-medium">
+                                    <div class="text-gray-300">31</div>
+                                    <div class="text-gray-700">1</div><div class="text-gray-700">2</div><div class="text-gray-700">3</div><div class="text-gray-700">4</div><div class="text-gray-700">5</div><div class="text-red-500">6</div>
+                                    <div class="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center mx-auto font-bold shadow">7</div>
+                                    <div class="text-gray-700">8</div><div class="text-gray-700">9</div><div class="text-gray-700">10</div><div class="text-gray-700">11</div><div class="text-gray-700">12</div><div class="text-red-500">13</div>
+                                    <div class="text-gray-700">14</div><div class="text-gray-700">15</div><div class="text-gray-700">16</div><div class="text-gray-700">17</div><div class="text-gray-700">18</div><div class="text-gray-700">19</div><div class="text-red-500">20</div>
+                                </div>
+                                <div class="mt-auto bg-red-50 border border-red-100 rounded-xl p-2.5 text-left text-xs">
+                                    <div class="flex items-center text-red-600 font-bold text-[11px] mb-1">
+                                        <i class="fas fa-bell mr-1"></i> Sự kiện: Hôm nay (07/09)
+                                    </div>
+                                    <p class="text-slate-600 text-[10px] leading-tight font-medium">Học Bài 1 Tin học 11: Hệ Điều Hành & Khảo sát tiện ích di động.</p>
+                                </div>
+                            </div>
+
+                            <!-- 5. Màn hình Ứng dụng Ghi chú tiện ích -->
+                            <div id="util-notes" class="absolute inset-0 bg-yellow-50 hidden opacity-0 transition-opacity duration-300 flex-col pt-10 px-3.5 pb-3 text-slate-800">
+                                <div class="flex justify-between items-center pb-2 border-b border-yellow-200">
+                                    <button onclick="openPhoneApp('app-home');" class="text-xs font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1">
+                                        <i class="fas fa-chevron-left"></i> Menu
+                                    </button>
+                                    <h4 class="font-bold text-xs text-amber-900">Ghi chú cá nhân</h4>
+                                    <i class="fas fa-edit text-amber-700 text-sm"></i>
+                                </div>
+                                <div class="flex-1 mt-2 space-y-2 overflow-y-auto text-left">
+                                    <div class="bg-white p-2.5 rounded-xl border border-yellow-200 shadow-sm">
+                                        <div class="font-bold text-xs text-slate-800">📌 Bài tập Tin 11</div>
+                                        <p class="text-[10px] text-slate-500 mt-1 font-medium">So sánh sự khác biệt giữa HĐH máy tính và HĐH thiết bị di động...</p>
+                                    </div>
+                                    <div class="bg-white p-2.5 rounded-xl border border-yellow-200 shadow-sm">
+                                        <div class="font-bold text-xs text-slate-800">✅ Tiện ích đã test</div>
+                                        <p class="text-[10px] text-slate-500 mt-1 font-medium">Đã kiểm tra Camera, Máy tính, Đồng hồ, Lịch trực tiếp trên điện thoại.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 6. Màn hình Ứng dụng Ghi âm tiện ích -->
+                            <div id="util-recorder" class="absolute inset-0 bg-slate-900 hidden opacity-0 transition-opacity duration-300 flex-col pt-10 px-4 pb-4 text-white">
+                                <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+                                    <button onclick="openPhoneApp('app-home');" class="text-xs font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1">
+                                        <i class="fas fa-chevron-left"></i> Menu
+                                    </button>
+                                    <h4 class="font-bold text-xs">Ghi âm giọng nói</h4>
+                                    <div class="w-6"></div>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center justify-center">
+                                    <div class="w-20 h-20 rounded-full bg-rose-600/20 border-2 border-rose-500 flex items-center justify-center mb-4 animate-pulse">
+                                        <i class="fas fa-microphone text-3xl text-rose-500"></i>
+                                    </div>
+                                    <div class="font-mono text-2xl font-bold tracking-wider">00:01:45</div>
+                                    <span class="text-xs text-slate-400 mt-1 font-medium">Đang ghi âm bài giảng...</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Touch Ripple Animation Element -->
+                        <div id="touch-ripple" class="absolute w-16 h-16 bg-white/50 rounded-full scale-0 opacity-0 pointer-events-none z-50"></div>
+
+                        <!-- Home Bar (Chạm vào thanh này để luôn quay về Màn hình chính) -->
+                        <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-6 z-30 flex items-center justify-center cursor-pointer group" onclick="openPhoneApp('app-home');" title="Về Màn hình chính">
+                            <div class="w-24 h-1 bg-white/80 rounded-full group-hover:bg-white group-hover:h-1.5 transition-all shadow"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Controls Panel: Đồng bộ với màn hình điện thoại -->
+                <div class="grid grid-cols-1 gap-4 w-full max-w-sm content-center z-10">
+                    
+                    <!-- Card 1: Giao diện Cảm biến -->
+                    <div onclick="openPhoneApp('app-sensors');" class="bg-white border-2 border-slate-100 p-5 rounded-2xl cursor-pointer hover:border-pink-300 transition-all shadow-sm">
+                        <div class="flex items-start">
+                            <div class="w-14 h-14 bg-pink-50 text-pink-500 rounded-full flex items-center justify-center mr-4 shrink-0">
+                                <i class="fas fa-fingerprint text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Giao diện Cảm biến</h4>
+                                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Vuốt, chạm, nhận dạng hành vi, tự xoay màn hình, tắt màn hình khi áp tai nghe.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Kết nối mạng Di động -->
+                    <div onclick="openPhoneApp('app-network');" class="bg-white border-2 border-slate-100 p-5 rounded-2xl cursor-pointer hover:border-blue-300 transition-all shadow-sm">
+                        <div class="flex items-start">
+                            <div class="w-14 h-14 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mr-4 shrink-0">
+                                <i class="fas fa-wifi text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Kết nối mạng Di động</h4>
+                                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Tối ưu cho 3G/4G/5G, Wifi, Bluetooth, NFC để luôn giữ kết nối online.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Tiện ích cá nhân -->
+                    <div onclick="openPhoneApp('app-home');" class="bg-white border-2 border-slate-100 p-5 rounded-2xl cursor-pointer hover:border-green-300 transition-all shadow-sm">
+                        <div class="flex items-start">
+                            <div class="w-14 h-14 bg-green-50 text-green-500 rounded-full flex items-center justify-center mr-4 shrink-0">
+                                <i class="fas fa-toolbox text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Tiện ích Cá nhân</h4>
+                                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Tích hợp sẵn nhiều ứng dụng tiện ích cá nhân: chụp ảnh, quay phim, đồng hồ, máy tính bỏ túi, sổ tay ghi chép, lịch làm việc...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OS Comparison -->
+            <div class="flex flex-col md:flex-row justify-center gap-10 items-center bg-white p-8 rounded-3xl border border-slate-100 shadow-sm mt-8">
+                <div class="text-center w-40">
+                    <i class="fab fa-apple text-6xl text-slate-800 mb-3"></i>
+                    <h4 class="font-bold text-xl">iOS</h4>
+                    <span class="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded">Apple (iPhone, iPad)</span>
+                </div>
+                <div class="hidden md:block w-px h-24 bg-slate-200"></div>
+                <div class="text-center w-40">
+                    <i class="fab fa-android text-6xl text-green-500 mb-3"></i>
+                    <h4 class="font-bold text-xl">Android</h4>
+                    <span class="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded">Google (Lõi LINUX)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: MỐI QUAN HỆ ================= -->
+        <div id="cautruc" class="tab-content">
+            
+            <div class="glass-card p-6 md:p-8 mb-8 bg-gradient-to-r from-indigo-50 via-white to-pink-50 border-2 border-white shadow-sm relative overflow-hidden">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="max-w-2xl">
+                        <div class="inline-flex items-center bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+                            <i class="fas fa-sitemap mr-1.5"></i> Kiến trúc hệ thống
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-2">
+                            Cấu trúc Phân Lớp & Cơ chế Gọi Dịch vụ
+                        </h3>
+                        <p class="text-[15px] text-gray-600 font-medium leading-relaxed">
+                            Phần mềm ứng dụng <strong class="text-pink-600">không được phép</strong> trực tiếp điều khiển các linh kiện điện tử phần cứng. Tất cả yêu cầu (đọc, ghi, mở tệp) đều phải thông qua <strong class="text-blue-600">Hệ điều hành</strong> – chiếc "cầu nối" an toàn và hiệu quả nhất!
+                        </p>
+                    </div>
+                    <div class="shrink-0 flex items-center gap-2 bg-white/80 p-3 rounded-2xl border border-indigo-100 shadow-sm text-center">
+                        <div class="px-3 py-2">
+                            <span class="block text-2xl font-extrabold text-indigo-600">4</span>
+                            <span class="text-[11px] font-bold text-gray-500 uppercase">Tầng phân lớp</span>
+                        </div>
+                        <div class="w-px h-10 bg-gray-200"></div>
+                        <div class="px-3 py-2">
+                            <span class="block text-2xl font-extrabold text-pink-500">2 Chiều</span>
+                            <span class="text-[11px] font-bold text-gray-500 uppercase">Giao tiếp bus</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SƠ ĐỒ 4 TẦNG LẬT XOAY NGANG TRỤC X TỪ DƯỚI LÊN -->
+            <div class="glass-card p-6 md:p-8 mb-10">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-800 flex items-center">
+                            <span class="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm mr-2.5 shadow-sm">1</span>
+                            Mô phỏng: Quá trình Lưu tệp tin (Save File)
+                        </h4>
+                        <p class="text-[15px] text-gray-600 font-medium leading-relaxed mt-1">Nhấp vào từng lớp để khám phá chi tiết (lật từ dưới lên), hoặc bấm nút thực nghiệm bên phải</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                            <span class="w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-ping"></span> Trực quan 2 chiều
+                        </span>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- Cột trái: Sơ đồ 4 lớp trực quan -->
+                    <div class="lg:col-span-6 relative flex flex-col items-center">
+                        <div class="w-full max-w-md relative flex flex-col gap-3 py-2" id="architecture-stack">
+                            
+                            <!-- Hạt dữ liệu chuyển động -->
+                            <div id="data-packet" class="data-packet hidden text-white text-[10px] font-bold">
+                                <i id="packet-icon" class="fas fa-file-alt"></i>
+                            </div>
+
+                            <!-- Lớp 1: Người dùng -->
+                            <div id="layer-user" class="stack-item stack-flip-x-container" onclick="this.classList.toggle('is-flipped')">
+                                <div class="stack-flip-x-inner shadow-sm group">
+                                    <div class="stack-flip-x-front bg-white p-4 border-2 border-indigo-500 flex items-center justify-between">
+                                        <div class="flex items-center gap-3.5">
+                                            <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600">
+                                                <i class="fas fa-user-astronaut text-2xl"></i>
+                                            </div>
+                                            <div class="text-left">
+                                                <div class="flex items-center gap-2">
+                                                    <h5 class="font-bold text-gray-800 text-base">1. Người dùng</h5>
+                                                    <span class="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-bold">Tác nhân</span>
+                                                </div>
+                                                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Phát sinh nhu cầu & tương tác (Click nút "Save")</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-gray-300"></i>
+                                    </div>
+                                    <div class="stack-flip-x-back bg-indigo-50 border-2 border-indigo-400 p-4 flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                            <i class="fas fa-user-astronaut text-lg"></i>
+                                        </div>
+                                        <p class="text-[15px] text-gray-600 font-medium leading-relaxed text-left">
+                                            Người dùng không cần biết dữ liệu được ghi vào track hay sector nào trên ổ cứng. Chỉ tương tác qua bàn phím, chuột để ra lệnh.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mũi tên kết nối -->
+                            <div class="flex justify-center -my-2 text-indigo-300 text-xs pointer-events-none">
+                                <i class="fas fa-arrows-alt-v animate-pulse"></i>
+                            </div>
+
+                            <!-- Lớp 2: PM Ứng dụng -->
+                            <div id="layer-app" class="stack-item stack-flip-x-container" onclick="this.classList.toggle('is-flipped')">
+                                <div class="stack-flip-x-inner shadow-sm group">
+                                    <div class="stack-flip-x-front bg-white p-4 border-2 border-pink-200 flex items-center justify-between">
+                                        <div class="flex items-center gap-3.5">
+                                            <div class="w-12 h-12 rounded-xl bg-pink-500 flex items-center justify-center text-white">
+                                                <i class="fas fa-file-word text-2xl"></i>
+                                            </div>
+                                            <div class="text-left">
+                                                <div class="flex items-center gap-2">
+                                                    <h5 class="font-bold text-pink-800 text-base">2. Phần mềm Ứng dụng</h5>
+                                                    <span class="text-[10px] bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-bold">Word / Chrome</span>
+                                                </div>
+                                                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Gọi dịch vụ hệ thống (System Call), không tự ghi đĩa</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-pink-300"></i>
+                                    </div>
+                                    <div class="stack-flip-x-back bg-pink-50 border-2 border-pink-400 p-4 flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-pink-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                            <i class="fas fa-info-circle text-lg"></i>
+                                        </div>
+                                        <p class="text-[15px] text-gray-600 font-medium leading-relaxed text-left">
+                                            Ứng dụng KHÔNG tự điều khiển mạch điện. Nó đóng gói yêu cầu thành 'Lời gọi dịch vụ hệ thống' (System Call) gửi xuống HĐH.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mũi tên kết nối -->
+                            <div class="flex justify-center -my-2 text-pink-300 text-xs pointer-events-none">
+                                <i class="fas fa-arrows-alt-v animate-pulse"></i>
+                            </div>
+
+                            <!-- Lớp 3: HỆ ĐIỀU HÀNH -->
+                            <div id="layer-os" class="stack-item stack-flip-x-container" onclick="this.classList.toggle('is-flipped')">
+                                <div class="stack-flip-x-inner shadow-md group">
+                                    <div class="stack-flip-x-front bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 border-2 border-blue-400 flex items-center justify-between" id="front-os">
+                                        <div class="flex items-center gap-3.5">
+                                            <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-white">
+                                                <i class="fas fa-cogs text-2xl animate-spin-slow"></i>
+                                            </div>
+                                            <div class="text-left">
+                                                <div class="flex items-center gap-2">
+                                                    <h5 class="font-extrabold text-white text-base">3. Hệ Điều Hành</h5>
+                                                    <span class="text-[10px] bg-white/30 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider">Môi trường trung gian</span>
+                                                </div>
+                                                <p class="text-[15px] text-blue-100 font-medium leading-relaxed">Tiếp nhận, kiểm tra dung lượng, phân quyền & ra lệnh</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-white/60"></i>
+                                    </div>
+                                    <div class="stack-flip-x-back bg-blue-50 border-2 border-blue-400 p-4 flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                            <i class="fas fa-info-circle text-lg"></i>
+                                        </div>
+                                        <p class="text-[15px] text-gray-600 font-medium leading-relaxed text-left">
+                                            Bộ não trọng tài: HĐH tiếp nhận yêu cầu, kiểm tra quyền, dò tìm cụm trống trên đĩa, quản lý bộ nhớ đệm trước khi phát lệnh vật lý.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mũi tên kết nối -->
+                            <div class="flex justify-center -my-2 text-blue-400 text-xs pointer-events-none">
+                                <i class="fas fa-arrows-alt-v animate-pulse"></i>
+                            </div>
+
+                            <!-- Lớp 4: Phần cứng -->
+                            <div id="layer-hw" class="stack-item stack-flip-x-container" onclick="this.classList.toggle('is-flipped')">
+                                <div class="stack-flip-x-inner shadow-md group">
+                                    <div class="stack-flip-x-front bg-slate-900 text-white p-4 border-2 border-slate-700 flex items-center justify-between" id="front-hw">
+                                        <div class="flex items-center gap-3.5">
+                                            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-emerald-400">
+                                                <i class="fas fa-microchip text-2xl"></i>
+                                            </div>
+                                            <div class="text-left">
+                                                <div class="flex items-center gap-2">
+                                                    <h5 class="font-bold text-white text-base">4. Phần cứng vật lý</h5>
+                                                    <span class="text-[10px] bg-slate-800 text-emerald-400 px-2 py-0.5 rounded font-bold">CPU / RAM / SSD</span>
+                                                </div>
+                                                <p class="text-[15px] text-slate-300 font-medium leading-relaxed">Ghi dữ liệu vật lý (từ tính / chip nhớ flash)</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-slate-500"></i>
+                                    </div>
+                                    <div class="stack-flip-x-back bg-slate-800 border-2 border-emerald-500 p-4 flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                            <i class="fas fa-info-circle text-lg"></i>
+                                        </div>
+                                        <p class="text-[15px] text-slate-200 font-medium leading-relaxed text-left">
+                                            Bộ điều khiển ổ đĩa (Disk Controller) nhận tín hiệu từ HĐH để ghi các bit 0 và 1 lên bề mặt lưu trữ vật lý.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cột phải: Bảng điều khiển kịch bản & Kernel Log -->
+                    <div class="lg:col-span-6 flex flex-col gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <label class="text-xs font-extrabold uppercase tracking-wider text-gray-400 block mb-3">
+                                Chọn kịch bản thực nghiệm
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="triggerDataFlow('success')" id="btn-flow-success" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-200 font-bold py-3 px-3 rounded-xl transition-all active:scale-95 flex flex-col items-center justify-center text-center group">
+                                    <i class="fas fa-check-circle text-xl text-emerald-600 mb-1 group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-sm">Lưu tệp thành công</span>
+                                    <span class="text-xs text-emerald-600 font-medium mt-0.5">(Ổ cứng còn trống)</span>
+                                </button>
+                                
+                                <button onclick="triggerDataFlow('error')" id="btn-flow-error" class="bg-rose-50 hover:bg-rose-100 text-rose-800 border-2 border-rose-200 font-bold py-3 px-3 rounded-xl transition-all active:scale-95 flex flex-col items-center justify-center text-center group">
+                                    <i class="fas fa-exclamation-triangle text-xl text-rose-600 mb-1 group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-sm">Lưu tệp thất bại</span>
+                                    <span class="text-xs text-rose-600 font-medium mt-0.5">(Ổ đĩa đầy / HĐH chặn)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Màn hình Terminal Kernel Log -->
+                        <div class="bg-slate-950 text-slate-300 rounded-2xl p-4 shadow-inner border border-slate-800 font-mono text-xs">
+                            <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[11px] text-slate-400">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>
+                                    <span class="ml-2 font-bold text-slate-300">Nhật ký Hệ điều hành (Kernel Log)</span>
+                                </div>
+                                <span id="flow-status-badge" class="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[10px]">Chờ lệnh...</span>
+                            </div>
+
+                            <div id="kernel-log" class="space-y-1.5 h-36 overflow-y-auto pr-1">
+                                <div class="text-slate-500">> Hệ thống ở trạng thái sẵn sàng. Bấm nút phía trên để mô phỏng luồng gọi dịch vụ.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= TAB 5: LUYỆN TẬP ================= -->
+        <div id="luyentap" class="tab-content">
+            
+            <!-- Mini Game -->
+            <div class="glass-card p-6 mb-8 border-t-4 border-pastel-green">
+                <h3 class="text-xl font-bold text-gray-700 mb-2"><i class="fas fa-lightbulb text-pastel-yellow mr-2"></i> Mini Game: Ai Cần Hệ Điều Hành?</h3>
+                <p class="text-[15px] text-gray-600 font-medium leading-relaxed mb-6">Thiết bị chuyên dụng KHÔNG CẦN HĐH. Thiết bị đa năng CẦN HĐH. Hãy chọn đáp án đúng!</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Thiết bị 1: Máy tính xách tay -->
+                    <div onclick="checkDevice(this, true)" class="bg-white border-2 border-gray-100 p-4 rounded-2xl text-center cursor-pointer hover:border-blue-300 hover:shadow-md transition flex flex-col justify-between min-h-[175px] group">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-laptop text-4xl text-gray-400 mb-2 group-hover:text-blue-500 transition"></i>
+                            <h4 class="font-bold text-base text-gray-700">Máy tính xách tay</h4>
+                        </div>
+                        <div class="device-result w-full mt-3 pt-2 border-t border-gray-100 min-h-[38px] flex items-center justify-center">
+                            <span class="text-[13px] text-gray-500 font-medium py-1 px-2 rounded-lg bg-gray-50 border border-gray-100 group-hover:text-gray-700 transition">Chạm để chọn</span>
+                        </div>
+                    </div>
+
+                    <!-- Thiết bị 2: Lò vi sóng -->
+                    <div onclick="checkDevice(this, false)" class="bg-white border-2 border-gray-100 p-4 rounded-2xl text-center cursor-pointer hover:border-blue-300 hover:shadow-md transition flex flex-col justify-between min-h-[175px] group">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-microchip text-4xl text-gray-400 mb-2 group-hover:text-pink-500 transition"></i>
+                            <h4 class="font-bold text-base text-gray-700">Lò vi sóng</h4>
+                        </div>
+                        <div class="device-result w-full mt-3 pt-2 border-t border-gray-100 min-h-[38px] flex items-center justify-center">
+                            <span class="text-[13px] text-gray-500 font-medium py-1 px-2 rounded-lg bg-gray-50 border border-gray-100 group-hover:text-gray-700 transition">Chạm để chọn</span>
+                        </div>
+                    </div>
+
+                    <!-- Thiết bị 3: Smartphone -->
+                    <div onclick="checkDevice(this, true)" class="bg-white border-2 border-gray-100 p-4 rounded-2xl text-center cursor-pointer hover:border-blue-300 hover:shadow-md transition flex flex-col justify-between min-h-[175px] group">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-mobile-alt text-4xl text-gray-400 mb-2 group-hover:text-blue-500 transition"></i>
+                            <h4 class="font-bold text-base text-gray-700">Smartphone</h4>
+                        </div>
+                        <div class="device-result w-full mt-3 pt-2 border-t border-gray-100 min-h-[38px] flex items-center justify-center">
+                            <span class="text-[13px] text-gray-500 font-medium py-1 px-2 rounded-lg bg-gray-50 border border-gray-100 group-hover:text-gray-700 transition">Chạm để chọn</span>
+                        </div>
+                    </div>
+
+                    <!-- Thiết bị 4: Máy xay sinh tố -->
+                    <div onclick="checkDevice(this, false)" class="bg-white border-2 border-gray-100 p-4 rounded-2xl text-center cursor-pointer hover:border-blue-300 hover:shadow-md transition flex flex-col justify-between min-h-[175px] group">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-blender text-4xl text-gray-400 mb-2 group-hover:text-pink-500 transition"></i>
+                            <h4 class="font-bold text-base text-gray-700">Máy xay sinh tố</h4>
+                        </div>
+                        <div class="device-result w-full mt-3 pt-2 border-t border-gray-100 min-h-[38px] flex items-center justify-center">
+                            <span class="text-[13px] text-gray-500 font-medium py-1 px-2 rounded-lg bg-gray-50 border border-gray-100 group-hover:text-gray-700 transition">Chạm để chọn</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz SGK -->
+            <h3 class="text-2xl font-bold text-center mb-6 text-gray-700">Trắc Nghiệm Ôn Tập (5 câu)</h3>
+            <div class="glass-card p-6 md:p-8 space-y-6" id="quiz-container">
+                <!-- Q1 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">1. Tiêu chí quan trọng nhất trong quá trình hình thành HĐH máy tính cá nhân là gì?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Khả năng bảo mật tối đa</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Tính thân thiện, dễ sử dụng</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Xử lý đồ họa 3D mạnh mẽ</span></label>
+                    </div>
+                </div>
+                <!-- Q2 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">2. Thành phần nào sau đây KHÔNG thuộc về "Giao diện đồ họa"?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Cửa sổ</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Biểu tượng (Icon)</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Câu lệnh văn bản</span></label>
+                    </div>
+                </div>
+                <!-- Q3 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">3. Cơ chế "plug & play" (cắm và chạy) có nghĩa là:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Tự động nhận biết thiết bị ngoại vi và cài đặt trình điều khiển.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Phải rút điện trước khi cắm thiết bị.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Chỉ áp dụng cho điện thoại di động.</span></label>
+                    </div>
+                </div>
+                <!-- Q4 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">4. HĐH Android được xây dựng dựa trên lõi của hệ điều hành nào?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Windows</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. macOS</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. LINUX</span></label>
+                    </div>
+                </div>
+                <!-- Q5 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">5. Lớp nào nằm trực tiếp giữa Phần cứng và Phần mềm ứng dụng?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Người dùng</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Hệ điều hành</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Thiết bị ngoại vi</span></label>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button onclick="checkAnswers()" class="bg-pastel-blue hover:bg-blue-200 text-blue-800 font-bold py-3 px-8 rounded-full shadow-sm transition-transform hover:scale-105 inline-flex items-center text-base">
+                        <i class="fas fa-paper-plane mr-2"></i> Nộp Bài & Xem Điểm
+                    </button>
+                    <div id="quiz-result" class="mt-4 text-lg font-bold hidden py-3 px-6 rounded-xl inline-block shadow-sm"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Tab switching
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-pastel-blue', 'text-blue-800', 'shadow-sm');
+                el.classList.add('text-gray-500', 'hover:bg-gray-50');
+            });
+            document.getElementById(tabName).classList.add('active');
+            const btn = document.getElementById('btn-' + tabName);
+            btn.classList.remove('text-gray-500', 'hover:bg-gray-50');
+            btn.classList.add('bg-pastel-blue', 'text-blue-800', 'shadow-sm');
+        }
+
+        // CLI vs GUI
+        function handleDosEnter(e) {
+            if (e.key === 'Enter') {
+                const inputEl = document.getElementById('dos-input');
+                const historyEl = document.getElementById('dos-history');
+                const command = inputEl.value.trim();
+                const expected = "erase C:\\dulieu\\danhsach.txt";
+                let output = `<div class="text-green-400">C:\\> ${command}</div>`;
+                
+                if (command === expected) {
+                    output += `<div class="text-pastel-blue">1 file(s) deleted.</div>`;
+                    inputEl.disabled = true;
+                } else if (command !== "") {
+                    output += `<div class="text-pastel-pink">Bad command or file name. (Sai cú pháp!)</div>`;
+                }
+                historyEl.innerHTML += output;
+                historyEl.scrollTop = historyEl.scrollHeight;
+                inputEl.value = '';
+            }
+        }
+
+        function selectGuiFile() {
+            const file = document.getElementById('gui-file');
+            file.querySelector('span').classList.add('bg-pastel-blue', 'text-blue-700');
+            document.getElementById('gui-delete-btn').classList.remove('hidden');
+        }
+
+        function deleteGuiFile() {
+            document.getElementById('gui-file').classList.add('hidden');
+            document.getElementById('gui-delete-btn').classList.add('hidden');
+            document.getElementById('gui-success').classList.replace('hidden', 'flex');
+        }
+
+        function resetGui() {
+            const file = document.getElementById('gui-file');
+            file.classList.remove('hidden');
+            file.querySelector('span').classList.remove('bg-pastel-blue', 'text-blue-700');
+            document.getElementById('gui-success').classList.replace('flex', 'hidden');
+        }
+
+        let isPlugged = false;
+        function simulateDetailedPlugAndPlay() {
+            if(isPlugged) return;
+            isPlugged = true;
+            
+            const btn = document.getElementById('btn-pnp');
+            const simBox = document.getElementById('pnp-simulator');
+            const usb = document.getElementById('usb-device');
+            const noti = document.getElementById('os-notification');
+            const notiText = document.getElementById('os-noti-text');
+            const logBox = document.getElementById('pnp-log');
+            const waves = document.getElementById('scan-waves');
+
+            simBox.classList.remove('hidden');
+            btn.disabled = true;
+            btn.classList.replace('bg-indigo-500', 'bg-slate-400');
+            btn.classList.replace('hover:bg-indigo-600', 'hover:bg-slate-400');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Đang xử lý...';
+            logBox.innerHTML = '';
+
+            function addLog(text, color='text-pastel-green') {
+                logBox.innerHTML += `<div class="${color}">> ${text}</div>`;
+                logBox.scrollTop = logBox.scrollHeight;
+            }
+
+            usb.style.left = 'calc(100% - 150px)';
+            
+            setTimeout(() => {
+                waves.classList.remove('hidden');
+                addLog('Hệ thống: Nhận diện tín hiệu cổng USB...');
+                noti.classList.remove('translate-x-[150%]');
+                notiText.textContent = "Thiết lập thiết bị mới...";
+                
+                setTimeout(() => {
+                    addLog('HĐH: Đọc mã định danh (Hardware ID)...', 'text-pastel-yellow');
+                    addLog('HĐH: Đang tìm Driver phù hợp...', 'text-pastel-yellow');
+                    
+                    setTimeout(() => {
+                        waves.classList.add('hidden');
+                        addLog('Hoàn tất: Đã nạp Driver thành công!', 'text-pastel-blue');
+                        
+                        noti.classList.replace('border-blue-500', 'border-pastel-green');
+                        noti.innerHTML = `<strong class="text-green-700 block mb-1 text-sm"><i class="fas fa-check-circle mr-1"></i>Hoàn tất</strong><span class="text-gray-600">USB sẵn sàng sử dụng.</span>`;
+                        btn.innerHTML = '<i class="fas fa-check-double mr-2"></i> Đã cấu hình xong (Plug & Play)';
+                        btn.classList.replace('bg-slate-400', 'bg-pastel-green');
+                        btn.classList.replace('text-white', 'text-green-800');
+                        
+                        setTimeout(() => { noti.classList.add('translate-x-[150%]'); }, 4000);
+                    }, 2500);
+                }, 1500);
+            }, 1000);
+        }
+
+        let isPhoneRotated = false;
+        function openPhoneApp(appId) {
+            document.querySelectorAll('.phone-app').forEach(app => {
+                app.classList.add('hidden'); 
+                app.classList.remove('flex');
+            });
+            const targetApp = document.getElementById(appId);
+            if(targetApp) {
+                targetApp.classList.remove('hidden');
+                targetApp.classList.add('flex');
+            }
+
+            const statusBar = document.getElementById('status-bar');
+            if(appId === 'app-network') {
+                statusBar.classList.replace('text-white', 'text-slate-800');
+            } else {
+                statusBar.classList.replace('text-slate-800', 'text-white');
+            }
+        }
+
+        function togglePhoneSetting(setting) {
+            const btn = document.getElementById(`toggle-${setting}`);
+            const circle = btn.querySelector('div');
+            const iconObj = document.getElementById(`status-${setting}`);
+            const isOn = !btn.classList.contains('bg-gray-300');
+
+            if (isOn) {
+                btn.className = `w-10 h-6 rounded-full bg-gray-300 relative transition-colors`;
+                circle.classList.remove('translate-x-4');
+                if(iconObj) iconObj.classList.add('hidden');
+            } else {
+                let colorClass = 'bg-blue-500'; 
+                if(setting === 'cellular') colorClass = 'bg-green-500';
+                if(setting === 'bluetooth') colorClass = 'bg-indigo-500';
+                if(setting === 'nfc') colorClass = 'bg-amber-500';
+
+                btn.className = `w-10 h-6 rounded-full ${colorClass} relative transition-colors`;
+                circle.classList.add('translate-x-4');
+                if(iconObj) iconObj.classList.remove('hidden');
+            }
+        }
+
+        function simulateProximity(isNear) {
+            const screen = document.getElementById('phone-screen');
+            screen.style.filter = isNear ? 'brightness(0)' : 'brightness(1)';
+        }
+
+        function triggerPhoneRotate() {
+            const phone = document.getElementById('virtual-phone');
+            isPhoneRotated = !isPhoneRotated;
+            phone.style.transform = isPhoneRotated ? "rotate(-90deg) scale(0.85)" : "rotate(0deg) scale(1)";
+        }
+
+        function switchUtilityMode(mode) {
+            openPhoneApp('app-utilities');
+            const allUtils = ['util-camera', 'util-clock', 'util-calc', 'util-calendar', 'util-notes', 'util-recorder'];
+            const statusBar = document.getElementById('status-bar');
+
+            allUtils.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.classList.replace('opacity-100', 'opacity-0');
+                    setTimeout(() => el.classList.add('hidden'), 250);
+                }
+            });
+
+            setTimeout(() => {
+                const activeEl = document.getElementById('util-' + mode);
+                if(activeEl) {
+                    activeEl.classList.remove('hidden');
+                    setTimeout(() => activeEl.classList.replace('opacity-0', 'opacity-100'), 30);
+                }
+
+                if (mode === 'calendar' || mode === 'notes') {
+                    statusBar.classList.replace('text-white', 'text-slate-800');
+                } else {
+                    statusBar.classList.replace('text-slate-800', 'text-white');
+                }
+            }, 260);
+        }
+
+        // Camera snap snapshot
+        let snapCount = 0;
+        function takeSnapshot() {
+            snapCount++;
+            document.getElementById('snap-count').innerText = snapCount;
+            triggerFlashEffect();
+        }
+
+        function triggerFlashEffect() {
+            const flash = document.getElementById('camera-flash');
+            flash.classList.remove('camera-flash-active');
+            void flash.offsetWidth;
+            flash.classList.add('camera-flash-active');
+        }
+
+        let calcCurrent = '0';
+        let calcPrev = null;
+        let calcOperator = null;
+        let calcReset = false;
+
+        function updateCalcDisplay() {
+            document.getElementById('calc-main-display').innerText = calcCurrent;
+            const sub = document.getElementById('calc-sub-display');
+            if (calcPrev !== null && calcOperator) {
+                sub.innerText = `${calcPrev} ${calcOperator}`;
+            } else {
+                sub.innerText = '';
+            }
+        }
+
+        function calcNum(num) {
+            if (calcCurrent === '0' || calcReset) {
+                calcCurrent = num;
+                calcReset = false;
+            } else {
+                calcCurrent += num;
+            }
+            updateCalcDisplay();
+        }
+
+        function calcDot() {
+            if (calcReset) {
+                calcCurrent = '0.';
+                calcReset = false;
+            } else if (!calcCurrent.includes('.')) {
+                calcCurrent += '.';
+            }
+            updateCalcDisplay();
+        }
+
+        function calcClear() {
+            calcCurrent = '0';
+            calcPrev = null;
+            calcOperator = null;
+            calcReset = false;
+            updateCalcDisplay();
+        }
+
+        function calcToggleSign() {
+            if (calcCurrent !== '0') {
+                calcCurrent = calcCurrent.startsWith('-') ? calcCurrent.slice(1) : '-' + calcCurrent;
+                updateCalcDisplay();
+            }
+        }
+
+        function calcPercent() {
+            calcCurrent = String(parseFloat(calcCurrent) / 100);
+            updateCalcDisplay();
+        }
+
+        function calcOp(op) {
+            if (calcOperator && !calcReset) {
+                calcEquals();
+            }
+            calcPrev = parseFloat(calcCurrent);
+            calcOperator = op;
+            calcReset = true;
+            updateCalcDisplay();
+        }
+
+        function calcEquals() {
+            if (calcOperator === null || calcPrev === null) return;
+            const current = parseFloat(calcCurrent);
+            let res = 0;
+            if (calcOperator === '+') res = calcPrev + current;
+            else if (calcOperator === '-') res = calcPrev - current;
+            else if (calcOperator === '×') res = calcPrev * current;
+            else if (calcOperator === '÷') res = current === 0 ? 'Lỗi' : calcPrev / current;
+
+            calcCurrent = String(res);
+            calcPrev = null;
+            calcOperator = null;
+            calcReset = true;
+            updateCalcDisplay();
+        }
+
+        // Live real time clock for mobile status & widgets
+        function updateLiveClocks() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const timeStr = `${h}:${m}`;
+            
+            const pClock = document.getElementById('phone-clock-status');
+            const wTime = document.getElementById('home-widget-time');
+            const cLive = document.getElementById('clock-live-time');
+            
+            if(pClock) pClock.innerText = timeStr;
+            if(wTime) wTime.innerText = timeStr;
+            if(cLive) cLive.innerText = `${h}:${m}:${s}`;
+        }
+        setInterval(updateLiveClocks, 1000);
+        updateLiveClocks();
+
+        function simulateTouch(e) {
+            const ripple = document.getElementById('touch-ripple');
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ripple.style.transition = 'none';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.opacity = '1';
+            ripple.style.left = `${x - 32}px`;
+            ripple.style.top = `${y - 32}px`;
+            
+            void ripple.offsetWidth;
+            ripple.style.transition = 'all 0.4s ease-out';
+            ripple.style.transform = 'scale(2.5)';
+            ripple.style.opacity = '0';
+        }
+
+        let isFlowRunning = false;
+        function appendLog(text, color = "text-slate-300") {
+            const logBox = document.getElementById('kernel-log');
+            const time = new Date().toLocaleTimeString('vi-VN', { hour12: false });
+            logBox.innerHTML += `<div class="${color} flex items-start gap-1"><span class="text-slate-500 shrink-0 font-mono">[${time}]</span> <span>${text}</span></div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function triggerDataFlow(scenario) {
+            if(isFlowRunning) return;
+            isFlowRunning = true;
+
+            const packet = document.getElementById('data-packet');
+            const badge = document.getElementById('flow-status-badge');
+            const logBox = document.getElementById('kernel-log');
+            logBox.innerHTML = '';
+
+            const osFront = document.getElementById('front-os');
+            const hwFront = document.getElementById('front-hw');
+
+            osFront.classList.remove('border-green-400', 'border-red-400');
+            osFront.classList.add('border-blue-400');
+            hwFront.classList.remove('border-green-400');
+            hwFront.classList.add('border-slate-700');
+
+            packet.className = 'data-packet hidden';
+            void packet.offsetWidth;
+
+            if (scenario === 'success') {
+                badge.innerText = "Đang xử lý: Thành công";
+                badge.className = "bg-emerald-950 text-emerald-300 border border-emerald-700 px-2 py-0.5 rounded text-[10px]";
+
+                packet.className = 'data-packet animate-flow-down bg-indigo-500 text-white';
+                packet.innerHTML = '<i class="fas fa-file-alt text-[9px]"></i>';
+
+                appendLog("Người dùng click [Ctrl + S] hoặc nút Lưu trong Word.", "text-indigo-300");
+
+                setTimeout(() => {
+                    appendLog("Word: Gọi hàm hệ thống SysCall::WriteFile('BaoCao.docx').", "text-pink-300");
+                }, 700);
+
+                setTimeout(() => {
+                    osFront.classList.replace('border-blue-400', 'border-green-400');
+                    appendLog("HĐH: Kiểm tra định dạng NTFS, hạn ngạch đĩa: HỢP LỆ.", "text-blue-300");
+                    appendLog("HĐH: Cấp phát cluster trống #4521 - #4528 trên ổ C:.", "text-blue-200");
+                }, 1400);
+
+                setTimeout(() => {
+                    hwFront.classList.replace('border-slate-700', 'border-green-400');
+                    appendLog("Ổ đĩa SSD: Nhận tín hiệu điều khiển, nạp dữ liệu vào chip nhớ.", "text-emerald-300");
+                    appendLog("HĐH báo về Word: Lưu tệp thành công 100%!", "text-emerald-400 font-bold");
+                    badge.innerText = "Hoàn tất: Đã lưu";
+                    isFlowRunning = false;
+                }, 2200);
+
+            } else {
+                badge.innerText = "Đang xử lý: Bị chặn";
+                badge.className = "bg-rose-950 text-rose-300 border border-rose-700 px-2 py-0.5 rounded text-[10px]";
+
+                packet.className = 'data-packet animate-flow-error bg-rose-500 text-white';
+                packet.innerHTML = '<i class="fas fa-times text-[9px]"></i>';
+
+                appendLog("Người dùng yêu cầu lưu tệp dung lượng 10 GB.", "text-indigo-300");
+
+                setTimeout(() => {
+                    appendLog("Ứng dụng gửi yêu cầu cấp phát bộ nhớ đĩa.", "text-pink-300");
+                }, 600);
+
+                setTimeout(() => {
+                    osFront.classList.replace('border-blue-400', 'border-red-400');
+                    appendLog("HĐH: Quét ổ đĩa -> Dung lượng trống chỉ còn 500 MB (KHÔNG ĐỦ).", "text-amber-300");
+                    appendLog("HĐH: CHẶN yêu cầu! Ngăn ứng dụng ghi đè gây lỗi hệ thống.", "text-rose-400 font-bold");
+                }, 1200);
+
+                setTimeout(() => {
+                    appendLog("HĐH hiển thị cảnh báo: 'Disk Full! Không thể lưu tệp.'", "text-rose-300");
+                    badge.innerText = "Từ chối an toàn";
+                    isFlowRunning = false;
+                }, 1800);
+            }
+        }
+
+        function checkDevice(el, isCorrect) {
+            const resultBox = el.querySelector('.device-result');
+            if (isCorrect) {
+                el.classList.add('border-green-400', 'bg-green-50/30');
+                el.classList.remove('border-gray-100', 'border-rose-300', 'bg-rose-50/30');
+                resultBox.innerHTML = `
+                    <span class="inline-flex items-center gap-1 text-[13px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-300 shadow-sm animate-pulse">
+                        <i class="fas fa-check-circle text-emerald-600"></i> ĐÚNG! (Cần HĐH)
+                    </span>
+                `;
+            } else {
+                el.classList.add('border-rose-300', 'bg-rose-50/30');
+                el.classList.remove('border-gray-100', 'border-green-400', 'bg-green-50/30');
+                resultBox.innerHTML = `
+                    <span class="inline-flex items-center gap-1 text-[13px] font-bold text-rose-700 bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-300 shadow-sm animate-pulse">
+                        <i class="fas fa-times-circle text-rose-600"></i> SAI! (Không cần)
+                    </span>
+                `;
+            }
+        }
+
+        const answers = { q1: 'B', q2: 'C', q3: 'A', q4: 'C', q5: 'B' };
+        function checkAnswers() {
+            let score = 0; let total = 5;
+            for(let i=1; i<=total; i++) {
+                let qName = 'q' + i;
+                let selected = document.querySelector(`input[name="${qName}"]:checked`);
+                let options = document.querySelectorAll(`input[name="${qName}"]`);
+                
+                options.forEach(opt => {
+                    opt.parentElement.classList.remove('bg-pastel-green', 'bg-pastel-pink', 'border-green-300', 'border-pink-300');
+                    opt.parentElement.classList.add('border-transparent');
+                });
+
+                if (selected) {
+                    if (selected.value === answers[qName]) {
+                        score++;
+                        selected.parentElement.classList.replace('border-transparent', 'border-green-300');
+                        selected.parentElement.classList.add('bg-pastel-green');
+                    } else {
+                        selected.parentElement.classList.replace('border-transparent', 'border-pink-300');
+                        selected.parentElement.classList.add('bg-pastel-pink');
+                        document.querySelector(`input[name="${qName}"][value="${answers[qName]}"]`).parentElement.classList.add('bg-pastel-green');
+                    }
+                }
+            }
+
+            const resultEl = document.getElementById('quiz-result');
+            resultEl.classList.remove('hidden');
+            if(score === 5) {
+                resultEl.innerHTML = `🎉 Xuất sắc! ${score}/${total} điểm.`;
+                resultEl.className = "mt-4 text-lg font-bold block text-green-700 bg-pastel-green border border-green-200 py-3 px-6 rounded-xl inline-block shadow-sm";
+                fireConfetti();
+            } else {
+                resultEl.innerHTML = `📚 Khá lắm! Đạt ${score}/${total} điểm. Ôn tập thêm nhé.`;
+                resultEl.className = "mt-4 text-lg font-bold block text-yellow-700 bg-pastel-yellow border border-yellow-200 py-3 px-6 rounded-xl inline-block shadow-sm";
+            }
+        }
+
+        function fireConfetti() {
+            const colors = ['#ff8fab', '#8eb3ff', '#73d686', '#f2c75c', '#b78eff'];
+            for(let i=0; i<50; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                confetti.style.top = '-10px';
+                document.body.appendChild(confetti);
+                setTimeout(() => { confetti.remove(); }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 5: Thực Hành Chia Sẻ Tài Nguyên Trên Mạng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        /* Tiêu đề chính xác theo yêu cầu */
+        .title-main {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700; /* Bold */
+            font-size: 28px; /* Size 28px */
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Gradient Blue to Purple */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: capitalize; /* Title Case */
+            display: inline-block;
+        }
+
+        .tabcontent { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tabcontent.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pastel Colors & UI elements */
+        .bg-pastel-blue { background-color: #e0f2fe; }
+        .bg-pastel-pink { background-color: #fce7f3; }
+        .bg-pastel-green { background-color: #dcfce3; }
+        .bg-pastel-purple { background-color: #f3e8ff; }
+        .bg-pastel-yellow { background-color: #fef08a; }
+        
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Infographic lines */
+        .flow-line { position: relative; }
+        .flow-line::after {
+            content: '';
+            position: absolute;
+            bottom: -20px; left: 50%;
+            width: 2px; height: 20px;
+            background-color: #cbd5e1;
+        }
+        .flow-line.arrow::after {
+            border-bottom: 2px solid #cbd5e1;
+            border-right: 2px solid #cbd5e1;
+            width: 10px; height: 10px;
+            transform: rotate(45deg);
+            bottom: -22px; margin-left: -4px; background: transparent;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 flex flex-col items-center">
+
+    <!-- Header Section -->
+    <header class="w-full max-w-5xl bg-white rounded-2xl shadow-sm p-6 mb-6 flex items-center justify-between border border-slate-100">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-pastel-blue rounded-full flex items-center justify-center text-blue-500 text-2xl shadow-inner">
+                <i class="fa-solid fa-network-wired"></i>
+            </div>
+            <div>
+                <p class="text-sm font-semibold text-slate-400 mb-1 tracking-wider uppercase">Bài 5 - Tin Học 12</p>
+                <h1 class="title-main">Thực Hành Chia Sẻ Tài Nguyên Trên Mạng</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="w-full max-w-5xl flex flex-wrap gap-2 mb-8 bg-white p-2 rounded-xl shadow-sm border border-slate-100">
+        <button class="tablink active flex-1 py-3 px-4 rounded-lg font-bold text-sm transition-all bg-blue-100 text-blue-600 shadow-sm" onclick="openTab(event, 'tab-tongquan')"><i class="fa-solid fa-compass mr-2"></i>Tổng Quan & Khái Niệm</button>
+        <button class="tablink flex-1 py-3 px-4 rounded-lg font-bold text-sm text-slate-500 hover:bg-slate-50 transition-all" onclick="openTab(event, 'tab-sodo')"><i class="fa-solid fa-sitemap mr-2"></i>Sơ Đồ Kiến Thức</button>
+        <button class="tablink flex-1 py-3 px-4 rounded-lg font-bold text-sm text-slate-500 hover:bg-slate-50 transition-all" onclick="openTab(event, 'tab-thuchanh')"><i class="fa-solid fa-desktop mr-2"></i>Mô Phỏng Thực Hành</button>
+        <button class="tablink flex-1 py-3 px-4 rounded-lg font-bold text-sm text-slate-500 hover:bg-slate-50 transition-all" onclick="openTab(event, 'tab-luuy')"><i class="fa-solid fa-triangle-exclamation mr-2"></i>So Sánh & Lưu Ý</button>
+        <button class="tablink flex-1 py-3 px-4 rounded-lg font-bold text-sm text-slate-500 hover:bg-slate-50 transition-all" onclick="openTab(event, 'tab-tracnghiem')"><i class="fa-solid fa-gamepad mr-2"></i>Trắc Nghiệm (5 Câu)</button>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="w-full max-w-5xl">
+
+        <!-- TAB 1: TỔNG QUAN & KHÁI NIỆM -->
+        <div id="tab-tongquan" class="tabcontent active">
+            <!-- Mục tiêu -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm mb-6 border-l-4 border-purple-400 card-hover">
+                <h2 class="text-xl font-bold text-purple-600 mb-3"><i class="fa-solid fa-bullseye mr-2"></i>Mục Tiêu Bài Học</h2>
+                <p class="text-slate-600 font-medium">Biết cách chia sẻ <span class="text-blue-500 font-bold bg-blue-50 px-2 rounded">tài nguyên tệp</span> và <span class="text-pink-500 font-bold bg-pink-50 px-2 rounded">máy in</span> trong mạng cục bộ.</p>
+            </div>
+
+            <h2 class="text-xl font-bold text-slate-700 mb-4"><i class="fa-solid fa-book-open mr-2 text-blue-400"></i>Các Khái Niệm Quan Trọng</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-pastel-blue p-5 rounded-2xl card-hover">
+                    <div class="text-blue-500 text-3xl mb-3"><i class="fa-solid fa-server"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Tài nguyên mạng</h3>
+                    <p class="text-sm text-slate-600">Có thể là dữ liệu, phần mềm hay thiết bị. Việc chia sẻ cho phép người từ máy này "nhìn thấy" và sử dụng tài nguyên trên máy khác.</p>
+                </div>
+                <div class="bg-pastel-pink p-5 rounded-2xl card-hover">
+                    <div class="text-pink-500 text-3xl mb-3"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Private Network vs Public Network</h3>
+                    <p class="text-sm text-slate-600"><b>Private (Mạng riêng):</b> Độ tin cậy cao, thích hợp để chia sẻ.<br><b>Public (Mạng công cộng):</b> Hạn chế lộ thông tin ở nơi công cộng.</p>
+                </div>
+                <div class="bg-pastel-purple p-5 rounded-2xl card-hover">
+                    <div class="text-purple-500 text-3xl mb-3"><i class="fa-solid fa-eye"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Network Discovery (Nhìn thấy)</h3>
+                    <p class="text-sm text-slate-600">Tính năng cho phép các máy tính khác phát hiện ra máy tính của bạn trong cùng một mạng cục bộ (LAN).</p>
+                </div>
+                <div class="bg-pastel-green p-5 rounded-2xl card-hover">
+                    <div class="text-green-500 text-3xl mb-3"><i class="fa-solid fa-print"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Print Server (Máy in mạng)</h3>
+                    <p class="text-sm text-slate-600">Máy tính cung cấp dịch vụ in trong mạng. Các máy khác gửi yêu cầu, Print Server xếp hàng đợi và cung cấp dịch vụ in.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: SƠ ĐỒ KIẾN THỨC (INFOGRAPHIC) -->
+        <div id="tab-sodo" class="tabcontent">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-slate-700 mb-6 text-center">Quy Trình Chia Sẻ Tài Nguyên Trên Windows</h2>
+                
+                <!-- Giai đoạn 1 -->
+                <div class="bg-slate-50 rounded-xl p-6 mb-8 border border-slate-200">
+                    <h3 class="font-bold text-blue-500 mb-4 text-center">Giai Đoạn 1: Thiết Lập Môi Trường (Bắt Buộc)</h3>
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm w-48 text-center border-t-4 border-blue-400">
+                            <i class="fa-solid fa-network-wired text-2xl text-blue-400 mb-2"></i>
+                            <p class="font-bold text-sm">1. Mạng Riêng</p>
+                            <p class="text-xs text-slate-500 mt-1">Chuyển sang Private Network</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-slate-300 hidden md:block"></i>
+                        <div class="bg-white p-4 rounded-lg shadow-sm w-48 text-center border-t-4 border-purple-400">
+                            <i class="fa-solid fa-eye text-2xl text-purple-400 mb-2"></i>
+                            <p class="font-bold text-sm">2. Bật Chia Sẻ</p>
+                            <p class="text-xs text-slate-500 mt-1">Turn on Network discovery & File sharing</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-slate-300 hidden md:block"></i>
+                        <div class="bg-white p-4 rounded-lg shadow-sm w-48 text-center border-t-4 border-red-400">
+                            <i class="fa-solid fa-fire-extinguisher text-2xl text-red-400 mb-2"></i>
+                            <p class="font-bold text-sm">3. Tường Lửa</p>
+                            <p class="text-xs text-slate-500 mt-1">Tạm dừng (Turn off) Firewall</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Giai đoạn 2 (Chia 2 nhánh) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Nhánh Chia sẻ thư mục -->
+                    <div class="bg-blue-50 rounded-xl p-6 border border-blue-100">
+                        <h3 class="font-bold text-blue-600 mb-4 text-center"><i class="fa-solid fa-folder-open mr-2"></i>Quy trình Chia Sẻ Thư Mục</h3>
+                        <div class="space-y-3 relative">
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm"><span class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">1</span> Click chuột phải vào thư mục > Properties</div>
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm"><span class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">2</span> Chọn thẻ Sharing > Advanced Sharing</div>
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm"><span class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">3</span> Tích "Share this folder"</div>
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm"><span class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">4</span> Share > Chọn Everyone > Add</div>
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm border-2 border-yellow-300"><span class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">5</span> <b>Cấp quyền:</b> Read hoặc Read/Write</div>
+                        </div>
+                    </div>
+
+                    <!-- Nhánh Chia sẻ máy in -->
+                    <div class="bg-pink-50 rounded-xl p-6 border border-pink-100">
+                        <h3 class="font-bold text-pink-600 mb-4 text-center"><i class="fa-solid fa-print mr-2"></i>Quy trình Chia Sẻ Máy In</h3>
+                        <div class="space-y-3">
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">1</span> Control Panel > Printers & Scanners</div>
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">2</span> Chọn Máy In > Set as default</div>
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">3</span> Printer properties</div>
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">4</span> Chọn thẻ Sharing > Tích "Share this printer"</div>
+                            <div class="bg-white p-3 rounded shadow-sm flex items-center text-sm border-2 border-yellow-300"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0">5</span> Máy khác truy cập bằng Add Device</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: MÔ PHỎNG THỰC HÀNH -->
+        <div id="tab-thuchanh" class="tabcontent">
+            <h2 class="text-xl font-bold text-slate-700 mb-4">Tương Tác Thực Hành</h2>
+            
+            <!-- Mô phỏng 1: Thiết Lập Môi Trường -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-indigo-100 mb-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Mô phỏng</div>
+                <h3 class="font-bold text-indigo-600 mb-2 border-b border-indigo-100 pb-2"><i class="fa-brands fa-windows mr-2"></i>Mô phỏng 1: Thiết Lập Môi Trường (Windows 11)</h3>
+                <p class="text-sm text-slate-500 mb-4">Thực hành 3 bước bắt buộc trước khi chia sẻ tài nguyên. Hãy nhấp vào các tùy chọn cấu hình để hoàn thành.</p>
+                
+                <div class="flex flex-col md:flex-row bg-slate-100 rounded-lg border shadow-inner min-h-[380px]">
+                    <!-- Sidebar menu (Mock) -->
+                    <div class="w-full md:w-1/3 bg-white border-r p-4 hidden md:block rounded-l-lg">
+                        <div class="font-semibold text-slate-700 mb-4">Settings</div>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li id="menu-net" class="p-2 rounded bg-indigo-50 text-indigo-600 font-medium transition"><i class="fa-solid fa-wifi w-6"></i> Network & internet</li>
+                            <li id="menu-priv" class="p-2 rounded transition"><i class="fa-solid fa-shield-halved w-6"></i> Privacy & security</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Content area -->
+                    <div class="w-full md:w-2/3 p-4 md:p-6 overflow-y-auto relative bg-slate-50 rounded-r-lg" id="env-sim-content">
+                        <!-- Step 1 -->
+                        <div id="env-step-1" class="transition-all duration-300">
+                            <div class="flex items-center gap-2 text-blue-600 mb-4"><span class="bg-blue-100 px-2 rounded-full text-xs font-bold">Bước 1/3</span><h4 class="font-bold">Mạng Riêng (Private Network)</h4></div>
+                            <div class="bg-white p-4 rounded border shadow-sm mb-4">
+                                <p class="font-medium text-slate-700 border-b pb-2 mb-3">Network profile type</p>
+                                <label class="flex items-start gap-3 p-3 rounded hover:bg-slate-50 cursor-pointer border border-transparent hover:border-slate-200 transition">
+                                    <input type="radio" name="net_profile" class="mt-1 w-4 h-4 text-blue-600" onchange="checkEnvStep1('public')">
+                                    <div>
+                                        <div class="font-medium text-slate-700">Public network (Recommended)</div>
+                                        <div class="text-xs text-slate-500">Thiết bị của bạn sẽ bị ẩn trên mạng.</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-3 p-3 rounded bg-blue-50/30 border border-transparent cursor-pointer mt-2 transition" id="lbl-private">
+                                    <input type="radio" name="net_profile" class="mt-1 w-4 h-4 text-blue-600" onchange="checkEnvStep1('private')" id="radio-private">
+                                    <div>
+                                        <div class="font-medium text-blue-700">Private network</div>
+                                        <div class="text-xs text-slate-500">Thiết bị của bạn có thể được tìm thấy, thích hợp để chia sẻ.</div>
+                                    </div>
+                                </label>
+                            </div>
+                            <button id="btn-env-next-1" onclick="goEnvStep(2)" class="px-4 py-2 bg-slate-300 text-slate-500 rounded font-medium cursor-not-allowed w-full transition" disabled>Hoàn thành Bước 1 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div id="env-step-2" class="hidden transition-all duration-300">
+                            <div class="flex items-center gap-2 text-purple-600 mb-4"><span class="bg-purple-100 px-2 rounded-full text-xs font-bold">Bước 2/3</span><h4 class="font-bold">Bật Chia Sẻ (Advanced Sharing)</h4></div>
+                            <div class="bg-white p-4 rounded border shadow-sm mb-4 space-y-4">
+                                <div class="flex justify-between items-center border-b pb-3">
+                                    <div>
+                                        <div class="font-medium text-slate-700">Network discovery</div>
+                                        <div class="text-xs text-slate-500">Cho phép thiết bị khác tìm thấy máy bạn.</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="toggle-discovery" class="sr-only peer" onchange="checkEnvStep2()">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+                                    </label>
+                                </div>
+                                <div class="flex justify-between items-center pb-1">
+                                    <div>
+                                        <div class="font-medium text-slate-700">File and printer sharing</div>
+                                        <div class="text-xs text-slate-500">Cho phép người khác truy cập tệp/máy in.</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="toggle-sharing" class="sr-only peer" onchange="checkEnvStep2()">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+                                    </label>
+                                </div>
+                            </div>
+                            <button id="btn-env-next-2" onclick="goEnvStep(3)" class="px-4 py-2 bg-slate-300 text-slate-500 rounded font-medium cursor-not-allowed w-full transition" disabled>Hoàn thành Bước 2 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div id="env-step-3" class="hidden transition-all duration-300">
+                            <div class="flex items-center gap-2 text-rose-600 mb-4"><span class="bg-rose-100 px-2 rounded-full text-xs font-bold">Bước 3/3</span><h4 class="font-bold">Tường Lửa (Firewall)</h4></div>
+                            <div class="bg-white p-4 rounded border shadow-sm mb-4">
+                                <div class="flex items-center gap-3 border-b pb-3 mb-3">
+                                    <i class="fa-solid fa-shield text-2xl text-slate-400"></i>
+                                    <div>
+                                        <div class="font-medium text-slate-700">Microsoft Defender Firewall</div>
+                                        <div class="text-xs text-slate-500">Kiểm soát truy cập trên Private Network.</div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center bg-rose-50 p-3 rounded border border-rose-100">
+                                    <div class="font-medium text-rose-700">Trạng thái Tường lửa</div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="toggle-firewall" class="sr-only peer" checked onchange="checkEnvStep3()">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-rose-500 mt-2 italic"><i class="fa-solid fa-circle-info mr-1"></i> Gợi ý: Hãy tạm thời tắt tường lửa (Tắt công tắc chuyển xám) để tránh bị chặn khi bắt đầu chia sẻ.</p>
+                            </div>
+                            <button id="btn-env-next-3" onclick="finishEnvSim()" class="px-4 py-2 bg-slate-300 text-slate-500 rounded font-medium cursor-not-allowed w-full transition" disabled>Hoàn tất thiết lập <i class="fa-solid fa-check ml-1"></i></button>
+                        </div>
+                        
+                        <!-- Success -->
+                        <div id="env-step-success" class="hidden h-full flex flex-col items-center justify-center text-center py-8">
+                            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                                <i class="fa-solid fa-check text-4xl text-green-500"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-slate-700 mb-2">Tuyệt vời! Môi trường đã sẵn sàng!</h4>
+                            <p class="text-sm text-slate-500 mb-6 max-w-xs mx-auto">Bạn đã thiết lập thành công Mạng riêng, bật chức năng chia sẻ và tạm tắt tường lửa.</p>
+                            <button onclick="resetEnvSim()" class="px-4 py-2 border border-slate-300 rounded text-slate-600 hover:bg-slate-200 transition font-medium"><i class="fa-solid fa-rotate-left mr-2"></i>Thực hành lại</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid 2 Cột: Mô phỏng Thư mục & Mô phỏng Máy In -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Mô phỏng 2: Chia sẻ Thư mục -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-blue-600 mb-2 border-b pb-2"><i class="fa-solid fa-folder-open mr-2"></i>Mô phỏng 2: Chia sẻ Thư mục "SÁCH LỚP 12"</h3>
+                    <p class="text-sm text-slate-500 mb-4">Bấm vào thư mục để bắt đầu cấp quyền Read / Read & Write.</p>
+                    
+                    <div class="bg-slate-100 p-4 rounded-lg border h-64 relative overflow-hidden" id="sim-folder-container">
+                        <!-- Step 1: Thư mục -->
+                        <div id="step-1" class="absolute inset-0 flex flex-col items-center justify-center transition-all">
+                            <button onclick="nextSim('folder', 2)" class="card-hover text-center focus:outline-none">
+                                <i class="fa-solid fa-folder text-6xl text-blue-400 mb-2"></i>
+                                <p class="font-bold text-slate-700">SÁCH LỚP 12</p>
+                                <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full mt-2 inline-block animate-pulse">Click Properties</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Step 2: Cửa sổ Properties -->
+                        <div id="step-2" class="absolute inset-0 bg-white m-2 border rounded shadow-lg hidden flex flex-col text-sm">
+                            <div class="bg-slate-100 p-2 border-b font-bold flex justify-between"><span>SÁCH LỚP 12 Properties</span> <span class="text-red-500 cursor-pointer">X</span></div>
+                            <div class="flex gap-2 p-2 border-b bg-slate-50 text-xs">
+                                <span class="px-2 py-1 cursor-not-allowed text-slate-400">General</span>
+                                <span class="px-2 py-1 bg-white border border-b-0 -mb-2 font-bold z-10 cursor-pointer">Sharing</span>
+                                <span class="px-2 py-1 cursor-not-allowed text-slate-400">Security</span>
+                            </div>
+                            <div class="p-4 text-center">
+                                <p class="mb-2">Network File and Folder Sharing</p>
+                                <button onclick="nextSim('folder', 3)" class="bg-slate-200 border border-slate-400 px-4 py-1 rounded hover:bg-slate-300"><i class="fa-solid fa-users mr-1"></i> Share...</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Chọn người dùng và Quyền -->
+                        <div id="step-3" class="absolute inset-0 bg-white m-2 border rounded shadow-lg hidden flex flex-col text-sm">
+                            <div class="bg-slate-100 p-2 border-b font-bold">Choose people to share with</div>
+                            <div class="p-3">
+                                <div class="flex gap-2 mb-3">
+                                    <select class="border w-full p-1" id="userSelect"><option>Everyone</option></select>
+                                    <button class="border bg-slate-100 px-2">Add</button>
+                                </div>
+                                <div class="border h-16 mb-2 overflow-y-auto">
+                                    <div class="flex justify-between p-1 bg-blue-50">
+                                        <span><i class="fa-solid fa-users mr-1 text-slate-400"></i> Everyone</span>
+                                        <select class="border text-xs" id="permissionSelect">
+                                            <option value="read">Read</option>
+                                            <option value="write">Read/Write</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex justify-end mt-2">
+                                    <button onclick="finishSim('folder')" class="bg-blue-500 text-white px-4 py-1 rounded">Share</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Hoàn thành -->
+                        <div id="step-4" class="absolute inset-0 bg-green-50 flex flex-col items-center justify-center hidden">
+                            <i class="fa-solid fa-circle-check text-5xl text-green-500 mb-2"></i>
+                            <p class="font-bold text-green-700">Đã chia sẻ thành công!</p>
+                            <p id="result-permission" class="text-sm text-green-600 mt-1"></p>
+                            <button onclick="resetSim('folder')" class="mt-4 text-xs underline text-slate-500">Thử lại</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mô phỏng 3: Chia sẻ & Kết nối Máy In (New) -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-pink-600 mb-2 border-b pb-2"><i class="fa-solid fa-print mr-2"></i>Mô phỏng 3: Chia Sẻ & Kết Nối Máy In</h3>
+                    <p class="text-sm text-slate-500 mb-4">Mô phỏng thiết lập Print Server và kết nối từ máy khác.</p>
+                    
+                    <div class="bg-slate-100 p-4 rounded-lg border h-64 relative overflow-hidden" id="sim-printer-container">
+                        <!-- Sub-step 1: Printers & Scanners List -->
+                        <div id="printer-step-1" class="absolute inset-0 bg-white m-2 border rounded shadow-md p-3 text-sm flex flex-col justify-between">
+                            <div>
+                                <div class="font-bold border-b pb-1 mb-2 text-slate-700"><i class="fa-solid fa-sliders mr-1 text-pink-500"></i> Printers & scanners</div>
+                                <div class="flex items-center justify-between p-2 bg-pink-50 rounded border border-pink-200 cursor-pointer" onclick="nextPrinterStep(2)">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-print text-pink-500 text-xl"></i>
+                                        <div>
+                                            <p class="font-bold text-xs text-slate-800">Canon LBP2900</p>
+                                            <span class="text-[10px] bg-pink-200 text-pink-700 px-1.5 py-0.5 rounded">Click để cấu hình</span>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                                </div>
+                            </div>
+                            <div class="text-[11px] text-slate-400 italic">Chọn máy in cần cấu hình làm Print Server trong mạng LAN.</div>
+                        </div>
+
+                        <!-- Sub-step 2: Set as Default & Printer Properties -->
+                        <div id="printer-step-2" class="absolute inset-0 bg-white m-2 border rounded shadow-md p-3 text-sm hidden flex flex-col justify-between">
+                            <div>
+                                <div class="font-bold border-b pb-1 mb-2 text-slate-700">Canon LBP2900 Properties</div>
+                                <div class="space-y-2">
+                                    <button onclick="setPrinterDefault()" id="btn-set-default" class="w-full text-left p-2 border rounded text-xs bg-slate-50 hover:bg-slate-100 font-medium">
+                                        <i class="fa-solid fa-circle-check mr-1 text-slate-400"></i> Set as default (Đặt làm máy in mặc định)
+                                    </button>
+                                    <button onclick="nextPrinterStep(3)" id="btn-printer-props" class="w-full text-left p-2 border rounded text-xs bg-slate-50 hover:bg-slate-100 font-medium" disabled style="opacity: 0.5;">
+                                        <i class="fa-solid fa-gear mr-1 text-pink-500"></i> Printer properties (Mở cài đặt chia sẻ...)
+                                    </button>
+                                </div>
+                            </div>
+                            <button onclick="nextPrinterStep(1)" class="text-xs text-slate-500 underline text-left">Quay lại</button>
+                        </div>
+
+                        <!-- Sub-step 3: Share this printer checkbox -->
+                        <div id="printer-step-3" class="absolute inset-0 bg-white m-2 border rounded shadow-md p-3 text-sm hidden flex flex-col justify-between">
+                            <div>
+                                <div class="font-bold border-b pb-1 mb-2 text-slate-700">Sharing Tab - Canon LBP2900</div>
+                                <label class="flex items-center gap-2 p-2 bg-pink-50 rounded border border-pink-200 cursor-pointer mt-3">
+                                    <input type="checkbox" id="chkSharePrinter" class="w-4 h-4 text-pink-600" onchange="toggleSharePrinter()">
+                                    <span class="font-bold text-xs text-pink-900">Share this printer (Chia sẻ máy in này)</span>
+                                </label>
+                                <div class="mt-2">
+                                    <label class="text-[11px] text-slate-600 block mb-1">Share name (Tên chia sẻ gợi nhớ):</label>
+                                    <input type="text" id="txtShareName" value="Máy in mạng Canon LBP2900" class="w-full border p-1 text-xs rounded" disabled>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <button onclick="nextPrinterStep(2)" class="text-xs text-slate-500 underline">Quay lại</button>
+                                <button onclick="finishPrinterSim()" id="btn-apply-printer" class="bg-pink-500 text-white px-3 py-1 text-xs rounded font-bold cursor-not-allowed" disabled>Apply / OK</button>
+                            </div>
+                        </div>
+
+                        <!-- Sub-step 4: Success / Client connection simulation -->
+                        <div id="printer-step-4" class="absolute inset-0 bg-pink-50 m-2 border border-pink-200 rounded shadow-md p-3 text-center flex flex-col items-center justify-center hidden">
+                            <i class="fa-solid fa-circle-check text-4xl text-pink-500 mb-1"></i>
+                            <p class="font-bold text-pink-800 text-sm">Print Server Đã Sẵn Sàng!</p>
+                            <p class="text-[11px] text-pink-600 mb-3">Máy khác trong LAN có thể dùng <b class="text-slate-700">Add Device</b> để kết nối.</p>
+                            <button onclick="resetPrinterSim()" class="text-xs bg-white border border-pink-300 text-pink-700 px-3 py-1 rounded shadow-sm hover:bg-pink-100 font-medium">Thực hành lại</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: LƯU Ý & SO SÁNH -->
+        <div id="tab-luuy" class="tabcontent">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Mối quan hệ Khái niệm -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-blue-600 mb-4"><i class="fa-solid fa-link mr-2"></i>Mối Quan Hệ Khái Niệm</h3>
+                    <ul class="space-y-4">
+                        <li class="flex gap-3">
+                            <div class="text-blue-500 mt-1"><i class="fa-solid fa-circle-right"></i></div>
+                            <div>
+                                <b class="text-slate-700">Mạng Cục Bộ (LAN) & Tài Nguyên:</b> 
+                                <p class="text-sm text-slate-600">Để chia sẻ được, điều kiện đầu tiên là các máy tính phải kết nối với nhau qua mạng LAN.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <div class="text-blue-500 mt-1"><i class="fa-solid fa-circle-right"></i></div>
+                            <div>
+                                <b class="text-slate-700">Network Discovery & Việc Nhìn Thấy:</b> 
+                                <p class="text-sm text-slate-600">Nếu không bật Discovery, dù đã cấu hình chia sẻ, máy khác vẫn không "nhìn thấy" máy bạn trên File Explorer.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <div class="text-blue-500 mt-1"><i class="fa-solid fa-circle-right"></i></div>
+                            <div>
+                                <b class="text-slate-700">Quyền Cấp (Permission) & Truy Cập:</b> 
+                                <p class="text-sm text-slate-600">Việc chia sẻ thành công phụ thuộc vào quyền do người chủ tài nguyên cấp (bằng các biện pháp kĩ thuật).</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Dễ nhầm lẫn -->
+                <div class="space-y-4">
+                    <div class="bg-amber-50 rounded-2xl p-5 border border-amber-200">
+                        <h3 class="font-bold text-amber-600 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Dễ Nhầm Lẫn 1: Quyền Truy Cập</h3>
+                        <div class="flex gap-4 text-sm mt-3">
+                            <div class="flex-1 bg-white p-3 rounded shadow-sm border-l-4 border-slate-400">
+                                <b class="text-slate-700">Quyền READ</b><br>
+                                <span class="text-slate-500">Chỉ được ĐỌC, xem, copy.</span><br>
+                                <span class="text-red-500 font-medium">KHÔNG được sửa, xoá.</span>
+                            </div>
+                            <div class="flex-1 bg-white p-3 rounded shadow-sm border-l-4 border-green-400">
+                                <b class="text-slate-700">Quyền READ/WRITE</b><br>
+                                <span class="text-slate-500">Vừa được xem,</span><br>
+                                <span class="text-green-600 font-medium">VỪA ĐƯỢC SỬA, XOÁ tài nguyên.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-rose-50 rounded-2xl p-5 border border-rose-200">
+                        <h3 class="font-bold text-rose-600 mb-2"><i class="fa-solid fa-fire mr-2"></i>Dễ Nhầm Lẫn 2: Tường Lửa (Firewall)</h3>
+                        <p class="text-sm text-slate-700 mb-2"><b>Sai lầm:</b> Tưởng rằng tắt tường lửa là bắt buộc vĩnh viễn.</p>
+                        <p class="text-sm text-slate-600 bg-white p-3 rounded shadow-sm"><b>Sự thật:</b> Tường lửa giúp chống xâm nhập. Việc chia sẻ tài nguyên chỉ nên <b>tạm dừng (Turn off)</b> tường lửa trong mạng Private để quá trình chia sẻ thuận lợi (do tường lửa đôi khi chặn các truy cập hợp lệ). Ở Windows 10/11, Windows Defender là mặc định.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: TRẮC NGHIỆM -->
+        <div id="tab-tracnghiem" class="tabcontent">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                <div class="flex justify-between items-center border-b pb-4 mb-4">
+                    <h2 class="text-xl font-bold text-slate-700">Kiểm Tra Kiến Thức</h2>
+                    <span id="score-display" class="bg-purple-100 text-purple-700 font-bold px-4 py-1 rounded-full">Điểm: 0/5</span>
+                </div>
+
+                <div id="quiz-container" class="space-y-6">
+                    <!-- JS sẽ sinh ra câu hỏi tại đây -->
+                </div>
+                
+                <div class="mt-6 text-center hidden" id="quiz-result">
+                    <h3 class="text-2xl font-bold text-green-600 mb-2">Hoàn Thành!</h3>
+                    <p class="text-slate-600 mb-4">Bạn đã nắm vững kiến thức bài học.</p>
+                    <button onclick="renderQuiz()" class="bg-blue-500 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition-colors">Làm Lại Lần Nữa</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // 1. Logic Tabs
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("bg-blue-100", "text-blue-600");
+                tablinks[i].classList.add("text-slate-500");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("bg-blue-100", "text-blue-600");
+            evt.currentTarget.classList.remove("text-slate-500");
+        }
+
+        // 2. Logic Mô phỏng Thực hành Thư mục
+        function nextSim(type, stepNum) {
+            if(type === 'folder') {
+                for(let i=1; i<=4; i++) {
+                    let el = document.getElementById(`step-${i}`);
+                    if(el) el.classList.add('hidden');
+                }
+                document.getElementById(`step-${stepNum}`).classList.remove('hidden');
+            }
+        }
+        function finishSim(type) {
+            if(type === 'folder') {
+                let perm = document.getElementById('permissionSelect').value;
+                document.getElementById('result-permission').innerText = `Quyền được cấp: ${perm === 'read' ? 'Chỉ xem (Read)' : 'Xem và sửa (Read/Write)'}`;
+                nextSim('folder', 4);
+            }
+        }
+        function resetSim(type) {
+            if(type === 'folder') {
+                document.getElementById('permissionSelect').value = 'read';
+                nextSim('folder', 1);
+            }
+        }
+
+        // 3. Logic Mô phỏng Chia sẻ Máy In (Print Server)
+        function nextPrinterStep(step) {
+            for(let i=1; i<=4; i++) {
+                let el = document.getElementById(`printer-step-${i}`);
+                if(el) el.classList.add('hidden');
+            }
+            document.getElementById(`printer-step-${step}`).classList.remove('hidden');
+        }
+
+        function setPrinterDefault() {
+            const btnDefault = document.getElementById('btn-set-default');
+            const btnProps = document.getElementById('btn-printer-props');
+            
+            btnDefault.innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-green-500"></i> Set as default (Đã đặt mặc định)';
+            btnDefault.classList.add('bg-green-50', 'border-green-300');
+            
+            btnProps.disabled = false;
+            btnProps.style.opacity = '1';
+            btnProps.classList.add('hover:bg-blue-50', 'border-blue-200');
+        }
+
+        function toggleSharePrinter() {
+            const isChecked = document.getElementById('chkSharePrinter').checked;
+            const txtName = document.getElementById('txtShareName');
+            const btnApply = document.getElementById('btn-apply-printer');
+            
+            txtName.disabled = !isChecked;
+            if (isChecked) {
+                btnApply.disabled = false;
+                btnApply.classList.remove('cursor-not-allowed');
+                btnApply.classList.add('hover:bg-pink-600', 'cursor-pointer');
+            } else {
+                btnApply.disabled = true;
+                btnApply.classList.add('cursor-not-allowed');
+                btnApply.classList.remove('hover:bg-pink-600', 'cursor-pointer');
+            }
+        }
+
+        function finishPrinterSim() {
+            nextPrinterStep(4);
+        }
+
+        function resetPrinterSim() {
+            document.getElementById('chkSharePrinter').checked = false;
+            document.getElementById('txtShareName').disabled = true;
+            const btnApply = document.getElementById('btn-apply-printer');
+            btnApply.disabled = true;
+            btnApply.classList.add('cursor-not-allowed');
+            
+            const btnDefault = document.getElementById('btn-set-default');
+            btnDefault.innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-slate-400"></i> Set as default (Đặt làm máy in mặc định)';
+            btnDefault.classList.remove('bg-green-50', 'border-green-300');
+            
+            const btnProps = document.getElementById('btn-printer-props');
+            btnProps.disabled = true;
+            btnProps.style.opacity = '0.5';
+
+            nextPrinterStep(1);
+        }
+
+        // 4. Logic Mô phỏng Thiết lập Môi trường (Windows 11)
+        function checkEnvStep1(type) {
+            const btn = document.getElementById('btn-env-next-1');
+            const lblPrivate = document.getElementById('lbl-private');
+            if (type === 'private') {
+                btn.disabled = false;
+                btn.classList.replace('bg-slate-300', 'bg-blue-500');
+                btn.classList.replace('text-slate-500', 'text-white');
+                btn.classList.replace('cursor-not-allowed', 'hover:bg-blue-600');
+                lblPrivate.classList.add('border-blue-300', 'bg-blue-50');
+                lblPrivate.classList.remove('border-transparent', 'bg-blue-50/30');
+            } else {
+                btn.disabled = true;
+                btn.classList.replace('bg-blue-500', 'bg-slate-300');
+                btn.classList.replace('text-white', 'text-slate-500');
+                btn.classList.replace('hover:bg-blue-600', 'cursor-not-allowed');
+                lblPrivate.classList.remove('border-blue-300', 'bg-blue-50');
+                lblPrivate.classList.add('border-transparent', 'bg-blue-50/30');
+            }
+        }
+        
+        function checkEnvStep2() {
+            const isDiscovery = document.getElementById('toggle-discovery').checked;
+            const isSharing = document.getElementById('toggle-sharing').checked;
+            const btn = document.getElementById('btn-env-next-2');
+            if (isDiscovery && isSharing) {
+                btn.disabled = false;
+                btn.classList.replace('bg-slate-300', 'bg-purple-500');
+                btn.classList.replace('text-slate-500', 'text-white');
+                btn.classList.replace('cursor-not-allowed', 'hover:bg-purple-600');
+            } else {
+                btn.disabled = true;
+                btn.classList.replace('bg-purple-500', 'bg-slate-300');
+                btn.classList.replace('text-white', 'text-slate-500');
+                btn.classList.replace('hover:bg-purple-600', 'cursor-not-allowed');
+            }
+        }
+
+        function checkEnvStep3() {
+            const isFirewallOn = document.getElementById('toggle-firewall').checked;
+            const btn = document.getElementById('btn-env-next-3');
+            if (!isFirewallOn) { // Tường lửa được tắt
+                btn.disabled = false;
+                btn.classList.replace('bg-slate-300', 'bg-rose-500');
+                btn.classList.replace('text-slate-500', 'text-white');
+                btn.classList.replace('cursor-not-allowed', 'hover:bg-rose-600');
+            } else {
+                btn.disabled = true;
+                btn.classList.replace('bg-rose-500', 'bg-slate-300');
+                btn.classList.replace('text-white', 'text-slate-500');
+                btn.classList.replace('hover:bg-rose-600', 'cursor-not-allowed');
+            }
+        }
+
+        function goEnvStep(step) {
+            document.getElementById('env-step-1').classList.add('hidden');
+            document.getElementById('env-step-2').classList.add('hidden');
+            document.getElementById('env-step-3').classList.add('hidden');
+            
+            document.getElementById('env-step-' + step).classList.remove('hidden');
+            
+            if(step === 2 || step === 1) {
+                document.getElementById('menu-net').classList.add('bg-indigo-50', 'text-indigo-600', 'font-medium');
+                document.getElementById('menu-priv').classList.remove('bg-indigo-50', 'text-indigo-600', 'font-medium');
+            } else if (step === 3) {
+                document.getElementById('menu-net').classList.remove('bg-indigo-50', 'text-indigo-600', 'font-medium');
+                document.getElementById('menu-priv').classList.add('bg-indigo-50', 'text-indigo-600', 'font-medium');
+            }
+        }
+
+        function finishEnvSim() {
+            document.getElementById('env-step-3').classList.add('hidden');
+            document.getElementById('env-step-success').classList.remove('hidden');
+        }
+
+        function resetEnvSim() {
+            document.querySelectorAll('input[name="net_profile"]').forEach(el => el.checked = false);
+            document.getElementById('toggle-discovery').checked = false;
+            document.getElementById('toggle-sharing').checked = false;
+            document.getElementById('toggle-firewall').checked = true;
+            
+            checkEnvStep1('');
+            checkEnvStep2();
+            checkEnvStep3();
+            
+            document.getElementById('env-step-success').classList.add('hidden');
+            goEnvStep(1);
+        }
+
+        // 5. Logic Trắc Nghiệm
+        const quizData = [
+            {
+                q: "Điều kiện cần để hai máy tính có thể chia sẻ tài nguyên qua mạng cục bộ là gì?",
+                options: [
+                    "Người chia sẻ và người được chia sẻ phải kết bạn.",
+                    "Người được chia sẻ phải trả phí truy cập.",
+                    "Kết nối hai máy tính với nhau qua mạng và cấp quyền truy cập.",
+                    "Phải dùng chung một hệ điều hành Windows 11."
+                ],
+                ans: 2,
+                exp: "Hoạt động 1: Cần kết nối máy tính qua mạng và người chia sẻ phải cấp quyền (bằng các biện pháp kĩ thuật)."
+            },
+            {
+                q: "Để môi trường chia sẻ dữ liệu thuận lợi và có độ tin cậy cao hơn, Windows khuyến nghị cài đặt mạng ở chế độ nào?",
+                options: [
+                    "Public Network (Mạng công cộng)",
+                    "Private Network (Mạng riêng)",
+                    "Internet Network",
+                    "Firewall Network"
+                ],
+                ans: 1,
+                exp: "Mạng riêng (Private) được hiểu là nhóm người dùng có độ tin cậy cao, thích hợp để chia sẻ tài nguyên, tránh nguy cơ lộ thông tin."
+            },
+            {
+                q: "Để các máy tính khác trong mạng có thể 'nhìn thấy' máy tính của bạn, bạn cần thiết lập chế độ nào sang On?",
+                options: [
+                    "Password protected sharing",
+                    "Windows Defender Firewall",
+                    "Network discovery",
+                    "Advanced Security"
+                ],
+                ans: 2,
+                exp: "Network discovery (Phát hiện mạng) khi được bật sẽ cho phép máy tính khác nhìn thấy máy của bạn trên giao diện File Explorer (Network)."
+            },
+            {
+                q: "Khi chia sẻ thư mục, quyền Permission Level là 'Read' mang ý nghĩa gì?",
+                options: [
+                    "Người được chia sẻ được quyền sửa hoặc xoá dữ liệu.",
+                    "Người được chia sẻ chỉ được xem (đọc) mà không được sửa dữ liệu.",
+                    "Người được chia sẻ không thể nhìn thấy thư mục.",
+                    "Người được chia sẻ phải nhập mật khẩu để truy cập."
+                ],
+                ans: 1,
+                exp: "Quyền 'Read' chỉ cho phép người dùng mở và xem nội dung, muốn sửa/xoá phải cấp quyền 'Read/Write'."
+            },
+            {
+                q: "Máy tính kết nối trực tiếp với máy in và cung cấp dịch vụ in cho các máy tính khác trong mạng được gọi là gì?",
+                options: [
+                    "Print Client (Máy khách in)",
+                    "File Server (Máy chủ tệp)",
+                    "Print Server (Máy cung cấp dịch vụ in)",
+                    "Router (Bộ định tuyến)"
+                ],
+                ans: 2,
+                exp: "Theo Nhiệm vụ 4, máy tính cung cấp dịch vụ in trong mạng sẽ xếp hàng đợi và cung cấp dịch vụ in, trở thành Print Server."
+            }
+        ];
+
+        let score = 0;
+        let answeredQuestions = [];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            score = 0;
+            answeredQuestions = [];
+            updateScoreDisplay();
+            document.getElementById('quiz-result').classList.add('hidden');
+
+            quizData.forEach((item, qIndex) => {
+                let questionHTML = `
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200" id="q-block-${qIndex}">
+                        <h4 class="font-bold text-slate-800 mb-3"><span class="text-blue-500 mr-2">Câu ${qIndex + 1}:</span>${item.q}</h4>
+                        <div class="space-y-2">
+                `;
+                
+                item.options.forEach((opt, oIndex) => {
+                    questionHTML += `
+                        <button onclick="checkAnswer(${qIndex}, ${oIndex}, ${item.ans})" 
+                                id="btn-${qIndex}-${oIndex}"
+                                class="w-full text-left p-3 rounded-lg border border-slate-300 bg-white hover:bg-blue-50 hover:border-blue-300 transition-colors">
+                            ${String.fromCharCode(65 + oIndex)}. ${opt}
+                        </button>
+                    `;
+                });
+
+                questionHTML += `
+                        </div>
+                        <div id="exp-${qIndex}" class="mt-4 text-sm hidden p-3 rounded bg-blue-100 text-blue-800 border-l-4 border-blue-500">
+                            <b>Giải thích:</b> ${item.exp}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += questionHTML;
+            });
+        }
+
+        function checkAnswer(qIndex, selectedIndex, correctIndex) {
+            if (answeredQuestions.includes(qIndex)) return;
+
+            answeredQuestions.push(qIndex);
+            
+            for(let i=0; i<4; i++) {
+                let btn = document.getElementById(`btn-${qIndex}-${i}`);
+                btn.classList.remove("hover:bg-blue-50", "hover:border-blue-300");
+                btn.style.cursor = "default";
+            }
+
+            const selectedBtn = document.getElementById(`btn-${qIndex}-${selectedIndex}`);
+            const correctBtn = document.getElementById(`btn-${qIndex}-${correctIndex}`);
+
+            if (selectedIndex === correctIndex) {
+                selectedBtn.classList.replace("bg-white", "bg-green-100");
+                selectedBtn.classList.replace("border-slate-300", "border-green-500");
+                selectedBtn.innerHTML += ' <i class="fa-solid fa-check text-green-600 float-right mt-1"></i>';
+                score++;
+            } else {
+                selectedBtn.classList.replace("bg-white", "bg-red-100");
+                selectedBtn.classList.replace("border-slate-300", "border-red-500");
+                selectedBtn.innerHTML += ' <i class="fa-solid fa-xmark text-red-600 float-right mt-1"></i>';
+                
+                correctBtn.classList.replace("bg-white", "bg-green-100");
+                correctBtn.classList.replace("border-slate-300", "border-green-500");
+            }
+
+            document.getElementById(`exp-${qIndex}`).classList.remove('hidden');
+            updateScoreDisplay();
+
+            if(answeredQuestions.length === quizData.length) {
+                setTimeout(() => {
+                    document.getElementById('quiz-result').classList.remove('hidden');
+                }, 500);
+            }
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').innerText = `Điểm: ${score}/5`;
+        }
+
+        window.onload = function() {
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>

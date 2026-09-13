@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 9: Giao tiếp an toàn trên Internet</title>
+    <!-- Tailwind CSS cho UI/UX -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Nunito cho phong cách Studygram/Pastel -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',   // sky-100
+                            pink: '#fce7f3',   // pink-100
+                            green: '#dcfce7',  // green-100
+                            yellow: '#fef9c3', // yellow-100
+                            purple: '#f3e8ff', // purple-100
+                            dark: '#334155'    // slate-700
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fafaf9;
+            background-image: radial-gradient(#e5e7eb 1.5px, transparent 1.5px);
+            background-size: 24px 24px; /* Dot pattern background */
+            color: #334155;
+        }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .mindmap-node { transition: all 0.3s; }
+        .mindmap-node:hover { transform: scale(1.05); z-index: 10; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        .chat-bubble { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; transform: scale(0.8); transform-origin: bottom left;}
+        @keyframes popIn { to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 font-sans">
+
+    <!-- App Container -->
+    <div class="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+        
+        <!-- Header -->
+        <header class="bg-pastel-blue p-6 md:p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-20 text-6xl"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="absolute bottom-0 left-0 p-4 opacity-20 text-6xl"><i class="fa-solid fa-wifi"></i></div>
+            <span class="bg-white text-pastel-dark px-4 py-1 rounded-full text-sm font-bold shadow-sm inline-block mb-3">Chủ đề 3 - Bài 9</span>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 drop-shadow-sm">Giao tiếp an toàn trên Internet</h1>
+            <p class="mt-2 text-slate-600 font-semibold">Đạo đức, pháp luật và văn hóa trong môi trường số</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap justify-center gap-2 p-4 bg-slate-50 border-b border-slate-100">
+            <button onclick="switchTab('tong-quan')" id="btn-tong-quan" class="tab-btn px-6 py-2 rounded-full font-bold transition-all bg-slate-800 text-white shadow-md"><i class="fa-solid fa-map-location-dot mr-2"></i>Tổng quan</button>
+            <button onclick="switchTab('phong-tranh')" id="btn-phong-tranh" class="tab-btn px-6 py-2 rounded-full font-bold transition-all bg-white text-slate-600 hover:bg-slate-100"><i class="fa-solid fa-user-shield mr-2"></i>Phòng chống Lừa đảo</button>
+            <button onclick="switchTab('ung-xu')" id="btn-ung-xu" class="tab-btn px-6 py-2 rounded-full font-bold transition-all bg-white text-slate-600 hover:bg-slate-100"><i class="fa-solid fa-comments mr-2"></i>Quy tắc Ứng xử</button>
+            <button onclick="switchTab('luyen-tap')" id="btn-luyen-tap" class="tab-btn px-6 py-2 rounded-full font-bold transition-all bg-white text-slate-600 hover:bg-slate-100"><i class="fa-solid fa-gamepad mr-2"></i>Luyện tập</button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="p-6 md:p-8 min-h-[500px]">
+
+            <!-- TAB 1: TỔNG QUAN -->
+            <section id="tong-quan" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Mục tiêu -->
+                    <div class="bg-pastel-pink rounded-2xl p-6 shadow-sm">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center"><i class="fa-solid fa-bullseye text-pink-500 text-2xl mr-3"></i>Mục tiêu bài học</h2>
+                        <ul class="space-y-4">
+                            <li class="flex items-start bg-white p-3 rounded-xl shadow-sm">
+                                <i class="fa-solid fa-check text-green-500 mt-1 mr-3"></i>
+                                <span>Nêu được <b>một số dạng lừa đảo phổ biến</b> và <b>biện pháp phòng tránh</b>.</span>
+                            </li>
+                            <li class="flex items-start bg-white p-3 rounded-xl shadow-sm">
+                                <i class="fa-solid fa-check text-green-500 mt-1 mr-3"></i>
+                                <span>Biết <b>giao tiếp văn minh</b>, phù hợp với quy tắc và văn hoá ứng xử.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Khái niệm & Nhầm lẫn -->
+                    <div class="space-y-6">
+                        <div class="bg-pastel-yellow rounded-2xl p-6 shadow-sm relative overflow-hidden">
+                            <i class="fa-solid fa-lightbulb absolute -bottom-4 -right-4 text-6xl text-yellow-300 opacity-50"></i>
+                            <h2 class="text-xl font-bold text-slate-800 mb-3"><i class="fa-solid fa-key text-yellow-600 mr-2"></i>Kiến thức cốt lõi</h2>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-white px-3 py-1 rounded-lg text-sm font-bold shadow-sm">3 Nguyên tắc phòng tránh</span>
+                                <span class="bg-white px-3 py-1 rounded-lg text-sm font-bold shadow-sm">4 Quy tắc ứng xử</span>
+                                <span class="bg-white px-3 py-1 rounded-lg text-sm font-bold shadow-sm">Kỹ năng giao tiếp</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-pastel-purple rounded-2xl p-6 shadow-sm border-2 border-purple-200 border-dashed">
+                            <h2 class="text-xl font-bold text-purple-800 mb-3"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Dễ nhầm lẫn!</h2>
+                            <p class="text-sm bg-white p-3 rounded-xl mb-2"><i class="fa-solid fa-xmark text-red-500 mr-1"></i> <b>Tin nhắn khẩn cấp:</b> Thường tưởng là thật (từ người thân, công an) -> <b>Thực tế:</b> Kẻ lừa đảo tạo cảm giác cấp bách để ép nạn nhân mất tỉnh táo.</p>
+                            <p class="text-sm bg-white p-3 rounded-xl"><i class="fa-solid fa-xmark text-red-500 mr-1"></i> <b>Website mạo danh:</b> Giao diện y hệt trang thật (thương mại điện tử) -> <b>Thực tế:</b> Khác tên miền, dụ đăng nhập để đánh cắp tài khoản.</p>
+                        </div>
+                    </div>
+
+                    <!-- Mối quan hệ logic -->
+                    <div class="md:col-span-2 bg-pastel-blue rounded-2xl p-6 text-center mt-4 shadow-sm">
+                        <h2 class="text-xl font-bold text-slate-800 mb-6">Mối quan hệ nguyên nhân - giải pháp</h2>
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+                            <div class="bg-white p-4 rounded-xl shadow-sm w-48 border-t-4 border-red-400">
+                                <i class="fa-solid fa-mask text-3xl text-red-400 mb-2"></i>
+                                <p class="font-bold text-sm">Thủ đoạn lừa đảo</p>
+                                <p class="text-xs text-gray-500">Tạo cảm giác cấp bách, câu chuyện khó tin</p>
+                            </div>
+                            <i class="fa-solid fa-arrow-right text-2xl text-slate-400 hidden md:block"></i>
+                            <i class="fa-solid fa-arrow-down text-2xl text-slate-400 md:hidden"></i>
+                            <div class="bg-white p-4 rounded-xl shadow-sm w-48 border-t-4 border-yellow-400">
+                                <i class="fa-solid fa-brain text-3xl text-yellow-400 mb-2"></i>
+                                <p class="font-bold text-sm">Tâm lý nạn nhân</p>
+                                <p class="text-xs text-gray-500">Hoảng sợ, vội vàng, vượt qua nhận định sáng suốt</p>
+                            </div>
+                            <i class="fa-solid fa-arrow-right text-2xl text-slate-400 hidden md:block"></i>
+                            <i class="fa-solid fa-arrow-down text-2xl text-slate-400 md:hidden"></i>
+                            <div class="bg-white p-4 rounded-xl shadow-sm w-48 border-t-4 border-green-400">
+                                <i class="fa-solid fa-shield text-3xl text-green-400 mb-2"></i>
+                                <p class="font-bold text-sm">Giải pháp</p>
+                                <p class="text-xs text-gray-500">Áp dụng 3 nguyên tắc vàng để ngăn chặn</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: LỪA ĐẢO & PHÒNG TRÁNH -->
+            <section id="phong-tranh" class="tab-content">
+                
+                <!-- 3 Nguyên tắc -->
+                <h2 class="text-2xl font-black text-center mb-6 text-slate-800">3 Nguyên Tắc Vàng Phòng Tránh Lừa Đảo</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <!-- Nguyên tắc 1 -->
+                    <div class="mindmap-node bg-white border-2 border-red-200 rounded-2xl p-6 text-center cursor-pointer group">
+                        <div class="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center text-red-500 text-3xl mb-4 group-hover:rotate-12 transition-transform">
+                            <i class="fa-solid fa-hand"></i>
+                        </div>
+                        <h3 class="font-black text-lg text-red-600 mb-2">1. HÃY CHẬM LẠI</h3>
+                        <p class="text-sm text-slate-600">Những kẻ lừa đảo thường tạo cảm giác cấp bách. Tự đặt câu hỏi, không vội tin các cảnh báo khẩn cấp.</p>
+                    </div>
+                    <!-- Nguyên tắc 2 -->
+                    <div class="mindmap-node bg-white border-2 border-blue-200 rounded-2xl p-6 text-center cursor-pointer group">
+                        <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-blue-500 text-3xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <h3 class="font-black text-lg text-blue-600 mb-2">2. KIỂM TRA NGAY</h3>
+                        <p class="text-sm text-slate-600">Tìm kiếm thông tin, tra cứu số điện thoại, liên hệ trực tiếp với cơ quan/tổ chức mang danh để xác minh.</p>
+                    </div>
+                    <!-- Nguyên tắc 3 -->
+                    <div class="mindmap-node bg-white border-2 border-orange-200 rounded-2xl p-6 text-center cursor-pointer group">
+                        <div class="w-16 h-16 mx-auto bg-orange-100 rounded-full flex items-center justify-center text-orange-500 text-3xl mb-4 group-hover:-rotate-12 transition-transform">
+                            <i class="fa-solid fa-ban"></i>
+                        </div>
+                        <h3 class="font-black text-lg text-orange-600 mb-2">3. DỪNG LẠI, KHÔNG GỬI</h3>
+                        <p class="text-sm text-slate-600">Dừng ngay giao dịch nếu thấy không đáng tin. Không chuyển tiền, thanh toán hay gửi mã thẻ cào.</p>
+                    </div>
+                </div>
+
+                <!-- 4 Dạng lừa đảo -->
+                <h2 class="text-2xl font-black text-center mb-6 text-slate-800">Các Dạng Lừa Đảo Phổ Biến (Ví dụ)</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    
+                    <div class="bg-pastel-blue p-5 rounded-2xl flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-white p-3 rounded-xl text-blue-500 text-2xl"><i class="fa-solid fa-headset"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Lừa đảo hỗ trợ kĩ thuật</h4>
+                            <p class="text-sm text-slate-600 mt-1">Cố gắng thuyết phục thiết bị của bạn đang gặp sự cố và yêu cầu thanh toán để khắc phục sự cố ảo đó.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-pastel-pink p-5 rounded-2xl flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-white p-3 rounded-xl text-pink-500 text-2xl"><i class="fa-solid fa-gift"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Thông báo tin tốt</h4>
+                            <p class="text-sm text-slate-600 mt-1">Bất ngờ thông báo trúng thưởng phiếu mua hàng giá trị cao, nhưng bắt đóng một khoản phí để nhận thưởng.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-pastel-purple p-5 rounded-2xl flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-white p-3 rounded-xl text-purple-500 text-2xl"><i class="fa-solid fa-building-shield"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Thông báo tin xấu</h4>
+                            <p class="text-sm text-slate-600 mt-1">Tự xưng nhân viên cơ quan chức năng, nhà nước yêu cầu thanh toán một khoản tiền phạt/nợ ngay lập tức.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-pastel-green p-5 rounded-2xl flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-white p-3 rounded-xl text-green-500 text-2xl"><i class="fa-solid fa-globe"></i></div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Website giả mạo</h4>
+                            <p class="text-sm text-slate-600 mt-1">Gửi link trang web giả mạo thương mại điện tử qua SMS, hoặc gọi báo nhận hàng "miễn phí" nhưng thu phí ship/phụ thu.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 3: QUY TẮC ỨNG XỬ -->
+            <section id="ung-xu" class="tab-content">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    
+                    <!-- Infographic 4 Quy tắc -->
+                    <div class="bg-pastel-blue rounded-3xl p-8 relative flex flex-col items-center justify-center min-h-[400px]">
+                        <h3 class="text-xl font-black text-center mb-8 bg-white px-6 py-2 rounded-full shadow-sm z-10">4 Quy tắc ứng xử chung</h3>
+                        
+                        <!-- Center Node -->
+                        <div class="w-32 h-32 bg-white rounded-full flex items-center justify-center font-bold text-center border-4 border-blue-300 shadow-lg z-10 p-2 text-sm">
+                            ỨNG XỬ<br>TRONG<br>MÔI TRƯỜNG SỐ
+                        </div>
+                        
+                        <!-- Surrounding Nodes -->
+                        <div class="absolute top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 mindmap-node">
+                            <div class="bg-white p-3 rounded-xl shadow-md text-sm font-bold text-slate-700 border-l-4 border-purple-400 w-32 text-center">
+                                <i class="fa-solid fa-gavel text-purple-400 block mb-1 text-xl"></i>
+                                Tôn trọng, tuân thủ pháp luật
+                            </div>
+                        </div>
+                        <div class="absolute top-1/4 right-1/4 transform translate-x-1/2 -translate-y-1/2 mindmap-node">
+                            <div class="bg-white p-3 rounded-xl shadow-md text-sm font-bold text-slate-700 border-l-4 border-green-400 w-32 text-center">
+                                <i class="fa-solid fa-leaf text-green-400 block mb-1 text-xl"></i>
+                                Lành mạnh
+                            </div>
+                        </div>
+                        <div class="absolute bottom-1/4 left-1/4 transform -translate-x-1/2 translate-y-1/2 mindmap-node">
+                            <div class="bg-white p-3 rounded-xl shadow-md text-sm font-bold text-slate-700 border-l-4 border-blue-400 w-32 text-center">
+                                <i class="fa-solid fa-lock text-blue-400 block mb-1 text-xl"></i>
+                                An toàn, bảo mật thông tin
+                            </div>
+                        </div>
+                        <div class="absolute bottom-1/4 right-1/4 transform translate-x-1/2 translate-y-1/2 mindmap-node">
+                            <div class="bg-white p-3 rounded-xl shadow-md text-sm font-bold text-slate-700 border-l-4 border-orange-400 w-32 text-center">
+                                <i class="fa-solid fa-handshake-angle text-orange-400 block mb-1 text-xl"></i>
+                                Trách nhiệm
+                            </div>
+                        </div>
+
+                        <!-- Connector Lines (Visual simulation using div borders) -->
+                        <div class="absolute inset-0 m-auto w-3/4 h-1/2 border-2 border-dashed border-blue-200 rounded-full z-0 opacity-50"></div>
+                        <p class="text-xs text-center text-slate-500 mt-auto pt-8 z-10 bg-pastel-blue w-full">(Theo Quyết định số 874/QĐ-BTTTT)</p>
+                    </div>
+
+                    <!-- NÊN & KHÔNG NÊN -->
+                    <div class="space-y-6">
+                        
+                        <!-- NÊN -->
+                        <div class="bg-white border-2 border-green-200 rounded-2xl overflow-hidden shadow-sm">
+                            <div class="bg-green-100 p-3 flex items-center">
+                                <span class="bg-green-500 text-white font-black px-4 py-1 rounded-full mr-3 shadow-sm">NÊN</span>
+                                <span class="font-bold text-green-800">Khi tham gia mạng xã hội</span>
+                            </div>
+                            <ul class="p-4 space-y-2 text-sm text-slate-700">
+                                <li class="flex gap-3"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> Tìm hiểu và tuân thủ các điều khoản quy định.</li>
+                                <li class="flex gap-3"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> Tuyên truyền và tham gia hướng dẫn sử dụng an toàn, có văn hoá.</li>
+                                <li class="flex gap-3"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> Chia sẻ thông tin chính thống, thông tin tích cực.</li>
+                                <li class="flex gap-3"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> Quảng bá hình ảnh tốt đẹp của con người Việt Nam.</li>
+                                <li class="flex gap-3"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> Quản lí, bảo mật thông tin cá nhân.</li>
+                            </ul>
+                        </div>
+
+                        <!-- KHÔNG NÊN -->
+                        <div class="bg-white border-2 border-red-200 rounded-2xl overflow-hidden shadow-sm">
+                            <div class="bg-red-100 p-3 flex items-center">
+                                <span class="bg-red-500 text-white font-black px-4 py-1 rounded-full mr-3 shadow-sm">KHÔNG NÊN</span>
+                            </div>
+                            <ul class="p-4 space-y-2 text-sm text-slate-700">
+                                <li class="flex gap-3"><i class="fa-solid fa-xmark-circle text-red-500 mt-1"></i> Đăng tải nội dung vi phạm pháp luật.</li>
+                                <li class="flex gap-3"><i class="fa-solid fa-xmark-circle text-red-500 mt-1"></i> Sử dụng từ ngữ gây thù hận, kích động bạo lực.</li>
+                                <li class="flex gap-3"><i class="fa-solid fa-xmark-circle text-red-500 mt-1"></i> Sử dụng ngôn ngữ phản cảm, vô văn hoá.</li>
+                                <li class="flex gap-3"><i class="fa-solid fa-xmark-circle text-red-500 mt-1"></i> Tung tin giả, sai sự thật hoặc xúc phạm cá nhân, tổ chức.</li>
+                                <li class="flex gap-3"><i class="fa-solid fa-xmark-circle text-red-500 mt-1"></i> Quảng cáo, kinh doanh dịch vụ trái phép.</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: LUYỆN TẬP -->
+            <section id="luyen-tap" class="tab-content">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    <!-- Mô phỏng tình huống (Tương tác trực quan) -->
+                    <div class="bg-slate-100 rounded-3xl p-4 md:p-6 shadow-inner flex flex-col h-[550px]">
+                        <h3 class="font-bold text-slate-800 mb-2 flex items-center"><i class="fa-solid fa-mobile-screen-button mr-2 text-xl text-blue-500"></i> Mô phỏng tình huống (Hoạt động 1)</h3>
+                        <p class="text-xs text-slate-500 mb-4">Click vào lựa chọn để xem kết quả cách ứng xử.</p>
+                        
+                        <!-- Phone Screen UI -->
+                        <div class="bg-white flex-1 rounded-2xl border-4 border-slate-800 overflow-hidden flex flex-col relative shadow-lg">
+                            <div class="bg-slate-800 text-white p-2 text-center text-sm font-bold flex justify-between px-4">
+                                <span><i class="fa-solid fa-chevron-left"></i> Messenger</span>
+                                <span>Bạn T. (Cùng lớp)</span>
+                                <span><i class="fa-solid fa-phone"></i></span>
+                            </div>
+                            
+                            <!-- Chat Area -->
+                            <div id="chat-box" class="flex-1 p-4 bg-pastel-blue/30 overflow-y-auto flex flex-col gap-3">
+                                <!-- Initial Messages -->
+                                <div class="chat-bubble self-start bg-white p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] border border-slate-100">
+                                    <p class="text-sm">Alo cậu, Minh đây. Tớ đang cần việc gấp lắm!!!</p>
+                                </div>
+                                <div class="chat-bubble self-start bg-white p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] border border-slate-100" style="animation-delay: 0.5s;">
+                                    <p class="text-sm">Hãy chuyển gấp vào tài khoản 123456789 cho tớ 500k hoặc gửi mã thẻ cào điện thoại mạng nào cũng được. Tí tớ trả ngay!</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Interaction Area -->
+                            <div id="chat-actions" class="p-3 bg-white border-t border-slate-200">
+                                <p class="text-xs font-bold text-slate-600 mb-2 text-center">Bạn sẽ làm gì trong tình huống này?</p>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <button onclick="handleChatScenario('bad')" class="text-sm bg-pastel-pink text-pink-700 font-bold py-2 rounded-xl hover:bg-pink-200 transition-colors">
+                                        Chuyển khoản ngay vì bạn bè đang cần gấp.
+                                    </button>
+                                    <button onclick="handleChatScenario('good')" class="text-sm bg-pastel-green text-green-700 font-bold py-2 rounded-xl hover:bg-green-200 transition-colors">
+                                        Chậm lại, gọi điện trực tiếp cho Minh để xác minh.
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Overlay Result -->
+                            <div id="chat-result" class="absolute inset-0 bg-white/95 hidden flex-col items-center justify-center p-6 text-center z-20">
+                                <div id="result-icon" class="text-6xl mb-4"></div>
+                                <h4 id="result-title" class="font-black text-xl mb-2"></h4>
+                                <p id="result-desc" class="text-sm text-slate-600 mb-6"></p>
+                                <button onclick="resetChat()" class="bg-slate-800 text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-slate-700">Thử lại</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trắc nghiệm (5 Câu) -->
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-slate-800 mb-4 flex items-center text-xl"><i class="fa-solid fa-clipboard-question mr-2 text-orange-500"></i> Trắc nghiệm ôn tập</h3>
+                        
+                        <div id="quiz-container">
+                            <div class="mb-4 flex justify-between items-center bg-slate-50 p-2 rounded-xl text-sm font-bold">
+                                <span class="text-slate-500">Câu <span id="current-q-num">1</span>/5</span>
+                                <span id="score-display" class="text-blue-500 hidden">Điểm: <span id="score">0</span></span>
+                            </div>
+                            
+                            <!-- Question Text -->
+                            <h4 id="question-text" class="font-bold text-slate-800 mb-4 text-lg">Loading...</h4>
+                            
+                            <!-- Options -->
+                            <div id="options-container" class="space-y-3">
+                                <!-- Buttons generated by JS -->
+                            </div>
+
+                            <!-- Feedback -->
+                            <div id="feedback" class="mt-4 p-4 rounded-xl hidden text-sm font-semibold"></div>
+                            
+                            <!-- Next Button -->
+                            <button id="next-btn" onclick="nextQuestion()" class="mt-4 w-full bg-pastel-blue text-blue-800 font-black py-3 rounded-xl hidden hover:bg-blue-200 transition-colors">Câu tiếp theo <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+
+                        <!-- Final Score Screen -->
+                        <div id="quiz-end" class="hidden text-center py-8">
+                            <div class="text-6xl mb-4 text-yellow-400"><i class="fa-solid fa-trophy"></i></div>
+                            <h3 class="text-2xl font-black text-slate-800 mb-2">Hoàn thành!</h3>
+                            <p class="text-slate-600 mb-6">Bạn đạt <span id="final-score" class="font-bold text-blue-600 text-xl"></span>/5 câu đúng.</p>
+                            <button onclick="initQuiz()" class="bg-slate-800 text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-slate-700"><i class="fa-solid fa-rotate-right mr-2"></i>Làm lại</button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Logic JS -->
+    <script>
+        // --- TAB LOGIC ---
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Reset all buttons style
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
+                el.classList.add('bg-white', 'text-slate-600');
+            });
+            
+            // Show active content
+            document.getElementById(tabId).classList.add('active');
+            // Style active button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('bg-white', 'text-slate-600');
+            activeBtn.classList.add('bg-slate-800', 'text-white', 'shadow-md');
+        }
+
+        // --- CHAT SIMULATION LOGIC ---
+        function handleChatScenario(choice) {
+            const chatBox = document.getElementById('chat-box');
+            const resultScreen = document.getElementById('chat-result');
+            const resultIcon = document.getElementById('result-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultDesc = document.getElementById('result-desc');
+
+            // Add user message to chat visually first
+            let userMsg = choice === 'bad' ? "Ok cậu, gửi số tài khoản đây tớ chuyển luôn nhé." : "Đợi chút tớ gọi điện lại số cậu xác minh đã nhé.";
+            chatBox.innerHTML += `
+                <div class="chat-bubble self-end bg-blue-500 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[80%] mt-2">
+                    <p class="text-sm">${userMsg}</p>
+                </div>
+            `;
+            
+            // Scroll to bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Show result after a short delay
+            setTimeout(() => {
+                if(choice === 'bad') {
+                    resultIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i>';
+                    resultTitle.className = "font-black text-xl mb-2 text-red-600";
+                    resultTitle.innerText = "Rất nguy hiểm!";
+                    resultDesc.innerHTML = "Bạn đã bỏ qua nguyên tắc <b>Hãy chậm lại</b>. Kẻ lừa đảo đã lợi dụng sự cả tin của bạn. Đây là hình thức mạo danh nhờ chuyển tiền phổ biến.";
+                } else {
+                    resultIcon.innerHTML = '<i class="fa-solid fa-shield-check text-green-500"></i>';
+                    resultTitle.className = "font-black text-xl mb-2 text-green-600";
+                    resultTitle.innerText = "Xử lý rất tốt!";
+                    resultDesc.innerHTML = "Bạn đã áp dụng thành công 2 nguyên tắc <b>Hãy chậm lại</b> và <b>Kiểm tra ngay</b>. Việc xác minh trực tiếp giúp ngăn chặn hành vi lừa đảo.";
+                }
+                resultScreen.classList.remove('hidden');
+                resultScreen.classList.add('flex');
+            }, 800);
+        }
+
+        function resetChat() {
+            document.getElementById('chat-result').classList.add('hidden');
+            document.getElementById('chat-result').classList.remove('flex');
+            document.getElementById('chat-box').innerHTML = `
+                <div class="chat-bubble self-start bg-white p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] border border-slate-100">
+                    <p class="text-sm">Alo cậu, Minh đây. Tớ đang cần việc gấp lắm!!!</p>
+                </div>
+                <div class="chat-bubble self-start bg-white p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[80%] border border-slate-100" style="animation-delay: 0.5s;">
+                    <p class="text-sm">Hãy chuyển gấp vào tài khoản 123456789 cho tớ 500k hoặc gửi mã thẻ cào điện thoại mạng nào cũng được. Tí tớ trả ngay!</p>
+                </div>
+            `;
+        }
+
+        // --- QUIZ LOGIC ---
+        const questions = [
+            {
+                q: "1. Nguyên tắc nào KHÔNG nằm trong 3 nguyên tắc nhận biết và phòng tránh lừa đảo?",
+                options: ["A. Hãy chậm lại", "B. Kiểm tra ngay", "C. Thử chuyển một ít tiền trước", "D. Dừng lại, không gửi"],
+                correct: 2,
+                explain: "3 nguyên tắc là: 1) Hãy chậm lại, 2) Kiểm tra ngay, 3) Dừng lại, không gửi. Việc chuyển tiền thử rất nguy hiểm."
+            },
+            {
+                q: "2. Quy tắc yêu cầu phải chủ động phối hợp với cơ quan chức năng khi phát hiện vi phạm pháp luật thuộc quy tắc nào?",
+                options: ["A. Tôn trọng, tuân thủ pháp luật", "B. Lành mạnh", "C. An toàn, bảo mật thông tin", "D. Trách nhiệm"],
+                correct: 3,
+                explain: "Quy tắc trách nhiệm hướng tới việc chịu trách nhiệm hành vi và phối hợp với cơ quan chức năng khi có yêu cầu."
+            },
+            {
+                q: "3. Kẻ lừa đảo thường tạo ra cảm giác gì để nạn nhân mất khả năng nhận định sáng suốt?",
+                options: ["A. Cảm giác tin tưởng tuyệt đối", "B. Cảm giác cấp bách, gấp gáp", "C. Cảm giác an toàn", "D. Cảm giác được tôn trọng"],
+                correct: 1,
+                explain: "Nguyên tắc 'Hãy chậm lại' chỉ ra rằng những kẻ lừa đảo thường tạo ra cảm giác cấp bách để nạn nhân vội vàng quyết định."
+            },
+            {
+                q: "4. Hành động nào sau đây ĐƯỢC KHUYẾN KHÍCH (NÊN LÀM) khi tham gia mạng xã hội?",
+                options: ["A. Chia sẻ thông tin từ mọi nguồn để thu hút", "B. Tung tin giả nhưng đính chính sau", "C. Quản lí, bảo mật thông tin cá nhân", "D. Đăng ảnh bạn bè mà chưa xin phép"],
+                correct: 2,
+                explain: "Theo hình 9.2 (Một số điều nên làm), quản lí và bảo mật thông tin cá nhân là việc nên làm."
+            },
+            {
+                q: "5. Khi nhận SMS báo trúng thưởng lớn nhưng yêu cầu truy cập link lạ và nộp phí, em nên áp dụng nguyên tắc nào để xử lý đầu tiên?",
+                options: ["A. Nhấp vào link xem thử", "B. Dừng lại, không gửi tiền/không truy cập", "C. Đăng lên mạng chửi bới", "D. Gửi link cho bạn bè xem"],
+                correct: 1,
+                explain: "Đây là dạng lừa đảo thông báo tin tốt. Cần áp dụng nguyên tắc 'Dừng lại, không gửi' (không trả phí, không vào link lạ)."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function initQuiz() {
+            currentQIndex = 0;
+            score = 0;
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-end').classList.add('hidden');
+            document.getElementById('score-display').classList.remove('hidden');
+            document.getElementById('score').innerText = score;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQIndex];
+            document.getElementById('current-q-num').innerText = currentQIndex + 1;
+            document.getElementById('question-text').innerText = q.q;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border-2 border-slate-100 bg-white hover:border-pastel-blue hover:bg-sky-50 transition-all font-semibold text-slate-700 text-sm option-btn";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if(answered) return;
+            answered = true;
+            
+            const q = questions[currentQIndex];
+            const btns = document.querySelectorAll('.option-btn');
+            
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.classList.remove('hidden');
+
+            if (selectedIndex === q.correct) {
+                score++;
+                document.getElementById('score').innerText = score;
+                btnElement.classList.replace('border-slate-100', 'border-green-500');
+                btnElement.classList.replace('bg-white', 'bg-green-50');
+                btnElement.innerHTML += ' <i class="fa-solid fa-check text-green-500 float-right mt-1"></i>';
+                
+                feedbackEl.className = "mt-4 p-3 rounded-xl text-sm font-semibold bg-green-100 text-green-800";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-thumbs-up mr-2"></i> <b>Chính xác!</b> ${q.explain}`;
+            } else {
+                btnElement.classList.replace('border-slate-100', 'border-red-500');
+                btnElement.classList.replace('bg-white', 'bg-red-50');
+                btnElement.innerHTML += ' <i class="fa-solid fa-xmark text-red-500 float-right mt-1"></i>';
+                
+                // Highlight correct answer
+                btns[q.correct].classList.replace('border-slate-100', 'border-green-500');
+                btns[q.correct].classList.replace('hover:border-pastel-blue', 'border-green-500'); // prevent hover override
+                
+                feedbackEl.className = "mt-4 p-3 rounded-xl text-sm font-semibold bg-red-100 text-red-800";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-2"></i> <b>Sai rồi!</b> ${q.explain}`;
+            }
+
+            // Disable all buttons
+            btns.forEach(b => b.onclick = null);
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById('quiz-container').classList.add('hidden');
+                document.getElementById('quiz-end').classList.remove('hidden');
+                document.getElementById('final-score').innerText = score;
+            }
+        }
+
+        // Initialize quiz on load
+        initQuiz();
+
+    </script>
+</body>
+</html>

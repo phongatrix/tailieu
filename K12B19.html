@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 19: Dịch vụ Sửa chữa và Bảo trì Máy tính</title>
+    <!-- Google Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#E0F2FE',
+                            purple: '#F3E8FF',
+                            pink: '#FCE7F3',
+                            green: '#DCFCE7',
+                            yellow: '#FEF9C3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Styles for Specific Requirements */
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #F8FAFC;
+        }
+
+        /* Gradient Title as Requested */
+        .gradient-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700; /* Bold */
+            font-size: 28px; /* Size 28px */
+            background: linear-gradient(to right, #3B82F6, #A855F7); /* Blue to Purple */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: capitalize; /* Title Case */
+            line-height: 1.4;
+        }
+
+        /* Hide scrollbar for clean studygram look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        /* Interactive Card Flip */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.active .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+            align-items: flex-start;
+            text-align: left;
+            overflow-y: auto;
+        }
+
+        /* Tab Transitions */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mindmap-node {
+            transition: all 0.3s ease;
+        }
+        .mindmap-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="text-slate-700 min-h-screen flex flex-col items-center py-8 px-4">
+
+    <!-- Main Container -->
+    <main class="w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+        
+        <!-- Header Section -->
+        <header class="p-8 text-center bg-pastel-blue border-b border-blue-100 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+            
+            <div class="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4">
+                <i class="fa-solid fa-screwdriver-wrench text-blue-500 text-2xl mr-3"></i>
+                <i class="fa-solid fa-laptop-medical text-purple-500 text-2xl"></i>
+            </div>
+            <!-- Standardized Gradient Title -->
+            <h1 class="gradient-title">Hướng Nghiệp Ngành Dịch Vụ Sửa Chữa Và Bảo Trì Máy Tính</h1>
+            <p class="mt-2 text-slate-500 font-medium">Chủ đề 5: Hướng nghiệp với Tin học - Bài 19</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap justify-center bg-slate-50 p-2 gap-2 border-b border-slate-200" id="tabs">
+            <button onclick="openTab('tongquan')" class="tab-btn px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-white shadow-sm text-blue-600 border border-blue-200" id="btn-tongquan">
+                <i class="fa-solid fa-map-location-dot mr-2"></i>Tổng Quan
+            </button>
+            <button onclick="openTab('congviec')" class="tab-btn px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 text-slate-500 hover:bg-white hover:shadow-sm" id="btn-congviec">
+                <i class="fa-solid fa-list-check mr-2"></i>Đầu Việc Cốt Lõi
+            </button>
+            <button onclick="openTab('nangluc')" class="tab-btn px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 text-slate-500 hover:bg-white hover:shadow-sm" id="btn-nangluc">
+                <i class="fa-solid fa-brain mr-2"></i>Năng Lực Yêu Cầu
+            </button>
+            <button onclick="openTab('dinhhuong')" class="tab-btn px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 text-slate-500 hover:bg-white hover:shadow-sm" id="btn-dinhhuong">
+                <i class="fa-solid fa-route mr-2"></i>Định Hướng & Đào Tạo
+            </button>
+            <button onclick="openTab('luyentap')" class="tab-btn px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 text-slate-500 hover:bg-white hover:shadow-sm" id="btn-luyentap">
+                <i class="fa-solid fa-gamepad mr-2"></i>Luyện Tập (Quiz)
+            </button>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="p-8">
+
+            <!-- TAB 1: TỔNG QUAN -->
+            <div id="tongquan" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    
+                    <!-- Text Side -->
+                    <div class="space-y-6">
+                        <div class="bg-pastel-blue p-5 rounded-2xl border border-blue-100">
+                            <h2 class="font-bold text-blue-700 flex items-center mb-2"><i class="fa-solid fa-bullseye mr-2"></i> Mục Tiêu Bài Học</h2>
+                            <ul class="text-sm space-y-2 text-slate-600">
+                                <li><i class="fa-solid fa-check text-green-500 mr-2"></i>Trình bày thông tin hướng nghiệp nghề sửa chữa/bảo trì.</li>
+                                <li><i class="fa-solid fa-magnifying-glass text-blue-500 mr-2"></i>Tự tìm kiếm, khai thác thông tin các nghề dịch vụ CNTT khác.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-pastel-purple p-5 rounded-2xl border border-purple-100">
+                            <h2 class="font-bold text-purple-700 flex items-center mb-2"><i class="fa-solid fa-star mr-2"></i> Khái Niệm Quan Trọng</h2>
+                            <p class="text-sm text-slate-600 mb-2"><b>Dịch vụ CNTT:</b> Hỗ trợ, phát triển, duy trì hệ thống cho cá nhân/tổ chức.</p>
+                            <p class="text-sm text-slate-600"><b>Vai trò:</b> Duy trì hoạt động ổn định, hiệu quả, hỗ trợ kỹ thuật kịp thời.</p>
+                        </div>
+                    </div>
+
+                    <!-- Visual Side: Sơ đồ mối quan hệ -->
+                    <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center">
+                        <h3 class="font-bold text-center mb-6 text-slate-600">Mối Quan Hệ Cốt Lõi (Tính Chất Nghề)</h3>
+                        
+                        <div class="flex items-center justify-center w-full gap-2 relative">
+                            <!-- Phần cứng -->
+                            <div class="z-10 flex flex-col items-center bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-200 w-1/3">
+                                <i class="fa-solid fa-microchip text-4xl text-blue-500 mb-2"></i>
+                                <span class="font-semibold text-sm text-center">Phần Cứng</span>
+                            </div>
+                            
+                            <!-- Liên kết -->
+                            <div class="flex-1 flex flex-col items-center text-rose-500">
+                                <i class="fa-solid fa-link text-xl"></i>
+                                <span class="text-[10px] font-bold text-center mt-1">Không thể tách rời</span>
+                                <div class="h-0.5 w-full bg-rose-300 mt-1"></div>
+                            </div>
+
+                            <!-- Phần mềm -->
+                            <div class="z-10 flex flex-col items-center bg-purple-50 p-4 rounded-xl shadow-sm border border-purple-200 w-1/3">
+                                <i class="fa-brands fa-windows text-4xl text-purple-500 mb-2"></i>
+                                <span class="font-semibold text-sm text-center">Phần Mềm</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center bg-green-50 px-4 py-2 rounded-lg border border-green-200 w-full text-sm font-medium text-green-700 shadow-sm">
+                            <i class="fa-solid fa-shield-halved mr-2"></i> Đảm bảo môi trường vận hành an toàn
+                        </div>
+                        <p class="text-xs text-slate-400 text-center mt-4 italic">* Nhấn qua Tab "Đầu Việc" để xem chi tiết</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ĐẦU VIỆC CỐT LÕI -->
+            <div id="congviec" class="tab-content">
+                <div class="text-center mb-6">
+                    <!-- Khung Lưu ý dễ nhầm lẫn -->
+                    <div class="inline-flex bg-orange-50 border border-orange-200 text-orange-700 px-4 py-2 rounded-xl text-xs font-semibold items-center">
+                        <i class="fa-solid fa-triangle-exclamation text-orange-500 mr-2 text-lg"></i>
+                        Dễ nhầm lẫn: Cài driver (phần mềm) & Thay linh kiện (phần cứng)
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-72">
+                    
+                    <!-- Card 1: Phần Cứng -->
+                    <div class="flip-card h-full" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 shadow-md">
+                                <div class="bg-white p-4 rounded-full shadow-sm mb-4">
+                                    <i class="fa-solid fa-memory text-5xl text-blue-500"></i>
+                                </div>
+                                <h3 class="font-bold text-xl text-blue-800">Về Phần Cứng</h3>
+                            </div>
+                            <div class="flip-card-back bg-blue-600 text-white shadow-lg">
+                                <h4 class="font-bold border-b border-blue-400 pb-2 mb-2 w-full"><i class="fa-solid fa-microchip mr-2"></i>Nhiệm vụ:</h4>
+                                <ul class="text-sm space-y-2 list-none">
+                                    <li class="flex items-start"><i class="fa-solid fa-check text-blue-300 mr-2 mt-1"></i>Kiểm soát, duy trì định kỳ.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-stethoscope text-blue-300 mr-2 mt-1"></i>Chẩn đoán, khắc phục lỗi vật lý.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-wrench text-blue-300 mr-2 mt-1"></i>Lắp đặt, sửa/thay linh kiện hỏng.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-arrow-up-right-dots text-blue-300 mr-2 mt-1"></i>Nâng cấp: RAM, ổ cứng, Mainboard...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Phần Mềm -->
+                    <div class="flip-card h-full" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 shadow-md">
+                                <div class="bg-white p-4 rounded-full shadow-sm mb-4">
+                                    <i class="fa-brands fa-microsoft text-5xl text-purple-500"></i>
+                                </div>
+                                <h3 class="font-bold text-xl text-purple-800">Về Phần Mềm</h3>
+                            </div>
+                            <div class="flip-card-back bg-purple-600 text-white shadow-lg">
+                                <h4 class="font-bold border-b border-purple-400 pb-2 mb-2 w-full"><i class="fa-solid fa-code mr-2"></i>Nhiệm vụ:</h4>
+                                <ul class="text-sm space-y-2 list-none">
+                                    <li class="flex items-start"><i class="fa-solid fa-compact-disc text-purple-300 mr-2 mt-1"></i>Cài đặt/cập nhật Driver.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-laptop-code text-purple-300 mr-2 mt-1"></i>Cài Hệ điều hành, ứng dụng văn phòng.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-network-wired text-purple-300 mr-2 mt-1"></i>Cấu hình, duy trì mạng thông suốt.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-shield-virus text-purple-300 mr-2 mt-1"></i>Quét mã độc, cài diệt Virus, bảo mật.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Hỗ trợ người dùng -->
+                    <div class="flip-card h-full" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 shadow-md">
+                                <div class="bg-white p-4 rounded-full shadow-sm mb-4">
+                                    <i class="fa-solid fa-headset text-5xl text-green-500"></i>
+                                </div>
+                                <h3 class="font-bold text-xl text-green-800">Hỗ Trợ Người Dùng</h3>
+                            </div>
+                            <div class="flip-card-back bg-green-600 text-white shadow-lg">
+                                <h4 class="font-bold border-b border-green-400 pb-2 mb-2 w-full"><i class="fa-solid fa-user-group mr-2"></i>Nhiệm vụ:</h4>
+                                <ul class="text-sm space-y-4 list-none">
+                                    <li class="flex items-start"><i class="fa-solid fa-chalkboard-user text-green-300 mr-2 mt-1"></i>Hướng dẫn sử dụng máy tính/thiết bị đúng cách, tối ưu.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-book-open text-green-300 mr-2 mt-1"></i>Hướng dẫn thao tác các phần mềm ứng dụng thông dụng.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 3: NĂNG LỰC YÊU CẦU -->
+            <div id="nangluc" class="tab-content">
+                <div class="flex flex-col md:flex-row gap-6">
+                    
+                    <!-- Cột Trái: Danh mục các Kỹ năng -->
+                    <div class="w-full md:w-5/12 flex flex-col gap-6">
+                        
+                        <!-- Kiến thức chuyên môn -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="bg-slate-800 text-white p-3 text-center font-bold">
+                                <i class="fa-solid fa-book-journal-whills mr-2"></i>Kiến Thức Chuyên Môn (Hard Skills)
+                            </div>
+                            <div class="p-3 flex flex-col gap-2">
+                                <button onclick="showSkillDetail('hw', this)" class="skill-btn flex items-center p-3 rounded-xl border border-slate-100 hover:border-blue-300 hover:bg-blue-50 transition-all text-left group">
+                                    <div class="bg-blue-100 text-blue-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-desktop"></i></div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800">Phần cứng</h4>
+                                    </div>
+                                </button>
+                                <button onclick="showSkillDetail('sw', this)" class="skill-btn flex items-center p-3 rounded-xl border border-slate-100 hover:border-purple-300 hover:bg-purple-50 transition-all text-left group">
+                                    <div class="bg-purple-100 text-purple-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform"><i class="fa-brands fa-windows"></i></div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800">Phần mềm</h4>
+                                    </div>
+                                </button>
+                                <button onclick="showSkillDetail('net', this)" class="skill-btn flex items-center p-3 rounded-xl border border-slate-100 hover:border-green-300 hover:bg-green-50 transition-all text-left group">
+                                    <div class="bg-green-100 text-green-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-wifi"></i></div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800">Mạng máy tính</h4>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Kỹ năng mềm -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="bg-amber-500 text-white p-3 text-center font-bold">
+                                <i class="fa-solid fa-hands-holding-circle mr-2"></i>Kỹ Năng Mềm (Soft Skills)
+                            </div>
+                            <div class="p-3 grid grid-cols-2 gap-2">
+                                <button onclick="showSkillDetail('learn', this)" class="skill-btn flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-amber-300 hover:bg-amber-50 transition-all group text-center">
+                                    <div class="text-amber-500 text-2xl mb-2 group-hover:-translate-y-1 transition-transform"><i class="fa-solid fa-book-open-reader"></i></div>
+                                    <h4 class="font-bold text-xs text-slate-700">Tự học & Cập nhật</h4>
+                                </button>
+                                <button onclick="showSkillDetail('solve', this)" class="skill-btn flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-rose-300 hover:bg-rose-50 transition-all group text-center">
+                                    <div class="text-rose-500 text-2xl mb-2 group-hover:-translate-y-1 transition-transform"><i class="fa-solid fa-lightbulb"></i></div>
+                                    <h4 class="font-bold text-xs text-slate-700">Giải quyết vấn đề</h4>
+                                </button>
+                                <button onclick="showSkillDetail('comm', this)" class="skill-btn flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-teal-300 hover:bg-teal-50 transition-all group text-center">
+                                    <div class="text-teal-500 text-2xl mb-2 group-hover:-translate-y-1 transition-transform"><i class="fa-solid fa-comments"></i></div>
+                                    <h4 class="font-bold text-xs text-slate-700">Giao tiếp</h4>
+                                </button>
+                                <button onclick="showSkillDetail('time', this)" class="skill-btn flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-indigo-300 hover:bg-indigo-50 transition-all group text-center">
+                                    <div class="text-indigo-500 text-2xl mb-2 group-hover:-translate-y-1 transition-transform"><i class="fa-solid fa-clock"></i></div>
+                                    <h4 class="font-bold text-xs text-slate-700">Quản lý thời gian</h4>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Cột Phải: Bảng Tương tác Chi tiết -->
+                    <div class="w-full md:w-7/12">
+                        <div id="skill-detail-panel" class="bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 p-8 h-full min-h-[400px] flex flex-col items-center justify-center text-center transition-all duration-300 relative overflow-hidden">
+                            <i class="fa-solid fa-hand-pointer text-6xl text-slate-300 mb-4 animate-bounce"></i>
+                            <h3 class="font-bold text-xl text-slate-600 mb-2">Khám phá Chi tiết Năng lực</h3>
+                            <p class="text-slate-500 text-sm">Nhấn vào các kỹ năng ở cột bên trái để xem giải thích trực quan nhé!</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 4: ĐỊNH HƯỚNG -->
+            <div id="dinhhuong" class="tab-content">
+                
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- Nhu cầu nhân lực -->
+                    <div class="w-full md:w-1/3 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col">
+                        <h3 class="font-bold text-slate-700 mb-4 text-center"><i class="fa-solid fa-chart-line text-pink-500 mr-2"></i>Nhu Cầu & Xu Hướng</h3>
+                        
+                        <div class="flex flex-col gap-4 flex-1">
+                            <!-- Card 1: Tăng mạnh -->
+                            <div class="flip-card w-full h-[190px] z-10 shrink-0" onclick="this.classList.toggle('active')">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front bg-pink-50 border-2 border-pink-200 shadow-sm flex flex-col items-center justify-center p-4">
+                                        <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm">
+                                            <i class="fa-solid fa-arrow-trend-up text-2xl text-pink-500"></i>
+                                        </div>
+                                        <span class="font-bold text-lg text-pink-700 text-center">Tăng Mạnh<br>(Lượng & Chất)</span>
+                                    </div>
+                                    <div class="flip-card-back bg-pink-500 text-white shadow-sm p-5 !flex !flex-col !items-center !justify-center !text-center">
+                                        <h4 class="font-bold text-lg border-b border-pink-300 pb-2 mb-3 w-full">Cơ Hội Mở Rộng</h4>
+                                        <p class="text-base leading-relaxed">Sự bùng nổ thiết bị số & CMCN 4.0 khiến nhu cầu tuyển dụng tăng vọt. Đòi hỏi kỹ thuật viên <b>trình độ cao</b> để xử lý công nghệ phức tạp.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Thách thức -->
+                            <div class="flip-card w-full h-[190px] z-10 shrink-0" onclick="this.classList.toggle('active')">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front bg-orange-50 border-2 border-orange-200 shadow-sm flex flex-col items-center justify-center p-4">
+                                        <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm">
+                                            <i class="fa-solid fa-shield-virus text-2xl text-orange-500"></i>
+                                        </div>
+                                        <span class="font-bold text-lg text-orange-700 text-center">Thách Thức Mới<br>(Từ Xa & Bảo Mật)</span>
+                                    </div>
+                                    <div class="flip-card-back bg-orange-500 text-white shadow-sm p-5 !flex !flex-col !items-center !justify-center !text-center">
+                                        <h4 class="font-bold text-lg border-b border-orange-300 pb-2 mb-3 w-full">Thích Ứng Mới</h4>
+                                        <p class="text-base leading-relaxed">Mô hình trực tuyến đòi hỏi kỹ năng <b>chẩn đoán, xử lý sự cố từ xa</b> linh hoạt, đồng thời phải nắm vững <b>an toàn, bảo mật thông tin</b>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bậc Đào tạo Path -->
+                    <div class="w-full md:w-2/3 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <h3 class="font-bold text-slate-700 mb-6 text-center"><i class="fa-solid fa-graduation-cap mr-2"></i>Lộ Trình & Bậc Đào Tạo Tại Việt Nam</h3>
+                        
+                        <div class="flex flex-col md:flex-row items-stretch justify-between relative gap-4">
+                            <!-- Line connecting (desktop) -->
+                            <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-slate-200 -z-10 -translate-y-1/2"></div>
+                            
+                            <!-- Cao Đẳng -->
+                            <div class="flip-card w-full md:flex-1 h-[420px] z-10" onclick="this.classList.toggle('active')">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front bg-white border-2 border-emerald-400 shadow-md flex flex-col items-center justify-center p-4">
+                                        <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold text-2xl mb-4 shadow-sm">CĐ</div>
+                                        <span class="font-bold text-base text-emerald-700 text-center">Cao Đẳng / Nghề</span>
+                                    </div>
+                                    <div class="flip-card-back bg-emerald-500 text-white shadow-md p-5 !flex flex-col !items-center !justify-center !text-center">
+                                        <i class="fa-solid fa-screwdriver-wrench text-2xl mb-3 text-emerald-200"></i>
+                                        <h4 class="font-bold text-base border-b border-emerald-200 pb-2 mb-3 w-full">Thực Hành</h4>
+                                        <p class="text-[13px] leading-relaxed text-emerald-50">
+                                            Ưu thế lớn trong việc rèn luyện tay nghề <b>thực hành chuyên sâu</b> sửa chữa thiết bị. Chú trọng "Học đi đôi với hành". Thực hành trực tiếp tháo lắp, cấu hình giúp kỹ thuật viên làm quen ngay với môi trường công việc, có thể đáp ứng công việc ngay lập tức.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Đại học -->
+                            <div class="flip-card w-full md:flex-1 h-[420px] z-10" onclick="this.classList.toggle('active')">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front bg-white border-2 border-blue-400 shadow-md flex flex-col items-center justify-center p-4">
+                                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-2xl mb-4 shadow-sm">ĐH</div>
+                                        <span class="font-bold text-base text-blue-700 text-center">Đại Học</span>
+                                    </div>
+                                    <div class="flip-card-back bg-blue-500 text-white shadow-md p-5 !flex flex-col !items-center !justify-center !text-center">
+                                        <i class="fa-solid fa-microchip text-2xl mb-3 text-blue-200"></i>
+                                        <h4 class="font-bold text-base border-b border-blue-200 pb-2 mb-3 w-full">Nguyên Lý</h4>
+                                        <p class="text-[13px] leading-relaxed text-blue-50">
+                                            Tập trung trang bị sâu sắc về <b>nguyên lý hoạt động</b>, giải quyết bài toán phức tạp. Hiểu rõ bản chất "tại sao" hệ thống vận hành. Nắm vững nền tảng cốt lõi để tự phân tích các lỗi chưa từng gặp và tối ưu hoá hệ thống thay vì làm theo khuôn mẫu.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Doanh Nghiệp -->
+                            <div class="flip-card w-full md:flex-1 h-[420px] z-10" onclick="this.classList.toggle('active')">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front bg-white border-2 border-purple-400 shadow-md flex flex-col items-center justify-center p-4">
+                                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-3xl mb-4 shadow-sm">
+                                            <i class="fa-solid fa-building"></i>
+                                        </div>
+                                        <span class="font-bold text-base text-purple-700 text-center">Thực Tế (DN)</span>
+                                    </div>
+                                    <div class="flip-card-back bg-purple-500 text-white shadow-md p-5 !flex flex-col !items-center !justify-center !text-center">
+                                        <i class="fa-solid fa-people-carry-box text-2xl mb-3 text-purple-200"></i>
+                                        <h4 class="font-bold text-base border-b border-purple-200 pb-2 mb-3 w-full">Kinh Nghiệm</h4>
+                                        <p class="text-[13px] leading-relaxed text-purple-50">
+                                            Môi trường thực tế là nơi tích lũy <b>kinh nghiệm</b> và học hỏi trực tiếp từ đồng nghiệp. Sự nhạy bén đúc kết qua thời gian dài cọ xát với vô số tình huống phát sinh. Trau dồi kỹ năng mềm, xử lý khủng hoảng và chăm sóc khách hàng mà sách vở ít đề cập.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: LUYỆN TẬP -->
+            <div id="luyentap" class="tab-content">
+                <div class="max-w-2xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+                    <div class="flex justify-between items-center border-b pb-4 mb-4">
+                        <h2 class="font-bold text-xl text-slate-800"><i class="fa-solid fa-gamepad text-indigo-500 mr-2"></i> Ôn Tập</h2>
+                        <span id="score-display" class="bg-indigo-100 text-indigo-800 font-bold px-3 py-1 rounded-full text-sm">Điểm: 0/5</span>
+                    </div>
+
+                    <div id="quiz-container">
+                        <!-- Questions will be injected here by JS -->
+                    </div>
+
+                    <div class="mt-6 flex justify-between items-center">
+                        <button id="btn-submit-quiz" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-xl transition-colors shadow-md hidden" onclick="checkAnswers()">Nộp bài</button>
+                        <button id="btn-retry-quiz" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-6 rounded-xl transition-colors hidden" onclick="initQuiz()">Làm lại</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- 1. Tab Navigation Logic ---
+        function openTab(tabId) {
+            // Hide all contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Reset all buttons style
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => {
+                btn.className = "tab-btn px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 text-slate-500 hover:bg-white hover:shadow-sm";
+            });
+
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+
+            // Highlight selected button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.className = "tab-btn px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-white shadow-sm text-blue-600 border border-blue-200";
+        }
+
+        // --- 2. Quiz Logic ---
+        const quizData = [
+            {
+                question: "Tính chất cốt lõi của nghề bảo trì, sửa chữa máy tính là gì?",
+                options: [
+                    "Chỉ tập trung sửa các linh kiện điện tử bị hỏng.",
+                    "Sửa chữa phần cứng luôn gắn liền với duy trì phần mềm và môi trường an toàn.",
+                    "Chỉ cần cài đặt các ứng dụng văn phòng cho người dùng.",
+                    "Phát triển các phần mềm quản lý hệ thống."
+                ],
+                correct: 1 // Index 1
+            },
+            {
+                question: "Đâu là công việc thuộc nhóm bảo trì 'Phần Mềm'?",
+                options: [
+                    "Nâng cấp dung lượng RAM và thay ổ cứng.",
+                    "Thay màn hình độ phân giải cao.",
+                    "Cài đặt, cập nhật phần mềm điều khiển thiết bị (driver).",
+                    "Tháo lắp các thiết bị ngoại vi bị hỏng."
+                ],
+                correct: 2
+            },
+            {
+                question: "Khi khách hàng cần tư vấn phương án kỹ thuật, kỹ năng mềm nào là quan trọng nhất?",
+                options: [
+                    "Giao tiếp (giải thích bằng ngôn ngữ dễ hiểu).",
+                    "Quản lý thời gian.",
+                    "Khả năng lập trình mạng.",
+                    "Tự học một công nghệ mới."
+                ],
+                correct: 0
+            },
+            {
+                question: "Đặc thù đào tạo bậc Cao đẳng nghề đối với ngành này là gì?",
+                options: [
+                    "Trang bị sâu sắc về nguyên lý hoạt động phức tạp.",
+                    "Chỉ học lý thuyết không thực hành.",
+                    "Ưu thế rèn luyện thực hành chuyên sâu, thành thạo tay nghề.",
+                    "Chuyên đào tạo kỹ năng quản lý dự án."
+                ],
+                correct: 2
+            },
+            {
+                question: "Xu hướng làm việc từ xa đòi hỏi kỹ thuật viên hiện nay phải có thêm kỹ năng gì?",
+                options: [
+                    "Kỹ năng lắp ráp linh kiện nhanh.",
+                    "Kỹ năng chẩn đoán, xử lý sự cố từ xa và bảo mật an toàn thông tin.",
+                    "Kỹ năng thiết kế đồ họa 3D.",
+                    "Kỹ năng kế toán doanh nghiệp."
+                ],
+                correct: 1
+            }
+        ];
+
+        let selectedAnswers = new Array(quizData.length).fill(null);
+
+        function initQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            selectedAnswers = new Array(quizData.length).fill(null);
+            document.getElementById('score-display').innerText = "Điểm: 0/5";
+            document.getElementById('score-display').className = "bg-indigo-100 text-indigo-800 font-bold px-3 py-1 rounded-full text-sm";
+            document.getElementById('btn-submit-quiz').classList.remove('hidden');
+            document.getElementById('btn-retry-quiz').classList.add('hidden');
+
+            quizData.forEach((q, qIndex) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "mb-6 pb-6 border-b border-slate-100 last:border-0";
+                
+                const qText = document.createElement('h4');
+                qText.className = "font-bold text-slate-700 mb-3";
+                qText.innerText = `Câu ${qIndex + 1}: ${q.question}`;
+                qDiv.appendChild(qText);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = "space-y-2";
+
+                q.options.forEach((opt, optIndex) => {
+                    const label = document.createElement('label');
+                    label.className = "flex items-center p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors option-label-" + qIndex;
+                    label.id = `label-${qIndex}-${optIndex}`;
+                    
+                    const input = document.createElement('input');
+                    input.type = "radio";
+                    input.name = "question" + qIndex;
+                    input.value = optIndex;
+                    input.className = "mr-3 w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 focus:ring-indigo-500";
+                    
+                    input.onclick = () => selectOption(qIndex, optIndex);
+
+                    const span = document.createElement('span');
+                    span.className = "text-sm text-slate-600";
+                    span.innerText = opt;
+
+                    label.appendChild(input);
+                    label.appendChild(span);
+                    optionsDiv.appendChild(label);
+                });
+
+                qDiv.appendChild(optionsDiv);
+                
+                // Feedback div
+                const feedback = document.createElement('div');
+                feedback.id = `feedback-${qIndex}`;
+                feedback.className = "mt-2 text-sm font-bold hidden";
+                qDiv.appendChild(feedback);
+
+                container.appendChild(qDiv);
+            });
+        }
+
+        function selectOption(qIndex, optIndex) {
+            selectedAnswers[qIndex] = optIndex;
+            
+            // UI reset for this question
+            const labels = document.querySelectorAll('.option-label-' + qIndex);
+            labels.forEach(l => {
+                l.classList.remove('bg-indigo-50', 'border-indigo-300');
+                l.classList.add('border-slate-200', 'hover:bg-slate-50');
+            });
+
+            // Highlight selected
+            const selectedLabel = document.getElementById(`label-${qIndex}-${optIndex}`);
+            selectedLabel.classList.remove('border-slate-200', 'hover:bg-slate-50');
+            selectedLabel.classList.add('bg-indigo-50', 'border-indigo-300');
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            let allAnswered = true;
+
+            for(let i=0; i<selectedAnswers.length; i++){
+                if(selectedAnswers[i] === null) {
+                    allAnswered = false;
+                    break;
+                }
+            }
+
+            if(!allAnswered) {
+                alert("Vui lòng chọn đáp án cho tất cả các câu hỏi!");
+                return;
+            }
+
+            quizData.forEach((q, i) => {
+                const labels = document.querySelectorAll('.option-label-' + i);
+                const feedback = document.getElementById(`feedback-${i}`);
+                
+                // Disable inputs
+                labels.forEach(l => l.querySelector('input').disabled = true);
+
+                if (selectedAnswers[i] === q.correct) {
+                    score++;
+                    document.getElementById(`label-${i}-${selectedAnswers[i]}`).classList.add('bg-green-100', 'border-green-400');
+                    feedback.innerHTML = '<i class="fa-solid fa-check text-green-600 mr-1"></i> Chính xác';
+                    feedback.className = "mt-2 text-sm font-bold text-green-600 block";
+                } else {
+                    document.getElementById(`label-${i}-${selectedAnswers[i]}`).classList.add('bg-red-100', 'border-red-400');
+                    // Highlight correct one
+                    document.getElementById(`label-${i}-${q.correct}`).classList.add('bg-green-100', 'border-green-400');
+                    
+                    feedback.innerHTML = '<i class="fa-solid fa-xmark text-red-600 mr-1"></i> Sai. Đáp án đúng là màu xanh.';
+                    feedback.className = "mt-2 text-sm font-bold text-red-600 block";
+                }
+            });
+
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.innerText = `Điểm: ${score}/5`;
+            
+            if(score === 5) {
+                scoreDisplay.className = "bg-green-500 text-white font-bold px-3 py-1 rounded-full text-sm shadow-md animate-bounce";
+            } else if (score >= 3) {
+                scoreDisplay.className = "bg-yellow-400 text-white font-bold px-3 py-1 rounded-full text-sm shadow-md";
+            } else {
+                scoreDisplay.className = "bg-red-400 text-white font-bold px-3 py-1 rounded-full text-sm shadow-md";
+            }
+
+            document.getElementById('btn-submit-quiz').classList.add('hidden');
+            document.getElementById('btn-retry-quiz').classList.remove('hidden');
+        }
+
+        // --- 3. Interactive Skills Logic ---
+        const skillDetails = {
+            hw: {
+                title: "Phần Cứng",
+                icon: "fa-solid fa-desktop",
+                color: "blue",
+                desc: "Hiểu biết rõ về cấu tạo và các thành phần cơ bản của máy tính.<br><br><b>Chi tiết:</b> Bạn sẽ biết cách kiểm tra, tháo lắp, sửa chữa, hoặc thay thế các linh kiện vật lý một cách an toàn và chính xác khi cần thiết.",
+                tags: ["Tháo lắp ráp", "Kiểm tra lỗi", "Thay thế linh kiện"]
+            },
+            sw: {
+                title: "Phần Mềm",
+                icon: "fa-brands fa-windows",
+                color: "purple",
+                desc: "Thực hiện được việc cài đặt, cấu hình và duy trì hệ thống phần mềm.<br><br><b>Chi tiết:</b> Từ hệ điều hành, phần mềm văn phòng, đến trình duyệt web. Đặc biệt, cần biết cách phát hiện cũng như loại bỏ virus và phần mềm độc hại.",
+                tags: ["Hệ điều hành", "Cấu hình ứng dụng", "Diệt Virus"]
+            },
+            net: {
+                title: "Mạng Máy Tính",
+                icon: "fa-solid fa-wifi",
+                color: "green",
+                desc: "Có kiến thức cơ bản về mạng máy tính để đảm bảo thiết bị luôn được kết nối.<br><br><b>Chi tiết:</b> Nắm vững phương pháp kết nối và cấu hình mạng cục bộ (LAN) cũng như duy trì mạng Internet thông suốt an toàn.",
+                tags: ["Cấu hình LAN", "Mạng Internet", "Xử lý mất mạng"]
+            },
+            learn: {
+                title: "Tự học & Cập nhật",
+                icon: "fa-solid fa-book-open-reader",
+                color: "amber",
+                desc: "Ngành CNTT thay đổi từng ngày. Người làm nghề cần có thói quen chủ động theo dõi, cập nhật để luôn có hiểu biết về công nghệ mới, thiết bị mới.",
+                tags: ["Chủ động", "Bắt kịp xu hướng", "Tìm tòi"]
+            },
+            solve: {
+                title: "Giải quyết vấn đề",
+                icon: "fa-solid fa-lightbulb",
+                color: "rose",
+                desc: "Sự cố máy tính rất đa dạng. Bạn cần khả năng phân tích để giải quyết các vấn đề kỹ thuật.<br><br><b>Chi tiết:</b> Biết cách tìm kiếm, tra cứu tài liệu hướng dẫn trên Internet và tìm ra phương pháp khắc phục lỗi nhanh chóng.",
+                tags: ["Phân tích logic", "Tra cứu Google", "Sửa lỗi hiệu quả"]
+            },
+            comm: {
+                title: "Giao tiếp & Tư vấn",
+                icon: "fa-solid fa-comments",
+                color: "teal",
+                desc: "Làm việc trực tiếp với khách hàng hoặc người dùng gặp sự cố. Khả năng giao tiếp tốt giúp bạn giải thích, tư vấn cho họ các giải pháp kỹ thuật một cách dễ hiểu nhất.",
+                tags: ["Lắng nghe", "Giải thích dễ hiểu", "Thái độ tốt"]
+            },
+            time: {
+                title: "Quản lý thời gian",
+                icon: "fa-solid fa-clock",
+                color: "indigo",
+                desc: "Đặc thù công việc dịch vụ đòi hỏi uy tín. Bạn có khả năng quản lý thời gian để hoàn thành dự án sửa chữa, bảo trì trong thời gian quy định và đáp ứng yêu cầu của khách hàng.",
+                tags: ["Đúng hẹn", "Lên kế hoạch", "Uy tín dịch vụ"]
+            }
+        };
+
+        function showSkillDetail(id, btnElement) {
+            // Xóa trạng thái active của tất cả các nút
+            document.querySelectorAll('.skill-btn').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-blue-400', 'ring-purple-400', 'ring-green-400', 'ring-amber-400', 'ring-rose-400', 'ring-teal-400', 'ring-indigo-400', 'shadow-md');
+            });
+            
+            // Thêm viền sáng (ring) cho nút vừa được click
+            const colorRing = `ring-${skillDetails[id].color}-400`;
+            btnElement.classList.add('ring-2', colorRing, 'shadow-md');
+
+            // Render dữ liệu vào Bảng Chi Tiết (Cột Phải)
+            const panel = document.getElementById('skill-detail-panel');
+            const data = skillDetails[id];
+            
+            // Map màu sắc phù hợp với Tailwind classes
+            const colorClasses = {
+                blue: { bg: 'bg-blue-100', text: 'text-blue-600', border: 'border-blue-200', grad: 'from-blue-50 to-white' },
+                purple: { bg: 'bg-purple-100', text: 'text-purple-600', border: 'border-purple-200', grad: 'from-purple-50 to-white' },
+                green: { bg: 'bg-green-100', text: 'text-green-600', border: 'border-green-200', grad: 'from-green-50 to-white' },
+                amber: { bg: 'bg-amber-100', text: 'text-amber-600', border: 'border-amber-200', grad: 'from-amber-50 to-white' },
+                rose: { bg: 'bg-rose-100', text: 'text-rose-600', border: 'border-rose-200', grad: 'from-rose-50 to-white' },
+                teal: { bg: 'bg-teal-100', text: 'text-teal-600', border: 'border-teal-200', grad: 'from-teal-50 to-white' },
+                indigo: { bg: 'bg-indigo-100', text: 'text-indigo-600', border: 'border-indigo-200', grad: 'from-indigo-50 to-white' },
+            };
+            const theme = colorClasses[data.color];
+            
+            // Tạo các thẻ (tags)
+            let tagsHtml = data.tags.map(tag => `<span class="inline-block px-3 py-1 rounded-full text-xs font-bold ${theme.bg} ${theme.text} mr-2 mb-2 border ${theme.border}">${tag}</span>`).join('');
+
+            // Cập nhật giao diện khung bên phải
+            panel.className = `bg-gradient-to-br ${theme.grad} rounded-3xl border ${theme.border} p-8 h-full min-h-[400px] flex flex-col items-center text-center shadow-lg relative overflow-hidden`;
+
+            panel.innerHTML = `
+                <!-- Hình nền mờ góc dưới -->
+                <i class="${data.icon} absolute -right-6 -bottom-6 text-9xl opacity-5 ${theme.text}"></i>
+                
+                <!-- Nội dung giải thích có hiệu ứng mờ dần (fadeIn) -->
+                <div style="animation: fadeIn 0.4s ease-in-out" class="w-full flex flex-col items-center z-10">
+                    <div class="inline-flex justify-center items-center w-20 h-20 rounded-2xl ${theme.bg} ${theme.text} mb-6 shadow-sm transform hover:scale-110 transition-transform duration-300 border ${theme.border}">
+                        <i class="${data.icon} text-4xl"></i>
+                    </div>
+                    <h3 class="font-bold text-2xl text-slate-800 mb-4">${data.title}</h3>
+                    <div class="w-16 h-1 bg-slate-200 mx-auto mb-6 rounded-full"></div>
+                    <p class="text-slate-600 leading-relaxed text-md md:text-lg mb-8 max-w-md">${data.desc}</p>
+                    <div class="flex flex-wrap justify-center max-w-sm">
+                        ${tagsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize quiz on load
+        window.onload = initQuiz;
+
+    </script>
+</body>
+</html>
