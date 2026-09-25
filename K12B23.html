@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuẩn Bị Xây Dựng Trang Web</title>
+    <!-- Google Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#EFF6FF',
+                            purple: '#F5F3FF',
+                            pink: '#FDF2F8',
+                            green: '#F0FDF4',
+                            yellow: '#FEFCE8'
+                        }
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'float': 'float 3s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+        }
+        /* Custom Title Style */
+        .custom-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3B82F6, #A855F7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+        
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background-color: #EFF6FF;
+            color: #3B82F6;
+            border-bottom: 2px solid #3B82F6;
+            font-weight: 700;
+        }
+        
+        /* Interactive Web Element Styles */
+        .web-element {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .web-element:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: #8B5CF6; /* Purple accent */
+        }
+        .web-element.selected {
+            border: 2px solid #8B5CF6;
+            background-color: #F5F3FF;
+        }
+
+        .mindmap-line {
+            position: absolute;
+            z-index: -1;
+            background: #CBD5E1;
+        }
+        
+        /* 3D Flip Card Styles (Hover) */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* 3D Flip Card X (Bottom to Top) Styles for Inner Web Mockup elements */
+        .flip-card-x {
+            background-color: transparent;
+            perspective: 1200px;
+        }
+        .flip-card-inner-x {
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            width: 100%;
+        }
+        .flip-card-x.is-flipped .flip-card-inner-x {
+            transform: rotateX(180deg);
+        }
+        .flip-card-front-x, .flip-card-back-x {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            width: 100%;
+        }
+        .flip-card-front-x {
+            transform: rotateX(0deg);
+        }
+        .flip-card-back-x {
+            position: absolute;
+            inset: 0;
+            transform: rotateX(180deg);
+            height: 100%;
+        }
+
+        /* NEW: 3D Flip Container for entire Mockup (Click to flip Y) */
+        .flip-container-click {
+            perspective: 1500px;
+        }
+        .flip-inner-click {
+            position: relative;
+            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            width: 100%;
+        }
+        .flip-container-click.is-flipped .flip-inner-click {
+            transform: rotateY(180deg);
+        }
+        .flip-front-click, .flip-back-click {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            width: 100%;
+            border-radius: 0.75rem; /* rounded-xl */
+        }
+        .flip-front-click {
+            transform: rotateY(0deg);
+            background: white;
+        }
+        .flip-back-click {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            transform: rotateY(180deg);
+            background: #1e1e1e; /* VS Code dark mode */
+            overflow: hidden;
+        }
+
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c084fc; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a855f7; 
+        }
+
+        /* Dark scrollbar for Code Editor */
+        .scrollbar-dark::-webkit-scrollbar { width: 8px; }
+        .scrollbar-dark::-webkit-scrollbar-track { background: #1e1e1e; }
+        .scrollbar-dark::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .scrollbar-dark::-webkit-scrollbar-thumb:hover { background: #777; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8">
+
+    <!-- Header & Navigation -->
+    <div class="w-full max-w-6xl bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="p-6 text-center border-b border-slate-100 bg-gradient-to-r from-pastel-blue via-white to-pastel-purple">
+            <h1 class="custom-title mb-2">Quy Trình Và Kiến Thức Chuẩn Bị Xây Dựng Trang Web</h1>
+            <p class="text-slate-500 font-medium"><i class="fa-solid fa-book-open text-blue-400 mr-2"></i>Chủ đề 7: Ứng dụng tin học - Bài 23</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex overflow-x-auto border-b border-slate-200">
+            <button onclick="switchTab('tongquan')" id="tab-tongquan" class="tab-btn active flex-1 py-4 px-6 text-slate-500 font-semibold whitespace-nowrap"><i class="fa-solid fa-compass mr-2"></i>Tổng Quan</button>
+            <button onclick="switchTab('cautruc')" id="tab-cautruc" class="tab-btn flex-1 py-4 px-6 text-slate-500 font-semibold whitespace-nowrap"><i class="fa-solid fa-layer-group mr-2"></i>Cấu Trúc Web</button>
+            <button onclick="switchTab('quytrinh')" id="tab-quytrinh" class="tab-btn flex-1 py-4 px-6 text-slate-500 font-semibold whitespace-nowrap"><i class="fa-solid fa-diagram-project mr-2"></i>Quy Trình</button>
+            <button onclick="switchTab('mythuat')" id="tab-mythuat" class="tab-btn flex-1 py-4 px-6 text-slate-500 font-semibold whitespace-nowrap"><i class="fa-solid fa-palette mr-2"></i>Thiết Kế & Lỗi</button>
+            <button onclick="switchTab('luyentap')" id="tab-luyentap" class="tab-btn flex-1 py-4 px-6 text-slate-500 font-semibold whitespace-nowrap"><i class="fa-solid fa-gamepad mr-2"></i>Luyện Tập</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="p-8 min-h-[600px] bg-slate-50">
+
+            <!-- TAB 1: TỔNG QUAN -->
+            <div id="content-tongquan" class="tab-content">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <!-- Mục tiêu -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100 relative overflow-hidden opacity-0 animate-fade-in-up hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-pastel-blue rounded-bl-full -z-10 animate-pulse"></div>
+                        <h2 class="text-xl font-bold text-blue-600 mb-4 flex items-center"><i class="fa-solid fa-bullseye text-2xl mr-3 text-blue-400 animate-float"></i> Mục tiêu bài học</h2>
+                        <ul class="space-y-3">
+                            <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mt-1 mr-3"></i> <span>Hiểu biết ban đầu về <b>cấu trúc</b> và <b>thành phần cơ bản</b> của trang web.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mt-1 mr-3"></i> <span>Nắm được <b>quy trình các bước</b> chuẩn bị để thiết kế, xây dựng trang web.</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Khái niệm cốt lõi (Infographic style) -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-purple-100 relative overflow-hidden opacity-0 animate-fade-in-up hover:shadow-md hover:-translate-y-1 transition-all duration-300" style="animation-delay: 150ms;">
+                         <div class="absolute top-0 right-0 w-24 h-24 bg-pastel-purple rounded-bl-full -z-10 animate-pulse"></div>
+                        <h2 class="text-xl font-bold text-purple-600 mb-6 flex items-center"><i class="fa-solid fa-key text-2xl mr-3 text-purple-400 animate-float"></i> Các khái niệm quan trọng</h2>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Card 1: URL -->
+                            <div class="flip-card h-32 cursor-pointer group">
+                                <div class="flip-card-inner relative w-full h-full">
+                                    <!-- Front -->
+                                    <div class="flip-card-front absolute w-full h-full bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center p-4 transition-colors group-hover:border-blue-200">
+                                        <i class="fa-brands fa-chrome text-blue-500 text-3xl mb-2"></i>
+                                        <span class="text-base font-bold text-slate-700">URL</span>
+                                        <span class="text-sm text-slate-400">Địa chỉ truy cập</span>
+                                    </div>
+                                    <!-- Back -->
+                                    <div class="flip-card-back absolute w-full h-full bg-pastel-blue rounded-2xl border border-blue-200 flex flex-col items-center justify-center p-3 text-center shadow-inner">
+                                        <span class="text-sm font-bold text-blue-700 mb-1">URL</span>
+                                        <span class="text-xs text-blue-800 leading-tight">Địa chỉ duy nhất để truy cập trang web thông qua trình duyệt (VD: Chrome, Safari).</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Favicon -->
+                            <div class="flip-card h-32 cursor-pointer group">
+                                <div class="flip-card-inner relative w-full h-full">
+                                    <!-- Front -->
+                                    <div class="flip-card-front absolute w-full h-full bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center p-4 transition-colors group-hover:border-yellow-200">
+                                        <i class="fa-solid fa-star text-yellow-400 text-3xl mb-2"></i>
+                                        <span class="text-base font-bold text-slate-700">Favicon</span>
+                                        <span class="text-sm text-slate-400">Biểu tượng trên tab</span>
+                                    </div>
+                                    <!-- Back -->
+                                    <div class="flip-card-back absolute w-full h-full bg-pastel-yellow rounded-2xl border border-yellow-200 flex flex-col items-center justify-center p-3 text-center shadow-inner">
+                                        <span class="text-sm font-bold text-yellow-700 mb-1">Favicon</span>
+                                        <span class="text-xs text-yellow-800 leading-tight">Biểu tượng đại diện nhỏ gọn hiển thị trên tab của trình duyệt web.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Thanh điều hướng -->
+                            <div class="flip-card h-32 cursor-pointer group">
+                                <div class="flip-card-inner relative w-full h-full">
+                                    <!-- Front -->
+                                    <div class="flip-card-front absolute w-full h-full bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center p-4 transition-colors group-hover:border-emerald-200">
+                                        <i class="fa-solid fa-bars text-emerald-500 text-3xl mb-2"></i>
+                                        <span class="text-base font-bold text-slate-700">Thanh điều hướng</span>
+                                        <span class="text-sm text-slate-400">Bảng chọn chức năng</span>
+                                    </div>
+                                    <!-- Back -->
+                                    <div class="flip-card-back absolute w-full h-full bg-pastel-green rounded-2xl border border-emerald-200 flex flex-col items-center justify-center p-3 text-center shadow-inner">
+                                        <span class="text-sm font-bold text-emerald-700 mb-1">Thanh điều hướng</span>
+                                        <span class="text-xs text-emerald-800 leading-tight">Nằm ở đầu trang, chứa menu chức năng giúp người dùng di chuyển giữa các nội dung.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 4: Typography -->
+                            <div class="flip-card h-32 cursor-pointer group">
+                                <div class="flip-card-inner relative w-full h-full">
+                                    <!-- Front -->
+                                    <div class="flip-card-front absolute w-full h-full bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center p-4 transition-colors group-hover:border-purple-200">
+                                        <span class="text-purple-500 font-serif font-bold text-3xl mb-2 leading-none">A</span>
+                                        <span class="text-base font-bold text-slate-700">Typography</span>
+                                        <span class="text-sm text-slate-400">Định dạng chữ</span>
+                                    </div>
+                                    <!-- Back -->
+                                    <div class="flip-card-back absolute w-full h-full bg-pastel-purple rounded-2xl border border-purple-200 flex flex-col items-center justify-center p-3 text-center shadow-inner">
+                                        <span class="text-sm font-bold text-purple-700 mb-1">Typography</span>
+                                        <span class="text-xs text-purple-800 leading-tight">Việc lựa chọn phông chữ, cỡ chữ hài hòa để dễ đọc và tăng tính thẩm mĩ cho trang.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-pastel-yellow p-6 rounded-2xl border border-yellow-200 opacity-0 animate-fade-in-up hover:shadow-lg transition-all duration-300 cursor-default" style="animation-delay: 300ms;">
+                    <h3 class="text-lg font-bold text-yellow-700 mb-2"><i class="fa-solid fa-lightbulb mr-2 animate-bounce inline-block"></i>Kiến thức cốt lõi (Ghi nhớ)</h3>
+                    <div class="flex flex-col md:flex-row gap-4 justify-around mt-4">
+                        <div class="flex items-center group"><div class="w-10 h-10 rounded-full bg-yellow-300 text-yellow-800 flex justify-center items-center font-bold mr-3 group-hover:scale-110 group-hover:bg-yellow-400 transition-transform">3</div><span class="group-hover:text-yellow-800 transition-colors font-medium">Phần cấu trúc web</span></div>
+                        <div class="flex items-center group"><div class="w-10 h-10 rounded-full bg-yellow-300 text-yellow-800 flex justify-center items-center font-bold mr-3 group-hover:scale-110 group-hover:bg-yellow-400 transition-transform">3</div><span class="group-hover:text-yellow-800 transition-colors font-medium">Bước chuẩn bị quy trình</span></div>
+                        <div class="flex items-center group"><div class="w-10 h-10 rounded-full bg-yellow-300 text-yellow-800 flex justify-center items-center font-bold mr-3 group-hover:scale-110 group-hover:bg-yellow-400 transition-transform">5</div><span class="group-hover:text-yellow-800 transition-colors font-medium">Màu hài hòa (Tối đa)</span></div>
+                        <div class="flex items-center group"><div class="w-10 h-10 rounded-full bg-yellow-300 text-yellow-800 flex justify-center items-center font-bold mr-3 group-hover:scale-110 group-hover:bg-yellow-400 transition-transform">4</div><span class="group-hover:text-yellow-800 transition-colors font-medium">Cỡ chữ (Tối thiểu)</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 2: CẤU TRÚC WEB (INTERACTIVE) -->
+            <div id="content-cautruc" class="tab-content hidden">
+                <div class="text-center mb-8">
+                    <p class="text-slate-600 text-base md:text-lg">
+                        👉 Nhấp vào <span class="font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded">từng phần</span> để lật xem chức năng.<br/>
+                        Hoặc nhấp vào <span class="font-bold text-slate-600 bg-slate-200 px-2 py-1 rounded shadow-sm border border-slate-300 cursor-pointer" onclick="document.getElementById('mockup-flipper').classList.toggle('is-flipped')">khoảng trống màu trắng</span> để lật xem toàn bộ mã nguồn HTML/CSS!
+                    </p>
+                </div>
+
+                <!-- OVERALL FLIP CONTAINER (Flips entire layout to reveal code) -->
+                <div id="mockup-flipper" class="flip-container-click w-full max-w-4xl mx-auto">
+                    <div class="flip-inner-click shadow-xl rounded-xl">
+                        
+                        <!-- FRONT SIDE: VISUAL MOCKUP -->
+                        <!-- event.stopPropagation() is not needed here as this is the parent, but clicking IT flips it. -->
+                        <div class="flip-front-click border border-slate-300 cursor-pointer overflow-hidden" onclick="this.parentNode.parentNode.classList.toggle('is-flipped')" title="Nhấp vào vùng trắng để xem mã nguồn">
+                            
+                            <!-- ROW 1: Browser Chrome (Favicon) -->
+                            <!-- Use event.stopPropagation() so clicking a specific part flips THAT part, not the whole page -->
+                            <div class="flip-card-x cursor-pointer border-b border-slate-300" onclick="event.stopPropagation(); this.classList.toggle('is-flipped')">
+                                <div class="flip-card-inner-x bg-slate-200">
+                                    <div class="flip-card-front-x flex items-end px-4 pt-3 h-[45px]">
+                                        <div class="flex items-center gap-2 pb-2">
+                                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                                        </div>
+                                        <div class="ml-4 bg-white px-4 py-1.5 rounded-t-lg flex items-center gap-2 text-xs text-slate-600 shadow-sm border border-b-0 border-slate-300 relative z-10 w-48">
+                                            <i class="fa-solid fa-star text-yellow-500 animate-pulse"></i>
+                                            <span class="font-bold flex-1 truncate">Trang chủ</span>
+                                            <i class="fa-solid fa-xmark text-slate-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card-back-x flex items-center justify-center px-4 bg-pastel-yellow text-yellow-800 h-[45px]">
+                                        <i class="fa-solid fa-star mr-2 text-yellow-600"></i>
+                                        <p class="text-sm font-bold truncate">Favicon: <span class="font-normal">Biểu tượng đại diện hiển thị trên tab của trình duyệt.</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ROW 2: Address Bar (URL) -->
+                            <div class="flip-card-x cursor-pointer border-b border-slate-300 shadow-sm" onclick="event.stopPropagation(); this.classList.toggle('is-flipped')">
+                                <div class="flip-card-inner-x bg-slate-100">
+                                    <div class="flip-card-front-x p-2">
+                                        <div class="bg-white rounded-md px-3 py-1.5 flex items-center text-sm text-slate-500 border border-slate-200 shadow-inner">
+                                            <i class="fa-solid fa-lock mr-2 text-green-500"></i>
+                                            <span class="font-medium text-slate-700">https://vietnam-vedeptieman.vn</span>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card-back-x flex items-center justify-center p-2 bg-slate-200 text-slate-700">
+                                        <i class="fa-solid fa-link mr-2 text-slate-600"></i>
+                                        <p class="text-sm font-bold">Địa chỉ URL: <span class="font-normal">Mỗi trang web đều có một địa chỉ truy cập dạng URL.</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ROW 3: WEB CONTENT START (Clicking the white gap here flips the whole thing) -->
+                            <div class="bg-white p-4 space-y-4">
+                                
+                                <!-- HEADER -->
+                                <div class="flip-card-x cursor-pointer" onclick="event.stopPropagation(); this.classList.toggle('is-flipped')">
+                                    <div class="flip-card-inner-x">
+                                        <div class="flip-card-front-x p-6 border-2 border-dashed border-blue-300 bg-pastel-blue rounded-xl flex flex-col justify-center items-center text-center relative hover:border-blue-500 transition-colors group">
+                                            <span class="absolute top-3 left-3 text-xs font-bold text-blue-600 bg-white px-3 py-1 rounded-full shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">1. HEADER (Phần đầu trang)</span>
+                                            <div class="flex flex-col md:flex-row justify-between items-center w-full mt-8 gap-4">
+                                                <div class="font-bold text-2xl text-blue-800 flex items-center"><i class="fa-solid fa-mountain-sun mr-2 text-blue-600"></i>LOGO</div>
+                                                <div class="flex flex-wrap justify-center gap-2 md:gap-4 text-sm font-semibold text-blue-600 bg-white/70 px-6 py-2 rounded-full shadow-sm">
+                                                    <span class="hover:text-blue-900">Tây Bắc</span>
+                                                    <span class="hover:text-blue-900">Miền Trung</span>
+                                                    <span class="hover:text-blue-900">Tây Nguyên</span>
+                                                    <span class="hover:text-blue-900">Miền Tây</span>
+                                                </div>
+                                                <div class="bg-white p-2 rounded-full shadow-sm hidden md:block"><i class="fa-solid fa-magnifying-glass text-blue-600"></i></div>
+                                            </div>
+                                            <h1 class="text-3xl md:text-4xl font-bold mt-10 mb-4 text-blue-900 tracking-wide">Việt Nam - Vẻ đẹp tiềm ẩn</h1>
+                                        </div>
+                                        <div class="flip-card-back-x p-6 border-2 border-blue-400 bg-blue-50 rounded-xl absolute inset-0 flex flex-col justify-center items-center text-center shadow-inner">
+                                            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3 shadow-sm"><i class="fa-solid fa-pager text-blue-600 text-xl"></i></div>
+                                            <h3 class="text-xl font-bold text-blue-800 mb-2">Phần Đầu Trang (Header)</h3>
+                                            <p class="text-sm md:text-base text-blue-700 max-w-2xl leading-relaxed">Đóng vai trò như "trang bìa thu gọn". Thường chứa hình nền, logo, tên trang, tiêu đề, và đặc biệt là Thanh điều hướng. <br/><span class="text-xs mt-2 block opacity-70"><i>(Nhấp để đóng)</i></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- BODY -->
+                                <div class="flip-card-x cursor-pointer" onclick="event.stopPropagation(); this.classList.toggle('is-flipped')">
+                                    <div class="flip-card-inner-x">
+                                        <div class="flip-card-front-x p-6 border-2 border-dashed border-emerald-300 bg-pastel-green rounded-xl relative hover:border-emerald-500 transition-colors group">
+                                            <span class="absolute top-3 left-3 text-xs font-bold text-emerald-600 bg-white px-3 py-1 rounded-full shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition-colors">2. BODY (Phần thân trang)</span>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+                                                <!-- content block -->
+                                                <div class="bg-white/80 p-4 rounded-xl shadow-sm flex flex-col items-center border border-emerald-100 hover:shadow-md transition-shadow">
+                                                    <div class="w-full h-32 bg-emerald-100/60 rounded-lg mb-4 flex items-center justify-center text-emerald-500"><i class="fa-regular fa-image text-5xl"></i></div>
+                                                    <div class="h-4 bg-emerald-100 w-3/4 rounded-full mb-2"></div>
+                                                    <div class="h-3 bg-slate-100 w-full rounded-full"></div>
+                                                </div>
+                                                <div class="bg-white/80 p-4 rounded-xl shadow-sm flex flex-col items-center border border-emerald-100 hover:shadow-md transition-shadow">
+                                                    <div class="w-full h-32 bg-emerald-100/60 rounded-lg mb-4 flex items-center justify-center text-emerald-500"><i class="fa-solid fa-video text-5xl"></i></div>
+                                                    <div class="h-4 bg-emerald-100 w-3/4 rounded-full mb-2"></div>
+                                                    <div class="h-3 bg-slate-100 w-full rounded-full"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flip-card-back-x p-6 border-2 border-emerald-400 bg-emerald-50 rounded-xl absolute inset-0 flex flex-col justify-center items-center text-center shadow-inner">
+                                            <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-3 shadow-sm"><i class="fa-solid fa-border-all text-emerald-600 text-xl"></i></div>
+                                            <h3 class="text-xl font-bold text-emerald-800 mb-2">Phần Thân Trang (Body)</h3>
+                                            <p class="text-sm md:text-base text-emerald-700 max-w-2xl leading-relaxed">Chứa nội dung chính của trang web. Thường được tổ chức theo bố cục gồm nhiều khối hình chữ nhật, chứa đa dạng thông tin như văn bản, hình ảnh, video, bản đồ...<br/><span class="text-xs mt-2 block opacity-70"><i>(Nhấp để đóng)</i></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- FOOTER -->
+                                <div class="flip-card-x cursor-pointer" onclick="event.stopPropagation(); this.classList.toggle('is-flipped')">
+                                    <div class="flip-card-inner-x">
+                                        <div class="flip-card-front-x p-6 border-2 border-dashed border-purple-300 bg-pastel-purple rounded-xl relative flex flex-col sm:flex-row justify-between items-center sm:items-end hover:border-purple-500 transition-colors group min-h-[140px]">
+                                            <span class="absolute top-3 left-3 text-xs font-bold text-purple-600 bg-white px-3 py-1 rounded-full shadow-sm group-hover:bg-purple-600 group-hover:text-white transition-colors">3. FOOTER (Phần chân trang)</span>
+                                            <div class="mt-12 sm:mt-8 text-purple-900 text-center sm:text-left">
+                                                <p class="font-bold text-lg">Bản quyền © 2026</p>
+                                                <p class="text-sm opacity-80">Liên hệ: info@vietnam-vedeptieman.vn</p>
+                                            </div>
+                                            <div class="flex gap-4 text-purple-600 text-2xl mt-4 sm:mt-0">
+                                                <i class="fa-brands fa-facebook hover:text-purple-900 transition-colors cursor-pointer"></i>
+                                                <i class="fa-brands fa-youtube hover:text-purple-900 transition-colors cursor-pointer"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flip-card-back-x p-6 border-2 border-purple-400 bg-purple-50 rounded-xl absolute inset-0 flex flex-col justify-center items-center text-center shadow-inner">
+                                            <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2 shadow-sm"><i class="fa-solid fa-shoe-prints text-purple-600 text-xl"></i></div>
+                                            <h3 class="text-xl font-bold text-purple-800 mb-1">Phần Chân Trang (Footer)</h3>
+                                            <p class="text-sm md:text-base text-purple-700 max-w-2xl leading-relaxed">Nằm ở cuối trang web. Chứa các thông tin ngắn gọn về thương hiệu, bản quyền, chính sách bảo mật, liên hệ và MXH.<br/><span class="text-xs mt-2 block opacity-70"><i>(Nhấp để đóng)</i></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BACK SIDE: HTML & CSS CODE EDITOR -->
+                        <div class="flip-back-click border border-slate-700 flex flex-col text-slate-300 font-mono text-[13px] md:text-sm cursor-pointer shadow-2xl" onclick="this.parentNode.parentNode.classList.toggle('is-flipped')" title="Nhấp để quay lại giao diện mô phỏng">
+                            
+                            <!-- Editor Header (Mac Style) -->
+                            <div class="bg-[#2d2d2d] px-4 py-3 flex items-center justify-between border-b border-[#404040]">
+                                <div class="flex gap-2">
+                                    <div class="w-3.5 h-3.5 rounded-full bg-[#ff5f56]"></div>
+                                    <div class="w-3.5 h-3.5 rounded-full bg-[#ffbd2e]"></div>
+                                    <div class="w-3.5 h-3.5 rounded-full bg-[#27c93f]"></div>
+                                </div>
+                                <div class="text-slate-400 font-sans text-xs tracking-widest font-bold">MÃ NGUỒN TRANG WEB</div>
+                                <div class="w-10"></div> <!-- spacing balance -->
+                            </div>
+                            
+                            <!-- Editor Content -->
+                            <div class="p-6 overflow-y-auto scrollbar-dark flex flex-col h-full bg-[#1e1e1e]">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+                                    
+                                    <!-- CSS Panel -->
+                                    <div>
+                                        <div class="text-slate-500 mb-2 italic">&lt;!-- 1. Định dạng cấu trúc (CSS) --&gt;</div>
+                                        <div class="leading-relaxed">
+                                            <span class="text-blue-400">&lt;style&gt;</span><br/>
+                                            
+                                            &nbsp;&nbsp;<span class="text-yellow-300">.header</span> {<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">background-color</span>: <span class="text-orange-300">#eff6ff</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">border</span>: <span class="text-orange-300">2px dashed #93c5fd</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">padding</span>: <span class="text-orange-300">24px</span>;<br/>
+                                            &nbsp;&nbsp;}<br/><br/>
+
+                                            &nbsp;&nbsp;<span class="text-yellow-300">.thanh-dieu-huong</span> {<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">background-color</span>: <span class="text-orange-300">rgba(255, 255, 255, 0.7)</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">border-radius</span>: <span class="text-orange-300">99px</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">padding</span>: <span class="text-orange-300">8px 24px</span>;<br/>
+                                            &nbsp;&nbsp;}<br/><br/>
+
+                                            &nbsp;&nbsp;<span class="text-yellow-300">.body</span> {<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">background-color</span>: <span class="text-orange-300">#f0fdf4</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">border</span>: <span class="text-orange-300">2px dashed #86efac</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">padding</span>: <span class="text-orange-300">24px</span>;<br/>
+                                            &nbsp;&nbsp;}<br/><br/>
+
+                                            &nbsp;&nbsp;<span class="text-yellow-300">.khoi-noi-dung</span> {<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">background-color</span>: <span class="text-orange-300">rgba(255, 255, 255, 0.8)</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">border-radius</span>: <span class="text-orange-300">12px</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">padding</span>: <span class="text-orange-300">16px</span>;<br/>
+                                            &nbsp;&nbsp;}<br/><br/>
+
+                                            &nbsp;&nbsp;<span class="text-yellow-300">.footer</span> {<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">background-color</span>: <span class="text-orange-300">#f5f3ff</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">border</span>: <span class="text-orange-300">2px dashed #d8b4fe</span>;<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-cyan-300">padding</span>: <span class="text-orange-300">24px</span>;<br/>
+                                            &nbsp;&nbsp;}<br/>
+                                            
+                                            <span class="text-blue-400">&lt;/style&gt;</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- HTML Panel -->
+                                    <div>
+                                        <div class="text-slate-500 mb-2 italic">&lt;!-- 2. Cấu trúc nội dung (HTML) --&gt;</div>
+                                        <div class="leading-relaxed">
+                                            <span class="text-blue-400">&lt;body&gt;</span><br/><br/>
+                                            
+                                            &nbsp;&nbsp;<span class="text-slate-500 italic">&lt;!-- PHẦN ĐẦU TRANG --&gt;</span><br/>
+                                            &nbsp;&nbsp;<span class="text-blue-400">&lt;header</span> <span class="text-cyan-200">class</span>=<span class="text-orange-300">"header"</span><span class="text-blue-400">&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;div</span> <span class="text-cyan-200">id</span>=<span class="text-orange-300">"logo"</span><span class="text-blue-400">&gt;</span>LOGO<span class="text-blue-400">&lt;/div&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;nav</span> <span class="text-cyan-200">class</span>=<span class="text-orange-300">"thanh-dieu-huong"</span><span class="text-blue-400">&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tây Bắc | Miền Trung | Tây Nguyên<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;/nav&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;h1&gt;</span>Việt Nam - Vẻ đẹp tiềm ẩn<span class="text-blue-400">&lt;/h1&gt;</span><br/>
+                                            &nbsp;&nbsp;<span class="text-blue-400">&lt;/header&gt;</span><br/><br/>
+                                            
+                                            &nbsp;&nbsp;<span class="text-slate-500 italic">&lt;!-- PHẦN THÂN TRANG --&gt;</span><br/>
+                                            &nbsp;&nbsp;<span class="text-blue-400">&lt;main</span> <span class="text-cyan-200">class</span>=<span class="text-orange-300">"body"</span><span class="text-blue-400">&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;section</span> <span class="text-cyan-200">class</span>=<span class="text-orange-300">"khoi-noi-dung"</span><span class="text-blue-400">&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;img</span> <span class="text-cyan-200">src</span>=<span class="text-orange-300">"anh-phong-canh.jpg"</span><span class="text-blue-400">&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;video</span> <span class="text-cyan-200">src</span>=<span class="text-orange-300">"video-gioi-thieu.mp4"</span><span class="text-blue-400">&gt;&lt;/video&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;/section&gt;</span><br/>
+                                            &nbsp;&nbsp;<span class="text-blue-400">&lt;/main&gt;</span><br/><br/>
+                                            
+                                            &nbsp;&nbsp;<span class="text-slate-500 italic">&lt;!-- PHẦN CHÂN TRANG --&gt;</span><br/>
+                                            &nbsp;&nbsp;<span class="text-blue-400">&lt;footer</span> <span class="text-cyan-200">class</span>=<span class="text-orange-300">"footer"</span><span class="text-blue-400">&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;p&gt;</span>Bản quyền © 2026<span class="text-blue-400">&lt;/p&gt;</span><br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">&lt;a</span> <span class="text-cyan-200">href</span>=<span class="text-orange-300">"mailto:info@vietnam.vn"</span><span class="text-blue-400">&gt;</span>Liên hệ<span class="text-blue-400">&lt;/a&gt;</span><br/>
+                                            &nbsp;&nbsp;<span class="text-blue-400">&lt;/footer&gt;</span><br/><br/>
+                                            
+                                            <span class="text-blue-400">&lt;/body&gt;</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-slate-700 text-center text-slate-500 italic">
+                                    <i class="fa-solid fa-arrow-rotate-left mr-2"></i> Nhấp chuột vào bất kì đâu trên mã nguồn để quay lại.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: QUY TRÌNH (MINDMAP/TIMELINE) -->
+            <div id="content-quytrinh" class="tab-content hidden">
+                
+                <h2 class="text-xl font-bold text-slate-700 mb-6 text-center">Quy Trình 3 Bước Xây Dựng Trang Web</h2>
+                <div class="text-center mb-10">
+                    <p class="text-slate-500 text-sm md:text-base">👉 <span class="text-blue-500 font-bold">Nhấp vào từng bước</span> để lật xem ứng dụng thực tế.</p>
+                </div>
+                
+                <div class="relative max-w-4xl mx-auto">
+                    <!-- Line connecting steps -->
+                    <div class="absolute left-[50%] top-0 bottom-0 w-1 bg-blue-100 -translate-x-1/2 hidden md:block"></div>
+
+                    <!-- Step 1 -->
+                    <div class="relative flex flex-col md:flex-row items-center mb-8 md:mb-0">
+                        <div class="md:w-1/2 md:pr-12 text-right flex flex-col items-end">
+                            <div class="flip-card-x cursor-pointer w-full max-w-sm relative" onclick="this.classList.toggle('is-flipped')">
+                                <div class="absolute top-1/2 -right-14 w-12 h-1 bg-blue-200 hidden md:block z-0"></div>
+                                <div class="flip-card-inner-x min-h-[180px]">
+                                    <!-- FRONT -->
+                                    <div class="flip-card-front-x bg-blue-50 p-5 rounded-xl shadow-sm border border-blue-200 h-full flex flex-col justify-center relative z-10 hover:border-blue-400 transition-colors group">
+                                        <h3 class="font-bold text-blue-600 text-lg mb-3">1. Định hình ý tưởng</h3>
+                                        <ul class="text-sm text-slate-600 text-left list-disc list-inside space-y-1.5">
+                                            <li>Xác định mục đích.</li>
+                                            <li>Xác định đối tượng phục vụ.</li>
+                                            <li>Thiết lập yêu cầu nội dung & hình thức.</li>
+                                        </ul>
+                                        <div class="mt-4 text-[11px] font-bold text-blue-400 text-center uppercase tracking-wider group-hover:animate-pulse"><i class="fa-solid fa-hand-pointer mr-1"></i> Nhấp xem ứng dụng</div>
+                                    </div>
+                                    <!-- BACK -->
+                                    <div class="flip-card-back-x bg-white p-5 rounded-xl shadow-md border border-blue-300 h-full flex flex-col justify-center items-center text-center relative z-10">
+                                        <h3 class="font-bold text-blue-600 text-base mb-2"><i class="fa-solid fa-magnifying-glass mr-1"></i> Ứng dụng: "VN tiềm ẩn"</h3>
+                                        <p class="text-sm text-slate-600 leading-relaxed">Giới thiệu văn hóa, thiên nhiên cho <b class="text-blue-700">người yêu du lịch</b>. Yêu cầu giao diện sinh động, nhiều hình ảnh và <b class="text-blue-700">tính tương tác cao</b>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="z-10 bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border-4 border-white shadow my-4 md:my-0">1</div>
+                        <div class="md:w-1/2 md:pl-12"></div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative flex flex-col md:flex-row-reverse items-center mb-8 md:mb-0 md:-mt-20">
+                        <div class="md:w-1/2 md:pl-12 text-left flex flex-col items-start">
+                            <div class="flip-card-x cursor-pointer w-full max-w-sm relative" onclick="this.classList.toggle('is-flipped')">
+                                <div class="absolute top-1/2 -left-14 w-12 h-1 bg-purple-200 hidden md:block z-0"></div>
+                                <div class="flip-card-inner-x min-h-[180px]">
+                                    <!-- FRONT -->
+                                    <div class="flip-card-front-x bg-purple-50 p-5 rounded-xl shadow-sm border border-purple-200 h-full flex flex-col justify-center relative z-10 hover:border-purple-400 transition-colors group">
+                                        <h3 class="font-bold text-purple-600 text-lg mb-3">2. Xây dựng thiết kế</h3>
+                                        <ul class="text-sm text-slate-600 text-left list-disc list-inside space-y-1.5">
+                                            <li>Thiết lập dàn ý tổng thể.</li>
+                                            <li>Xây dựng kiến trúc nội dung.</li>
+                                            <li>Chỉ định mĩ thuật (bố cục, màu, font).</li>
+                                        </ul>
+                                        <div class="mt-4 text-[11px] font-bold text-purple-400 text-center uppercase tracking-wider group-hover:animate-pulse"><i class="fa-solid fa-hand-pointer mr-1"></i> Nhấp xem ứng dụng</div>
+                                    </div>
+                                    <!-- BACK -->
+                                    <div class="flip-card-back-x bg-white p-5 rounded-xl shadow-md border border-purple-300 h-full flex flex-col justify-center items-center text-center relative z-10">
+                                        <h3 class="font-bold text-purple-600 text-base mb-4"><i class="fa-solid fa-object-group mr-1"></i> Ứng dụng mĩ thuật</h3>
+                                        <div class="w-full bg-slate-50 p-2 rounded-lg text-xs border border-slate-100 flex gap-2">
+                                             <div class="flex-1 bg-pastel-pink text-center rounded py-1.5 font-bold text-pink-700">Layout</div>
+                                             <div class="flex-1 bg-pastel-yellow text-center rounded py-1.5 font-bold text-yellow-700">Color (5)</div>
+                                             <div class="flex-1 bg-pastel-blue text-center rounded py-1.5 font-bold text-blue-700">Font</div>
+                                        </div>
+                                        <p class="text-xs text-slate-500 mt-3">Dùng Font <b>Sans-Serif</b> (Arial), chọn tối đa <b>5 màu</b> hài hòa.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="z-10 bg-purple-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border-4 border-white shadow my-4 md:my-0">2</div>
+                        <div class="md:w-1/2 md:pr-12"></div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative flex flex-col md:flex-row items-center md:-mt-20">
+                        <div class="md:w-1/2 md:pr-12 text-right flex flex-col items-end">
+                            <div class="flip-card-x cursor-pointer w-full max-w-sm relative" onclick="this.classList.toggle('is-flipped')">
+                                <div class="absolute top-1/2 -right-14 w-12 h-1 bg-emerald-200 hidden md:block z-0"></div>
+                                <div class="flip-card-inner-x min-h-[180px]">
+                                    <!-- FRONT -->
+                                    <div class="flip-card-front-x bg-emerald-50 p-5 rounded-xl shadow-sm border border-emerald-200 h-full flex flex-col justify-center relative z-10 hover:border-emerald-400 transition-colors group">
+                                        <h3 class="font-bold text-emerald-600 text-lg mb-3">3. Chuẩn bị tư liệu</h3>
+                                        <ul class="text-sm text-slate-600 text-left list-disc list-inside space-y-1.5">
+                                            <li>Chọn phần mềm xây dựng (Google Sites).</li>
+                                            <li>Thiết kế thương hiệu (Logo, favicon).</li>
+                                            <li>Chuẩn bị bài viết, hình ảnh, video.</li>
+                                        </ul>
+                                        <div class="mt-4 text-[11px] font-bold text-emerald-400 text-center uppercase tracking-wider group-hover:animate-pulse"><i class="fa-solid fa-hand-pointer mr-1"></i> Nhấp xem ứng dụng</div>
+                                    </div>
+                                    <!-- BACK -->
+                                    <div class="flip-card-back-x bg-white p-5 rounded-xl shadow-md border border-emerald-300 h-full flex flex-col justify-center items-center text-center relative z-10">
+                                        <h3 class="font-bold text-emerald-600 text-base mb-3"><i class="fa-solid fa-laptop-code mr-1"></i> Ứng dụng công cụ</h3>
+                                        <div class="flex justify-center gap-6 text-emerald-500 text-3xl mb-3">
+                                            <i class="fa-brands fa-google hover:text-emerald-700 transition-colors" title="Google Sites"></i>
+                                            <i class="fa-solid fa-images hover:text-emerald-700 transition-colors" title="Hình ảnh"></i>
+                                            <i class="fa-solid fa-pen-nib hover:text-emerald-700 transition-colors" title="Nội dung"></i>
+                                        </div>
+                                        <p class="text-xs text-slate-600">Sử dụng phần mềm <b>Google Sites</b> để trực tiếp thiết kế, kéo thả tư liệu thành trang web.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="z-10 bg-emerald-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border-4 border-white shadow my-4 md:my-0">3</div>
+                        <div class="md:w-1/2 md:pl-12"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 4: THIẾT KẾ & NHỮNG ĐIỀU DỄ NHẦM LẪN -->
+            <div id="content-mythuat" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    <!-- Typography Tool -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center"><i class="fa-solid fa-font text-blue-500 mr-2"></i> Định dạng chữ (Typography)</h2>
+                        <p class="text-sm text-slate-500 mb-6">Rê chuột (hoặc nhấp) vào từng loại phông chữ để xem công dụng và vị trí áp dụng.</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Card 1: Sans Serif -->
+                            <div class="flip-card h-44 cursor-pointer group">
+                                <div class="flip-card-inner relative w-full h-full">
+                                    <!-- Front -->
+                                    <div class="flip-card-front absolute w-full h-full bg-pastel-blue rounded-xl shadow-sm border border-blue-200 flex flex-col items-center justify-center p-4">
+                                        <span class="text-blue-500 font-sans font-bold text-5xl mb-2 leading-none">Aa</span>
+                                        <span class="text-[15px] font-bold text-blue-800 text-center leading-tight">Chữ không chân<br/>(Sans Serif)</span>
+                                        <span class="text-[11px] text-blue-600 mt-2 text-center font-medium bg-white/60 px-2 py-1 rounded-md">Arial, Calibri, Verdana...</span>
+                                    </div>
+                                    <!-- Back -->
+                                    <div class="flip-card-back absolute w-full h-full bg-white rounded-xl border border-blue-300 flex flex-col items-center justify-center p-4 text-center shadow-inner">
+                                        <h3 class="font-bold text-blue-700 text-sm mb-2"><i class="fa-solid fa-check-circle mr-1"></i> Công dụng & Áp dụng</h3>
+                                        <p class="text-xs text-slate-600 leading-relaxed">Giúp <b>dễ đọc trên màn hình</b> và tiết kiệm không gian hiển thị. Ưu tiên áp dụng cho <b>nội dung bài viết</b> chính và <b>thanh điều hướng</b>.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Serif -->
+                            <div class="flip-card h-44 cursor-pointer group">
+                                <div class="flip-card-inner relative w-full h-full">
+                                    <!-- Front -->
+                                    <div class="flip-card-front absolute w-full h-full bg-pastel-pink rounded-xl shadow-sm border border-pink-200 flex flex-col items-center justify-center p-4">
+                                        <span class="text-pink-500 font-serif font-bold text-5xl mb-2 leading-none">Aa</span>
+                                        <span class="text-[15px] font-bold text-pink-800 text-center leading-tight">Chữ có chân<br/>(Serif)</span>
+                                        <span class="text-[11px] text-pink-600 mt-2 text-center font-medium bg-white/60 px-2 py-1 rounded-md">Times New Roman...</span>
+                                    </div>
+                                    <!-- Back -->
+                                    <div class="flip-card-back absolute w-full h-full bg-white rounded-xl border border-pink-300 flex flex-col items-center justify-center p-4 text-center shadow-inner">
+                                        <h3 class="font-bold text-pink-700 text-sm mb-2"><i class="fa-solid fa-check-circle mr-1"></i> Công dụng & Áp dụng</h3>
+                                        <p class="text-xs text-slate-600 leading-relaxed">Mang cảm giác <b>trang trọng</b> nhưng khó nhận diện trên màn hình đối với chữ nhỏ. Chỉ nên áp dụng cho <b>tiêu đề lớn</b> hoặc khi cần <b>nhấn mạnh</b>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Palette -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+                        <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center"><i class="fa-solid fa-palette text-pink-500 mr-2"></i> Bảng màu (Color Palette)</h2>
+                        <p class="text-sm text-slate-500 mb-8">Quy tắc: Không dùng màu tương phản gắt. Chọn 5 màu hài hòa (ấm, lạnh, trung tính). <span class="text-blue-500 font-bold"><i class="fa-solid fa-arrow-pointer mr-1 animate-pulse"></i>Nhấp vào từng màu để xem ứng dụng!</span></p>
+                        
+                        <!-- Interactive Color Palette (Pure CSS / No JS) -->
+                        <div class="relative w-full mt-auto flex flex-col">
+                            
+                            <!-- Hidden Radio Inputs for Click Interaction -->
+                            <input type="radio" name="cp-select" id="cp-blue" class="peer/blue hidden">
+                            <input type="radio" name="cp-select" id="cp-pink" class="peer/pink hidden">
+                            <input type="radio" name="cp-select" id="cp-purple" class="peer/purple hidden">
+                            <input type="radio" name="cp-select" id="cp-green" class="peer/green hidden">
+                            <input type="radio" name="cp-select" id="cp-yellow" class="peer/yellow hidden">
+
+                            <!-- Wrapper for Color Circles and Hover Labels -->
+                            <div class="relative pb-6 w-full max-w-sm mx-auto mb-4">
+                                <!-- Color Circles -->
+                                <div class="flex justify-center gap-4 sm:gap-6 mb-2">
+                                    <label for="cp-blue" class="peer/c1 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#EFF6FF] shadow-md cursor-pointer hover:scale-110 transition-transform border-4 border-white"></label>
+                                    <label for="cp-pink" class="peer/c2 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FDF2F8] shadow-md cursor-pointer hover:scale-110 transition-transform border-4 border-white"></label>
+                                    <label for="cp-purple" class="peer/c3 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#F5F3FF] shadow-md cursor-pointer hover:scale-110 transition-transform border-4 border-white"></label>
+                                    <label for="cp-green" class="peer/c4 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#F0FDF4] shadow-md cursor-pointer hover:scale-110 transition-transform border-4 border-white"></label>
+                                    <label for="cp-yellow" class="peer/c5 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FEFCE8] shadow-md cursor-pointer hover:scale-110 transition-transform border-4 border-white"></label>
+
+                                    <!-- Default text (centered) -->
+                                    <div class="absolute bottom-0 left-0 w-full text-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em] transition-opacity duration-300 peer-hover/c1:opacity-0 peer-hover/c2:opacity-0 peer-hover/c3:opacity-0 peer-hover/c4:opacity-0 peer-hover/c5:opacity-0">
+                                        Bảng 5 màu hài hòa
+                                    </div>
+                                    
+                                    <!-- Centered explanations (Hover) -->
+                                    <div class="absolute bottom-0 left-0 w-full text-center text-sm font-bold text-blue-500 opacity-0 peer-hover/c1:opacity-100 transition-opacity duration-300">
+                                        Màu Lạnh
+                                    </div>
+                                    <div class="absolute bottom-0 left-0 w-full text-center text-sm font-bold text-pink-500 opacity-0 peer-hover/c2:opacity-100 transition-opacity duration-300">
+                                        Màu Ấm
+                                    </div>
+                                    <div class="absolute bottom-0 left-0 w-full text-center text-sm font-bold text-purple-500 opacity-0 peer-hover/c3:opacity-100 transition-opacity duration-300">
+                                        Màu Trung Tính
+                                    </div>
+                                    <div class="absolute bottom-0 left-0 w-full text-center text-sm font-bold text-emerald-500 opacity-0 peer-hover/c4:opacity-100 transition-opacity duration-300">
+                                        Màu Lạnh
+                                    </div>
+                                    <div class="absolute bottom-0 left-0 w-full text-center text-sm font-bold text-yellow-500 opacity-0 peer-hover/c5:opacity-100 transition-opacity duration-300">
+                                        Màu Trung Tính
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Click Detail Boxes (Shown based on Radio state) -->
+                            
+                            <!-- Default State Box (Shown immediately on load / no color clicked yet) -->
+                            <div class="block peer-checked/blue:hidden peer-checked/pink:hidden peer-checked/purple:hidden peer-checked/green:hidden peer-checked/yellow:hidden animate-fade-in-up p-5 rounded-xl border-2 border-dashed bg-slate-50 border-slate-200 text-slate-500 text-sm shadow-sm text-center flex flex-col justify-center items-center min-h-[140px]">
+                                <i class="fa-solid fa-wand-magic-sparkles text-3xl text-yellow-400 mb-2 animate-pulse"></i>
+                                <h3 class="font-bold text-slate-600 text-base mb-1">Khám phá ý nghĩa của màu sắc</h3>
+                                <p>Nhấp vào bất kỳ màu nào trên dải màu phía trên để xem giải thích chi tiết và ứng dụng.</p>
+                            </div>
+
+                            <div class="hidden peer-checked/blue:flex flex-col justify-center animate-fade-in-up p-4 rounded-xl border bg-pastel-blue border-blue-200 text-blue-800 text-sm shadow-inner min-h-[140px]">
+                                <h3 class="font-bold text-base mb-2 flex items-center"><i class="fa-solid fa-water mr-2"></i> Tông Xanh Dương (Lạnh)</h3>
+                                <ul class="space-y-1.5">
+                                    <li><span class="font-bold">💡 Ý nghĩa:</span> Tạo cảm giác tin tưởng, bình yên và chuyên nghiệp.</li>
+                                    <li><span class="font-bold">🎯 Ứng dụng:</span> Thường dùng làm màu nền chính/phụ hoặc màu nhấn cho nút bấm, thanh điều hướng.</li>
+                                    <li><span class="font-bold">✅ Phù hợp:</span> Website giáo dục, công nghệ, y tế hoặc tổ chức, doanh nghiệp.</li>
+                                </ul>
+                            </div>
+
+                            <div class="hidden peer-checked/pink:flex flex-col justify-center animate-fade-in-up p-4 rounded-xl border bg-pastel-pink border-pink-200 text-pink-800 text-sm shadow-inner min-h-[140px]">
+                                <h3 class="font-bold text-base mb-2 flex items-center"><i class="fa-solid fa-fire mr-2"></i> Tông Hồng (Ấm)</h3>
+                                <ul class="space-y-1.5">
+                                    <li><span class="font-bold">💡 Ý nghĩa:</span> Năng động, trẻ trung, nhiệt huyết và thân thiện.</li>
+                                    <li><span class="font-bold">🎯 Ứng dụng:</span> Thu hút sự chú ý vào các thông báo quan trọng, nút kêu gọi hành động (Call to action).</li>
+                                    <li><span class="font-bold">✅ Phù hợp:</span> Website thời trang, làm đẹp, giải trí, sự kiện giới trẻ.</li>
+                                </ul>
+                            </div>
+
+                            <div class="hidden peer-checked/purple:flex flex-col justify-center animate-fade-in-up p-4 rounded-xl border bg-pastel-purple border-purple-200 text-purple-800 text-sm shadow-inner min-h-[140px]">
+                                <h3 class="font-bold text-base mb-2 flex items-center"><i class="fa-solid fa-gem mr-2"></i> Tông Tím (Trung tính)</h3>
+                                <ul class="space-y-1.5">
+                                    <li><span class="font-bold">💡 Ý nghĩa:</span> Thể hiện sự sáng tạo, độc đáo, tinh tế và đôi chút sang trọng.</li>
+                                    <li><span class="font-bold">🎯 Ứng dụng:</span> Dùng cho các tiêu đề lớn, icon đặc biệt, hoặc viền nổi bật tạo chiều sâu.</li>
+                                    <li><span class="font-bold">✅ Phù hợp:</span> Website nghệ thuật, nhiếp ảnh, trang portfolio cá nhân, sản phẩm cao cấp.</li>
+                                </ul>
+                            </div>
+
+                            <div class="hidden peer-checked/green:flex flex-col justify-center animate-fade-in-up p-4 rounded-xl border bg-pastel-green border-emerald-200 text-emerald-800 text-sm shadow-inner min-h-[140px]">
+                                <h3 class="font-bold text-base mb-2 flex items-center"><i class="fa-solid fa-leaf mr-2"></i> Tông Xanh Lá (Lạnh)</h3>
+                                <ul class="space-y-1.5">
+                                    <li><span class="font-bold">💡 Ý nghĩa:</span> Tươi mới, gần gũi với thiên nhiên, biểu tượng của sự tăng trưởng và an toàn.</li>
+                                    <li><span class="font-bold">🎯 Ứng dụng:</span> Dùng cho nút bấm thành công, nhãn dán (tags), nền cho các khối thông tin tự nhiên.</li>
+                                    <li><span class="font-bold">✅ Phù hợp:</span> Website du lịch sinh thái, sức khỏe, nông nghiệp, môi trường.</li>
+                                </ul>
+                            </div>
+
+                            <div class="hidden peer-checked/yellow:flex flex-col justify-center animate-fade-in-up p-4 rounded-xl border bg-pastel-yellow border-yellow-200 text-yellow-800 text-sm shadow-inner min-h-[140px]">
+                                <h3 class="font-bold text-base mb-2 flex items-center"><i class="fa-solid fa-sun mr-2"></i> Tông Vàng Nhạt (Trung tính)</h3>
+                                <ul class="space-y-1.5">
+                                    <li><span class="font-bold">💡 Ý nghĩa:</span> Lạc quan, ấm áp, thu hút sự chú ý nhẹ nhàng mà không bị gắt.</li>
+                                    <li><span class="font-bold">🎯 Ứng dụng:</span> Làm nền cho các khối ghi chú (note), highlight kiến thức trọng tâm cần ghi nhớ.</li>
+                                    <li><span class="font-bold">✅ Phù hợp:</span> Blog chia sẻ kiến thức, website học tập, nền tảng thân thiện cho trẻ em.</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lỗi dễ nhầm lẫn -->
+                <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-red-100 relative overflow-hidden">
+                     <div class="absolute top-0 left-0 w-2 h-full bg-red-400"></div>
+                    <h2 class="text-xl font-bold text-red-500 mb-4 flex items-center"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Kiến thức dễ nhầm lẫn</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-red-50 p-4 rounded-lg flex items-start">
+                            <i class="fa-regular fa-circle-xmark text-red-400 text-xl mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-bold text-sm text-red-800">Xây dựng trang web CƠ BẢN = Quản trị & Vận hành</p>
+                                <p class="text-xs text-red-600 mt-1"><b>Thực tế:</b> Xây dựng web cơ bản đơn giản hơn. Tổ chức vận hành và quản trị đòi hỏi thêm nhiều bước phức tạp khác.</p>
+                            </div>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg flex items-start">
+                            <i class="fa-regular fa-circle-xmark text-red-400 text-xl mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-bold text-sm text-red-800">Favicon LUÔN là Logo thu nhỏ</p>
+                                <p class="text-xs text-red-600 mt-1"><b>Thực tế:</b> Favicon có thể không thu gọn từ logo mà được tạo dựng riêng biệt làm biểu tượng đại diện trên tab duyệt web.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 5: LUYỆN TẬP (QUIZ) -->
+            <div id="content-luyentap" class="tab-content hidden max-w-3xl mx-auto">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <h2 class="text-2xl font-bold text-slate-700 flex items-center"><i class="fa-solid fa-graduation-cap text-purple-500 mr-3"></i> Bài Tập Ôn Tập</h2>
+                        <div class="bg-pastel-purple text-purple-700 px-4 py-2 rounded-full font-bold">
+                            Điểm: <span id="score">0</span> / 5
+                        </div>
+                    </div>
+
+                    <!-- Quiz Form -->
+                    <div id="quiz-container">
+                        <!-- Q1 -->
+                        <div class="quiz-question mb-6" id="q1">
+                            <p class="font-bold text-slate-700 mb-3">1. Một trang web đầy đủ và tiêu chuẩn thường được cấu trúc bởi mấy phần chính?</p>
+                            <div class="space-y-2">
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q1" value="0" class="mr-3"> A. 2 phần (Đầu và Thân)
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q1" value="1" class="mr-3"> B. 3 phần (Đầu, Thân và Chân)
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q1" value="0" class="mr-3"> C. 4 phần (Đầu, Thanh điều hướng, Thân, Chân)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="quiz-question mb-6" id="q2">
+                            <p class="font-bold text-slate-700 mb-3">2. Favicon của một trang web được hiển thị ở vị trí nào?</p>
+                            <div class="space-y-2">
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q2" value="0" class="mr-3"> A. Dưới cùng ở phần chân trang (Footer)
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q2" value="0" class="mr-3"> B. Giữa phần nội dung của thân trang
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q2" value="1" class="mr-3"> C. Trên tab của trình duyệt web
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="quiz-question mb-6" id="q3">
+                            <p class="font-bold text-slate-700 mb-3">3. Loại phông chữ nào được ưu tiên sử dụng cho NỘI DUNG bài viết trên trang web vì dễ đọc trên màn hình?</p>
+                            <div class="space-y-2">
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q3" value="1" class="mr-3"> A. Chữ không chân (Sans Serif) như Arial, Calibri
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q3" value="0" class="mr-3"> B. Chữ có chân (Serif) như Times New Roman
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q3" value="0" class="mr-3"> C. Phông chữ viết tay cách điệu
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="quiz-question mb-6" id="q4">
+                            <p class="font-bold text-slate-700 mb-3">4. Bước ĐẦU TIÊN trong quy trình 3 bước chuẩn bị xây dựng trang web là gì?</p>
+                            <div class="space-y-2">
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q4" value="0" class="mr-3"> A. Lựa chọn phần mềm (VD: Google Sites)
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q4" value="1" class="mr-3"> B. Định hình ý tưởng (Mục đích, đối tượng)
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q4" value="0" class="mr-3"> C. Xây dựng thiết kế bố cục, màu sắc
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q5 -->
+                        <div class="quiz-question mb-6" id="q5">
+                            <p class="font-bold text-slate-700 mb-3">5. Theo tài liệu, nên chọn một bảng màu kết hợp hài hòa gồm bao nhiêu màu cho trang web (không tính trắng và đen)?</p>
+                            <div class="space-y-2">
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q5" value="0" class="mr-3"> A. 3 màu
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q5" value="1" class="mr-3"> B. 5 màu
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="radio" name="q5" value="0" class="mr-3"> C. Không giới hạn số lượng
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-8">
+                            <button onclick="checkAnswers()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Nộp Bài & Kiểm Tra</button>
+                        </div>
+                    </div>
+
+                    <div id="quiz-result" class="hidden mt-6 p-4 rounded-xl bg-pastel-green border border-green-200 text-center">
+                        <i class="fa-solid fa-party-horn text-green-500 text-4xl mb-2"></i>
+                        <h3 class="font-bold text-green-800 text-xl">Hoàn thành xuất sắc!</h3>
+                        <p class="text-green-700 mt-1 text-sm">Bạn đã nắm vững các kiến thức cơ bản để sẵn sàng xây dựng một trang web.</p>
+                        <button onclick="resetQuiz()" class="mt-4 text-green-600 underline text-sm font-bold">Làm lại</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Tab switching logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Remove active style from all tabs
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'bg-pastel-blue', 'text-blue-600', 'border-b-2', 'border-blue-500');
+                el.classList.add('text-slate-500');
+            });
+            
+            // Show selected content
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            // Add active style to selected tab
+            const activeTab = document.getElementById('tab-' + tabId);
+            activeTab.classList.add('active');
+        }
+
+        // Quiz Logic
+        function checkAnswers() {
+            let score = 0;
+            const total = 5;
+            
+            // Loop through questions 1 to 5
+            for(let i=1; i<=total; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const qDiv = document.getElementById(`q${i}`);
+                
+                // Reset styling
+                qDiv.querySelectorAll('label').forEach(lbl => {
+                    lbl.classList.remove('bg-green-50', 'border-green-400', 'bg-red-50', 'border-red-400');
+                });
+
+                if (selected) {
+                    const val = parseInt(selected.value);
+                    score += val;
+                    
+                    // Highlight correct/incorrect visually
+                    if(val === 1) {
+                        selected.parentElement.classList.add('bg-green-50', 'border-green-400');
+                    } else {
+                        selected.parentElement.classList.add('bg-red-50', 'border-red-400');
+                        // Find and highlight correct answer
+                        const correctInput = document.querySelector(`input[name="q${i}"][value="1"]`);
+                        correctInput.parentElement.classList.add('bg-green-50', 'border-green-400');
+                    }
+                }
+            }
+
+            document.getElementById('score').innerText = score;
+            
+            if(score === 5) {
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('quiz-result').classList.add('animate-bounce');
+                setTimeout(() => document.getElementById('quiz-result').classList.remove('animate-bounce'), 1000);
+            }
+        }
+
+        function resetQuiz() {
+            document.getElementById('score').innerText = '0';
+            document.getElementById('quiz-result').classList.add('hidden');
+            const inputs = document.querySelectorAll('input[type="radio"]');
+            inputs.forEach(input => {
+                input.checked = false;
+                input.parentElement.classList.remove('bg-green-50', 'border-green-400', 'bg-red-50', 'border-red-400');
+            });
+        }
+    </script>
+</body>
+</html>

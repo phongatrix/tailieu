@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 30: Biên Tập Phim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            pink: '#fce7f3',
+                            green: '#dcfce7',
+                            yellow: '#fef3c7',
+                            purple: '#f3e8ff'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        /* Tiêu chuẩn Title theo yêu cầu */
+        .gradient-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700; /* Bold */
+            font-size: 28px;
+            text-transform: capitalize; /* Title Case */
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Blue to Purple */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #8b5cf6;
+            color: #8b5cf6;
+            font-weight: 700;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mindmap Styles */
+        .mindmap-node {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .mindmap-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Audio Line animation */
+        .audio-line {
+            transition: all 0.5s ease;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 0;
+        }
+        .audio-fade-out .audio-line {
+            clip-path: polygon(0 0, 80% 0, 100% 100%, 0 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <header class="text-center py-6 glass rounded-2xl shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-purple-400"></div>
+            <h1 class="gradient-title mb-2">Bài 30: Biên Tập Phim</h1>
+            <p class="text-slate-500 font-medium"><i class="fa-solid fa-bullseye text-pink-400 mr-2"></i>Mục tiêu: Sử dụng được các công cụ cơ bản biên tập phim.</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex justify-center space-x-2 md:space-x-8 border-b-2 border-slate-200 glass rounded-xl px-4 sticky top-4 z-50">
+            <button onclick="switchTab('tab-tongquan')" id="btn-tab-tongquan" class="tab-btn active py-4 px-2 md:px-4 flex items-center gap-2">
+                <i class="fa-solid fa-sitemap"></i> <span class="hidden md:inline">Tổng quan</span>
+            </button>
+            <button onclick="switchTab('tab-khainiem')" id="btn-tab-khainiem" class="tab-btn py-4 px-2 md:px-4 flex items-center gap-2 text-slate-500">
+                <i class="fa-solid fa-layer-group"></i> <span class="hidden md:inline">Khái niệm cốt lõi</span>
+            </button>
+            <button onclick="switchTab('tab-thuchanh')" id="btn-tab-thuchanh" class="tab-btn py-4 px-2 md:px-4 flex items-center gap-2 text-slate-500">
+                <i class="fa-solid fa-laptop-code"></i> <span class="hidden md:inline">Mô phỏng tương tác</span>
+            </button>
+            <button onclick="switchTab('tab-ontap')" id="btn-tab-ontap" class="tab-btn py-4 px-2 md:px-4 flex items-center gap-2 text-slate-500">
+                <i class="fa-solid fa-clipboard-check"></i> <span class="hidden md:inline">Ôn tập nhanh</span>
+            </button>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="glass rounded-2xl p-6 md:p-8 shadow-sm min-h-[600px]">
+            
+            <!-- TAB 1: TỔNG QUAN (SƠ ĐỒ TƯ DUY) -->
+            <section id="tab-tongquan" class="fade-in space-y-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-xl font-bold text-slate-700 mb-2"><i class="fa-solid fa-project-diagram text-blue-500 mr-2"></i>Sơ Đồ Tư Duy Các Công Cụ</h2>
+                    <p class="text-sm text-slate-500">5 yếu tố tạo nên một đoạn phim chuyên nghiệp</p>
+                </div>
+
+                <div class="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-center py-10">
+                    <!-- Central Node -->
+                    <div class="mindmap-node z-10 w-40 h-40 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex flex-col items-center justify-center shadow-lg border-4 border-white mb-16 relative">
+                        <i class="fa-solid fa-film text-3xl mb-2"></i>
+                        <span class="font-bold text-center leading-tight">BIÊN TẬP<br>PHIM</span>
+                        
+                        <!-- Connector lines (Desktop only visual hack) -->
+                        <div class="hidden md:block absolute top-1/2 left-1/2 w-full h-[2px] bg-slate-300 -z-10" style="transform: translateX(-50%) translateY(80px) rotate(90deg); width: 100px;"></div>
+                    </div>
+
+                    <!-- Branches Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 w-full relative z-10">
+                        <!-- Hình ảnh -->
+                        <div class="mindmap-node bg-pastel-blue rounded-xl p-4 text-center border-2 border-blue-200">
+                            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3 text-blue-600 text-xl"><i class="fa-regular fa-image"></i></div>
+                            <h3 class="font-bold text-slate-700 text-sm">Hình Ảnh</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Thay thế, xóa, căn chỉnh hướng, tạo hiệu ứng.</p>
+                        </div>
+                        <!-- Âm thanh -->
+                        <div class="mindmap-node bg-pastel-pink rounded-xl p-4 text-center border-2 border-pink-200">
+                            <div class="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center mx-auto mb-3 text-pink-600 text-xl"><i class="fa-solid fa-music"></i></div>
+                            <h3 class="font-bold text-slate-700 text-sm">Âm Thanh</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Ghép nối, đổi độ dài, âm lượng, hiệu ứng nhỏ dần.</p>
+                        </div>
+                        <!-- Chuyển cảnh -->
+                        <div class="mindmap-node bg-pastel-green rounded-xl p-4 text-center border-2 border-green-200">
+                            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3 text-green-600 text-xl"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <h3 class="font-bold text-slate-700 text-sm">Chuyển Cảnh</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Giúp đoạn phim mượt mà, hấp dẫn hơn.</p>
+                        </div>
+                        <!-- Thời gian -->
+                        <div class="mindmap-node bg-pastel-yellow rounded-xl p-4 text-center border-2 border-yellow-200">
+                            <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-3 text-yellow-600 text-xl"><i class="fa-regular fa-clock"></i></div>
+                            <h3 class="font-bold text-slate-700 text-sm">Thời Gian</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Khớp sự xuất hiện của phân cảnh với kịch bản.</p>
+                        </div>
+                        <!-- Phụ đề -->
+                        <div class="mindmap-node bg-pastel-purple rounded-xl p-4 text-center border-2 border-purple-200 col-span-2 md:col-span-1">
+                            <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3 text-purple-600 text-xl"><i class="fa-solid fa-closed-captioning"></i></div>
+                            <h3 class="font-bold text-slate-700 text-sm">Phụ Đề</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Giúp truyền tải thông tin tốt hơn.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex gap-4 items-start max-w-2xl mx-auto">
+                    <div class="text-indigo-500 text-2xl mt-1"><i class="fa-solid fa-circle-nodes"></i></div>
+                    <div>
+                        <h4 class="font-bold text-indigo-900 mb-1">Mối quan hệ</h4>
+                        <p class="text-sm text-indigo-700">Đoạn phim là sự kết hợp của nhiều lớp: <strong>lớp băng hình (ảnh/video)</strong>, <strong>lớp âm thanh</strong> và <strong>lớp chữ (phụ đề)</strong>. Căn chỉnh thời gian chính là cầu nối để các lớp này xuất hiện đồng bộ theo kịch bản.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: KHÁI NIỆM & LƯU Ý (THẺ TRỰC QUAN) -->
+            <section id="tab-khainiem" class="hidden fade-in space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Image Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex gap-4 hover:border-blue-300 transition-colors">
+                        <div class="w-16 h-16 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0 text-2xl">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800">1. Chỉnh sửa hình ảnh</h3>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <p><i class="fa-solid fa-check text-green-500 mr-2 w-4"></i>Thực hiện trong: Ngăn Tư liệu.</p>
+                                <p><i class="fa-solid fa-check text-green-500 mr-2 w-4"></i>Thao tác: Nháy chuột phải -> Chọn lệnh (Vd: <code class="bg-slate-100 px-1 rounded text-pink-600">Replace file...</code>)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audio Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex gap-4 hover:border-pink-300 transition-colors">
+                        <div class="w-16 h-16 rounded-xl bg-pink-50 flex items-center justify-center text-pink-500 shrink-0 text-2xl">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800">2. Chỉnh sửa âm thanh</h3>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <p><i class="fa-solid fa-check text-green-500 mr-2 w-4"></i>Hiệu ứng phổ biến: <span class="font-bold text-pink-600">Fade Out</span> (Nhỏ dần).</p>
+                                <p><i class="fa-solid fa-check text-green-500 mr-2 w-4"></i>Thực hiện ở chế độ: <span class="bg-yellow-100 px-1 rounded font-bold">Timeline</span> (Dòng thời gian).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transition Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex gap-4 hover:border-green-300 transition-colors">
+                        <div class="w-16 h-16 rounded-xl bg-green-50 flex items-center justify-center text-green-500 shrink-0 text-2xl">
+                            <i class="fa-solid fa-film"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800">3. Hiệu ứng chuyển cảnh</h3>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <p><i class="fa-solid fa-check text-green-500 mr-2 w-4"></i>Mục đích: Giúp nối các phân cảnh mượt mà.</p>
+                                <p><i class="fa-solid fa-check text-green-500 mr-2 w-4"></i>Thực hiện ở chế độ: <span class="bg-blue-100 px-1 rounded font-bold">Storyboard</span>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subtitle Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex gap-4 hover:border-purple-300 transition-colors">
+                        <div class="w-16 h-16 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500 shrink-0 text-2xl">
+                            <i class="fa-solid fa-closed-captioning"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800">4. Tạo phụ đề</h3>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <p><i class="fa-solid fa-check text-green-500 mr-2 w-4"></i>Menu lệnh: Dải lệnh <code class="font-bold">Sequence</code> -> <code class="font-bold">Subtitles</code>.</p>
+                                <p><i class="fa-solid fa-check text-green-500 mr-2 w-4"></i>Cần xác định: Nội dung chữ, Thời điểm xuất hiện (Start), Kết thúc (End).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Box: Dễ nhầm lẫn -->
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl mt-6">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-red-500 text-xl"></i>
+                        <h4 class="font-bold text-red-800">Điểm Dễ Nhầm Lẫn Cần Chú Ý!</h4>
+                    </div>
+                    <div class="mt-2 text-sm text-red-700 ml-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white/50 p-3 rounded-lg border border-red-100">
+                            <p class="font-bold text-slate-800 mb-1 text-center"><i class="fa-solid fa-list-ol mr-1"></i> Storyboard</p>
+                            <p class="text-center text-xs">Dùng để: <strong>Tạo chuyển cảnh</strong> và <strong>Đổi thời lượng (Duration)</strong>.</p>
+                        </div>
+                        <div class="bg-white/50 p-3 rounded-lg border border-red-100">
+                            <p class="font-bold text-slate-800 mb-1 text-center"><i class="fa-solid fa-bars-staggered mr-1"></i> Timeline</p>
+                            <p class="text-center text-xs">Dùng để: <strong>Chỉnh âm lượng (Fade Out)</strong> chi tiết theo lớp.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 3: MÔ PHỎNG THỰC HÀNH -->
+            <section id="tab-thuchanh" class="hidden fade-in space-y-8">
+                
+                <!-- Nhiệm vụ 1: Thay thế ảnh -->
+                <div class="border-2 border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-2">
+                        <span class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                        <h3 class="font-bold text-slate-700">Mô phỏng: Thay thế ảnh (Replace File)</h3>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white">
+                        <div class="space-y-4">
+                            <p class="text-sm text-slate-600">1. Trong ngăn tư liệu, ảnh số 5 đang là hình một bãi biển.</p>
+                            <p class="text-sm text-slate-600">2. Nháy chuột phải vào ảnh, chọn <strong>Replace file...</strong></p>
+                            <button onclick="simulateReplaceImg()" id="btn-replace" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-bold transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-mouse-pointer"></i> Click phải chuột & Chọn Replace
+                            </button>
+                            <p id="replace-msg" class="text-xs text-green-600 font-bold hidden"><i class="fa-solid fa-check mr-1"></i> Đã thay thế thành công bằng ảnh Núi!</p>
+                        </div>
+                        <div class="flex justify-center">
+                            <!-- Visual mock of the image -->
+                            <div class="relative rounded-xl overflow-hidden border-4 border-slate-200 shadow-md transition-all duration-500 group" style="width: 200px; height: 150px;">
+                                <div id="sim-img-content" class="w-full h-full bg-blue-200 flex items-center justify-center flex-col transition-colors duration-500">
+                                    <i id="sim-img-icon" class="fa-solid fa-water text-4xl text-blue-500 mb-2"></i>
+                                    <span id="sim-img-text" class="text-xs font-bold text-blue-700 bg-white/50 px-2 py-1 rounded"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nhiệm vụ 2: Âm thanh Fade Out -->
+                <div class="border-2 border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-2">
+                        <span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                        <h3 class="font-bold text-slate-700">Mô phỏng: Âm lượng nhỏ dần (Fade Out)</h3>
+                    </div>
+                    <div class="p-6 bg-white">
+                        <div class="flex flex-col md:flex-row gap-6 items-start">
+                            <div class="flex-1 space-y-4">
+                                <p class="text-sm text-slate-600">Thiết lập: <strong>From the end of the clip</strong> (Ở phần cuối đoạn phim). Thời gian: <strong>2.00s</strong></p>
+                                <button onclick="simulateFadeOut()" class="py-2 px-4 bg-pink-500 hover:bg-pink-600 text-white rounded-lg text-sm font-bold transition flex items-center gap-2">
+                                    <i class="fa-solid fa-sliders"></i> Áp dụng Fade Out
+                                </button>
+                                <p id="fade-msg" class="text-xs text-pink-600 hidden">Quan sát đường kẻ xanh (âm lượng) ở cuối audio track đi xuống.</p>
+                            </div>
+                            
+                            <!-- Visual mock of Timeline -->
+                            <div class="flex-1 w-full bg-slate-800 rounded-lg p-3 text-white overflow-hidden shadow-inner">
+                                <div class="text-[10px] text-slate-400 mb-1 border-b border-slate-600 pb-1">Timeline - Audio Track 1</div>
+                                <div class="relative h-12 bg-slate-700 rounded mt-2 border border-slate-600 w-full overflow-hidden">
+                                    <!-- Waveform visual -->
+                                    <div class="absolute inset-0 opacity-30 flex items-center justify-around">
+                                        <div class="w-1 h-6 bg-green-400"></div><div class="w-1 h-8 bg-green-400"></div><div class="w-1 h-4 bg-green-400"></div><div class="w-1 h-10 bg-green-400"></div><div class="w-1 h-5 bg-green-400"></div><div class="w-1 h-7 bg-green-400"></div><div class="w-1 h-6 bg-green-400"></div><div class="w-1 h-8 bg-green-400"></div>
+                                    </div>
+                                    <!-- Volume Line (The blue line described in book) -->
+                                    <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                                        <line id="vol-line-1" x1="0" y1="20%" x2="70%" y2="20%" stroke="#3b82f6" stroke-width="2" />
+                                        <line id="vol-line-2" x1="70%" y1="20%" x2="100%" y2="20%" stroke="#3b82f6" stroke-width="2" style="transition: all 0.5s ease;" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nhiệm vụ 5: Thêm Phụ đề -->
+                <div class="border-2 border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-2">
+                        <span class="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                        <h3 class="font-bold text-slate-700">Mô phỏng: Thêm Phụ Đề (Subtitles)</h3>
+                    </div>
+                    <div class="p-6 bg-white flex flex-col md:flex-row gap-6">
+                        
+                        <!-- Input form -->
+                        <div class="w-full md:w-1/3 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div>
+                                <label class="text-xs font-bold text-slate-600">Nội dung phụ đề:</label>
+                                <input type="text" id="sub-text" value="Ngày thứ 3, lướt ván" class="w-full mt-1 px-3 py-2 border rounded text-sm focus:outline-none focus:border-purple-500" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-600">Start (Giây):</label>
+                                    <input type="number" id="sub-start" value="10" class="w-full mt-1 px-3 py-2 border rounded text-sm" />
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-600">End (Giây):</label>
+                                    <input type="number" id="sub-end" value="15" class="w-full mt-1 px-3 py-2 border rounded text-sm" />
+                                </div>
+                            </div>
+                            <button onclick="simulateSubtitle()" class="w-full py-2 mt-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-bold transition">
+                                <i class="fa-solid fa-plus"></i> Áp dụng Phụ đề
+                            </button>
+                        </div>
+
+                        <!-- Video Preview Mock -->
+                        <div class="flex-1 bg-black rounded-xl overflow-hidden relative flex items-center justify-center aspect-video shadow-inner">
+                            <div class="text-slate-600 opacity-50 flex flex-col items-center">
+                                <i class="fa-solid fa-play text-4xl mb-2"></i>
+                                <span class="text-xs">[Video Cảnh Lướt Ván]</span>
+                            </div>
+                            <!-- Subtitle Overlay -->
+                            <div id="sim-subtitle-display" class="absolute bottom-6 w-full text-center hidden">
+                                <span class="bg-black/70 text-white px-4 py-1 rounded text-sm font-bold tracking-wide border border-black" id="sim-subtitle-text"></span>
+                            </div>
+                            <!-- Timer mock -->
+                            <div class="absolute bottom-1 right-2 text-white/50 text-[10px] font-mono">00:00:12.000</div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 4: ÔN TẬP (TRẮC NGHIỆM) -->
+            <section id="tab-ontap" class="hidden fade-in">
+                
+                <div class="flex items-center gap-4 mb-6 bg-blue-50 p-4 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl shadow">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-lg">Kiểm tra kiến thức nhanh</h2>
+                        <p class="text-sm text-slate-600">Hoàn thành 5 câu hỏi dựa trên nội dung nguồn.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6" id="quiz-container">
+                    <!-- Quiz questions generated by JS -->
+                </div>
+                
+                <div class="mt-8 flex justify-end">
+                    <button onclick="checkAnswers()" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-xl font-bold shadow-lg transition-transform hover:-translate-y-1">
+                        Kiểm Tra Đáp Án <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+                
+                <div id="quiz-result" class="mt-4 text-center font-bold text-lg hidden"></div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scripts for Interactivity -->
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            // Remove active state from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-slate-500');
+            });
+
+            // Show selected section
+            document.getElementById(tabId).classList.remove('hidden');
+            // Add active state to clicked button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-slate-500');
+        }
+
+        // Simulation 1: Replace Image
+        function simulateReplaceImg() {
+            const btn = document.getElementById('btn-replace');
+            const imgContent = document.getElementById('sim-img-content');
+            const imgIcon = document.getElementById('sim-img-icon');
+            const imgText = document.getElementById('sim-img-text');
+            const msg = document.getElementById('replace-msg');
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang thay thế...';
+            btn.classList.replace('bg-slate-800', 'bg-slate-500');
+
+            setTimeout(() => {
+                // Change visual to "Mountain"
+                imgContent.classList.replace('bg-blue-200', 'bg-emerald-200');
+                imgIcon.classList.replace('fa-water', 'fa-mountain');
+                imgIcon.classList.replace('text-blue-500', 'text-emerald-600');
+                imgText.innerText = '';
+                imgText.classList.replace('text-blue-700', 'text-emerald-800');
+                
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Đã Thay Thế';
+                btn.classList.replace('bg-slate-500', 'bg-emerald-500');
+                msg.classList.remove('hidden');
+            }, 800);
+        }
+
+        // Simulation 2: Fade Out
+        let isFaded = false;
+        function simulateFadeOut() {
+            if(isFaded) return;
+            const line2 = document.getElementById('vol-line-2');
+            const msg = document.getElementById('fade-msg');
+            
+            // Animate line down to y2=90%
+            line2.setAttribute('y2', '90%');
+            msg.classList.remove('hidden');
+            msg.classList.add('fade-in');
+            isFaded = true;
+        }
+
+        // Simulation 3: Subtitle
+        function simulateSubtitle() {
+            const text = document.getElementById('sub-text').value;
+            const display = document.getElementById('sim-subtitle-display');
+            const textSpan = document.getElementById('sim-subtitle-text');
+            
+            if(!text) return;
+            
+            textSpan.innerText = text;
+            display.classList.remove('hidden');
+            display.classList.add('fade-in');
+            
+            // Flash effect to show it updated
+            textSpan.style.backgroundColor = '#8b5cf6';
+            setTimeout(() => {
+                textSpan.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            }, 300);
+        }
+
+        // Quiz Data based strictly on source text
+        const quizData = [
+            {
+                q: "Để có đoạn phim mượt mà, hấp dẫn hơn từ chuỗi các phân cảnh, tính năng nào được sử dụng?",
+                opts: ["A. Chỉnh sửa âm lượng", "B. Hiệu ứng chuyển cảnh", "C. Căn chỉnh thời gian", "D. Tạo phụ đề"],
+                ans: 1 // Index of correct option (B)
+            },
+            {
+                q: "Tính năng Fade Out trong chỉnh sửa âm thanh dùng để làm gì?",
+                opts: ["A. Tăng âm lượng nhạc nền", "B. Cắt bỏ đoạn nhạc nền", "C. Tạo hiệu ứng âm thanh nhỏ dần", "D. Lồng ghép giọng nói"],
+                ans: 2 // (C)
+            },
+            {
+                q: "Trong quá trình biên tập, khi thay thế ảnh 5 bằng ảnh mới (Replace file), điều gì sẽ xảy ra?",
+                opts: ["A. Ảnh được đưa vào ngăn tư liệu, ảnh cũ bị xoá khỏi máy tính.", "B. Phân cảnh dùng ảnh 5 cũ trong phim sẽ thay đổi theo.", "C. Thời lượng của phân cảnh tự động tăng lên.", "D. Phải tự kéo thả ảnh mới vào thanh tiến trình."],
+                ans: 1 // (B)
+            },
+            {
+                q: "Việc căn chỉnh thời gian xuất hiện giữa phân cảnh trên các lớp (hình, âm thanh, chữ) nhằm mục đích gì?",
+                opts: ["A. Giảm dung lượng của tệp phim.", "B. Tạo hiệu ứng chuyển cảnh tự động.", "C. Cho khớp với kịch bản mà ta mong muốn.", "D. Để âm thanh tự động nhỏ dần ở cuối phim."],
+                ans: 2 // (C)
+            },
+            {
+                q: "Để thêm phụ đề cho đoạn phim, người dùng chọn chuỗi lệnh nào trên thanh công cụ?",
+                opts: ["A. Sequence -> Subtitles", "B. Effects -> Subtitles", "C. Audio -> Add Text", "D. Subtitles -> Sequence"],
+                ans: 0 // (A)
+            }
+        ];
+
+        // Render Quiz
+        const quizContainer = document.getElementById('quiz-container');
+        quizData.forEach((item, index) => {
+            let optionsHTML = '';
+            item.opts.forEach((opt, optIdx) => {
+                optionsHTML += `
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:bg-blue-50 cursor-pointer transition w-full">
+                        <input type="radio" name="q${index}" value="${optIdx}" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-slate-700">${opt}</span>
+                    </label>
+                `;
+            });
+
+            quizContainer.innerHTML += `
+                <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm question-block" id="qb-${index}">
+                    <p class="font-bold text-slate-800 mb-3"><span class="text-blue-500">Câu ${index + 1}:</span> ${item.q}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${optionsHTML}
+                    </div>
+                    <div id="feedback-${index}" class="mt-3 text-sm font-bold hidden"></div>
+                </div>
+            `;
+        });
+
+        // Check Quiz Answers
+        function checkAnswers() {
+            let score = 0;
+            quizData.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const feedback = document.getElementById(`feedback-${index}`);
+                const block = document.getElementById(`qb-${index}`);
+                
+                feedback.classList.remove('hidden');
+                
+                if (selected) {
+                    if (parseInt(selected.value) === item.ans) {
+                        score++;
+                        feedback.innerHTML = '<i class="fa-solid fa-circle-check text-green-500"></i> Chính xác!';
+                        feedback.className = "mt-3 text-sm font-bold text-green-600";
+                        block.classList.add('border-green-200', 'bg-green-50/30');
+                    } else {
+                        feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-500"></i> Sai. Đáp án đúng là: ${item.opts[item.ans]}`;
+                        feedback.className = "mt-3 text-sm font-bold text-red-600";
+                        block.classList.add('border-red-200', 'bg-red-50/30');
+                    }
+                } else {
+                    feedback.innerHTML = '<i class="fa-solid fa-circle-exclamation text-orange-500"></i> Vui lòng chọn đáp án!';
+                    feedback.className = "mt-3 text-sm font-bold text-orange-600";
+                }
+            });
+
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.classList.add('fade-in');
+            
+            if(score === 5) {
+                resultDiv.innerHTML = `🎉 Xuất sắc! Bạn đạt ${score}/5 điểm.`;
+                resultDiv.className = "mt-6 text-center font-bold text-xl text-green-600";
+            } else {
+                resultDiv.innerHTML = `Đạt ${score}/5 điểm. Hãy xem lại phần lý thuyết nhé!`;
+                resultDiv.className = "mt-6 text-center font-bold text-xl text-blue-600";
+            }
+        }
+    </script>
+</body>
+</html>

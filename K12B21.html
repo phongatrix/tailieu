@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hội Thảo Hướng Nghiệp Ngành CNTT</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            purple: '#f3e8ff',
+                            pink: '#fce7f3',
+                            green: '#dcfce3',
+                            yellow: '#fef3c7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* --- HIỆU ỨNG TRANG TRÍ BACKGROUND (BLOBS) --- */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
+        /* Tiêu chuẩn CSS cho Tiêu đề có hiệu ứng Shine */
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .custom-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3b82f6, #a855f7, #3b82f6);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: capitalize;
+            line-height: 1.4;
+            animation: shine 4s linear infinite; /* Chữ lấp lánh */
+        }
+
+        /* Ẩn tab mặc định và hiệu ứng xuất hiện mượt mà */
+        .tab-content { display: none; }
+        .tab-content.active {
+            display: block;
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hiệu ứng Hover dạng Studygram (Glassmorphism & Scale) */
+        .study-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.85); /* Trong suốt một chút */
+            backdrop-filter: blur(10px);
+        }
+        .study-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(59, 130, 246, 0.1);
+            border-color: #d8b4fe; /* Viền sáng lên màu tím pastel */
+        }
+
+        /* Nút Tab Hover */
+        .tab-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 50%;
+            width: 0; height: 3px;
+            background: #8b5cf6;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 3px;
+        }
+        .tab-btn.active-tab::after { width: 60%; }
+
+        /* Floating elements (Hình ảnh lơ lửng) */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating-icon { animation: float 4s ease-in-out infinite; }
+        .floating-icon-delay { animation: float 4s ease-in-out 2s infinite; }
+
+        /* Tùy chỉnh Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-10">
+
+    <!-- BACKGROUND BLOBS TRANG TRÍ -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-blue-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-pink-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Header Navigation (Glassmorphism) -->
+    <nav class="bg-white/70 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-white/50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg floating-icon">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <div class="custom-title">Hội Thảo Hướng Nghiệp CNTT</div>
+                </div>
+            </div>
+            <!-- Tabs Menu -->
+            <div class="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide">
+                <button onclick="openTab('tong-quan')" id="btn-tong-quan" class="tab-btn active-tab px-6 py-2 rounded-full font-bold transition-all bg-pastel-blue text-blue-700 shadow-sm hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-bullseye mr-2"></i>Tổng Quan
+                </button>
+                <button onclick="openTab('linh-vuc')" id="btn-linh-vuc" class="tab-btn px-6 py-2 rounded-full font-bold transition-all text-slate-500 hover:bg-pastel-purple hover:text-purple-700 hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-network-wired mr-2"></i>Lĩnh Vực Ứng Dụng
+                </button>
+                <button onclick="openTab('quy-trinh')" id="btn-quy-trinh" class="tab-btn px-6 py-2 rounded-full font-bold transition-all text-slate-500 hover:bg-pastel-pink hover:text-pink-700 hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-tasks mr-2"></i>Quy Trình Tổ Chức
+                </button>
+                <button onclick="openTab('danh-gia')" id="btn-danh-gia" class="tab-btn px-6 py-2 rounded-full font-bold transition-all text-slate-500 hover:bg-pastel-green hover:text-green-700 hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-calculator mr-2"></i>Đánh Giá & Điểm
+                </button>
+                <button onclick="openTab('luyen-tap')" id="btn-luyen-tap" class="tab-btn px-6 py-2 rounded-full font-bold transition-all text-slate-500 hover:bg-pastel-yellow hover:text-yellow-700 hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-gamepad mr-2 text-yellow-500"></i>Luyện Tập
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container (Nổi trên nền z-10) -->
+    <main class="max-w-7xl mx-auto px-4 mt-8 relative z-10">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tong-quan" class="tab-content active">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Mục tiêu -->
+                <div class="md:col-span-2 bg-white/80 rounded-3xl p-8 shadow-sm study-card border border-white">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-6 flex items-center">
+                        <span class="bg-gradient-to-r from-blue-400 to-blue-200 text-white p-2 rounded-lg mr-3 shadow-md"><i class="fa-solid fa-flag-checkered"></i></span> 
+                        Mục Tiêu Bài Học
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white p-5 rounded-2xl flex flex-col items-center text-center shadow-sm border border-blue-50 hover:shadow-md transition-all group">
+                            <div class="relative w-20 h-20 mb-4">
+                                <div class="absolute inset-0 bg-blue-200 rounded-full animate-ping opacity-20"></div>
+                                <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Ngành nghề" class="relative z-10 w-20 h-20 rounded-full object-cover shadow-md border-4 border-white group-hover:scale-110 transition-transform">
+                            </div>
+                            <p class="font-semibold text-slate-700">Nêu tên ngành nghề, lĩnh vực sử dụng nhân lực CNTT</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl flex flex-col items-center text-center shadow-sm border border-purple-50 hover:shadow-md transition-all group">
+                            <div class="relative w-20 h-20 mb-4">
+                                <div class="absolute inset-0 bg-purple-200 rounded-full animate-ping opacity-20"></div>
+                                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Vai trò" class="relative z-10 w-20 h-20 rounded-full object-cover shadow-md border-4 border-white group-hover:scale-110 transition-transform">
+                            </div>
+                            <p class="font-semibold text-slate-700">Giải thích vai trò & công việc của chuyên viên CNTT</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl flex flex-col items-center text-center shadow-sm border border-pink-50 hover:shadow-md transition-all group">
+                            <div class="relative w-20 h-20 mb-4">
+                                <div class="absolute inset-0 bg-pink-200 rounded-full animate-ping opacity-20"></div>
+                                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Đào tạo" class="relative z-10 w-20 h-20 rounded-full object-cover shadow-md border-4 border-white group-hover:scale-110 transition-transform">
+                            </div>
+                            <p class="font-semibold text-slate-700">Tìm hiểu thông tin đào tạo từ các cơ sở uy tín</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl flex flex-col items-center text-center shadow-sm border border-green-50 hover:shadow-md transition-all group">
+                            <div class="relative w-20 h-20 mb-4">
+                                <div class="absolute inset-0 bg-green-200 rounded-full animate-ping opacity-20"></div>
+                                <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Giao lưu" class="relative z-10 w-20 h-20 rounded-full object-cover shadow-md border-4 border-white group-hover:scale-110 transition-transform">
+                            </div>
+                            <p class="font-semibold text-slate-700">Giao lưu, chia sẻ thông tin qua mạng xã hội/truyền thông</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khái niệm -->
+                <div class="flex flex-col gap-6">
+                    <div class="bg-white/80 rounded-3xl p-6 shadow-sm study-card border border-white flex-1">
+                        <h3 class="text-xl font-bold text-purple-800 mb-4 flex items-center">
+                            <span class="bg-purple-100 p-2 rounded-lg mr-3 text-purple-600"><i class="fa-solid fa-key"></i></span> Khái Niệm Chính
+                        </h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start bg-gradient-to-r from-pastel-purple to-white p-4 rounded-xl shadow-sm border-l-4 border-purple-400 hover:translate-x-2 transition-transform">
+                                <i class="fa-solid fa-user-tie text-purple-500 text-xl mt-1 mr-3"></i>
+                                <span><b class="text-purple-800">Chuyên viên CNTT:</b> Người đảm nhiệm công việc kỹ thuật, quản lý, bảo mật trong mọi lĩnh vực.</span>
+                            </li>
+                            <li class="flex items-start bg-gradient-to-r from-pastel-purple to-white p-4 rounded-xl shadow-sm border-l-4 border-purple-400 hover:translate-x-2 transition-transform">
+                                <i class="fa-solid fa-users text-purple-500 text-xl mt-1 mr-3"></i>
+                                <span><b class="text-purple-800">Nhân lực CNTT:</b> Không chỉ làm trong ngành IT mà mở rộng ra y tế, giáo dục, tài chính...</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Dễ nhầm lẫn -->
+                    <div class="bg-red-50/90 rounded-3xl p-6 shadow-sm study-card border border-red-100 flex-1 relative overflow-hidden">
+                        <!-- Hiệu ứng sọc nền -->
+                        <div class="absolute inset-0 opacity-[0.03] bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#000_10px,#000_20px)]"></div>
+                        
+                        <h3 class="text-xl font-bold text-red-700 mb-3 flex items-center relative z-10">
+                            <i class="fa-solid fa-triangle-exclamation text-red-500 mr-2 animate-pulse"></i> Dễ Nhầm Lẫn
+                        </h3>
+                        <div class="bg-white/90 p-4 rounded-xl border border-red-200 flex items-center space-x-3 relative z-10 shadow-sm">
+                            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-xmark text-red-500 text-lg"></i></div>
+                            <p class="text-sm">Nghĩ rằng nhân lực CNTT <b>chỉ làm việc</b> tại các công ty chuyên về máy tính/phần mềm.</p>
+                        </div>
+                        
+                        <div class="my-3 flex justify-center relative z-10">
+                            <div class="bg-green-100 text-green-600 px-4 py-1 rounded-full text-sm font-bold shadow-sm floating-icon"><i class="fa-solid fa-arrow-down mr-1"></i>Thực tế</div>
+                        </div>
+                        
+                        <div class="bg-green-50/90 p-4 rounded-xl border border-green-200 flex items-center space-x-3 relative z-10 shadow-sm">
+                            <div class="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-green-600 text-lg"></i></div>
+                            <p class="text-sm">Làm việc ở <b>mọi lĩnh vực</b> (Y tế, Giáo dục, Sản xuất, Giải trí...).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: LĨNH VỰC ỨNG DỤNG -->
+        <section id="linh-vuc" class="tab-content">
+            <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-sm text-center mb-8 border border-white">
+                <div class="custom-title mb-2 text-3xl">Bản Đồ Ứng Dụng CNTT</div>
+                <p class="text-slate-500 mb-10">Nhấn vào từng lĩnh vực để xem ví dụ công việc thực tế của Chuyên viên CNTT</p>
+                
+                <!-- Interactive Mindmap Layout -->
+                <div class="relative max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
+                    
+                    <!-- Core -->
+                    <div class="z-10 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 text-white rounded-full w-48 h-48 flex flex-col items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.4)] border-4 border-white floating-icon">
+                        <i class="fa-solid fa-microchip text-5xl mb-3 text-blue-100"></i>
+                        <span class="font-bold text-xl text-center leading-tight">Nhân Lực<br>CNTT</span>
+                    </div>
+
+                    <!-- Branches -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10 w-full">
+                        
+                        <!-- Y Tế -->
+                        <div class="study-card bg-gradient-to-br from-pastel-blue to-white p-5 rounded-2xl cursor-pointer shadow-sm border border-blue-100 group" onclick="showFieldDetails('yte')">
+                            <div class="flex items-center space-x-4 mb-2">
+                                <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-colors"><i class="fa-solid fa-notes-medical"></i></div>
+                                <h3 class="font-bold text-lg text-blue-800">Y Tế & Sức Khỏe</h3>
+                            </div>
+                            <div class="text-sm text-blue-500 font-semibold group-hover:text-blue-700">Nhấn xem chi tiết <i class="fa-solid fa-arrow-right text-xs ml-1 opacity-0 group-hover:opacity-100 transition-opacity"></i></div>
+                        </div>
+
+                        <!-- Công Nghiệp -->
+                        <div class="study-card bg-gradient-to-br from-pastel-yellow to-white p-5 rounded-2xl cursor-pointer shadow-sm border border-yellow-100 group" onclick="showFieldDetails('congnghiep')">
+                            <div class="flex items-center space-x-4 mb-2">
+                                <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 text-2xl shadow-inner group-hover:bg-yellow-500 group-hover:text-white transition-colors"><i class="fa-solid fa-industry"></i></div>
+                                <h3 class="font-bold text-lg text-yellow-800">Công Nghiệp Sản Xuất</h3>
+                            </div>
+                            <div class="text-sm text-yellow-600 font-semibold group-hover:text-yellow-700">Nhấn xem chi tiết <i class="fa-solid fa-arrow-right text-xs ml-1 opacity-0 group-hover:opacity-100 transition-opacity"></i></div>
+                        </div>
+                        
+                        <!-- Tài Chính -->
+                        <div class="study-card bg-gradient-to-br from-pastel-green to-white p-5 rounded-2xl cursor-pointer shadow-sm border border-green-100 group" onclick="showFieldDetails('taichinh')">
+                            <div class="flex items-center space-x-4 mb-2">
+                                <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-2xl shadow-inner group-hover:bg-green-500 group-hover:text-white transition-colors"><i class="fa-solid fa-coins"></i></div>
+                                <h3 class="font-bold text-lg text-green-800">Tài Chính, Ngân Hàng</h3>
+                            </div>
+                            <div class="text-sm text-green-600 font-semibold group-hover:text-green-700">Nhóm 3 báo cáo <i class="fa-regular fa-hand-pointer ml-1"></i></div>
+                        </div>
+
+                        <!-- Giáo Dục & Truyền Thông -->
+                        <div class="study-card bg-gradient-to-br from-pastel-pink to-white p-5 rounded-2xl cursor-pointer shadow-sm border border-pink-100 group" onclick="showFieldDetails('giaoduc')">
+                            <div class="flex items-center space-x-4 mb-2">
+                                <div class="w-14 h-14 bg-pink-100 rounded-full flex items-center justify-center text-pink-500 text-2xl shadow-inner group-hover:bg-pink-500 group-hover:text-white transition-colors"><i class="fa-solid fa-graduation-cap"></i></div>
+                                <h3 class="font-bold text-lg text-pink-800">Giáo Dục / Truyền Thông</h3>
+                            </div>
+                            <div class="text-sm text-pink-500 font-semibold group-hover:text-pink-700">Nhóm 2 & 4 báo cáo <i class="fa-regular fa-hand-pointer ml-1"></i></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Display Details Box -->
+                <div id="field-details" class="mt-10 bg-white border-2 border-indigo-100 rounded-3xl p-8 min-h-[160px] flex items-center justify-center shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] hidden transition-all">
+                    <!-- Content injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: QUY TRÌNH TỔ CHỨC -->
+        <section id="quy-trinh" class="tab-content">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Thông tin cơ bản -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-slate-100 study-card">
+                        <h3 class="font-bold text-xl mb-5 text-slate-800 flex items-center border-b border-slate-100 pb-3">
+                            <div class="bg-purple-100 text-purple-600 p-2 rounded-lg mr-3"><i class="fa-regular fa-calendar-check"></i></div> Kế Hoạch Chung
+                        </h3>
+                        <ul class="space-y-5">
+                            <li class="flex items-center group"><span class="w-12 h-12 bg-blue-50 group-hover:bg-blue-100 transition-colors rounded-full flex items-center justify-center text-blue-600 mr-4 shadow-sm border border-blue-100"><i class="fa-solid fa-clock text-lg"></i></span> 
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Thời lượng</p><p class="font-bold text-slate-700">1 tiết (45 phút)</p></div>
+                            </li>
+                            <li class="flex items-center group"><span class="w-12 h-12 bg-pink-50 group-hover:bg-pink-100 transition-colors rounded-full flex items-center justify-center text-pink-600 mr-4 shadow-sm border border-pink-100"><i class="fa-solid fa-users text-lg"></i></span> 
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Ban tổ chức</p><p class="font-bold text-slate-700">4 thành viên</p></div>
+                            </li>
+                            <li class="flex items-center group"><span class="w-12 h-12 bg-green-50 group-hover:bg-green-100 transition-colors rounded-full flex items-center justify-center text-green-600 mr-4 shadow-sm border border-green-100"><i class="fa-solid fa-gavel text-lg"></i></span> 
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Chủ tọa</p><p class="font-bold text-slate-700">3 thành viên</p></div>
+                            </li>
+                            <li class="flex items-center group"><span class="w-12 h-12 bg-yellow-50 group-hover:bg-yellow-100 transition-colors rounded-full flex items-center justify-center text-yellow-600 mr-4 shadow-sm border border-yellow-100"><i class="fa-solid fa-video text-lg"></i></span> 
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Hình thức</p><p class="font-bold text-slate-700">Trực tiếp / Trực tuyến</p></div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80')] bg-cover bg-center rounded-3xl shadow-lg overflow-hidden relative study-card">
+                        <div class="absolute inset-0 bg-gradient-to-t from-indigo-900 via-indigo-900/80 to-purple-800/60"></div>
+                        <div class="relative p-8 text-white">
+                            <h3 class="font-bold text-sm text-indigo-200 uppercase tracking-wider mb-2">Chủ đề Hội thảo</h3>
+                            <p class="text-2xl font-bold leading-snug">"Nhân lực công nghệ thông tin:<br><span class="text-yellow-300">Cơ hội và thách thức</span> trong kỉ nguyên số"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 Nhiệm vụ chính -->
+                <div class="lg:col-span-8 bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-sm border border-slate-100">
+                    <div class="custom-title mb-8 text-3xl text-center md:text-left">Trình Tự Thực Hiện</div>
+                    
+                    <!-- Infographic Timeline -->
+                    <div class="relative border-l-4 border-indigo-200 ml-4 md:ml-8 space-y-10 pb-4">
+                        
+                        <!-- Nhiệm vụ 1 -->
+                        <div class="relative group">
+                            <div class="absolute -left-10 md:-left-[42px] top-0 w-14 h-14 bg-white border-4 border-purple-400 rounded-full flex items-center justify-center text-purple-600 font-bold text-xl shadow-md group-hover:scale-110 group-hover:bg-purple-50 transition-all">1</div>
+                            <div class="ml-8 md:ml-12 study-card bg-gradient-to-r from-pastel-purple to-white rounded-2xl p-6 border border-purple-100">
+                                <h4 class="font-bold text-purple-800 text-xl mb-3 flex items-center"><i class="fa-solid fa-people-group mr-2"></i> Chuẩn bị Hội thảo</h4>
+                                <p class="text-slate-700 mb-3">Chia lớp thành 4 nhóm (tương ứng 4 lĩnh vực). Bầu nhóm trưởng, thư ký, cử đại diện Ban tổ chức.</p>
+                                <div class="bg-white/80 p-3 rounded-xl text-sm flex items-start border border-orange-200 shadow-sm">
+                                    <i class="fa-solid fa-triangle-exclamation text-orange-500 mt-1 mr-3 text-lg animate-bounce"></i> 
+                                    <span class="text-slate-700"><b>Lưu ý quan trọng:</b> Ban tổ chức phải thu bài trình bày trước ít nhất 2 ngày để tập hợp và gửi khách mời.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nhiệm vụ 2 -->
+                        <div class="relative group">
+                            <div class="absolute -left-10 md:-left-[42px] top-0 w-14 h-14 bg-white border-4 border-blue-400 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl shadow-md group-hover:scale-110 group-hover:bg-blue-50 transition-all">2</div>
+                            <div class="ml-8 md:ml-12 study-card bg-gradient-to-r from-pastel-blue to-white rounded-2xl p-6 border border-blue-100">
+                                <h4 class="font-bold text-blue-800 text-xl mb-3 flex items-center"><i class="fa-solid fa-laptop-file mr-2"></i> Xây dựng bài trình bày (8 phút/nhóm)</h4>
+                                <p class="text-slate-700 mb-4">Sử dụng nguồn uy tín, thiết kế biểu đồ/sơ đồ trực quan.</p>
+                                
+                                <!-- Dàn ý 5 phần (Tương tác) -->
+                                <div class="bg-white rounded-xl p-4 border border-blue-200 shadow-sm">
+                                    <p class="font-bold text-blue-800 text-sm mb-3 flex items-center border-b border-blue-50 pb-2"><i class="fa-solid fa-list-ol mr-2 text-blue-500"></i> Cấu trúc 5 phần (Nhấn để xem chi tiết):</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button onclick="showStep(1)" class="px-4 py-2 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-lg text-sm font-bold text-blue-700 transition-colors shadow-sm active:scale-95 border border-blue-100">Phần 1: Giới thiệu</button>
+                                        <button onclick="showStep(2)" class="px-4 py-2 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-lg text-sm font-bold text-blue-700 transition-colors shadow-sm active:scale-95 border border-blue-100">Phần 2: Vai trò</button>
+                                        <button onclick="showStep(3)" class="px-4 py-2 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-lg text-sm font-bold text-blue-700 transition-colors shadow-sm active:scale-95 border border-blue-100">Phần 3: Cơ hội/Thách thức</button>
+                                        <button onclick="showStep(4)" class="px-4 py-2 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-lg text-sm font-bold text-blue-700 transition-colors shadow-sm active:scale-95 border border-blue-100">Phần 4: Đào tạo</button>
+                                        <button onclick="showStep(5)" class="px-4 py-2 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-lg text-sm font-bold text-blue-700 transition-colors shadow-sm active:scale-95 border border-blue-100">Phần 5: Kết luận</button>
+                                    </div>
+                                    <div id="step-desc" class="mt-4 p-4 bg-blue-50/50 rounded-lg text-sm text-slate-700 hidden border border-blue-100">
+                                        <!-- Content injected via JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nhiệm vụ 3 -->
+                        <div class="relative group">
+                            <div class="absolute -left-10 md:-left-[42px] top-0 w-14 h-14 bg-white border-4 border-green-400 rounded-full flex items-center justify-center text-green-600 font-bold text-xl shadow-md group-hover:scale-110 group-hover:bg-green-50 transition-all">3</div>
+                            <div class="ml-8 md:ml-12 study-card bg-gradient-to-r from-pastel-green to-white rounded-2xl p-6 border border-green-100">
+                                <h4 class="font-bold text-green-800 text-xl mb-3 flex items-center"><i class="fa-solid fa-microphone-lines mr-2"></i> Tổ chức và Đánh giá</h4>
+                                <p class="text-slate-700">Trình bày theo thứ tự 4 báo cáo (xen kẽ 2 lần thảo luận 5 phút). Cuối cùng chủ tọa kết luận (3 phút).</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: ĐÁNH GIÁ & TÍNH ĐIỂM -->
+        <section id="danh-gia" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Tiêu chí GV -->
+                <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-sm border border-slate-100 study-card">
+                    <h3 class="font-bold text-2xl text-slate-800 mb-2 flex items-center"><div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mr-3"><i class="fa-solid fa-clipboard-list"></i></div> Tiêu chí chấm (Nhóm)</h3>
+                    <p class="text-sm text-slate-500 mb-6 font-medium">Thang điểm 10 (Tối đa 2đ/tiêu chí ở mức Giỏi).</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-blue-50/50 border border-blue-100 rounded-xl hover:shadow-md transition-shadow">
+                            <span class="font-bold text-slate-700 flex items-center"><div class="w-8 h-8 rounded bg-blue-100 text-blue-500 flex items-center justify-center mr-3"><i class="fa-regular fa-file-lines"></i></div> Nội dung</span>
+                            <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">Max 2đ</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-pink-50/50 border border-pink-100 rounded-xl hover:shadow-md transition-shadow">
+                            <span class="font-bold text-slate-700 flex items-center"><div class="w-8 h-8 rounded bg-pink-100 text-pink-500 flex items-center justify-center mr-3"><i class="fa-solid fa-palette"></i></div> Hình thức</span>
+                            <span class="bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">Max 2đ</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-purple-50/50 border border-purple-100 rounded-xl hover:shadow-md transition-shadow">
+                            <span class="font-bold text-slate-700 flex items-center"><div class="w-8 h-8 rounded bg-purple-100 text-purple-500 flex items-center justify-center mr-3"><i class="fa-solid fa-briefcase"></i></div> Tính chuyên nghiệp</span>
+                            <span class="bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">Max 2đ</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-green-50/50 border border-green-100 rounded-xl hover:shadow-md transition-shadow">
+                            <span class="font-bold text-slate-700 flex items-center"><div class="w-8 h-8 rounded bg-green-100 text-green-500 flex items-center justify-center mr-3"><i class="fa-solid fa-user-tie"></i></div> Báo cáo viên</span>
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">Max 2đ</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-yellow-50/50 border border-yellow-100 rounded-xl hover:shadow-md transition-shadow">
+                            <span class="font-bold text-slate-700 flex items-center"><div class="w-8 h-8 rounded bg-yellow-100 text-yellow-600 flex items-center justify-center mr-3"><i class="fa-regular fa-comments"></i></div> Thảo luận</span>
+                            <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">Max 2đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tương tác: Trình mô phỏng tính điểm -->
+                <div class="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-sm border border-slate-100 relative overflow-hidden study-card">
+                    <!-- Glass glare effect -->
+                    <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/60 to-transparent pointer-events-none"></div>
+
+                    <h3 class="font-bold text-2xl text-indigo-800 mb-6 flex items-center relative z-10"><i class="fa-solid fa-calculator text-indigo-500 mr-3 text-3xl"></i> Mô phỏng Điểm Cá Nhân</h3>
+                    
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-5 rounded-2xl border border-indigo-100 mb-6 text-center relative z-10 shadow-inner">
+                        <p class="font-bold text-slate-700 mb-2">Công thức (Dễ nhầm lẫn!)</p>
+                        <p class="text-indigo-700 bg-white py-2 px-4 rounded-xl font-mono font-bold inline-block shadow-sm">Điểm CN = Điểm Nhóm × Hệ số cá nhân</p>
+                        <p class="text-xs text-slate-500 mt-2 font-medium">Hệ số cá nhân = Tổng điểm đánh giá nội bộ / 100%</p>
+                    </div>
+
+                    <div class="space-y-6 relative z-10">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">1. Nhập Điểm Nhóm (GV chấm):</label>
+                            <input type="number" id="diem-nhom" min="0" max="10" step="0.5" value="8" class="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition-all font-bold text-indigo-700 text-lg">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">2. Đánh giá nội bộ cá nhân (Max 100đ):</label>
+                            <div class="text-xs text-slate-500 mb-3 font-medium bg-slate-50 p-2 rounded-lg border border-slate-100">Tiêu chí: Hoàn thành việc (30) + Tinh thần (20) + Đóng góp (20) + Phối hợp (20) + Họp đủ (10)</div>
+                            <div class="flex items-center gap-4">
+                                <input type="range" id="diem-noi-bo" min="0" max="100" value="90" oninput="document.getElementById('hs-val').innerText = this.value + 'đ'" class="w-full h-3 bg-indigo-100 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                                <div class="bg-indigo-600 text-white font-bold py-1 px-3 rounded-lg text-sm w-16 text-center" id="hs-val">90đ</div>
+                            </div>
+                        </div>
+
+                        <button onclick="calculateScore()" class="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-lg rounded-xl shadow-[0_10px_20px_-10px_rgba(99,102,241,0.6)] hover:shadow-[0_15px_25px_-10px_rgba(99,102,241,0.8)] hover:-translate-y-1 transition-all active:scale-95">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Tính Điểm Của Tôi
+                        </button>
+
+                        <div id="result-box" class="hidden mt-2 text-center p-5 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-2xl shadow-lg font-bold text-xl transform transition-all duration-500 scale-95 opacity-0">
+                            <!-- JS Result -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: TRẮC NGHIỆM -->
+        <section id="luyen-tap" class="tab-content">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-10">
+                    <div class="inline-block bg-yellow-100 text-yellow-600 p-3 rounded-full mb-4 floating-icon shadow-sm"><i class="fa-solid fa-gamepad text-3xl"></i></div>
+                    <div class="custom-title text-4xl mb-3">Ôn Tập</div>
+                    <p class="text-slate-500 font-medium bg-white/60 inline-block px-4 py-1 rounded-full backdrop-blur-sm">Kiểm tra kiến thức cốt lõi của Bài 21</p>
+                </div>
+
+                <div class="bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-10 shadow-sm border border-slate-100 relative" id="quiz-container">
+                    <!-- Questions injected by JS -->
+                </div>
+
+                <div class="mt-8 bg-white rounded-3xl p-6 border border-purple-100 shadow-lg flex-col items-center justify-center hidden transform transition-all text-center" id="quiz-result-container">
+                    <div class="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 animate-bounce"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="text-3xl font-bold text-slate-700 mb-2">Điểm của bạn: <span id="quiz-score" class="text-purple-600 text-5xl"></span><span class="text-slate-400 text-xl">/5</span></div>
+                    <p id="quiz-message" class="text-slate-500 mb-6 font-medium"></p>
+                    <button onclick="resetQuiz()" class="px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-all hover:-translate-y-1 active:scale-95 flex items-center mx-auto shadow-sm">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> Làm lại bài
+                    </button>
+                </div>
+                
+                <button onclick="checkQuiz()" id="submit-quiz-btn" class="mt-8 w-full py-5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold text-xl rounded-2xl shadow-[0_15px_30px_-10px_rgba(147,51,234,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(147,51,234,0.7)] hover:-translate-y-1 transition-all active:scale-95">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Nộp Bài Kiểm Tra
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- LOGIC ĐIỀU HƯỚNG TAB ---
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-pastel-blue', 'text-blue-700', 'bg-pastel-purple', 'text-purple-700', 'bg-pastel-pink', 'text-pink-700', 'bg-pastel-green', 'text-green-700', 'bg-pastel-yellow', 'text-yellow-700', 'active-tab', 'shadow-sm');
+                el.classList.add('text-slate-500');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+
+            const btn = document.getElementById('btn-' + tabId);
+            btn.classList.remove('text-slate-500');
+            btn.classList.add('active-tab', 'shadow-sm');
+            if(tabId === 'tong-quan') btn.classList.add('bg-pastel-blue', 'text-blue-700');
+            if(tabId === 'linh-vuc') btn.classList.add('bg-pastel-purple', 'text-purple-700');
+            if(tabId === 'quy-trinh') btn.classList.add('bg-pastel-pink', 'text-pink-700');
+            if(tabId === 'danh-gia') btn.classList.add('bg-pastel-green', 'text-green-700');
+            if(tabId === 'luyen-tap') btn.classList.add('bg-pastel-yellow', 'text-yellow-700');
+        }
+
+        // --- LOGIC HIỂN THỊ CHI TIẾT LĨNH VỰC ---
+        function showFieldDetails(field) {
+            const box = document.getElementById('field-details');
+            box.classList.remove('hidden');
+            // Reset animation
+            box.style.animation = 'none';
+            box.offsetHeight; /* trigger reflow */
+            box.style.animation = 'slideUpFade 0.4s ease-out';
+            
+            let content = '';
+
+            switch(field) {
+                case 'yte':
+                    content = `
+                        <div class="flex flex-col md:flex-row items-center gap-8 w-full">
+                            <div class="relative group w-48 shrink-0">
+                                <div class="absolute inset-0 bg-blue-400 rounded-2xl transform rotate-6 opacity-30 group-hover:rotate-12 transition-transform"></div>
+                                <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" class="relative z-10 w-48 h-48 object-cover rounded-2xl shadow-lg border-4 border-white">
+                            </div>
+                            <div class="flex-1 text-left">
+                                <h4 class="text-2xl font-bold text-blue-800 mb-4 flex items-center border-b border-blue-100 pb-2"><div class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center mr-3"><i class="fa-solid fa-notes-medical"></i></div> Y Tế & Sức Khỏe</h4>
+                                <ul class="space-y-2 text-slate-700 font-medium">
+                                    <li class="flex items-start"><i class="fa-solid fa-check text-blue-500 mt-1 mr-2"></i> Quản lý hệ thống <b>bệnh án điện tử</b>.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-check text-blue-500 mt-1 mr-2"></i> Duy trì <b>thiết bị số</b> trong bệnh viện.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-check text-blue-500 mt-1 mr-2"></i> Phát triển các <b>ứng dụng sức khỏe</b> số.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-check text-blue-500 mt-1 mr-2"></i> Nghiên cứu dược phẩm thông qua dữ liệu.</li>
+                                </ul>
+                            </div>
+                        </div>`;
+                    break;
+                case 'congnghiep':
+                    content = `
+                        <div class="flex flex-col md:flex-row items-center gap-8 w-full">
+                            <div class="relative group w-48 shrink-0">
+                                <div class="absolute inset-0 bg-yellow-400 rounded-2xl transform -rotate-6 opacity-30 group-hover:-rotate-12 transition-transform"></div>
+                                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" class="relative z-10 w-48 h-48 object-cover rounded-2xl shadow-lg border-4 border-white">
+                            </div>
+                            <div class="flex-1 text-left">
+                                <h4 class="text-2xl font-bold text-yellow-800 mb-4 flex items-center border-b border-yellow-100 pb-2"><div class="bg-yellow-100 text-yellow-600 w-10 h-10 rounded-full flex items-center justify-center mr-3"><i class="fa-solid fa-industry"></i></div> Công Nghiệp Sản Xuất</h4>
+                                <ul class="space-y-2 text-slate-700 font-medium">
+                                    <li class="flex items-start"><i class="fa-solid fa-check text-yellow-500 mt-1 mr-2"></i> Bảo mật các hệ thống thông tin kỹ thuật số.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-check text-yellow-500 mt-1 mr-2"></i> Triển khai Mạng vạn vật <b class="bg-yellow-100 px-1 rounded">IoT</b>.</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-check text-yellow-500 mt-1 mr-2"></i> Quản lý và <b>khai thác dữ liệu</b> để cải thiện quy trình sản xuất.</li>
+                                </ul>
+                            </div>
+                        </div>`;
+                    break;
+                case 'taichinh':
+                    content = `
+                        <div class="text-center bg-green-50 p-6 rounded-2xl border border-green-100 w-full relative overflow-hidden">
+                            <i class="fa-solid fa-coins absolute -right-4 -bottom-4 text-8xl text-green-500 opacity-10"></i>
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-green-500 text-3xl mx-auto mb-4 shadow-sm"><i class="fa-solid fa-chart-line"></i></div>
+                            <h4 class="text-2xl font-bold text-green-800 mb-3">Tài Chính & Kinh Doanh</h4>
+                            <p class="text-slate-700 text-lg max-w-xl mx-auto font-medium">Lĩnh vực này rất cần CNTT cho ngân hàng số, bảo mật giao dịch, phân tích dữ liệu thị trường và thương mại điện tử.</p>
+                            <div class="mt-4 inline-block bg-white text-green-700 font-bold px-4 py-2 rounded-full shadow-sm text-sm border border-green-200">✨ Chủ đề dành cho Nhóm 3 (8 phút)</div>
+                        </div>`;
+                    break;
+                case 'giaoduc':
+                    content = `
+                        <div class="text-center bg-pink-50 p-6 rounded-2xl border border-pink-100 w-full relative overflow-hidden">
+                            <i class="fa-solid fa-graduation-cap absolute -left-4 -bottom-4 text-8xl text-pink-500 opacity-10"></i>
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-pink-500 text-3xl mx-auto mb-4 shadow-sm"><i class="fa-solid fa-laptop-code"></i></div>
+                            <h4 class="text-2xl font-bold text-pink-800 mb-3">Giáo Dục & Truyền Thông</h4>
+                            <p class="text-slate-700 text-lg max-w-xl mx-auto font-medium">Bao gồm hệ thống học trực tuyến (E-learning), sản xuất nội dung số, thiết kế đồ họa, game và ứng dụng giải trí.</p>
+                            <div class="mt-4 inline-block bg-white text-pink-700 font-bold px-4 py-2 rounded-full shadow-sm text-sm border border-pink-200">✨ Chủ đề dành cho Nhóm 2 & Nhóm 4</div>
+                        </div>`;
+                    break;
+            }
+            box.innerHTML = content;
+        }
+
+        // --- LOGIC HIỂN THỊ BƯỚC THUYẾT TRÌNH ---
+        function showStep(step) {
+            const desc = document.getElementById('step-desc');
+            desc.classList.remove('hidden');
+            
+            // Animation reset
+            desc.style.animation = 'none';
+            desc.offsetHeight;
+            desc.style.animation = 'slideUpFade 0.3s ease-out';
+
+            let text = '';
+            if(step === 1) text = "<span class='text-blue-600 font-black mr-2 bg-blue-100 px-2 py-1 rounded'>1 Phút</span> <b>Giới thiệu lĩnh vực:</b> Nêu định nghĩa, tầm quan trọng và lợi ích của việc ứng dụng CNTT.";
+            if(step === 2) text = "<span class='text-blue-600 font-black mr-2 bg-blue-100 px-2 py-1 rounded'>2 Phút</span> <b>Vai trò:</b> Mô tả công việc, nhiệm vụ chính và các yêu cầu về kiến thức, kĩ năng cần thiết.";
+            if(step === 3) text = "<span class='text-blue-600 font-black mr-2 bg-blue-100 px-2 py-1 rounded'>2 Phút</span> <b>Phân tích:</b> Làm rõ những cơ hội phát triển cùng những khó khăn, thách thức thực tế gặp phải.";
+            if(step === 4) text = "<span class='text-blue-600 font-black mr-2 bg-blue-100 px-2 py-1 rounded'>2 Phút</span> <b>Đào tạo:</b> Giới thiệu các trường, tổ chức đào tạo uy tín và mô tả chương trình học, chuyên ngành.";
+            if(step === 5) text = "<span class='text-blue-600 font-black mr-2 bg-blue-100 px-2 py-1 rounded'>1 Phút</span> <b>Kết luận:</b> Tóm tắt các ý chính và đề xuất hướng phát triển tương lai dựa trên xu hướng công nghệ.";
+            desc.innerHTML = text;
+        }
+
+        // --- LOGIC TÍNH ĐIỂM ---
+        function calculateScore() {
+            let diemNhom = parseFloat(document.getElementById('diem-nhom').value);
+            let diemNoiBo = parseInt(document.getElementById('diem-noi-bo').value);
+            
+            if(diemNhom > 10 || diemNhom < 0) {
+                alert("Điểm nhóm chỉ từ 0 đến 10");
+                return;
+            }
+
+            let heSo = diemNoiBo / 100;
+            let diemCaNhan = diemNhom * heSo;
+
+            const resBox = document.getElementById('result-box');
+            resBox.classList.remove('hidden');
+            
+            // Animation for result box
+            setTimeout(() => {
+                resBox.classList.remove('scale-95', 'opacity-0');
+                resBox.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            resBox.innerHTML = `
+                <div class="text-sm font-semibold mb-1 opacity-90 uppercase tracking-widest">Kết Quả Điểm Cá Nhân</div>
+                <div class="text-5xl font-black drop-shadow-md mb-2">${diemCaNhan.toFixed(1)} <span class="text-2xl font-bold opacity-80">điểm</span></div>
+                <div class="inline-block bg-white/20 px-3 py-1 rounded-full text-sm font-medium mt-1 backdrop-blur-sm border border-white/30">
+                    Phép tính: ${diemNhom} × ${heSo.toFixed(2)}
+                </div>
+            `;
+        }
+
+        // --- LOGIC QUIZ ---
+        const questions = [
+            {
+                q: "1. Đâu là thời lượng tổ chức Hội thảo hướng nghiệp theo gợi ý của bài học?",
+                options: ["30 phút", "1 tiết (45 phút)", "2 tiết (90 phút)", "Nửa ngày"],
+                ans: 1
+            },
+            {
+                q: "2. Vai trò của chuyên viên CNTT trong ngành công nghiệp sản xuất (được nêu làm ví dụ) là gì?",
+                options: ["Quản lý bệnh án điện tử", "Sản xuất video clip truyền thông", "Triển khai Mạng vạn vật (IoT) và khai thác dữ liệu", "Thiết kế giáo án điện tử"],
+                ans: 2
+            },
+            {
+                q: "3. Cấu trúc một bài trình bày của nhóm trong hội thảo gồm mấy phần chính?",
+                options: ["3 phần", "4 phần", "5 phần", "6 phần"],
+                ans: 2
+            },
+            {
+                q: "4. Dựa vào nội dung dễ nhầm lẫn, Hệ số cá nhân trong công thức tính điểm được xác định dựa trên yếu tố nào?",
+                options: ["Do giáo viên tự chấm riêng cho từng học sinh", "Các thành viên trong nhóm tự đánh giá lẫn nhau (tối đa 100đ)", "Do chủ tọa hội thảo quyết định", "Cộng điểm thưởng từ phần thi trắc nghiệm"],
+                ans: 1
+            },
+            {
+                q: "5. Thời hạn nộp bài trình bày cho Ban tổ chức là khi nào?",
+                options: ["Ngay trong buổi hội thảo", "Trước hội thảo 1 ngày", "Trước hội thảo ít nhất 2 ngày", "Sau khi hội thảo kết thúc"],
+                ans: 2
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            questions.forEach((item, index) => {
+                let optionsHtml = '';
+                item.options.forEach((opt, optIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 p-4 rounded-xl border-2 border-slate-100 hover:border-purple-300 hover:bg-purple-50 cursor-pointer transition-all option-label group">
+                            <input type="radio" name="q${index}" value="${optIdx}" class="form-radio w-5 h-5 text-purple-600 focus:ring-purple-500 accent-purple-600">
+                            <span class="group-hover:text-purple-800 font-medium text-slate-700">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="mb-8 quiz-question bg-white p-6 rounded-2xl border border-slate-100 shadow-sm" id="question-${index}">
+                        <h4 class="font-bold text-lg text-slate-800 mb-4 flex items-start"><span class="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 shrink-0 text-sm">Q${index+1}</span> ${item.q.substring(3)}</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ml-11">
+                            ${optionsHtml}
+                        </div>
+                        <div class="feedback mt-4 ml-11 text-sm font-bold hidden p-3 rounded-xl"></div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkQuiz() {
+            let score = 0;
+            questions.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const qDiv = document.getElementById(`question-${index}`);
+                const feedback = qDiv.querySelector('.feedback');
+                
+                // Reset styling
+                qDiv.querySelectorAll('label').forEach(lbl => {
+                    lbl.classList.remove('bg-green-50', 'border-green-400', 'bg-red-50', 'border-red-400', 'opacity-50');
+                });
+
+                if (selected) {
+                    const val = parseInt(selected.value);
+                    const selectedLabel = selected.parentElement;
+                    
+                    if (val === item.ans) {
+                        score++;
+                        feedback.innerHTML = '<i class="fa-solid fa-circle-check text-green-500 mr-2 text-lg"></i> Chính xác tuyệt đối!';
+                        feedback.className = 'feedback mt-4 ml-11 text-sm font-bold p-3 rounded-xl bg-green-50 text-green-700 border border-green-200 block';
+                        selectedLabel.classList.add('bg-green-50', 'border-green-400');
+                    } else {
+                        feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-500 mr-2 text-lg"></i> Chưa đúng. Đáp án chuẩn là: <b class="ml-1">${item.options[item.ans]}</b>`;
+                        feedback.className = 'feedback mt-4 ml-11 text-sm font-bold p-3 rounded-xl bg-red-50 text-red-700 border border-red-200 block';
+                        selectedLabel.classList.add('bg-red-50', 'border-red-400');
+                        // Highlight correct answer
+                        const correctInput = qDiv.querySelector(`input[value="${item.ans}"]`);
+                        if(correctInput) correctInput.parentElement.classList.add('border-green-400', 'bg-green-50/50');
+                    }
+                    
+                    // Dim unselected options
+                    qDiv.querySelectorAll('label').forEach(lbl => {
+                        if(lbl !== selectedLabel && !lbl.classList.contains('border-green-400')) {
+                            lbl.classList.add('opacity-50');
+                        }
+                    });
+
+                } else {
+                    feedback.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-orange-500 mr-2 text-lg"></i> Bạn quên chưa chọn đáp án câu này!';
+                    feedback.className = 'feedback mt-4 ml-11 text-sm font-bold p-3 rounded-xl bg-orange-50 text-orange-700 border border-orange-200 block animate-pulse';
+                }
+            });
+
+            const resContainer = document.getElementById('quiz-result-container');
+            resContainer.classList.remove('hidden');
+            resContainer.classList.add('flex');
+            
+            document.getElementById('quiz-score').innerText = score;
+            
+            const msgEl = document.getElementById('quiz-message');
+            if(score === 5) msgEl.innerHTML = "Tuyệt vời! Bạn đã nắm vững kiến thức cốt lõi. 🎉";
+            else if(score >= 3) msgEl.innerHTML = "Làm tốt lắm! Nhưng hãy xem lại các câu sai nhé. 👍";
+            else msgEl.innerHTML = "Bạn cần ôn tập lại kỹ hơn phần lý thuyết nha! 📚";
+
+            document.getElementById('submit-quiz-btn').classList.add('hidden');
+            
+            // Cuộn xuống kết quả
+            resContainer.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+
+        function resetQuiz() {
+            renderQuiz();
+            const resContainer = document.getElementById('quiz-result-container');
+            resContainer.classList.add('hidden');
+            resContainer.classList.remove('flex');
+            document.getElementById('submit-quiz-btn').classList.remove('hidden');
+            
+            // Scroll to top of quiz
+            document.getElementById('luyen-tap').scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+
+        // Khởi tạo trang ban đầu
+        window.onload = () => {
+            renderQuiz();
+        };
+
+    </script>
+</body>
+</html>

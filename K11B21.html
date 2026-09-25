@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 21: Cập Nhật & Truy Xuất CSDL</title>
+    <!-- Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc; /* Nền sáng nhẹ */
+            color: #334155;
+        }
+
+        /* Tiêu chuẩn tiêu đề theo yêu cầu */
+        .title-gradient {
+            font-size: 28px;
+            font-weight: 700; /* Bold */
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Xanh dương sang Tím */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: capitalize; /* Title Case */
+            display: inline-block;
+        }
+
+        /* Màu Pastel Studygram */
+        .pastel-blue { background-color: #e0f2fe; color: #0369a1; }
+        .pastel-purple { background-color: #f3e8ff; color: #7e22ce; }
+        .pastel-pink { background-color: #fce7f3; color: #be185d; }
+        .pastel-green { background-color: #dcfce7; color: #15803d; }
+        .pastel-yellow { background-color: #fef08a; color: #854d0e; }
+
+        /* Tabs */
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background-color: #fff;
+            border-bottom: 3px solid #a855f7;
+            color: #a855f7;
+            font-weight: 700;
+        }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sơ đồ tư duy dạng CSS đơn giản */
+        .mindmap-node {
+            position: relative;
+        }
+        .mindmap-node::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: #cbd5e1;
+            bottom: -20px;
+            left: 50%;
+        }
+        .mindmap-children {
+            position: relative;
+            padding-top: 20px;
+        }
+        .mindmap-children::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #cbd5e1;
+        }
+        
+        /* Interactive Table */
+        .sim-table th, .sim-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+        .sim-table tr:hover { background-color: #f1f5f9; cursor: pointer; }
+        .sim-table tr.selected { background-color: #e0f2fe; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <h1 class="title-gradient"><i class="fa-solid fa-database mr-2"></i> Bài 21: Thực Hành Cập Nhật Và Truy Xuất Dữ Liệu</h1>
+        <p class="text-slate-500 mt-2 font-medium">Khám phá cách làm việc với bảng dữ liệu trên HeidiSQL</p>
+    </header>
+
+    <!-- Tab Navigation -->
+    <div class="flex flex-wrap border-b border-slate-200 mb-6 justify-center gap-2">
+        <button class="tab-btn active px-6 py-3 rounded-t-lg font-semibold text-slate-500 hover:text-purple-600" data-target="tongquan">
+            <i class="fa-solid fa-sitemap"></i> Tổng Quan
+        </button>
+        <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold text-slate-500 hover:text-purple-600" data-target="capnhat">
+            <i class="fa-solid fa-edit"></i> Cập Nhật (Tương tác)
+        </button>
+        <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold text-slate-500 hover:text-purple-600" data-target="truyxuat">
+            <i class="fa-solid fa-search"></i> Truy Xuất & SQL
+        </button>
+        <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold text-slate-500 hover:text-purple-600" data-target="tracnghiem">
+            <i class="fa-solid fa-gamepad"></i> Luyện Tập
+        </button>
+    </div>
+
+    <!-- Tab 1: Tổng Quan (Sơ đồ, Khái niệm, Dễ nhầm lẫn) -->
+    <div id="tongquan" class="tab-content active">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Cột trái: Mục tiêu & Lưu ý -->
+            <div class="space-y-6">
+                <div class="glass-panel p-5 rounded-xl pastel-blue">
+                    <h3 class="font-bold text-lg mb-2"><i class="fa-solid fa-bullseye"></i> Mục Tiêu & Khái Niệm</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li>Biết cách <strong>cập nhật</strong> và <strong>truy xuất</strong> CSDL.</li>
+                        <li>Làm việc với bảng đơn giản, không có khoá ngoài trên <strong>HeidiSQL</strong>.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-panel p-5 rounded-xl pastel-pink">
+                    <h3 class="font-bold text-lg mb-2"><i class="fa-solid fa-triangle-exclamation"></i> Dễ Nhầm Lẫn</h3>
+                    <ul class="list-disc pl-5 space-y-2 text-sm">
+                        <li>Trường <strong>AUTO_INCREMENT</strong> (như idNhacsi): Không cần tự nhập dữ liệu.</li>
+                        <li><strong>Shift + Click</strong>: Chọn các dòng liền nhau.</li>
+                        <li><strong>Ctrl + Click</strong>: Chọn các dòng tách rời.</li>
+                        <li><strong>ASC</strong>: Tăng dần vs <strong>DESC</strong>: Giảm dần.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cột phải: Sơ đồ tư duy (70% visual) -->
+            <div class="md:col-span-2 glass-panel p-6 rounded-xl bg-white flex flex-col items-center justify-center">
+                <h3 class="font-bold text-xl mb-6 text-slate-700 text-center"><i class="fa-solid fa-diagram-project"></i> Sơ Đồ Kiến Thức Cốt Lõi</h3>
+                
+                <div class="flex flex-col items-center w-full">
+                    <!-- Root -->
+                    <div class="mindmap-node bg-slate-800 text-white px-6 py-3 rounded-lg font-bold shadow-md z-10">
+                        Làm việc với CSDL
+                    </div>
+                    
+                    <!-- Branches -->
+                    <div class="mindmap-children flex justify-between w-full max-w-lg mt-5">
+                        
+                        <!-- Nhánh Cập nhật -->
+                        <div class="flex flex-col items-center w-1/2">
+                            <div class="mindmap-node pastel-green px-4 py-2 rounded-lg font-bold z-10 mb-5 border-2 border-green-200">
+                                Cập Nhật (Tab Dữ liệu)
+                            </div>
+                            <div class="flex flex-col gap-3 w-full px-4">
+                                <div class="bg-white border rounded p-2 text-sm text-center shadow-sm flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-plus text-green-500"></i> Thêm (Phím Insert)
+                                </div>
+                                <div class="bg-white border rounded p-2 text-sm text-center shadow-sm flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-pen text-blue-500"></i> Sửa (Nháy đúp chuột)
+                                </div>
+                                <div class="bg-white border rounded p-2 text-sm text-center shadow-sm flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-trash text-red-500"></i> Xóa (Ctrl+Delete)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nhánh Truy xuất -->
+                        <div class="flex flex-col items-center w-1/2">
+                            <div class="mindmap-node pastel-purple px-4 py-2 rounded-lg font-bold z-10 mb-5 border-2 border-purple-200">
+                                Truy Xuất
+                            </div>
+                            <div class="flex flex-col gap-3 w-full px-4">
+                                <div class="bg-white border rounded p-2 text-sm text-center shadow-sm">
+                                    Đơn giản (Tab Dữ liệu)
+                                </div>
+                                <div class="bg-white border rounded p-2 text-sm text-center shadow-sm">
+                                    Sắp xếp (Nháy tiêu đề cột)
+                                </div>
+                                <div class="bg-white border rounded p-2 text-sm text-center shadow-sm">
+                                    Tìm kiếm (Quick Filter)
+                                </div>
+                                <div class="bg-white border rounded p-2 text-sm text-center shadow-sm flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-code text-purple-600"></i> Lệnh SQL (Tab Truy vấn)
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Trực quan Cập nhật -->
+    <div id="capnhat" class="tab-content">
+        <h2 class="title-gradient mb-4 text-center block">Tương Tác: Mô Phỏng HeidiSQL</h2>
+        <p class="text-center text-sm mb-6 text-slate-600">
+            <strong>Thử nghiệm các thao tác:</strong><br>
+            - <strong>Thêm:</strong> Nhấn nút Insert -> Nháy đúp vào cột Tên để nhập -> ID tự tăng.<br>
+            - <strong>Sửa:</strong> Nháy đúp vào chữ <span class="text-red-500 font-bold">Hoang Viet</span> để sửa lỗi.<br>
+            - <strong>Xóa:</strong> Giữ <kbd class="bg-slate-200 px-1 rounded">Ctrl</kbd> hoặc <kbd class="bg-slate-200 px-1 rounded">Shift</kbd> + Click chuột để chọn nhiều dòng -> Nhấn Xóa.
+        </p>
+
+        <div class="glass-panel p-2 rounded-lg shadow-lg max-w-3xl mx-auto border border-slate-300">
+            <!-- Thanh công cụ giả lập HeidiSQL -->
+            <div class="bg-slate-100 p-2 flex gap-2 border-b border-slate-300 rounded-t-md text-sm items-center">
+                <button onclick="simInsert()" class="hover:bg-slate-200 p-1 rounded px-2" title="Chèn hàng (Insert)"><i class="fa-solid fa-plus text-green-600"></i> Insert</button>
+                <button onclick="simDelete()" class="hover:bg-slate-200 p-1 rounded px-2" title="Xóa dòng (Ctrl+Delete)"><i class="fa-solid fa-circle-xmark text-red-600"></i> Xóa</button>
+                <div class="border-l border-slate-300 h-5 mx-1"></div>
+                <span class="text-xs text-slate-500 font-mono">Bảng: nhacsi | Tab: Dữ liệu</span>
+            </div>
+
+            <!-- Vùng dữ liệu -->
+            <div class="p-4 bg-white overflow-x-auto min-h-[250px]">
+                <table class="w-full sim-table text-sm" id="nhacsiTable">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-600">
+                            <th class="w-10 text-center"></th>
+                            <th class="w-24"><i class="fa-solid fa-key text-yellow-500 text-xs"></i> idNhacsi</th>
+                            <th>tenNhacsi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="simTableBody">
+                        <tr onclick="toggleSelect(event, this)">
+                            <td class="text-center text-slate-400 text-xs font-bold text-blue-500">►</td>
+                            <td class="text-slate-700 font-medium">1</td>
+                            <td ondblclick="editCell(this)">Đỗ Nhuận</td>
+                        </tr>
+                        <tr onclick="toggleSelect(event, this)">
+                            <td class="text-center text-slate-400 text-xs font-bold text-blue-500"></td>
+                            <td class="text-slate-700 font-medium">2</td>
+                            <td ondblclick="editCell(this)">Văn Cao</td>
+                        </tr>
+                        <tr onclick="toggleSelect(event, this)" class="bg-red-50" id="errorRow">
+                            <td class="text-center text-slate-400 text-xs font-bold text-blue-500"></td>
+                            <td class="text-slate-700 font-medium">3</td>
+                            <td ondblclick="editCell(this)" class="text-red-500 font-bold" title="Lỗi thiếu dấu">Hoang Viet</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p id="actionMsg" class="text-xs text-purple-600 mt-4 font-medium h-4">Đã chọn 1 dòng.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 3: Truy Xuất & SQL (ĐÃ NÂNG CẤP MÔ PHỎNG) -->
+    <div id="truyxuat" class="tab-content">
+        <h2 class="title-gradient mb-4 text-center block">Tương Tác: Truy Xuất & Lệnh SQL</h2>
+        <p class="text-center text-sm mb-6 text-slate-600">Thử nghiệm các thao tác lọc, sắp xếp và chạy câu truy vấn SQL trực tiếp trên giao diện giả lập bên dưới.</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Cột trái: Hướng dẫn (Infographics) -->
+            <div class="lg:col-span-5 space-y-4">
+                <div class="glass-panel p-4 rounded-xl border-l-4 border-blue-500 bg-white">
+                    <h3 class="font-bold text-blue-700 mb-2"><i class="fa-solid fa-sort"></i> 1. Sắp xếp kết quả</h3>
+                    <p class="text-sm text-slate-600">Trong tab <strong>Dữ liệu</strong>, nháy chuột vào tiêu đề cột <code>idNhacsi</code>. Một hình tam giác sẽ xuất hiện báo hiệu sắp xếp <strong>tăng dần (ASC)</strong> hoặc <strong>giảm dần (DESC)</strong>.</p>
+                </div>
+
+                <div class="glass-panel p-4 rounded-xl border-l-4 border-green-500 bg-white">
+                    <h3 class="font-bold text-green-700 mb-2"><i class="fa-solid fa-filter"></i> 2. Tìm kiếm (Quick Filter)</h3>
+                    <p class="text-sm text-slate-600">Nhập từ khóa vào ô <strong>Bộ lọc</strong> bên phải. Phần mềm tự động tạo lệnh <code>LIKE "%từ_khóa%"</code> để lọc các hàng chứa dữ liệu tương ứng.</p>
+                </div>
+
+                <div class="glass-panel p-4 rounded-xl border-l-4 border-purple-500 bg-white">
+                    <h3 class="font-bold text-purple-700 mb-2"><i class="fa-solid fa-terminal"></i> 3. Truy xuất bằng SQL</h3>
+                    <p class="text-sm text-slate-600 mb-2">Chuyển sang tab <strong>Truy vấn</strong> để viết lệnh. Cấu trúc chuẩn:</p>
+                    <div class="bg-slate-800 text-slate-300 p-3 rounded font-mono text-xs leading-relaxed">
+                        <span class="text-blue-400">SELECT</span> danh_sách_các_trường<br>
+                        <span class="text-purple-400">FROM</span> tên_bảng<br>
+                        [<span class="text-pink-400">WHERE</span> biểu_thức_điều_kiện]<br>
+                        [<span class="text-green-400">ORDER BY</span> tên_trường [ASC|DESC]];
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải: Giao diện giả lập HeidiSQL -->
+            <div class="lg:col-span-7 glass-panel p-0 rounded-xl overflow-hidden border border-slate-300 shadow-xl flex flex-col h-full bg-slate-50">
+                
+                <!-- Tab nội bộ của HeidiSQL -->
+                <div class="bg-slate-200 flex text-sm font-medium border-b border-slate-300">
+                    <button id="btnTabDuLieu" onclick="switchHeidiTab('dulieu')" class="px-4 py-2 bg-white border-t-2 border-blue-500 text-blue-700 flex items-center gap-2">
+                        <i class="fa-solid fa-table"></i> Dữ liệu
+                    </button>
+                    <button id="btnTabTruyVan" onclick="switchHeidiTab('truyvan')" class="px-4 py-2 text-slate-600 hover:bg-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-play text-blue-500"></i> Truy vấn
+                    </button>
+                    <div class="flex-grow flex justify-end items-center px-2 gap-2 text-xs text-slate-500">
+                        <span>Máy chủ: 127.0.0.1</span>
+                    </div>
+                </div>
+
+                <!-- KHUNG DỮ LIỆU -->
+                <div id="heidi-dulieu" class="flex flex-col flex-grow">
+                    <!-- Toolbar Filter -->
+                    <div class="bg-white border-b border-slate-200 p-2 flex items-center gap-3 text-sm">
+                        <span class="text-slate-600"><i class="fa-solid fa-filter"></i> Bộ lọc:</span>
+                        <input type="text" id="quickFilterInput" oninput="applyQuickFilter()" placeholder="tenNhacsi LIKE '%...%'" class="border border-slate-300 rounded px-2 py-1 w-64 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                        <button onclick="clearQuickFilter()" class="text-slate-500 hover:text-red-500 bg-slate-100 px-2 py-1 rounded border border-slate-200" title="Dọn dẹp">Dọn dẹp</button>
+                    </div>
+                    <!-- Data Table -->
+                    <div class="p-2 overflow-auto bg-white flex-grow min-h-[200px]">
+                        <table class="w-full sim-table text-sm">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 cursor-pointer select-none">
+                                    <th onclick="toggleSort()" class="w-28 hover:bg-slate-200 transition-colors">
+                                        <i class="fa-solid fa-key text-yellow-500 text-xs"></i> idNhacsi 
+                                        <span id="sortIcon" class="ml-1 text-xs text-slate-500"></span>
+                                    </th>
+                                    <th class="w-auto">tenNhacsi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="viewTableBody">
+                                <!-- Dữ liệu render bằng JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- KHUNG TRUY VẤN -->
+                <div id="heidi-truyvan" class="hidden flex flex-col flex-grow">
+                    <!-- SQL Editor -->
+                    <div class="bg-white border-b border-slate-300 flex-grow relative">
+                        <div class="bg-slate-100 p-1 border-b flex gap-2">
+                            <button onclick="runSQL()" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-3 py-1 rounded text-sm font-bold flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-play"></i> Run
+                            </button>
+                            <button onclick="resetSQL()" class="text-slate-500 hover:bg-slate-200 px-2 py-1 rounded text-sm"><i class="fa-solid fa-rotate-right"></i> Đặt lại</button>
+                        </div>
+                        <textarea id="sqlEditor" spellcheck="false" class="w-full h-32 p-3 font-mono text-sm focus:outline-none resize-none text-slate-800">
+SELECT idNhacsi, tenNhacsi
+FROM nhacsi
+WHERE tenNhacsi LIKE 'P%'
+ORDER BY tenNhacsi ASC;</textarea>
+                    </div>
+                    <!-- Results -->
+                    <div class="bg-slate-50 h-40 overflow-auto border-t border-slate-300">
+                        <div class="bg-slate-200 text-xs font-mono px-2 py-1 border-b text-slate-600">Kết quả (Kết xuất 1)</div>
+                        <table class="w-full sim-table text-sm bg-white">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700">
+                                    <th class="w-28">idNhacsi</th>
+                                    <th>tenNhacsi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sqlResultBody">
+                                <tr><td colspan="2" class="text-center text-slate-400 italic py-4">Nhấn nút Run để xem kết quả...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 4: Trắc nghiệm -->
+    <div id="tracnghiem" class="tab-content">
+        <div class="glass-panel p-6 rounded-xl max-w-2xl mx-auto">
+            <h2 class="title-gradient mb-6 text-center block">Ôn Tập Nhanh</h2>
+            
+            <div id="quiz-container" class="space-y-6">
+                <!-- Câu hỏi sẽ được render bằng JS -->
+            </div>
+            
+            <button onclick="checkQuiz()" class="mt-8 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                Nộp Bài
+            </button>
+            <div id="quiz-result" class="mt-4 text-center font-bold text-lg hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- TAB LOGIC ---
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Xóa active class
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                
+                // Thêm active class
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+            });
+        });
+
+        // --- INTERACTIVE TABLE LOGIC ---
+        let nextId = 4;
+        let lastSelectedRowIndex = 0;
+        const msg = document.getElementById('actionMsg');
+
+        // Khởi tạo trạng thái ban đầu cho dòng 1
+        document.querySelector('.sim-table tbody tr').classList.add('selected');
+
+        function toggleSelect(event, row) {
+            const tbody = document.getElementById('simTableBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const currentIndex = rows.indexOf(row);
+
+            if (event.ctrlKey) {
+                // Ctrl + Click: Bật/tắt chọn dòng hiện tại độc lập
+                row.classList.toggle('selected');
+                row.cells[0].innerText = row.classList.contains('selected') ? '►' : '';
+                lastSelectedRowIndex = currentIndex;
+            } else if (event.shiftKey && lastSelectedRowIndex > -1) {
+                // Shift + Click: Chọn từ dòng click trước đó đến dòng hiện tại
+                const start = Math.min(lastSelectedRowIndex, currentIndex);
+                const end = Math.max(lastSelectedRowIndex, currentIndex);
+                rows.forEach((r, idx) => {
+                    if (idx >= start && idx <= end) {
+                        r.classList.add('selected');
+                        r.cells[0].innerText = '►';
+                    } else if (!event.ctrlKey) {
+                        // Không kết hợp Ctrl thì bỏ chọn các dòng ngoài khoảng
+                        r.classList.remove('selected');
+                        r.cells[0].innerText = '';
+                    }
+                });
+            } else {
+                // Click bình thường: Chọn duy nhất 1 dòng
+                rows.forEach(r => {
+                    r.classList.remove('selected');
+                    r.cells[0].innerText = '';
+                });
+                row.classList.add('selected');
+                row.cells[0].innerText = '►';
+                lastSelectedRowIndex = currentIndex;
+            }
+
+            const count = document.querySelectorAll('.sim-table tr.selected').length;
+            msg.innerText = count > 0 ? `Đã chọn ${count} dòng.` : "Chưa chọn dòng nào.";
+            
+            // Xóa vùng chọn văn bản vô tình khi Shift-click
+            window.getSelection().removeAllRanges();
+        }
+
+        function editCell(cell) {
+            let currentVal = cell.innerText;
+            if (currentVal.includes("Nháy đúp")) currentVal = "";
+            
+            let input = prompt("Chỉnh sửa dữ liệu (Nhấn Enter/OK để lưu):", currentVal);
+            if (input !== null && input.trim() !== "") {
+                cell.innerText = input;
+                cell.classList.remove('text-red-500', 'font-bold', 'bg-blue-50', 'text-slate-400'); 
+                cell.parentElement.classList.remove('bg-red-50');
+                
+                // Mô phỏng AUTO_INCREMENT cho cột ID
+                let idCell = cell.parentElement.cells[1];
+                if (idCell.innerText === "(NULL)") {
+                    idCell.innerText = nextId++;
+                    idCell.classList.remove('text-slate-400', 'italic');
+                    idCell.classList.add('text-slate-700', 'font-medium');
+                }
+                
+                msg.innerText = "Đã lưu thay đổi dữ liệu.";
+            }
+        }
+
+        function simInsert() {
+            const tbody = document.getElementById('simTableBody');
+            const tr = document.createElement('tr');
+            tr.onclick = function(event) { toggleSelect(event, this) };
+            tr.innerHTML = `
+                <td class="text-center text-slate-400 text-xs font-bold text-blue-500"></td>
+                <td class="text-slate-400 italic">(NULL)</td>
+                <td ondblclick="editCell(this)" class="bg-blue-50 text-slate-400">Nháy đúp để nhập...</td>
+            `;
+            tbody.appendChild(tr);
+            
+            // Tự động focus/chọn dòng mới thêm
+            toggleSelect({ctrlKey: false, shiftKey: false}, tr);
+            msg.innerText = "Đã chèn hàng trống. Trường ID đang là (NULL), hãy nháy đúp vào cột Tên để nhập.";
+        }
+
+        function simDelete() {
+            const selected = document.querySelectorAll('.sim-table tr.selected');
+            if (selected.length > 0) {
+                // Mô phỏng chính xác hộp thoại của HeidiSQL
+                if(confirm(`Unnamed: Confirm\n\n? Delete ${selected.length} row(s)?`)) {
+                    selected.forEach(r => r.remove());
+                    msg.innerText = `Đã xóa ${selected.length} dòng dữ liệu.`;
+                    lastSelectedRowIndex = -1;
+                }
+            } else {
+                alert("Hãy nháy chuột (có thể giữ Ctrl/Shift) vào các dòng để chọn trước khi xóa!");
+            }
+        }
+
+        // --- TAB 3 LOGIC: VIEW & SQL SIMULATION ---
+        const initialDBData = [
+            { id: 1, name: "Đỗ Nhuận" },
+            { id: 2, name: "Văn Cao" },
+            { id: 3, name: "Hoàng Việt" },
+            { id: 4, name: "Nguyễn Tài Tuệ" },
+            { id: 5, name: "Nguyễn Văn Tý" },
+            { id: 6, name: "Phan Nhân" },
+            { id: 7, name: "Phan Huỳnh Điểu" }
+        ];
+
+        let currentViewData = [...initialDBData];
+        let sortMode = 0; // 0: None, 1: ASC, 2: DESC
+
+        function renderViewTable(data, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="2" class="text-center text-slate-400 italic">Không tìm thấy dữ liệu</td></tr>`;
+                return;
+            }
+            data.forEach(row => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="text-slate-700 font-medium">${row.id}</td>
+                        <td>${row.name}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function toggleSort() {
+            sortMode = (sortMode + 1) % 3;
+            const icon = document.getElementById('sortIcon');
+            
+            if (sortMode === 1) {
+                icon.innerHTML = '▲'; // ASC
+                currentViewData.sort((a, b) => a.id - b.id);
+            } else if (sortMode === 2) {
+                icon.innerHTML = '▼'; // DESC
+                currentViewData.sort((a, b) => b.id - a.id);
+            } else {
+                icon.innerHTML = '';  // Reset
+                applyQuickFilter(); // Re-apply filter to restore original order
+                return;
+            }
+            renderViewTable(currentViewData, 'viewTableBody');
+        }
+
+        function applyQuickFilter() {
+            const val = document.getElementById('quickFilterInput').value.toLowerCase();
+            currentViewData = initialDBData.filter(item => item.name.toLowerCase().includes(val));
+            
+            // Re-apply sort if active
+            if (sortMode === 1) currentViewData.sort((a, b) => a.id - b.id);
+            if (sortMode === 2) currentViewData.sort((a, b) => b.id - a.id);
+            
+            renderViewTable(currentViewData, 'viewTableBody');
+        }
+
+        function clearQuickFilter() {
+            document.getElementById('quickFilterInput').value = '';
+            applyQuickFilter();
+        }
+
+        function switchHeidiTab(tab) {
+            const btnDL = document.getElementById('btnTabDuLieu');
+            const btnTV = document.getElementById('btnTabTruyVan');
+            const viewDL = document.getElementById('heidi-dulieu');
+            const viewTV = document.getElementById('heidi-truyvan');
+
+            if (tab === 'dulieu') {
+                btnDL.className = "px-4 py-2 bg-white border-t-2 border-blue-500 text-blue-700 flex items-center gap-2";
+                btnTV.className = "px-4 py-2 text-slate-600 hover:bg-slate-100 flex items-center gap-2";
+                viewDL.classList.remove('hidden');
+                viewTV.classList.add('hidden');
+            } else {
+                btnTV.className = "px-4 py-2 bg-white border-t-2 border-blue-500 text-blue-700 flex items-center gap-2";
+                btnDL.className = "px-4 py-2 text-slate-600 hover:bg-slate-100 flex items-center gap-2";
+                viewTV.classList.remove('hidden');
+                viewDL.classList.add('hidden');
+            }
+        }
+
+        function runSQL() {
+            const sqlText = document.getElementById('sqlEditor').value.toUpperCase();
+            
+            // Simple mock evaluation based on SGK example: LIKE 'P%'
+            let resultData = [...initialDBData];
+            
+            if (sqlText.includes("LIKE 'P%'") || sqlText.includes('LIKE "P%"')) {
+                resultData = resultData.filter(item => item.name.startsWith('P'));
+            }
+            
+            if (sqlText.includes("ORDER BY TENNHACSI ASC")) {
+                resultData.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sqlText.includes("ORDER BY TENNHACSI DESC")) {
+                resultData.sort((a, b) => b.name.localeCompare(a.name));
+            }
+
+            renderViewTable(resultData, 'sqlResultBody');
+        }
+
+        function resetSQL() {
+            document.getElementById('sqlEditor').value = "SELECT idNhacsi, tenNhacsi\nFROM nhacsi\nWHERE tenNhacsi LIKE 'P%'\nORDER BY tenNhacsi ASC;";
+            document.getElementById('sqlResultBody').innerHTML = `<tr><td colspan="2" class="text-center text-slate-400 italic py-4">Nhấn nút Run để xem kết quả...</td></tr>`;
+        }
+
+        // Initialize Tab 3 data on load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderViewTable(initialDBData, 'viewTableBody');
+        });
+
+        // --- QUIZ LOGIC ---
+        const quizData = [
+            {
+                q: "1. Để thêm một hàng dữ liệu mới trong bảng, em có thể nhấn phím nào?",
+                opts: ["A. Phím Enter", "B. Phím Insert", "C. Phím Space", "D. Phím Shift"],
+                ans: 1
+            },
+            {
+                q: "2. Để chọn những dòng tách rời nhau để xóa, em cần nhấn giữ phím nào kết hợp nháy chuột?",
+                opts: ["A. Phím Shift", "B. Phím Alt", "C. Phím Ctrl", "D. Phím Tab"],
+                ans: 2
+            },
+            {
+                q: "3. Trong thẻ Dữ liệu, làm thế nào để sắp xếp kết quả theo thứ tự giảm dần của một cột?",
+                opts: ["A. Dùng lệnh ORDER BY DESC", "B. Nháy đúp vào một ô bất kỳ", "C. Nháy chuột vào tiêu đề cột đến khi xuất hiện tam giác màu đen hướng xuống", "D. Chọn Quick Filter"],
+                ans: 2
+            },
+            {
+                q: "4. Trong cấu trúc câu truy vấn SQL, mệnh đề nào dùng để thiết lập điều kiện lọc dữ liệu?",
+                opts: ["A. SELECT", "B. FROM", "C. ORDER BY", "D. WHERE"],
+                ans: 3
+            },
+            {
+                q: "5. Khi trường idNhacsi được thiết lập thuộc tính AUTO_INCREMENT (tự động tăng), em cần nhập dữ liệu thế nào cho trường này khi thêm mới?",
+                opts: ["A. Nhập số lớn nhất hiện tại", "B. Không cần nhập dữ liệu cho trường này", "C. Nhập số 0", "D. Nhập chữ 'NULL'"],
+                ans: 1
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        
+        quizData.forEach((q, index) => {
+            let optionsHTML = '';
+            q.opts.forEach((opt, optIndex) => {
+                optionsHTML += `
+                    <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-purple-50 cursor-pointer transition-colors">
+                        <input type="radio" name="q${index}" value="${optIndex}" class="form-radio text-purple-600">
+                        <span class="text-sm">${opt}</span>
+                    </label>
+                `;
+            });
+
+            quizContainer.innerHTML += `
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100 mb-4" id="qBlock${index}">
+                    <p class="font-bold text-slate-700 mb-3">${q.q}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${optionsHTML}
+                    </div>
+                    <p class="hidden text-sm mt-2 font-semibold" id="qRes${index}"></p>
+                </div>
+            `;
+        });
+
+        function checkQuiz() {
+            let score = 0;
+            quizData.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const resBlock = document.getElementById(`qRes${index}`);
+                const qBlock = document.getElementById(`qBlock${index}`);
+                
+                resBlock.classList.remove('hidden');
+                
+                if (selected) {
+                    if (parseInt(selected.value) === q.ans) {
+                        score++;
+                        resBlock.innerHTML = "<i class='fa-solid fa-check text-green-500'></i> Chính xác!";
+                        resBlock.className = "text-sm mt-2 font-semibold text-green-600 block";
+                        qBlock.classList.add('border-green-300', 'bg-green-50');
+                    } else {
+                        resBlock.innerHTML = `<i class='fa-solid fa-xmark text-red-500'></i> Sai rồi. Đáp án đúng là: ${q.opts[q.ans]}`;
+                        resBlock.className = "text-sm mt-2 font-semibold text-red-600 block";
+                        qBlock.classList.add('border-red-300', 'bg-red-50');
+                    }
+                } else {
+                    resBlock.innerHTML = "<i class='fa-solid fa-circle-exclamation text-orange-500'></i> Bạn chưa chọn đáp án!";
+                    resBlock.className = "text-sm mt-2 font-semibold text-orange-600 block";
+                }
+            });
+
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `Bạn đạt <span class="text-purple-600 text-2xl">${score}/${quizData.length}</span> điểm!`;
+        }
+    </script>
+</body>
+</html>

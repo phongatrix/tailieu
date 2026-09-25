@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 7: Thực hành tìm kiếm thông tin</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            green: '#dcfce7',
+                            pink: '#fce7f3',
+                            yellow: '#fef9c3',
+                            purple: '#f3e8ff'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; color: #334155; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+        .hover-scale { transition: transform 0.2s; }
+        .hover-scale:hover { transform: scale(1.02); }
+        
+        /* Mindmap styles */
+        .node { padding: 10px 20px; border-radius: 20px; font-weight: bold; text-align: center; }
+        .line-v { width: 2px; background-color: #94a3b8; margin: 0 auto; }
+        .line-h { height: 2px; background-color: #94a3b8; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 mb-2">
+                <i class="fa-solid fa-globe"></i> Bài 7: Thực hành tìm kiếm thông tin
+            </h1>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8">
+            <button onclick="openTab('tongquan')" class="tab-btn active px-6 py-3 rounded-full bg-blue-500 text-white font-bold shadow-md hover:bg-blue-600 transition"><i class="fa-solid fa-book-open mr-2"></i>Tổng quan</button>
+            <button onclick="openTab('trucquan')" class="tab-btn px-6 py-3 rounded-full bg-white text-gray-600 font-bold shadow-md hover:bg-gray-50 transition"><i class="fa-solid fa-sitemap mr-2"></i>Sơ đồ & Tương tác</button>
+            <button onclick="openTab('luyentap')" class="tab-btn px-6 py-3 rounded-full bg-white text-gray-600 font-bold shadow-md hover:bg-gray-50 transition"><i class="fa-solid fa-gamepad mr-2"></i>Luyện tập & Quiz</button>
+        </div>
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <div id="tongquan" class="tab-content active space-y-6">
+            
+            <!-- Mục tiêu & Khái niệm -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Mục tiêu -->
+                <div class="glass p-6 rounded-2xl shadow-sm border-t-4 border-pastel-blue">
+                    <h2 class="text-xl font-bold text-blue-600 mb-4"><i class="fa-solid fa-bullseye mr-2"></i>Mục tiêu bài học</h2>
+                    <ul class="space-y-3">
+                        <li class="flex items-start bg-pastel-blue p-3 rounded-lg">
+                            <i class="fa-solid fa-check text-blue-500 mt-1 mr-3"></i>
+                            <span>Sử dụng máy tìm kiếm (PC/Smart device) bằng <strong>từ khoá</strong> hoặc <strong>tiếng nói</strong>.</span>
+                        </li>
+                        <li class="flex items-start bg-pastel-blue p-3 rounded-lg">
+                            <i class="fa-solid fa-check text-blue-500 mt-1 mr-3"></i>
+                            <span>Xác lập lựa chọn theo <strong>tiêu chí</strong> để nâng cao hiệu quả.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Khái niệm -->
+                <div class="glass p-6 rounded-2xl shadow-sm border-t-4 border-pastel-pink">
+                    <h2 class="text-xl font-bold text-pink-600 mb-4"><i class="fa-solid fa-key mr-2"></i>Khái niệm quan trọng</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-full font-semibold"><i class="fa-solid fa-magnifying-glass mr-1"></i>Máy tìm kiếm</span>
+                        <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-full font-semibold"><i class="fa-solid fa-keyboard mr-1"></i>Từ khoá</span>
+                        <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-full font-semibold"><i class="fa-brands fa-chrome mr-1"></i>Trình duyệt Internet</span>
+                        <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-full font-semibold"><i class="fa-solid fa-microphone mr-1"></i>Tìm kiếm tiếng nói</span>
+                        <span class="px-4 py-2 bg-pink-100 text-pink-700 rounded-full font-semibold"><i class="fa-solid fa-filter mr-1"></i>Tiêu chí (filetype, "")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kiến thức cốt lõi (Workflow) -->
+            <div class="glass p-6 rounded-2xl shadow-sm border-t-4 border-pastel-green">
+                <h2 class="text-xl font-bold text-green-600 mb-4"><i class="fa-solid fa-brain mr-2"></i>Kiến thức cốt lõi: Quy trình tìm kiếm</h2>
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 text-center">
+                    <div class="bg-white p-4 rounded-xl shadow-md w-full md:w-1/4 hover-scale">
+                        <i class="fa-regular fa-window-maximize text-4xl text-green-400 mb-2"></i>
+                        <p class="font-bold">1. Khởi động</p>
+                        <p class="text-sm text-gray-500">Mở trình duyệt, gõ URL máy tìm kiếm</p>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-2xl text-gray-300 hidden md:block"></i>
+                    <i class="fa-solid fa-arrow-down text-2xl text-gray-300 md:hidden"></i>
+                    
+                    <div class="bg-white p-4 rounded-xl shadow-md w-full md:w-1/4 hover-scale relative">
+                        <div class="absolute -top-2 -right-2 bg-yellow-400 text-xs font-bold px-2 py-1 rounded-full animate-bounce">2 Cách!</div>
+                        <i class="fa-solid fa-keyboard text-4xl text-blue-400 mb-2"></i>
+                        <p class="font-bold">2. Nhập từ khoá</p>
+                        <p class="text-sm text-gray-500">Gõ bàn phím hoặc dùng <i class="fa-solid fa-microphone"></i> Tiếng nói</p>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-2xl text-gray-300 hidden md:block"></i>
+                    <i class="fa-solid fa-arrow-down text-2xl text-gray-300 md:hidden"></i>
+
+                    <div class="bg-white p-4 rounded-xl shadow-md w-full md:w-1/4 hover-scale">
+                        <i class="fa-solid fa-list-check text-4xl text-purple-400 mb-2"></i>
+                        <p class="font-bold">3. Kiểm tra & Đọc</p>
+                        <p class="text-sm text-gray-500">Xem kết quả, đổi từ khoá nếu chưa ưng ý</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dễ nhầm lẫn & Lưu ý -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-yellow-50 p-5 rounded-2xl border-l-4 border-yellow-400">
+                    <h3 class="font-bold text-yellow-700"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Dễ nhầm lẫn khi dùng Giọng nói</h3>
+                    <p class="text-sm mt-2">Từ khoá được <strong>tự động điền có thể không khớp</strong> với lời đọc. Luôn phải <strong>kiểm tra lại</strong> trước khi xem kết quả.</p>
+                </div>
+                <div class="bg-purple-50 p-5 rounded-2xl border-l-4 border-purple-400">
+                    <h3 class="font-bold text-purple-700"><i class="fa-solid fa-lightbulb mr-2"></i>Mẹo hẹp phạm vi</h3>
+                    <p class="text-sm mt-2">Tìm chung chung khác với tìm chính xác. Dùng <strong>dấu nháy kép (" ")</strong> để bắt buộc chứa cụm từ chính xác.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: TRỰC QUAN & TƯƠNG TÁC -->
+        <div id="trucquan" class="tab-content space-y-6">
+            
+            <!-- Mô phỏng trực quan -->
+            <div class="glass p-6 rounded-2xl shadow-sm bg-gradient-to-br from-white to-gray-50">
+                <h2 class="text-xl font-bold text-gray-700 mb-4"><i class="fa-solid fa-laptop-code mr-2"></i>Thực hành: Mô phỏng Máy tìm kiếm</h2>
+                <p class="text-sm text-gray-500 mb-4">Thử nhập các từ khoá ví dụ trong sách để xem sự khác biệt!</p>
+                
+                <!-- Thanh tìm kiếm mô phỏng -->
+                <div class="max-w-2xl mx-auto bg-white rounded-full shadow-lg border border-gray-200 flex items-center p-2 px-4 focus-within:ring-2 ring-blue-300">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3"></i>
+                    <input type="text" id="mockSearchInput" class="flex-1 outline-none text-lg" placeholder="Nhập từ khoá..." value="tuyển sinh Đại học Dược Hà Nội 2022">
+                    <i class="fa-solid fa-xmark text-gray-400 cursor-pointer hover:text-gray-600 mr-3" onclick="document.getElementById('mockSearchInput').value=''"></i>
+                    <i class="fa-solid fa-microphone text-blue-500 text-xl cursor-pointer hover:scale-110 transition" title="Tìm bằng tiếng nói" onclick="simulateVoice()"></i>
+                </div>
+                
+                <div class="flex justify-center gap-2 mt-4">
+                    <button class="px-3 py-1 bg-gray-100 text-sm rounded hover:bg-gray-200" onclick="setMockInput('tuyển sinh Đại học Dược Hà Nội 2022')">Ví dụ 1 (Cơ bản)</button>
+                    <button class="px-3 py-1 bg-gray-100 text-sm rounded hover:bg-gray-200" onclick="setMockInput('tuyển sinh Đại học Dược Hà Nội 2022 + filetype:pdf')">Ví dụ 2 (filetype)</button>
+                    <button class="px-3 py-1 bg-gray-100 text-sm rounded hover:bg-gray-200" onclick="setMockInput('tuyển sinh 2022 &quot;đại học Dược Hà Nội&quot; + filetype:pdf')">Ví dụ 3 ("")</button>
+                </div>
+                <div class="text-center mt-4">
+                    <button onclick="runMockSearch()" class="px-6 py-2 bg-blue-500 text-white rounded-lg font-bold shadow hover:bg-blue-600">Tìm kiếm</button>
+                </div>
+
+                <!-- Kết quả mô phỏng -->
+                <div id="mockResults" class="mt-6 p-4 bg-white rounded-lg border border-gray-200 hidden">
+                    <div class="flex gap-4 border-b pb-2 mb-4 text-sm text-gray-500">
+                        <span class="text-blue-600 border-b-2 border-blue-600 pb-2"><i class="fa-solid fa-list mr-1"></i>Tất cả</span>
+                        <span><i class="fa-regular fa-image mr-1"></i>Hình ảnh</span>
+                        <span><i class="fa-solid fa-video mr-1"></i>Video</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-4" id="resultCount">Khoảng 15.200.000 kết quả (0,50 giây)</p>
+                    
+                    <div id="resultContent">
+                        <!-- Nội dung sẽ được render bằng JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sơ đồ tư duy -->
+            <div class="glass p-6 rounded-2xl shadow-sm">
+                <h2 class="text-xl font-bold text-gray-700 mb-6 text-center"><i class="fa-solid fa-network-wired mr-2"></i>Sơ đồ: Nâng cao hiệu quả tìm kiếm</h2>
+                
+                <div class="flex flex-col items-center">
+                    <div class="node bg-blue-500 text-white shadow-lg">TỪ KHOÁ CẦN TÌM</div>
+                    <div class="h-6 line-v"></div>
+                    <div class="w-2/3 line-h relative">
+                        <div class="absolute -top-1 left-0 w-2 h-2 bg-gray-400 rounded-full"></div>
+                        <div class="absolute -top-1 right-0 w-2 h-2 bg-gray-400 rounded-full"></div>
+                        <div class="absolute -top-1 left-1/2 w-2 h-2 bg-gray-400 rounded-full -translate-x-1/2"></div>
+                    </div>
+                    
+                    <div class="w-2/3 flex justify-between items-start mt-4 gap-4">
+                        <!-- Dạng tệp -->
+                        <div class="flex flex-col items-center w-1/3">
+                            <div class="node bg-pastel-green text-green-700 text-sm border border-green-200"><i class="fa-solid fa-file-pdf mr-1"></i> filetype:pdf</div>
+                            <p class="text-xs text-center mt-2 text-gray-500">Giới hạn chỉ tìm các văn bản định dạng tệp cụ thể (VD: tài liệu PDF).</p>
+                        </div>
+                        <!-- Phân loại kết quả -->
+                        <div class="flex flex-col items-center w-1/3">
+                            <div class="node bg-pastel-purple text-purple-700 text-sm border border-purple-200"><i class="fa-solid fa-icons mr-1"></i> Phân loại Tab</div>
+                            <p class="text-xs text-center mt-2 text-gray-500">Chọn tab Tin tức, Hình ảnh, Video trên giao diện máy tìm kiếm.</p>
+                        </div>
+                        <!-- Dấu nháy kép -->
+                        <div class="flex flex-col items-center w-1/3">
+                            <div class="node bg-pastel-pink text-pink-700 text-sm border border-pink-200"><i class="fa-solid fa-quote-left mr-1"></i> "Cụm từ"</div>
+                            <p class="text-xs text-center mt-2 text-gray-500">Thu hẹp phạm vi, kết quả chứa chính xác cụm từ trong dấu nháy kép.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Image Request -->
+                <div class="mt-8 flex justify-center">
+                    <div class="w-full max-w-3xl rounded-xl overflow-hidden shadow-md border-2 border-blue-100 hover:shadow-lg hover:scale-[1.02] transition duration-300">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: LUYỆN TẬP -->
+        <div id="luyentap" class="tab-content space-y-6">
+            
+            <!-- Câu hỏi tương tác -->
+            <div class="glass p-6 rounded-2xl shadow-sm border-t-4 border-pastel-yellow">
+                <h2 class="text-xl font-bold text-yellow-600 mb-4"><i class="fa-solid fa-comments mr-2"></i>Thảo luận</h2>
+                <div class="bg-white p-4 rounded-lg shadow-sm mb-4 border border-gray-100">
+                    <p class="font-bold text-gray-700 mb-2">Q: Có ý kiến cho rằng "Ngày nay, tất cả mọi thông tin đều có thể tìm thấy trên Internet". Em có đồng ý không? Tại sao cùng tìm, người thì nhanh chính xác, người thì không?</p>
+                    <button onclick="document.getElementById('hint1').classList.toggle('hidden')" class="text-sm bg-yellow-100 text-yellow-700 px-3 py-1 rounded hover:bg-yellow-200">Xem gợi ý trả lời</button>
+                    <div id="hint1" class="hidden mt-3 p-3 bg-yellow-50 text-sm text-gray-600 rounded border-l-2 border-yellow-300">
+                        - Không hoàn toàn đồng ý. Internet có lượng thông tin khổng lồ nhưng không phải là *tất cả* (thông tin mật, thông tin chưa số hóa, kỉ niệm cá nhân...). <br>
+                        - Cùng tìm nhưng kết quả khác nhau vì kĩ năng sử dụng <strong>Từ khoá</strong> và <strong>Tiêu chí tìm kiếm</strong> (dấu "", filetype) khác nhau.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trắc nghiệm -->
+            <div class="glass p-6 rounded-2xl shadow-sm border-t-4 border-pastel-blue">
+                <h2 class="text-xl font-bold text-blue-600 mb-4"><i class="fa-solid fa-clipboard-check mr-2"></i>Quiz Ôn tập (5 Câu)</h2>
+                
+                <form id="quizForm" class="space-y-6">
+                    <!-- Q1 -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <p class="font-bold mb-3">1. Bước đầu tiên để tìm kiếm thông tin trên Internet là gì?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q1" value="A"> <span>A. Đọc kết quả tìm kiếm.</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q1" value="B"> <span>B. Khởi động công cụ tìm kiếm (mở trình duyệt, gõ URL).</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q1" value="C"> <span>C. Nhập từ khoá bằng bàn phím.</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q1" value="D"> <span>D. Bấm vào biểu tượng micro.</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <p class="font-bold mb-3">2. Để thực hiện tìm kiếm bằng tiếng nói, thiết bị của em CẦN có phần cứng nào?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q2" value="A"> <span>A. Loa (Speaker)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q2" value="B"> <span>B. Bàn phím (Keyboard)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q2" value="C"> <span>C. Chuột (Mouse)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q2" value="D"> <span>D. Micro (Microphone)</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <p class="font-bold mb-3">3. Trong các ví dụ dưới đây, cách nào giúp thu hẹp phạm vi tìm kiếm để có kết quả chính xác nhất chứa một cụm từ cụ thể?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q3" value="A"> <span>A. Đặt từ khoá trong dấu ngoặc đơn ( ).</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q3" value="B"> <span>B. Đặt từ khoá trong dấu ngoặc vuông [ ].</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q3" value="C"> <span>C. Đặt từ khoá trong dấu nháy kép " ".</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q3" value="D"> <span>D. Viết hoa toàn bộ từ khoá.</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <p class="font-bold mb-3">4. Nếu muốn tìm một thông báo dưới dạng tệp văn bản PDF, em cần thêm cụm từ nào vào sau từ khoá?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q4" value="A"> <span>A. type:pdf</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q4" value="B"> <span>B. filetype:pdf</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q4" value="C"> <span>C. format:pdf</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q4" value="D"> <span>D. document:pdf</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <p class="font-bold mb-3">5. Theo hướng dẫn, sau khi máy tính tự động điền từ khoá bằng tiếng nói, em cần làm gì trước khi xem kết quả?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q5" value="A"> <span>A. Tắt micro ngay lập tức.</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q5" value="B"> <span>B. Đọc to lại một lần nữa.</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q5" value="C"> <span>C. Kiểm tra xem từ khoá tự động điền có khớp với lời đọc không.</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"><input type="radio" name="q5" value="D"> <span>D. Khởi động lại trình duyệt.</span></label>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="checkQuiz()" class="w-full py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition"><i class="fa-solid fa-paper-plane mr-2"></i>Nộp bài & Xem điểm</button>
+                </form>
+
+                <div id="quizResult" class="mt-6 p-4 rounded-lg hidden text-center font-bold text-lg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        // Tab switching logic
+        function openTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active style from buttons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-blue-500', 'text-white');
+                el.classList.add('bg-white', 'text-gray-600');
+            });
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            // Add active style to clicked button
+            event.currentTarget.classList.remove('bg-white', 'text-gray-600');
+            event.currentTarget.classList.add('bg-blue-500', 'text-white');
+        }
+
+        // Mock Search logic
+        function setMockInput(val) {
+            document.getElementById('mockSearchInput').value = val;
+            document.getElementById('mockResults').classList.add('hidden');
+        }
+
+        function simulateVoice() {
+            const input = document.getElementById('mockSearchInput');
+            input.value = "Đang nghe...";
+            input.classList.add('text-gray-400', 'italic');
+            setTimeout(() => {
+                input.value = "tuyển sinh đại học dược hà nội 2022";
+                input.classList.remove('text-gray-400', 'italic');
+            }, 1500);
+        }
+
+        function runMockSearch() {
+            const val = document.getElementById('mockSearchInput').value.toLowerCase();
+            const resBox = document.getElementById('mockResults');
+            const resContent = document.getElementById('resultContent');
+            const count = document.getElementById('resultCount');
+            
+            resBox.classList.remove('hidden');
+
+            // Template rendering based on input matching textbook examples
+            if(val.includes('filetype:pdf') && val.includes('"đại học dược')) {
+                count.innerText = "Khoảng 120 kết quả (0,34 giây)";
+                resContent.innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-800"><span class="bg-gray-200 px-1 rounded font-bold text-xs mr-2">PDF</span>tuyensinh.hup.edu.vn</p>
+                        <h3 class="text-xl text-blue-800 font-medium hover:underline cursor-pointer">Thông báo tuyển sinh 2022 <span class="font-bold">Đại học Dược Hà Nội</span></h3>
+                        <p class="text-sm text-gray-600">... Đề án tuyển sinh đại học năm 2022 của Trường <strong>Đại học Dược Hà Nội</strong>...</p>
+                    </div>
+                `;
+            } else if (val.includes('filetype:pdf')) {
+                count.innerText = "Khoảng 45.000 kết quả (0,41 giây)";
+                resContent.innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-800"><span class="bg-gray-200 px-1 rounded font-bold text-xs mr-2">PDF</span>tuyensinh.hup.edu.vn</p>
+                        <h3 class="text-xl text-blue-800 font-medium hover:underline cursor-pointer">Tuyển sinh Đại học Dược Hà Nội</h3>
+                        <p class="text-sm text-gray-600">... dự kiến ngày 16 và 17-08-2022. Xét tuyển nghiên cứu sinh...</p>
+                    </div>
+                     <div class="mb-4">
+                        <p class="text-sm text-gray-800"><span class="bg-gray-200 px-1 rounded font-bold text-xs mr-2">PDF</span>moet.gov.vn</p>
+                        <h3 class="text-xl text-blue-800 font-medium hover:underline cursor-pointer">Quy chế tuyển sinh các trường Y Dược 2022</h3>
+                        <p class="text-sm text-gray-600">... tuyển sinh Đại học các ngành liên quan đến Dược học...</p>
+                    </div>
+                `;
+            } else {
+                count.innerText = "Khoảng 15.200.000 kết quả (0,50 giây)";
+                resContent.innerHTML = `
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-800">https://tuyensinh.hup.edu.vn</p>
+                        <h3 class="text-xl text-blue-800 font-medium hover:underline cursor-pointer">Tuyển sinh Đại học Dược Hà Nội</h3>
+                        <p class="text-sm text-gray-600">9, TP Hồ Chí Minh (nếu điểm thi có > 20 thí sinh). Dự kiến ngày 16 và 17-08-2022. Xét tuyển nghiên cứu sinh...</p>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-800">https://vnexpress.net › Giao duc</p>
+                        <h3 class="text-xl text-blue-800 font-medium hover:underline cursor-pointer">Điểm chuẩn Đại học Dược Hà Nội 2022</h3>
+                        <p class="text-sm text-gray-600">Trường Đại học Dược Hà Nội công bố điểm chuẩn xét tuyển năm 2022...</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Quiz Logic
+        function checkQuiz() {
+            const answers = { q1: 'B', q2: 'D', q3: 'C', q4: 'B', q5: 'C' };
+            let score = 0;
+            const form = document.getElementById('quizForm');
+            const data = new FormData(form);
+
+            for (let [question, correctAnswer] of Object.entries(answers)) {
+                if (data.get(question) === correctAnswer) {
+                    score++;
+                }
+            }
+
+            const resultDiv = document.getElementById('quizResult');
+            resultDiv.classList.remove('hidden');
+            
+            if (score === 5) {
+                resultDiv.className = "mt-6 p-4 rounded-lg text-center font-bold text-lg bg-green-100 text-green-700 border-2 border-green-400 block";
+                resultDiv.innerHTML = `🎉 Xuất sắc! Bạn đạt ${score}/5. Bạn đã nắm rất vững kĩ năng tìm kiếm!`;
+            } else if (score >= 3) {
+                resultDiv.className = "mt-6 p-4 rounded-lg text-center font-bold text-lg bg-yellow-100 text-yellow-700 border-2 border-yellow-400 block";
+                resultDiv.innerHTML = `👍 Khá lắm! Bạn đạt ${score}/5. Cùng xem lại bài để nhớ lâu hơn nhé!`;
+            } else {
+                resultDiv.className = "mt-6 p-4 rounded-lg text-center font-bold text-lg bg-red-100 text-red-700 border-2 border-red-400 block";
+                resultDiv.innerHTML = `💪 Cố lên! Bạn đạt ${score}/5. Hãy đọc lại phần "Tổng quan" nhé!`;
+            }
+        }
+    </script>
+</body>
+</html>

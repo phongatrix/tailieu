@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 19: Thực Hành Tạo Lập CSDL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc; /* Nền xám rất nhạt */
+            color: #334155;
+        }
+        
+        /* Pastel Colors custom classes */
+        .bg-pastel-pink { background-color: #ffe4e6; }
+        .text-pastel-pink { color: #e11d48; }
+        .bg-pastel-blue { background-color: #e0f2fe; }
+        .text-pastel-blue { color: #0284c7; }
+        .bg-pastel-purple { background-color: #f3e8ff; }
+        .text-pastel-purple { color: #9333ea; }
+        .bg-pastel-green { background-color: #dcfce7; }
+        .text-pastel-green { color: #16a34a; }
+        .bg-pastel-yellow { background-color: #fef9c3; }
+        .text-pastel-yellow { color: #ca8a04; }
+
+        .tab-btn.active {
+            border-bottom: 4px solid #8b5cf6;
+            color: #8b5cf6;
+            font-weight: 700;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styling for the Mock App */
+        .mock-window {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+        }
+        .mock-header {
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .mock-dots span {
+            width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px;
+        }
+        
+        /* Interactive tree */
+        .tree-item { cursor: pointer; transition: all 0.2s; padding: 4px 8px; border-radius: 4px;}
+        .tree-item:hover { background-color: #e2e8f0; }
+        
+        /* Custom Checkbox */
+        .custom-checkbox input:checked + div {
+            background-color: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+        
+        /* Grid system for tables */
+        .mock-table-grid {
+            display: grid;
+            grid-template-columns: 50px 150px 100px 80px 100px 150px;
+            gap: 1px;
+            background-color: #e2e8f0;
+            border: 1px solid #cbd5e1;
+        }
+        .mock-table-grid > div {
+            background-color: white;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+        }
+        .mock-table-grid .header {
+            background-color: #f8fafc;
+            font-weight: 600;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .context-menu {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            z-index: 50;
+            min-width: 150px;
+        }
+        .context-menu.show { display: block; }
+        .context-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .context-item:hover { background-color: #f1f5f9; }
+
+        /* Mindmap styles */
+        .node { text-align: center; padding: 10px 15px; border-radius: 20px; font-weight: 600; position: relative; z-index: 2;}
+        .connector-vertical { width: 2px; height: 30px; background-color: #cbd5e1; margin: 0 auto; }
+        .connector-horizontal { height: 2px; width: 50px; background-color: #cbd5e1; }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <div class="inline-block bg-pastel-purple text-pastel-purple px-4 py-1 rounded-full text-sm font-bold mb-3 shadow-sm">
+            <i class="fas fa-book-open mr-2"></i>TIN HỌC 11
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">BÀI 19: THỰC HÀNH TẠO LẬP CSDL & CÁC BẢNG</h1>
+        <p class="text-slate-500 font-medium">Sử dụng phần mềm khách HeidiSQL</p>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <div class="flex overflow-x-auto border-b border-gray-200 mb-6 pb-1 scrollbar-hide">
+        <button class="tab-btn active px-4 py-2 whitespace-nowrap font-medium text-slate-500 hover:text-slate-800 transition-colors" onclick="openTab(event, 'tab-tongquan')">
+            <i class="fas fa-bullseye mr-2"></i>Tổng quan
+        </button>
+        <button class="tab-btn px-4 py-2 whitespace-nowrap font-medium text-slate-500 hover:text-slate-800 transition-colors" onclick="openTab(event, 'tab-sodo')">
+            <i class="fas fa-project-diagram mr-2"></i>Sơ đồ Khái niệm
+        </button>
+        <button class="tab-btn px-4 py-2 whitespace-nowrap font-medium text-slate-500 hover:text-slate-800 transition-colors" onclick="openTab(event, 'tab-thuchanh')">
+            <i class="fas fa-laptop-code mr-2"></i>Mô phỏng Thực hành
+        </button>
+        <button class="tab-btn px-4 py-2 whitespace-nowrap font-medium text-slate-500 hover:text-slate-800 transition-colors" onclick="openTab(event, 'tab-luuy')">
+            <i class="fas fa-exclamation-triangle mr-2"></i>Lưu ý & Nhầm lẫn
+        </button>
+        <button class="tab-btn px-4 py-2 whitespace-nowrap font-medium text-slate-500 hover:text-slate-800 transition-colors" onclick="openTab(event, 'tab-tracnghiem')">
+            <i class="fas fa-pencil-alt mr-2"></i>Trắc nghiệm (5)
+        </button>
+    </div>
+
+    <!-- TAB 1: TỔNG QUAN -->
+    <div id="tab-tongquan" class="tab-content active">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Mục tiêu -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-pastel-pink rounded-full opacity-50"></div>
+                <h2 class="text-xl font-bold mb-4 flex items-center text-slate-800">
+                    <div class="w-8 h-8 rounded-full bg-pastel-pink text-pastel-pink flex items-center justify-center mr-3">
+                        <i class="fas fa-flag-checkered"></i>
+                    </div>
+                    Mục tiêu bài học
+                </h2>
+                <ul class="space-y-4">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                        <span>Biết <strong>tạo mới một CSDL</strong> thông qua giao diện HeidiSQL.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                        <span>Tạo được các <strong>bảng</strong> (không có khoá ngoài).</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                        <span>Chỉ định được <strong>khoá chính (PRIMARY KEY)</strong> cho mỗi bảng.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                        <span>Khai báo <strong>khoá cấm trùng lặp</strong> (không được có giá trị trùng lặp).</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Nhiệm vụ & Ví dụ -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-pastel-blue rounded-full opacity-50"></div>
+                <h2 class="text-xl font-bold mb-4 flex items-center text-slate-800">
+                    <div class="w-8 h-8 rounded-full bg-pastel-blue text-pastel-blue flex items-center justify-center mr-3">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    Nhiệm vụ & Ví dụ minh họa
+                </h2>
+                
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4">
+                    <p class="font-semibold text-blue-800 mb-2">Ví dụ Xuyên Suốt:</p>
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-database text-2xl text-blue-400"></i>
+                        <div>
+                            <p class="text-sm text-slate-500">Tên CSDL</p>
+                            <p class="font-bold font-mono text-blue-900">mymusic</p>
+                        </div>
+                    </div>
+                    <div class="ml-8 border-l-2 border-blue-200 pl-4">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-table text-xl text-blue-400"></i>
+                            <div>
+                                <p class="text-sm text-slate-500">Bảng cần tạo</p>
+                                <p class="font-bold font-mono text-blue-900">nhacsi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <span class="px-3 py-1 bg-gray-100 rounded-full text-xs font-semibold text-gray-600"><i class="fas fa-hashtag mr-1"></i>Bộ mã: utf8mb4</span>
+                    <span class="px-3 py-1 bg-gray-100 rounded-full text-xs font-semibold text-gray-600"><i class="fas fa-sort mr-1"></i>Đối chiếu: utf8mb4_general_ci</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: SƠ ĐỒ KHÁI NIỆM -->
+    <div id="tab-sodo" class="tab-content">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h2 class="text-xl font-bold mb-6 text-center text-slate-800">Mối quan hệ các cấu trúc dữ liệu</h2>
+            
+            <div class="flex flex-col items-center justify-center bg-slate-50 p-8 rounded-xl">
+                <!-- CSDL -->
+                <div class="node bg-pastel-blue text-blue-800 border-2 border-blue-200 shadow-md w-48">
+                    <i class="fas fa-database mb-1 text-2xl"></i><br>
+                    Cơ sở dữ liệu (CSDL)<br>
+                    <span class="font-mono text-sm font-normal">Ví dụ: mymusic</span>
+                </div>
+                
+                <div class="connector-vertical"></div>
+                
+                <!-- Bảng -->
+                <div class="node bg-pastel-green text-green-800 border-2 border-green-200 shadow-md w-48">
+                    <i class="fas fa-table mb-1 text-xl"></i><br>
+                    Bảng (Table)<br>
+                    <span class="font-mono text-sm font-normal">Ví dụ: nhacsi</span>
+                </div>
+                
+                <div class="connector-vertical"></div>
+                
+                <!-- Fields Level -->
+                <div class="flex justify-center w-full max-w-2xl relative">
+                    <div class="absolute top-0 w-3/4 border-t-2 border-slate-300 h-2"></div>
+                    
+                    <div class="flex justify-between w-3/4 pt-4">
+                        <!-- Field 1 -->
+                        <div class="flex flex-col items-center">
+                            <div class="node bg-pastel-yellow text-yellow-800 border-2 border-yellow-200 shadow-sm w-40 text-sm">
+                                <i class="fas fa-key text-yellow-600 mr-1"></i> Trường (Column)<br>
+                                <span class="font-mono font-bold">idNhacsi</span>
+                            </div>
+                            <div class="connector-vertical h-4"></div>
+                            <div class="bg-white text-xs p-2 rounded border border-gray-200 shadow-sm text-center">
+                                Kiểu: <b>INT</b><br>
+                                ❌ Bỏ Allow NULL<br>
+                                ✅ AUTO_INCREMENT<br>
+                                👑 <b>PRIMARY KEY</b>
+                            </div>
+                        </div>
+
+                        <!-- Field 2 -->
+                        <div class="flex flex-col items-center">
+                            <div class="node bg-pastel-pink text-pink-800 border-2 border-pink-200 shadow-sm w-40 text-sm">
+                                <i class="fas fa-columns mr-1"></i> Trường (Column)<br>
+                                <span class="font-mono font-bold">tenNhacsi</span>
+                            </div>
+                            <div class="connector-vertical h-4"></div>
+                            <div class="bg-white text-xs p-2 rounded border border-gray-200 shadow-sm text-center">
+                                Kiểu: <b>VARCHAR</b><br>
+                                Độ dài: <b>255</b><br>
+                                Mặc định: Kí tự rỗng ''
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <i class="fas fa-font text-indigo-400 text-2xl mb-2"></i>
+                    <p class="font-bold text-sm">VARCHAR</p>
+                    <p class="text-xs text-gray-500">Kiểu chuỗi kí tự</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <i class="fas fa-hashtag text-indigo-400 text-2xl mb-2"></i>
+                    <p class="font-bold text-sm">INT</p>
+                    <p class="text-xs text-gray-500">Kiểu số nguyên</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <i class="fas fa-sort-numeric-up-alt text-indigo-400 text-2xl mb-2"></i>
+                    <p class="font-bold text-sm">AUTO_INCREMENT</p>
+                    <p class="text-xs text-gray-500">Tự động tăng giá trị</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <i class="fas fa-key text-yellow-500 text-2xl mb-2"></i>
+                    <p class="font-bold text-sm">PRIMARY</p>
+                    <p class="text-xs text-gray-500">Khoá chính (duy nhất)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: MÔ PHỎNG THỰC HÀNH -->
+    <div id="tab-thuchanh" class="tab-content">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Instructions Panel -->
+            <div class="lg:col-span-1 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 h-full flex flex-col">
+                <h3 class="font-bold text-lg mb-4 text-indigo-600 flex items-center">
+                    <i class="fas fa-magic mr-2"></i> Trợ lý Hướng dẫn
+                </h3>
+                
+                <div id="sim-instruction" class="bg-indigo-50 p-4 rounded-xl text-sm text-slate-700 flex-grow mb-4 border border-indigo-100">
+                    <!-- Text inserted by JS -->
+                </div>
+
+                <!-- Interactive prompts generated here -->
+                <div id="sim-controls" class="space-y-3">
+                    <!-- Buttons inserted by JS -->
+                </div>
+
+                <div class="mt-4 flex justify-between items-center text-xs text-slate-400">
+                    <span id="sim-step-indicator">Bước 1/4</span>
+                    <button onclick="resetSimulation()" class="hover:text-indigo-500 transition-colors"><i class="fas fa-redo mr-1"></i>Làm lại</button>
+                </div>
+            </div>
+
+            <!-- HeidiSQL Mockup -->
+            <div class="lg:col-span-2">
+                <div class="mock-window h-full min-h-[400px] flex flex-col relative" id="mock-app-container">
+                    
+                    <!-- Title Bar -->
+                    <div class="mock-header justify-between">
+                        <div class="flex items-center">
+                            <div class="mock-dots flex">
+                                <span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span>
+                            </div>
+                            <span class="text-xs font-semibold text-slate-500 ml-2">HeidiSQL Portable</span>
+                        </div>
+                        <div class="flex gap-2 text-slate-400 text-xs">
+                            <i class="fas fa-save hover:text-slate-600 cursor-pointer" onclick="saveTable()"></i>
+                        </div>
+                    </div>
+
+                    <!-- Toolbar -->
+                    <div class="bg-white border-b border-gray-200 p-2 flex gap-2 text-slate-600 text-sm">
+                        <button class="px-2 py-1 hover:bg-gray-100 rounded"><i class="fas fa-file text-blue-500"></i></button>
+                        <button class="px-2 py-1 hover:bg-gray-100 rounded"><i class="fas fa-database text-purple-500"></i></button>
+                        <div class="w-px bg-gray-300 mx-1"></div>
+                        <button class="px-2 py-1 hover:bg-gray-100 rounded text-xs"><i class="fas fa-play text-green-500 mr-1"></i>Chạy</button>
+                    </div>
+
+                    <!-- Main App Area -->
+                    <div class="flex flex-grow overflow-hidden relative">
+                        
+                        <!-- Context Menu (Hidden by default) -->
+                        <div id="context-menu" class="context-menu">
+                            <div class="context-item text-slate-500 border-b border-gray-100"><i class="fas fa-copy mr-2"></i>Sao chép</div>
+                            <div class="context-item" onclick="handleMenuAction('add_column')"><i class="fas fa-plus text-green-500 mr-2"></i>Add column (Ctrl+Ins)</div>
+                            <div class="context-item text-slate-500 border-b border-gray-100"><i class="fas fa-times text-red-500 mr-2"></i>Remove column</div>
+                            <div class="context-item" onclick="handleMenuAction('create_index')" id="menu-create-index">
+                                <i class="fas fa-key text-yellow-500 mr-2"></i>Create new index <i class="fas fa-caret-right float-right mt-1"></i>
+                            </div>
+                        </div>
+
+                        <!-- Sub-menu for Primary Key -->
+                        <div id="sub-menu-index" class="context-menu" style="left: 100%; top: 0;">
+                            <div class="context-item" onclick="handleMenuAction('set_primary')"><i class="fas fa-key text-yellow-500 mr-2"></i>PRIMARY</div>
+                            <div class="context-item text-slate-500"><i class="fas fa-key text-gray-400 mr-2"></i>KEY</div>
+                        </div>
+
+
+                        <!-- Sidebar (DB List) -->
+                        <div class="w-1/3 border-r border-gray-200 bg-white p-2 text-sm overflow-y-auto" id="db-tree">
+                            <div class="tree-item font-semibold"><i class="fas fa-server text-gray-500 mr-1"></i> Máy chủ mặc định</div>
+                            <div class="ml-4">
+                                <!-- Default DB -->
+                                <div class="tree-item text-slate-600"><i class="fas fa-database text-gray-400 mr-1"></i> information_schema</div>
+                                <!-- New DB will appear here -->
+                                <div id="tree-mymusic" class="tree-item text-slate-800 font-medium hidden">
+                                    <i class="fas fa-database text-green-500 mr-1"></i> mymusic
+                                </div>
+                                <!-- New Table will appear here -->
+                                <div id="tree-nhacsi" class="tree-item text-slate-800 ml-4 hidden">
+                                    <i class="fas fa-table text-blue-500 mr-1"></i> nhacsi
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Content Area -->
+                        <div class="w-2/3 bg-[#f8f9fa] flex flex-col relative" id="main-workspace">
+                            
+                            <!-- Placeholder -->
+                            <div id="workspace-empty" class="absolute inset-0 flex items-center justify-center text-slate-400 flex-col">
+                                <i class="fas fa-database text-4xl mb-2 opacity-50"></i>
+                                <p class="text-sm">Chọn một cơ sở dữ liệu để xem</p>
+                            </div>
+
+                            <!-- Table Editor (Hidden initially) -->
+                            <div id="workspace-table" class="hidden flex-col h-full bg-white">
+                                <!-- Tabs -->
+                                <div class="flex border-b text-sm bg-gray-50">
+                                    <div class="px-4 py-2 border-r bg-white border-t-2 border-t-blue-500 font-bold">Basic</div>
+                                    <div class="px-4 py-2 border-r text-gray-500">Tùy chọn</div>
+                                    <div class="px-4 py-2 border-r text-gray-500">Indexes</div>
+                                </div>
+                                
+                                <!-- Meta -->
+                                <div class="p-3 border-b border-gray-200 flex gap-4 text-sm items-center bg-gray-50">
+                                    <label class="font-semibold w-16">Tên:</label>
+                                    <input type="text" value="nhacsi" class="border p-1 rounded bg-white w-48" readonly>
+                                </div>
+
+                                <!-- Action bar -->
+                                <div class="p-2 border-b flex gap-2 text-sm bg-white">
+                                    <button class="px-2 py-1 bg-green-50 text-green-700 rounded border border-green-200 hover:bg-green-100" onclick="simulateRightClick(event, 'main_area')">
+                                        <i class="fas fa-plus mr-1"></i> Thêm mới (Giả lập Click Phải)
+                                    </button>
+                                </div>
+
+                                <!-- Grid Data -->
+                                <div class="flex-grow overflow-auto p-2">
+                                    <div class="mock-table-grid" id="columns-grid">
+                                        <!-- Headers -->
+                                        <div class="header"># Tên</div>
+                                        <div class="header">Kiểu dữ liệu</div>
+                                        <div class="header">Length/Set</div>
+                                        <div class="header">Allow NULL</div>
+                                        <div class="header text-[10px]">Zero/Unsigned</div>
+                                        <div class="header">Mặc định</div>
+                                        
+                                        <!-- Rows will be injected here via JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Status Bar (shows SQL) -->
+                    <div class="bg-gray-100 border-t border-gray-300 p-1 px-3 font-mono text-[10px] text-gray-600 h-16 overflow-y-auto" id="sql-log">
+                        /* Nhật ký lệnh SQL sẽ hiển thị ở đây */<br>
+                    </div>
+
+                    <!-- Overlay Modals (for Create DB) -->
+                    <div id="modal-create-db" class="absolute inset-0 bg-black bg-opacity-20 hidden items-center justify-center z-50">
+                        <div class="bg-white p-4 rounded shadow-lg w-80 border border-gray-300">
+                            <h4 class="font-bold text-sm mb-3">Tạo cơ sở dữ liệu...</h4>
+                            <div class="grid grid-cols-3 gap-2 items-center text-sm mb-2">
+                                <label class="text-right">Tên:</label>
+                                <input type="text" id="input-db-name" class="col-span-2 border p-1 rounded" placeholder="Nhập mymusic">
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 items-center text-sm mb-4">
+                                <label class="text-right">Đối chiếu:</label>
+                                <select class="col-span-2 border p-1 rounded bg-gray-50 text-xs">
+                                    <option>utf8mb4_general_ci</option>
+                                </select>
+                            </div>
+                            <div class="text-[10px] font-mono bg-gray-100 p-2 mb-4 border text-gray-600 rounded">
+                                CREATE DATABASE `<span id="preview-db-name"></span>` /*!40100 COLLATE 'utf8mb4_general_ci' */
+                            </div>
+                            <div class="flex justify-end gap-2">
+                                <button class="px-3 py-1 border rounded bg-gray-100 text-sm hover:bg-gray-200">Hủy</button>
+                                <button class="px-3 py-1 border rounded bg-blue-500 text-white text-sm hover:bg-blue-600" onclick="submitCreateDB()">OK</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: LƯU Ý & NHẦM LẪN -->
+    <div id="tab-luuy" class="tab-content">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
+            <h2 class="text-xl font-bold mb-4 text-red-500 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i> Sai lầm thường gặp: Chọn nhầm Khóa chính
+            </h2>
+            <p class="mb-4 text-slate-700">Trong quá trình làm, có thể bạn sẽ <strong>chọn nhầm trường làm khoá chính</strong>. Ví dụ: vô tình chọn <code class="bg-gray-100 px-1 rounded text-red-500">tenNhacsi</code> thay vì <code class="bg-gray-100 px-1 rounded text-green-500">idNhacsi</code>.</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Tình huống sai -->
+                <div class="border-2 border-red-200 rounded-xl p-4 bg-red-50 relative">
+                    <div class="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold shadow">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <h3 class="font-bold text-red-700 mb-2 text-sm">Hình 19.7: Khai báo nhầm</h3>
+                    <div class="bg-white border p-2 text-xs font-mono shadow-sm rounded">
+                        <div class="flex border-b bg-gray-100 font-bold p-1">
+                            <div class="w-1/2">Tên Index</div>
+                            <div class="w-1/2">Cột</div>
+                        </div>
+                        <div class="flex p-1 items-center bg-red-50">
+                            <div class="w-1/2"><i class="fas fa-key text-yellow-500 mr-1"></i>PRIMARY KEY</div>
+                            <div class="w-1/2 font-bold text-red-600 cursor-pointer border-b border-dashed border-red-400" id="wrong-field-demo" onclick="fixWrongField()">tenNhacsi (Click để sửa)</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-red-600 mt-2 italic">*Khoá chính đang đặt ở cột Tên, điều này sai vì Tên có thể trùng nhau.</p>
+                </div>
+
+                <!-- Cách sửa -->
+                <div class="border-2 border-green-200 rounded-xl p-4 bg-green-50 relative">
+                    <div class="absolute -top-3 -right-3 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold shadow">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 class="font-bold text-green-700 mb-2 text-sm">Hình 19.8 & 19.9: Cách thao tác sửa</h3>
+                    <ol class="text-sm space-y-2 text-slate-700 list-decimal ml-4">
+                        <li><strong>Nháy đúp chuột</strong> vào ô tên trường bị nhầm (VD: <code class="bg-white px-1">tenNhacsi</code>).</li>
+                        <li>Một danh sách thả xuống sẽ hiện ra.</li>
+                        <li><strong>Chọn lại</strong> tên trường đúng (VD: <code class="bg-white px-1 font-bold">idNhacsi</code>).</li>
+                        <li>Nháy chuột ra khoảng trống bên cạnh để áp dụng.</li>
+                    </ol>
+                    <div class="mt-3 bg-white p-2 rounded text-xs font-mono border text-green-700 text-center font-bold" id="fix-result-demo" style="display:none;">
+                        Đã sửa thành công: PRIMARY KEY -> idNhacsi
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: TRẮC NGHIỆM -->
+    <div id="tab-tracnghiem" class="tab-content">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 class="text-xl font-bold flex items-center text-slate-800">
+                    <i class="fas fa-clipboard-check text-indigo-500 mr-2"></i> Ôn tập kiến thức
+                </h2>
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold" id="score-display">Điểm: 0/5</span>
+            </div>
+
+            <form id="quiz-form" class="space-y-6">
+                <!-- Question 1 -->
+                <div class="quiz-q" data-correct="b">
+                    <p class="font-semibold text-slate-800 mb-2">1. Phần mềm nào được sử dụng để quản trị cơ sở dữ liệu trong bài học?</p>
+                    <div class="space-y-2 pl-4">
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q1" value="a" class="text-indigo-600"> <span>a) Microsoft Access</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q1" value="b" class="text-indigo-600"> <span>b) HeidiSQL</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q1" value="c" class="text-indigo-600"> <span>c) MySQL Workbench</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="quiz-q" data-correct="a">
+                    <p class="font-semibold text-slate-800 mb-2">2. Bộ mã kí tự (character set) mặc định khi tạo CSDL trong HeidiSQL được nhắc đến là gì?</p>
+                    <div class="space-y-2 pl-4">
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q2" value="a" class="text-indigo-600"> <span>a) utf8mb4</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q2" value="b" class="text-indigo-600"> <span>b) ascii</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q2" value="c" class="text-indigo-600"> <span>c) utf16</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="quiz-q" data-correct="c">
+                    <p class="font-semibold text-slate-800 mb-2">3. Để trường `idNhacsi` tự động tăng giá trị mỗi khi thêm dữ liệu mới, ta chọn thuộc tính nào ở cột "Mặc định"?</p>
+                    <div class="space-y-2 pl-4">
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q3" value="a" class="text-indigo-600"> <span>a) Allow NULL</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q3" value="b" class="text-indigo-600"> <span>b) No default</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q3" value="c" class="text-indigo-600"> <span>c) AUTO_INCREMENT</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="quiz-q" data-correct="a">
+                    <p class="font-semibold text-slate-800 mb-2">4. Khi khai báo trường `tenNhacsi`, kiểu dữ liệu và độ dài mặc định được hướng dẫn thiết lập là gì?</p>
+                    <div class="space-y-2 pl-4">
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q4" value="a" class="text-indigo-600"> <span>a) VARCHAR, 255</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q4" value="b" class="text-indigo-600"> <span>b) INT, 11</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q4" value="c" class="text-indigo-600"> <span>c) TEXT, không giới hạn</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="quiz-q" data-correct="c">
+                    <p class="font-semibold text-slate-800 mb-2">5. Thao tác nào đúng để chỉ định trường `idNhacsi` làm khoá chính (PRIMARY KEY)?</p>
+                    <div class="space-y-2 pl-4">
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q5" value="a" class="text-indigo-600"> <span>a) Nháy đúp vào cột Tên và gõ chữ PRIMARY.</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q5" value="b" class="text-indigo-600"> <span>b) Kéo thả biểu tượng chìa khóa vào cột idNhacsi.</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50 border border-transparent">
+                            <input type="radio" name="q5" value="c" class="text-indigo-600"> <span>c) Nháy nút phải chuột vào dòng idNhacsi -> Chọn Create new index -> PRIMARY.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex gap-4">
+                    <button type="button" onclick="checkQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl shadow transition-colors">
+                        Nộp bài kiểm tra
+                    </button>
+                    <button type="reset" onclick="resetQuiz()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-xl transition-colors">
+                        Làm lại
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- TABS LOGIC ---
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.className += " active";
+        }
+
+        // --- TAB 4: MOCK FIX ERROR ---
+        function fixWrongField() {
+            const el = document.getElementById('wrong-field-demo');
+            el.innerHTML = `<select class="border p-1 bg-white text-black" onchange="applyFix(this)"><option value="tenNhacsi">tenNhacsi</option><option value="idNhacsi">idNhacsi</option></select>`;
+        }
+        function applyFix(selectEl) {
+            if(selectEl.value === 'idNhacsi') {
+                const el = document.getElementById('wrong-field-demo');
+                el.innerHTML = 'idNhacsi';
+                el.className = 'w-1/2 font-bold text-green-600';
+                document.getElementById('fix-result-demo').style.display = 'block';
+            }
+        }
+
+        // --- TAB 5: QUIZ LOGIC ---
+        function checkQuiz() {
+            const questions = document.querySelectorAll('.quiz-q');
+            let score = 0;
+            
+            questions.forEach((q, index) => {
+                const correctAns = q.getAttribute('data-correct');
+                const selected = q.querySelector(`input[name="q${index+1}"]:checked`);
+                const labels = q.querySelectorAll('label');
+                
+                // Reset styles
+                labels.forEach(l => {
+                    l.classList.remove('bg-green-100', 'border-green-400', 'bg-red-100', 'border-red-400');
+                    const icon = l.querySelector('.res-icon');
+                    if(icon) icon.remove();
+                });
+
+                if (selected) {
+                    const label = selected.closest('label');
+                    if (selected.value === correctAns) {
+                        score++;
+                        label.classList.add('bg-green-100', 'border-green-400');
+                        label.innerHTML += '<i class="fas fa-check text-green-600 ml-auto res-icon"></i>';
+                    } else {
+                        label.classList.add('bg-red-100', 'border-red-400');
+                        label.innerHTML += '<i class="fas fa-times text-red-600 ml-auto res-icon"></i>';
+                        
+                        // Show correct answer
+                        const correctLabel = q.querySelector(`input[value="${correctAns}"]`).closest('label');
+                        correctLabel.classList.add('border-green-400', 'border-dashed');
+                    }
+                }
+            });
+
+            document.getElementById('score-display').innerText = `Điểm: ${score}/5`;
+            
+            if(score === 5) {
+                document.getElementById('score-display').classList.replace('bg-indigo-100', 'bg-green-100');
+                document.getElementById('score-display').classList.replace('text-indigo-700', 'text-green-700');
+            }
+        }
+
+        function resetQuiz() {
+            const questions = document.querySelectorAll('.quiz-q label');
+            questions.forEach(l => {
+                l.classList.remove('bg-green-100', 'border-green-400', 'bg-red-100', 'border-red-400', 'border-dashed');
+                const icon = l.querySelector('.res-icon');
+                if(icon) icon.remove();
+            });
+            document.getElementById('score-display').innerText = `Điểm: 0/5`;
+            document.getElementById('score-display').classList.replace('bg-green-100', 'bg-indigo-100');
+            document.getElementById('score-display').classList.replace('text-green-700', 'text-indigo-700');
+        }
+
+        // --- TAB 3: SIMULATION LOGIC ---
+        let currentStep = 1;
+        let selectedRowId = null;
+
+        const uiElements = {
+            instr: document.getElementById('sim-instruction'),
+            ctrls: document.getElementById('sim-controls'),
+            stepInd: document.getElementById('sim-step-indicator'),
+            log: document.getElementById('sql-log'),
+            treeMyMusic: document.getElementById('tree-mymusic'),
+            treeNhacsi: document.getElementById('tree-nhacsi'),
+            workspaceEmpty: document.getElementById('workspace-empty'),
+            workspaceTable: document.getElementById('workspace-table'),
+            colGrid: document.getElementById('columns-grid'),
+            ctxMenu: document.getElementById('context-menu'),
+            ctxSubMenu: document.getElementById('sub-menu-index'),
+            modalCreateDB: document.getElementById('modal-create-db'),
+            inputDbName: document.getElementById('input-db-name'),
+            previewDbName: document.getElementById('preview-db-name')
+        };
+
+        // Real-time update DB name in preview
+        uiElements.inputDbName.addEventListener('input', function(e) {
+            uiElements.previewDbName.innerText = e.target.value;
+        });
+
+        function logSQL(msg, type="sql") {
+            const color = type === "sql" ? "text-blue-600 font-bold" : "text-green-600";
+            uiElements.log.innerHTML += `<span class="${color}">${msg}</span><br>`;
+            uiElements.log.scrollTop = uiElements.log.scrollHeight;
+        }
+
+        function renderStep() {
+            uiElements.stepInd.innerText = `Bước ${currentStep}/5`;
+            uiElements.ctrls.innerHTML = '';
+            
+            switch(currentStep) {
+                case 1:
+                    uiElements.instr.innerHTML = "<strong>Nhiệm vụ 1:</strong> Tạo lập CSDL <code>mymusic</code>.<br>Hãy click vào nút bên dưới để mô phỏng thao tác <em>Nháy phải chuột vùng danh sách CSDL -> Tạo mới -> Cơ sở dữ liệu</em>.";
+                    const btn1 = document.createElement('button');
+                    btn1.className = "w-full py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded shadow text-sm font-bold transition";
+                    btn1.innerHTML = "<i class='fas fa-mouse-pointer mr-2'></i>Nháy phải -> Tạo mới CSDL";
+                    btn1.onclick = () => { uiElements.modalCreateDB.classList.remove('hidden'); };
+                    uiElements.ctrls.appendChild(btn1);
+                    break;
+                case 2:
+                    uiElements.instr.innerHTML = "CSDL <code>mymusic</code> đã được tạo. <strong>Nhiệm vụ 2:</strong> Tạo bảng <code>nhacsi</code>.<br>Mô phỏng <em>Nháy phải chuột vào CSDL mymusic -> Tạo mới -> Bảng</em>.";
+                    const btn2 = document.createElement('button');
+                    btn2.className = "w-full py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded shadow text-sm font-bold transition";
+                    btn2.innerHTML = "<i class='fas fa-table mr-2'></i>Tạo mới Bảng";
+                    btn2.onclick = () => {
+                        uiElements.treeNhacsi.classList.remove('hidden');
+                        uiElements.workspaceEmpty.classList.add('hidden');
+                        uiElements.workspaceTable.classList.remove('hidden');
+                        uiElements.workspaceTable.style.display = 'flex';
+                        currentStep = 3;
+                        renderStep();
+                    };
+                    uiElements.ctrls.appendChild(btn2);
+                    break;
+                case 3:
+                    uiElements.instr.innerHTML = "Giao diện cấu hình Bảng xuất hiện. <strong>Nhiệm vụ 3:</strong> Thêm cột <code>idNhacsi</code> kiểu INT, tự động tăng.";
+                    const btn3 = document.createElement('button');
+                    btn3.className = "w-full py-2 border-2 border-indigo-400 text-indigo-700 hover:bg-indigo-50 rounded shadow text-sm font-bold transition bg-white";
+                    btn3.innerHTML = "<i class='fas fa-plus mr-2'></i>Nhấn nút 'Thêm mới' (Hoặc Ctrl+Ins)";
+                    btn3.onclick = () => { addColumnRow(1, 'idNhacsi', 'INT', false, 'AUTO_INCREMENT'); };
+                    uiElements.ctrls.appendChild(btn3);
+                    break;
+                case 4:
+                    uiElements.instr.innerHTML = "<strong>Nhiệm vụ 4:</strong> Thêm cột <code>tenNhacsi</code> kiểu VARCHAR(255).";
+                    const btn4 = document.createElement('button');
+                    btn4.className = "w-full py-2 border-2 border-indigo-400 text-indigo-700 hover:bg-indigo-50 rounded shadow text-sm font-bold transition bg-white";
+                    btn4.innerHTML = "<i class='fas fa-plus mr-2'></i>Nhấn 'Thêm mới' lần nữa";
+                    btn4.onclick = () => { addColumnRow(2, 'tenNhacsi', 'VARCHAR', true, 'Kí tự rỗng \'\'', '255'); };
+                    uiElements.ctrls.appendChild(btn4);
+                    break;
+                case 5:
+                    uiElements.instr.innerHTML = "<strong>Nhiệm vụ 5:</strong> Đặt <code>idNhacsi</code> làm Khoá chính (PRIMARY KEY).<br><em>Hướng dẫn:</em> Click chuột phải vào dòng <strong>idNhacsi</strong> bên bảng, chọn <strong>Create new index -> PRIMARY</strong>. Sau đó nhấn nút <strong>Save</strong> (icon Đĩa mềm) trên góc.";
+                    break;
+            }
+        }
+
+        function submitCreateDB() {
+            const name = uiElements.inputDbName.value;
+            if(name === 'mymusic') {
+                uiElements.modalCreateDB.classList.add('hidden');
+                uiElements.treeMyMusic.classList.remove('hidden');
+                logSQL(`CREATE DATABASE \`mymusic\` /*!40100 COLLATE 'utf8mb4_general_ci' */`);
+                currentStep = 2;
+                renderStep();
+            } else {
+                alert("Vui lòng nhập tên đúng là 'mymusic' như trong sách giáo khoa.");
+            }
+        }
+
+        function addColumnRow(id, name, type, allowNull, def, length="") {
+            const rowHtml = `
+                <div class="row-cell border-b" id="row-${id}" oncontextmenu="simulateRightClick(event, 'row', ${id})" onclick="selectRow(${id})">
+                    <span id="key-icon-${id}"></span> ${name}
+                </div>
+                <div class="row-cell border-b text-blue-600 font-bold">${type}</div>
+                <div class="row-cell border-b">${length}</div>
+                <div class="row-cell border-b text-center">
+                    <input type="checkbox" ${allowNull ? 'checked' : ''} disabled>
+                </div>
+                <div class="row-cell border-b"></div>
+                <div class="row-cell border-b text-xs">${def}</div>
+            `;
+            uiElements.colGrid.insertAdjacentHTML('beforeend', rowHtml);
+            
+            if(id === 1) {
+                currentStep = 4;
+            } else if (id === 2) {
+                currentStep = 5;
+            }
+            renderStep();
+        }
+
+        function selectRow(id) {
+            document.querySelectorAll('.row-cell').forEach(el => el.style.backgroundColor = 'white');
+            // very rudimentary selection highlight
+            const rowCells = document.querySelectorAll(`[id^="row-${id}"] ~ div`);
+            // simplification for visual purpose
+            selectedRowId = id;
+        }
+
+        // --- Context Menu Logic ---
+        function simulateRightClick(e, type, id=null) {
+            e.preventDefault();
+            const menu = uiElements.ctxMenu;
+            menu.style.left = e.pageX - 300 + 'px'; // adjust for container
+            menu.style.top = e.pageY - 100 + 'px';
+            menu.classList.add('show');
+            uiElements.ctxSubMenu.classList.remove('show'); // hide submenu
+
+            if(type === 'row') {
+                selectedRowId = id;
+                selectRow(id);
+            }
+        }
+
+        // Close menu on click anywhere
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('.context-menu')) {
+                uiElements.ctxMenu.classList.remove('show');
+                uiElements.ctxSubMenu.classList.remove('show');
+            }
+        });
+
+        // Submenu hover
+        document.getElementById('menu-create-index').addEventListener('mouseenter', function() {
+            uiElements.ctxSubMenu.classList.add('show');
+        });
+
+        function handleMenuAction(action) {
+            if(action === 'add_column') {
+                if(currentStep === 3) addColumnRow(1, 'idNhacsi', 'INT', false, 'AUTO_INCREMENT');
+                else if (currentStep === 4) addColumnRow(2, 'tenNhacsi', 'VARCHAR', true, 'Kí tự rỗng \'\'', '255');
+            } else if (action === 'set_primary') {
+                if(selectedRowId === 1) {
+                    document.getElementById(`key-icon-1`).innerHTML = `<i class="fas fa-key text-yellow-500 mr-1"></i>`;
+                    logSQL(`ALTER TABLE \`mymusic\`.\`nhacsi\` ADD PRIMARY KEY (\`idNhacsi\`);`);
+                    uiElements.instr.innerHTML = "<span class='text-green-600 font-bold'><i class='fas fa-check-circle mr-1'></i>Hoàn thành xuất sắc!</span> Bạn đã thiết lập xong bảng `nhacsi` với khoá chính là `idNhacsi`. Bây giờ hãy bấm nút <b>Save</b> góc trên bên trái.";
+                } else if (selectedRowId === 2) {
+                    alert("Cảnh báo: Bạn đang chọn nhầm 'tenNhacsi' làm khoá chính. Hãy xem Tab 'Lưu ý'!");
+                }
+            }
+            uiElements.ctxMenu.classList.remove('show');
+            uiElements.ctxSubMenu.classList.remove('show');
+        }
+
+        function saveTable() {
+            if (currentStep === 5 && document.getElementById('key-icon-1').innerHTML.includes('fa-key')) {
+                logSQL("-- Bảng `nhacsi` đã được lưu vào CSDL `mymusic`", "success");
+                alert("Chúc mừng! Bạn đã hoàn thành mô phỏng bài thực hành số 19.");
+            } else {
+                alert("Vui lòng hoàn thành các bước tạo bảng và thiết lập khoá chính trước khi lưu.");
+            }
+        }
+
+        function resetSimulation() {
+            currentStep = 1;
+            selectedRowId = null;
+            uiElements.log.innerHTML = '/* Nhật ký lệnh SQL sẽ hiển thị ở đây */<br>';
+            uiElements.treeMyMusic.classList.add('hidden');
+            uiElements.treeNhacsi.classList.add('hidden');
+            uiElements.workspaceTable.classList.add('hidden');
+            uiElements.workspaceTable.style.display = 'none';
+            uiElements.workspaceEmpty.classList.remove('hidden');
+            
+            // Clean table grid (keep headers)
+            const headers = Array.from(uiElements.colGrid.querySelectorAll('.header'));
+            uiElements.colGrid.innerHTML = '';
+            headers.forEach(h => uiElements.colGrid.appendChild(h));
+            
+            uiElements.inputDbName.value = '';
+            uiElements.previewDbName.innerText = '';
+            
+            renderStep();
+        }
+
+        // Init
+        renderStep();
+
+    </script>
+</body>
+</html>

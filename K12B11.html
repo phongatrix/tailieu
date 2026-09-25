@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 11: Đa Phương Tiện & Khung Nội Tuyến</title>
+    
+    <!-- Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc; /* Nền pastel rất nhẹ */
+            color: #334155;
+        }
+
+        /* Yêu cầu đặc biệt cho Tiêu đề */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            text-transform: capitalize;
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Xanh lam sang Tím */
+            -webkit-background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        .tab-btn.active {
+            background-color: #e0e7ff; /* Xanh pastel */
+            color: #4f46e5;
+            border-bottom: 3px solid #6366f1;
+            font-weight: 700;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tùy chỉnh thanh cuộn */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a5b4fc; }
+
+        /* Card pastel */
+        .card-pink { background-color: #fce7f3; }
+        .card-blue { background-color: #e0f2fe; }
+        .card-green { background-color: #dcfce3; }
+        .card-purple { background-color: #f3e8ff; }
+        .card-yellow { background-color: #fef08a; }
+
+        .mindmap-line {
+            width: 2px;
+            background-color: #cbd5e1;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <header class="text-center mb-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+        <h1 class="title-gradient mb-2">Bài 11: Chèn Tệp Đa Phương Tiện Và Khung Nội Tuyến Vào Trang Web</h1>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <nav class="flex flex-wrap gap-2 justify-center mb-8 bg-white p-2 rounded-2xl shadow-sm">
+        <button onclick="openTab('tongquan')" class="tab-btn active px-6 py-3 rounded-xl transition-all duration-300 hover:bg-slate-100"><i class="fa-solid fa-map-location-dot mr-2"></i>Tổng Quan</button>
+        <button onclick="openTab('hinhanh')" class="tab-btn px-6 py-3 rounded-xl transition-all duration-300 hover:bg-slate-100"><i class="fa-solid fa-image mr-2"></i>Chèn Ảnh</button>
+        <button onclick="openTab('media')" class="tab-btn px-6 py-3 rounded-xl transition-all duration-300 hover:bg-slate-100"><i class="fa-solid fa-circle-play mr-2"></i>Âm Thanh & Video</button>
+        <button onclick="openTab('iframe')" class="tab-btn px-6 py-3 rounded-xl transition-all duration-300 hover:bg-slate-100"><i class="fa-solid fa-window-restore mr-2"></i>Khung Nội Tuyến</button>
+        <button onclick="openTab('luyentap')" class="tab-btn px-6 py-3 rounded-xl transition-all duration-300 hover:bg-slate-100"><i class="fa-solid fa-gamepad mr-2"></i>Luyện Tập</button>
+    </nav>
+
+    <!-- TAB 1: TỔNG QUAN -->
+    <section id="tongquan" class="tab-content active">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Mục tiêu & Cốt lõi (30% Text) -->
+            <div class="col-span-1 space-y-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border-l-4 border-blue-400">
+                    <h2 class="text-xl font-bold text-blue-600 mb-4"><i class="fa-solid fa-bullseye mr-2"></i>Mục tiêu bài học</h2>
+                    <ul class="space-y-3 text-slate-600">
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-500 mt-1 mr-2"></i> Sử dụng thẻ HTML chèn được tệp đa phương tiện.</li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-500 mt-1 mr-2"></i> Điều chỉnh kích thước cho phù hợp.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border-l-4 border-purple-400">
+                    <h2 class="text-xl font-bold text-purple-600 mb-4"><i class="fa-solid fa-brain mr-2"></i>Kiến thức cốt lõi</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-100 rounded-lg text-sm font-mono">&lt;img&gt;</span>
+                        <span class="px-3 py-1 bg-slate-100 rounded-lg text-sm font-mono">&lt;video&gt;</span>
+                        <span class="px-3 py-1 bg-slate-100 rounded-lg text-sm font-mono">&lt;audio&gt;</span>
+                        <span class="px-3 py-1 bg-slate-100 rounded-lg text-sm font-mono">&lt;iframe&gt;</span>
+                        <span class="px-3 py-1 bg-slate-100 rounded-lg text-sm font-mono">src</span>
+                        <span class="px-3 py-1 bg-slate-100 rounded-lg text-sm font-mono">alt</span>
+                    </div>
+                </div>
+                
+                <div class="bg-red-50 p-6 rounded-3xl shadow-sm border-l-4 border-red-400">
+                    <h2 class="text-xl font-bold text-red-600 mb-4"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Dễ nhầm lẫn</h2>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li>📌 <code class="bg-white px-1 rounded">&lt;img&gt;</code> là thẻ ĐƠN, không có thẻ đóng.</li>
+                        <li>📌 <code class="bg-white px-1 rounded">&lt;video&gt;</code> và <code class="bg-white px-1 rounded">&lt;audio&gt;</code> là thẻ CÓ ĐÓNG.</li>
+                        <li>📌 Thẻ <code class="bg-white px-1 rounded">&lt;audio&gt;</code> <b>KHÔNG CÓ</b> thuộc tính width, height và poster.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Sơ đồ tư duy (70% Visual) -->
+            <div class="col-span-1 md:col-span-2 bg-white p-6 rounded-3xl shadow-sm flex flex-col items-center justify-center">
+                <h2 class="text-xl font-bold text-slate-700 mb-6"><i class="fa-solid fa-sitemap mr-2"></i>Sơ Đồ Tư Duy</h2>
+                
+                <!-- Mindmap CSS Flow -->
+                <div class="text-center w-full max-w-lg">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 px-6 rounded-2xl shadow-md inline-block z-10 relative text-lg">
+                        ĐA PHƯƠNG TIỆN HTML
+                    </div>
+                    
+                    <div class="flex justify-between mt-6 relative">
+                        <div class="w-full h-1 bg-slate-200 absolute top-0 z-0"></div>
+                        
+                        <!-- Nhánh Ảnh -->
+                        <div class="flex flex-col items-center w-1/3 z-10 pt-4 relative">
+                            <div class="w-1 h-6 bg-slate-200 absolute -top-2 left-1/2"></div>
+                            <div class="card-blue p-3 rounded-xl shadow-sm mb-3 w-full border border-blue-200">
+                                <i class="fa-solid fa-image text-blue-500 text-2xl mb-1"></i>
+                                <div class="font-bold text-blue-700">&lt;img&gt;</div>
+                                <div class="text-xs text-slate-600 mt-1">PNG, JPEG, GIF</div>
+                            </div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-full text-center">src (bắt buộc)</div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-full text-center">alt (thay thế)</div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-full text-center">width, height</div>
+                        </div>
+
+                        <!-- Nhánh Media -->
+                        <div class="flex flex-col items-center w-1/3 z-10 pt-4 relative">
+                            <div class="w-1 h-6 bg-slate-200 absolute -top-2 left-1/2"></div>
+                            <div class="card-pink p-3 rounded-xl shadow-sm mb-3 w-11/12 border border-pink-200 mx-auto">
+                                <i class="fa-solid fa-film text-pink-500 text-2xl mb-1"></i>
+                                <div class="font-bold text-pink-700">&lt;video&gt; / &lt;audio&gt;</div>
+                                <div class="text-xs text-slate-600 mt-1">mp4, mp3, wav</div>
+                            </div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-11/12 text-center">controls</div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-11/12 text-center">autoplay, muted</div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-11/12 text-center">poster (chỉ video)</div>
+                        </div>
+
+                        <!-- Nhánh Iframe -->
+                        <div class="flex flex-col items-center w-1/3 z-10 pt-4 relative">
+                            <div class="w-1 h-6 bg-slate-200 absolute -top-2 left-1/2"></div>
+                            <div class="card-green p-3 rounded-xl shadow-sm mb-3 w-full border border-green-200">
+                                <i class="fa-solid fa-window-maximize text-green-600 text-2xl mb-1"></i>
+                                <div class="font-bold text-green-700">&lt;iframe&gt;</div>
+                                <div class="text-xs text-slate-600 mt-1">Nhúng trang khác</div>
+                            </div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-full text-center">src</div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-full text-center">width, height</div>
+                            <div class="text-xs bg-white border border-slate-200 rounded px-2 py-1 m-1 w-full text-center">kết hợp thẻ &lt;a&gt;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 2: HÌNH ẢNH -->
+    <section id="hinhanh" class="tab-content">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Lý thuyết (Infographic) -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-slate-700 mb-4"><i class="fa-solid fa-image text-blue-500 mr-2"></i>Thẻ Hình Ảnh <code>&lt;img&gt;</code></h2>
+                
+                <div class="card-blue p-4 rounded-2xl mb-4">
+                    <p class="text-sm">Là thẻ <b>đơn</b>, không ngắt dòng. Cần tải ảnh trước khi hiển thị.</p>
+                    <p class="text-sm text-red-500 mt-1"><i class="fa-solid fa-lightbulb"></i> Mẹo: Nên dùng đường dẫn tương đối.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-green-50 p-3 rounded-xl border border-green-100 text-center">
+                        <i class="fa-regular fa-circle-check text-green-500 text-2xl mb-2"></i>
+                        <h3 class="font-bold text-sm text-slate-700">Định dạng hỗ trợ</h3>
+                        <p class="text-xs text-slate-500">PNG, JPEG, GIF, WebP</p>
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 text-center">
+                        <i class="fa-solid fa-arrows-rotate text-orange-400 text-2xl mb-2"></i>
+                        <h3 class="font-bold text-sm text-slate-700">Cần chuyển đổi</h3>
+                        <p class="text-xs text-slate-500">TIFF, EPS</p>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-slate-700 mb-2 border-b pb-2">Các thuộc tính:</h3>
+                <ul class="space-y-3 text-sm">
+                    <li><code class="text-blue-600 bg-blue-50 px-2 py-1 rounded">src</code> <b>(Bắt buộc)</b> Đường dẫn tới ảnh.</li>
+                    <li><code class="text-purple-600 bg-purple-50 px-2 py-1 rounded">alt</code> Văn bản thay thế khi lỗi mạng/ảnh hỏng. Giúp hình dung nội dung.</li>
+                    <li><code class="text-green-600 bg-green-50 px-2 py-1 rounded">width / height</code> Chỉnh kích thước (pixel). Giúp tải trang nhanh hơn. Nếu chỉ chỉnh 1 cạnh, cạnh kia giữ nguyên tỉ lệ gốc.</li>
+                </ul>
+            </div>
+
+            <!-- Tương tác trực quan -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col">
+                <h2 class="text-xl font-bold text-slate-700 mb-4"><i class="fa-solid fa-wand-magic-sparkles text-purple-500 mr-2"></i>Góc Thực Hành Tương Tác</h2>
+                
+                <!-- Bảng điều khiển -->
+                <div class="bg-slate-50 p-4 rounded-xl mb-4 border border-slate-200">
+                    <p class="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Cài đặt thuộc tính</p>
+                    <div class="grid grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <label class="text-xs text-slate-600 block mb-1"><code>width</code> (px): <span id="widthVal" class="font-bold text-blue-600">200px</span></label>
+                            <input type="range" id="imgWidth" min="50" max="350" value="200" class="w-full accent-blue-500" oninput="updateImage()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-600 block mb-1"><code>height</code> (px): <span id="heightVal" class="font-bold text-green-600">Auto</span></label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="imgHeight" min="50" max="350" value="200" class="w-full accent-green-500" disabled oninput="updateImage()">
+                                <label class="text-[10px] flex items-center gap-1 cursor-pointer" title="Bỏ chọn để làm méo ảnh">
+                                    <input type="checkbox" id="autoHeight" checked onchange="toggleAutoHeight()" class="accent-slate-500"> Auto
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs text-slate-600 block mb-1">Đường dẫn (<code>src</code>)</label>
+                            <select id="imgSrc" class="w-full p-1.5 text-sm rounded border border-slate-300 bg-white" onchange="updateImage()">
+                                <option value="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" data-type="absolute" data-display="https://example.com/img/meo.jpg">Tuyệt đối (Link Web)</option>
+                                <option value="https://images.unsplash.com/photo-1526512340740-9217d0159da9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" data-type="relative" data-display="images/anh_the_thao.png">Tương đối (Thư mục local)</option>
+                                <option value="duong_dan_khong_ton_tai.jpg" data-type="error" data-display="images/anh_loi.jpg">Đường dẫn sai (Để test ALT)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-600 block mb-1"><code>alt</code> <span class="text-[10px] text-red-500">(Chỉ hiện khi lỗi ảnh)</span></label>
+                            <input type="text" id="imgAlt" value="Hình chú mèo dễ thương" class="w-full p-1.5 text-sm rounded border border-slate-300" oninput="updateImage()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Preview -->
+                <div class="bg-slate-800 text-green-400 font-mono text-sm p-3 rounded-xl mb-4 overflow-x-auto whitespace-pre">
+                    &lt;img src="<span id="codeSrc" class="text-green-300 font-bold">https://example.com/img/meo.jpg</span>"<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alt="<span id="codeAlt" class="text-yellow-300">Hình chú mèo dễ thương</span>"<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;width="<span id="codeWidth" class="text-yellow-300">200</span>"<span id="codeHeightDisplay" class="hidden"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;height="<span id="codeHeight" class="text-yellow-300">200</span>"</span>&gt;
+                </div>
+
+                <!-- Trình duyệt mô phỏng -->
+                <div class="flex-grow border-2 border-dashed border-slate-300 rounded-xl p-4 bg-white relative min-h-[300px] flex flex-col">
+                    <span class="absolute top-2 left-2 text-xs text-slate-400 bg-white px-2 py-1 rounded shadow-sm z-10"><i class="fa-brands fa-chrome"></i> Kết quả hiển thị thực tế</span>
+                    
+                    <!-- Khung mô phỏng cấu trúc tệp (Mới) -->
+                    <div id="pathContextSimulation" class="mt-6 mb-4 w-full">
+                        <!-- Sẽ được render bởi Javascript -->
+                    </div>
+
+                    <!-- Khung hiển thị ảnh thật -->
+                    <div class="border border-slate-200 bg-slate-50 flex-grow flex flex-col items-center justify-center w-full h-full p-4 relative rounded">
+                         
+                         <!-- Thẻ img thực tế: Tự động dùng hành vi tự nhiên của trình duyệt -->
+                         <img id="actualImagePreview" 
+                              src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" 
+                              alt="Hình chú mèo dễ thương" 
+                              width="200" 
+                              class="shadow-md transition-all duration-300 bg-slate-200 object-cover min-h-[50px] min-w-[50px]">
+                         
+                         <!-- Helper text chỉ hiện khi có lỗi để nhấn mạnh -->
+                         <div id="altHelperText" class="mt-4 text-xs text-red-500 font-bold animate-pulse hidden bg-red-50 p-2 rounded border border-red-200">
+                             <i class="fa-solid fa-arrow-up"></i> Trình duyệt vừa hiển thị thuộc tính "alt" do không tìm thấy ảnh!
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 3: ÂM THANH & VIDEO -->
+    <section id="media" class="tab-content">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Trực quan So sánh -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-slate-700 mb-6"><i class="fa-solid fa-film text-pink-500 mr-2"></i>Thẻ <code>&lt;video&gt;</code> và <code>&lt;audio&gt;</code></h2>
+                
+                <div class="flex gap-4 mb-6">
+                    <!-- Video Col -->
+                    <div class="flex-1 card-pink p-4 rounded-2xl border border-pink-100">
+                        <div class="text-center mb-3">
+                            <i class="fa-solid fa-video text-3xl text-pink-500"></i>
+                            <h3 class="font-bold mt-2">Video</h3>
+                            <span class="text-xs bg-white px-2 py-1 rounded-full text-pink-600">mp4, webm</span>
+                        </div>
+                        <ul class="text-sm space-y-2">
+                            <li><i class="fa-solid fa-check text-green-500 mr-1"></i> <code>src</code></li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-1"></i> <code>controls</code></li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-1"></i> <code>autoplay</code></li>
+                            <li class="bg-white p-1 rounded font-bold"><i class="fa-solid fa-star text-yellow-500 mr-1"></i> <code>width, height</code></li>
+                            <li class="bg-white p-1 rounded font-bold"><i class="fa-solid fa-image text-blue-500 mr-1"></i> <code>poster</code></li>
+                        </ul>
+                    </div>
+
+                    <!-- Audio Col -->
+                    <div class="flex-1 card-purple p-4 rounded-2xl border border-purple-100">
+                        <div class="text-center mb-3">
+                            <i class="fa-solid fa-music text-3xl text-purple-500"></i>
+                            <h3 class="font-bold mt-2">Audio</h3>
+                            <span class="text-xs bg-white px-2 py-1 rounded-full text-purple-600">mp3, wav, ogg</span>
+                        </div>
+                        <ul class="text-sm space-y-2">
+                            <li><i class="fa-solid fa-check text-green-500 mr-1"></i> <code>src</code></li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-1"></i> <code>controls</code></li>
+                            <li><i class="fa-solid fa-check text-green-500 mr-1"></i> <code>autoplay</code></li>
+                            <li class="text-red-400 line-through"><i class="fa-solid fa-xmark mr-1"></i> width, height</li>
+                            <li class="text-red-400 line-through"><i class="fa-solid fa-xmark mr-1"></i> poster</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-xl border-l-4 border-yellow-400 text-sm">
+                    <b>Lưu ý (autoplay):</b> Một số trình duyệt như Chrome sẽ KHÔNG cho phép video chạy tự động nếu thiếu thuộc tính <code>muted</code> (không phát tiếng).
+                </div>
+            </div>
+
+            <!-- Tương tác tạo Video -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-slate-700 mb-4"><i class="fa-solid fa-sliders text-blue-500 mr-2"></i>Lắp ráp Trình phát Video</h2>
+                
+                <!-- Bật/tắt thuộc tính -->
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <label class="flex items-center space-x-2 bg-slate-100 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-200 border border-slate-200">
+                        <input type="checkbox" id="chkControls" checked onchange="updateVideoDemo()" class="w-4 h-4 text-blue-600 rounded">
+                        <span class="text-sm font-mono font-bold text-slate-700">controls</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-slate-100 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-200 border border-slate-200">
+                        <input type="checkbox" id="chkAutoplay" onchange="updateVideoDemo()" class="w-4 h-4 text-blue-600 rounded">
+                        <span class="text-sm font-mono font-bold text-slate-700">autoplay</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-slate-100 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-200 border border-slate-200">
+                        <input type="checkbox" id="chkMuted" onchange="updateVideoDemo()" class="w-4 h-4 text-blue-600 rounded">
+                        <span class="text-sm font-mono font-bold text-slate-700">muted</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-slate-100 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-200 border border-slate-200">
+                        <input type="checkbox" id="chkLoop" onchange="updateVideoDemo()" class="w-4 h-4 text-blue-600 rounded">
+                        <span class="text-sm font-mono font-bold text-slate-700">loop</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-slate-100 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-200 border border-slate-200">
+                        <input type="checkbox" id="chkPoster" onchange="updateVideoDemo()" class="w-4 h-4 text-blue-600 rounded">
+                        <span class="text-sm font-mono font-bold text-slate-700">poster</span>
+                    </label>
+                </div>
+
+                <!-- Code sinh ra -->
+                <div class="bg-slate-800 text-pink-300 font-mono text-sm p-3 rounded-xl mb-4 overflow-x-auto">
+                    &lt;video src="<span class="text-white">big_buck_bunny.mp4</span>" width="<span class="text-yellow-300">100%</span>" 
+                    <span id="codeControls" class="text-yellow-300">controls</span>
+                    <span id="codeAutoplay" class="text-yellow-300 hidden">autoplay</span>
+                    <span id="codeMuted" class="text-yellow-300 hidden">muted</span>
+                    <span id="codeLoop" class="text-yellow-300 hidden">loop</span>
+                    <span id="codePoster" class="text-yellow-300 hidden">poster="<span class="text-white">anh_bia.jpg</span>"</span>&gt;<br>
+                    &lt;/video&gt;
+                </div>
+
+                <!-- Trực quan hóa Player -->
+                <div class="border-2 border-slate-300 rounded-xl bg-slate-100 relative flex flex-col items-center justify-center p-2 min-h-[300px]">
+                    <span class="absolute top-2 left-2 text-xs text-slate-500 bg-white px-2 py-1 rounded shadow-sm z-10 opacity-80"><i class="fa-solid fa-play"></i> Trình phát thực tế</span>
+                    
+                    <!-- Vùng chứa video thực tế -->
+                    <div id="realVideoContainer" class="w-full h-full flex items-center justify-center rounded-lg overflow-hidden bg-black shadow-inner">
+                        <!-- Video sẽ được render lại bằng JS ở đây -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 4: IFRAME -->
+    <section id="iframe" class="tab-content">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-center">
+                <h2 class="text-xl font-bold text-slate-700 mb-4"><i class="fa-solid fa-window-restore text-green-500 mr-2"></i>Khung Nội Tuyến <code>&lt;iframe&gt;</code></h2>
+                
+                <p class="text-slate-600 text-sm mb-4">
+                    Khung nhìn chứa tài nguyên web khác (VD: YouTube, Google Maps) bên trong trang web hiện tại.
+                </p>
+
+                <div class="card-green p-4 rounded-xl mb-4 border border-green-200">
+                    <h3 class="font-bold text-green-700 mb-2">Thuộc tính:</h3>
+                    <ul class="text-sm space-y-1">
+                        <li><code>src</code>: Đường dẫn hiển thị trong khung.</li>
+                        <li><code>width, height</code>: Chiều rộng/cao của khung.</li>
+                        <li><code>name</code> (định danh) để kết hợp với <code>target</code> của thẻ <code>&lt;a&gt;</code>.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                    <p class="text-sm font-bold text-slate-700 mb-2">Cách liên kết link vào iframe (Nhiệm vụ 3):</p>
+                    <div class="font-mono text-xs bg-white p-2 border rounded text-slate-600 mb-2">
+                        &lt;iframe <b>name="khung_hien_thi"</b>&gt;&lt;/iframe&gt;
+                    </div>
+                    <div class="font-mono text-xs bg-white p-2 border rounded text-blue-600">
+                        &lt;a href="trang1.html" <b>target="khung_hien_thi"</b>&gt;Mở Web 1&lt;/a&gt;
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tương tác Iframe -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <h2 class="text-lg font-bold text-slate-700 mb-4 text-center">Tương tác: Click Menu <i class="fa-solid fa-arrow-right text-slate-400 mx-2"></i> Đổi Iframe</h2>
+                
+                <p class="text-xs text-slate-500 text-center mb-6">Mô phỏng một trang web thực tế có thanh menu. Các mục menu là thẻ <code>&lt;a&gt;</code> sử dụng thuộc tính <code>target="khung_hien_thi"</code></p>
+
+                <!-- Container Layout (Menu + Iframe + Bottom Code) -->
+                <div class="flex flex-col border-4 border-slate-300 rounded-xl overflow-hidden bg-slate-50 shadow-inner relative">
+                    
+                    <!-- Khung trên: Menu và Iframe -->
+                    <div class="flex flex-col md:flex-row w-full">
+                        <!-- Cột Menu (Bên trái) -->
+                        <div class="w-full md:w-1/3 bg-white border-b md:border-b-0 md:border-r border-slate-200 p-4 flex flex-col">
+                            <h3 class="font-bold text-slate-700 mb-4 pb-2 border-b border-slate-100 uppercase text-sm tracking-wider"><i class="fa-solid fa-bars mr-2 text-blue-500"></i> Menu Điều Hướng</h3>
+                            
+                            <nav class="flex-grow space-y-2">
+                                <!-- Sử dụng data URL để mô phỏng trang web khác nhau -->
+                                <a href="data:text/html;charset=utf-8,%3Chtml%3E%3Cbody%3E%3Cdiv%20style='font-family:sans-serif;text-align:center;padding:40px;background:%23ffedd5;color:%23ea580c;border-radius:15px;height:100%25;box-sizing:border-box;'%3E%3Ch1%20style='font-size:2rem;margin-bottom:10px;'%3E%26%23127936%3B%20CLB%20Th%E1%BB%83%20Thao%3C/h1%3E%3Cp%3E%C4%90%C3%A2y%20l%C3%A0%20n%E1%BB%99i%20dung%20c%E1%BB%A7a%20trang%20%3Cb%3Ethe_thao.html%3C/b%3E%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E" 
+                                   target="khung_hien_thi" 
+                                   data-file="the_thao.html"
+                                   onclick="setIframeMenuActive(this)"
+                                   class="iframe-menu-item block px-4 py-3 rounded-lg font-medium text-slate-600 hover:bg-orange-50 hover:text-orange-600 border border-transparent hover:border-orange-100 transition-all duration-200">
+                                    <i class="fa-solid fa-basketball mr-2 w-5 text-center"></i> CLB Thể Thao
+                                </a>
+                                
+                                <a href="data:text/html;charset=utf-8,%3Chtml%3E%3Cbody%3E%3Cdiv%20style='font-family:sans-serif;text-align:center;padding:40px;background:%23f3e8ff;color:%239333ea;border-radius:15px;height:100%25;box-sizing:border-box;'%3E%3Ch1%20style='font-size:2rem;margin-bottom:10px;'%3E%26%23127912%3B%20CLB%20Ngh%E1%BB%87%20Thu%E1%BA%ADt%3C/h1%3E%3Cp%3E%C4%90%C3%A2y%20l%C3%A0%20n%E1%BB%99i%20dung%20c%E1%BB%A7a%20trang%20%3Cb%3Enghe_thuat.html%3C/b%3E%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E" 
+                                   target="khung_hien_thi" 
+                                   data-file="nghe_thuat.html"
+                                   onclick="setIframeMenuActive(this)"
+                                   class="iframe-menu-item block px-4 py-3 rounded-lg font-medium text-slate-600 hover:bg-purple-50 hover:text-purple-600 border border-transparent hover:border-purple-100 transition-all duration-200">
+                                    <i class="fa-solid fa-palette mr-2 w-5 text-center"></i> CLB Nghệ Thuật
+                                </a>
+
+                                <a href="data:text/html;charset=utf-8,%3Chtml%3E%3Cbody%3E%3Cdiv%20style='font-family:sans-serif;text-align:center;padding:40px;background:%23e0f2fe;color:%230284c7;border-radius:15px;height:100%25;box-sizing:border-box;'%3E%3Ch1%20style='font-size:2rem;margin-bottom:10px;'%3E%26%23128187%3B%20CLB%20Tin%20H%E1%BB%8Dc%3C/h1%3E%3Cp%3E%C4%90%C3%A2y%20l%C3%A0%20n%E1%BB%99i%20dung%20c%E1%BB%A7a%20trang%20%3Cb%3Etin_hoc.html%3C/b%3E%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E" 
+                                   target="khung_hien_thi" 
+                                   data-file="tin_hoc.html"
+                                   onclick="setIframeMenuActive(this)"
+                                   class="iframe-menu-item block px-4 py-3 rounded-lg font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-600 border border-transparent hover:border-blue-100 transition-all duration-200">
+                                    <i class="fa-solid fa-computer mr-2 w-5 text-center"></i> CLB Tin Học
+                                </a>
+                            </nav>
+                        </div>
+
+                        <!-- Cửa sổ Iframe (Bên phải) -->
+                        <div class="w-full md:w-2/3 flex flex-col bg-slate-50">
+                            <div class="bg-slate-300 p-2 flex items-center gap-2 border-b border-slate-300">
+                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                                <div class="bg-white rounded-md px-3 py-1 text-xs text-slate-500 font-mono flex-grow mx-2 flex justify-between items-center">
+                                    <span>&lt;iframe name="<span class="text-blue-600 font-bold">khung_hien_thi</span>"&gt;</span>
+                                    <i class="fa-solid fa-lock text-green-500 opacity-70" title="Khung bảo mật"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Iframe thật -->
+                            <iframe name="khung_hien_thi" class="w-full h-64 md:h-full min-h-[350px] border-none bg-white" srcdoc="
+                                <html style='height:100%;'>
+                                <body style='height:100%; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; color:#94a3b8; background-color:#f8fafc; text-align:center; padding:20px;'>
+                                    <div style='background-color: #e2e8f0; border-radius: 50%; width: 80px; height: 80px; display:flex; align-items:center; justify-content:center; margin-bottom: 20px; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);'>
+                                        <h1 style='font-size:2.5rem; margin:0;'>🖱️</h1>
+                                    </div>
+                                    <h2 style='color:#64748b; font-size:1.2rem; margin-bottom:10px;'>Khu vực hiển thị</h2>
+                                    <p style='font-size:0.9rem; line-height: 1.5;'>Hãy click vào các mục <b>Menu Điều Hướng</b> bên trái<br>để tải trang web vào khung nội tuyến này.</p>
+                                </body>
+                                </html>
+                            "></iframe>
+                        </div>
+                    </div>
+                    
+                    <!-- Khung dưới: Hiển thị Code ngang (Mới chuyển xuống) -->
+                    <div class="w-full border-t border-slate-300 bg-slate-800 p-4">
+                        <div id="iframeCodeDisplay" class="text-sm font-mono text-slate-300 break-words transition-all duration-300">
+                            <div class="flex items-center text-slate-400 mb-1 text-xs">
+                                <i class="fa-solid fa-code mr-2"></i> Cấu trúc thẻ liên kết (Click menu để xem)
+                            </div>
+                            <div class="opacity-50 mt-2">
+                                &lt;a href="..." target="khung_hien_thi"&gt;...&lt;/a&gt;
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- TAB 5: LUYỆN TẬP (QUIZ) -->
+    <section id="luyentap" class="tab-content">
+        <div class="max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
+            <h2 class="title-gradient mb-6 text-center w-full block"><i class="fa-solid fa-gamepad mr-2"></i>Trắc Nghiệm Ôn Tập (5 Câu)</h2>
+            
+            <div id="quizContainer">
+                <!-- Câu hỏi được render bằng JS -->
+            </div>
+
+            <div class="mt-6 flex justify-between items-center">
+                <span id="quizScore" class="font-bold text-lg text-slate-700 hidden">Kết quả: 0/5</span>
+                <button onclick="submitQuiz()" id="submitBtn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-700 transition w-full md:w-auto shadow-md">
+                    Nộp Bài <i class="fa-solid fa-paper-plane ml-2"></i>
+                </button>
+                <button onclick="resetQuiz()" id="retryBtn" class="bg-purple-100 text-purple-700 font-bold py-3 px-8 rounded-xl hover:bg-purple-200 transition w-full md:w-auto hidden">
+                    Làm Lại <i class="fa-solid fa-rotate-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="text-center mt-12 text-sm text-slate-400 pb-8">
+        <p>Sổ tay điện tử Tin học 11 - Bài 11. Thiết kế theo phong cách Studygram.</p>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // 1. Quản lý Tabs
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // 2. Tương tác Ảnh (Đã nâng cấp)
+        function toggleAutoHeight() {
+            const isAuto = document.getElementById('autoHeight').checked;
+            const heightInput = document.getElementById('imgHeight');
+            heightInput.disabled = isAuto;
+            updateImage();
+        }
+
+        function updateImage() {
+            const width = document.getElementById('imgWidth').value;
+            const heightInput = document.getElementById('imgHeight');
+            const isAutoHeight = document.getElementById('autoHeight').checked;
+            
+            // Lấy thông tin từ Dropdown
+            const srcSelect = document.getElementById('imgSrc');
+            const selectedOption = srcSelect.options[srcSelect.selectedIndex];
+            const actualUrl = selectedOption.value; // Link thật để hiển thị
+            const pathType = selectedOption.getAttribute('data-type'); // absolute, relative, error
+            const codeDisplayUrl = selectedOption.getAttribute('data-display'); // Text hiển thị trong code HTML
+            
+            const altText = document.getElementById('imgAlt').value;
+
+            // Cập nhật UI controls
+            document.getElementById('widthVal').innerText = width + 'px';
+            document.getElementById('heightVal').innerText = isAutoHeight ? 'Auto' : heightInput.value + 'px';
+            
+            // Cập nhật Code Preview
+            document.getElementById('codeWidth').innerText = width;
+            document.getElementById('codeAlt').innerText = altText;
+            
+            if(!isAutoHeight) {
+                document.getElementById('codeHeightDisplay').classList.remove('hidden');
+                document.getElementById('codeHeight').innerText = heightInput.value;
+            } else {
+                document.getElementById('codeHeightDisplay').classList.add('hidden');
+            }
+
+            // --- XỬ LÝ MÔ PHỎNG ĐƯỜNG DẪN VÀ THỂ HIỆN TRONG CODE ---
+            const codeSrcElement = document.getElementById('codeSrc');
+            codeSrcElement.innerText = codeDisplayUrl;
+
+            const pathContextDiv = document.getElementById('pathContextSimulation');
+            const altHelperText = document.getElementById('altHelperText');
+
+            if (pathType === 'absolute') {
+                codeSrcElement.className = 'text-green-300 font-bold';
+                pathContextDiv.innerHTML = `
+                    <div class="flex items-center text-sm text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-200 shadow-sm">
+                        <i class="fa-solid fa-globe text-3xl mr-4 text-blue-500"></i>
+                        <div>
+                            <strong class="uppercase block mb-1">Mô phỏng: Đường dẫn Tuyệt đối</strong>
+                            <span class="text-xs">Ảnh được tải từ một website/máy chủ khác trên mạng Internet.</span>
+                        </div>
+                    </div>`;
+                altHelperText.classList.add('hidden');
+            } 
+            else if (pathType === 'relative') {
+                codeSrcElement.className = 'text-purple-300 font-bold'; 
+                pathContextDiv.innerHTML = `
+                    <div class="flex items-center text-sm text-purple-700 bg-purple-50 p-3 rounded-lg border border-purple-200 shadow-sm">
+                        <i class="fa-solid fa-folder-tree text-3xl mr-4 text-purple-500"></i>
+                        <div>
+                            <strong class="uppercase block mb-1">Mô phỏng: Đường dẫn Tương đối</strong>
+                            <span class="text-xs">Tải từ cấu trúc thư mục của bạn: <code class="bg-white px-1 rounded border">Thư mục gốc</code> <i class="fa-solid fa-angle-right mx-1 text-[10px]"></i> <code class="bg-white px-1 rounded border">images</code> <i class="fa-solid fa-angle-right mx-1 text-[10px]"></i> <code class="bg-white px-1 rounded border">anh_the_thao.png</code></span>
+                        </div>
+                    </div>`;
+                altHelperText.classList.add('hidden');
+            } 
+            else if (pathType === 'error') {
+                codeSrcElement.className = 'text-red-400 font-bold';
+                pathContextDiv.innerHTML = `
+                    <div class="flex items-center text-sm text-red-700 bg-red-50 p-3 rounded-lg border border-red-200 shadow-sm">
+                        <i class="fa-solid fa-link-slash text-3xl mr-4 text-red-500"></i>
+                        <div>
+                            <strong class="uppercase block mb-1">Mô phỏng: Link bị hỏng / Lỗi mạng</strong>
+                            <span class="text-xs">Tệp tin không tồn tại. Lúc này trình duyệt bắt buộc phải sử dụng thuộc tính <b>alt</b>.</span>
+                        </div>
+                    </div>`;
+                altHelperText.classList.remove('hidden');
+            }
+
+            // --- ÁP DỤNG VÀO THẺ IMG THỰC TẾ ĐỂ BROWSER TỰ XỬ LÝ LỖI (NATIVE BEHAVIOR) ---
+            const actualImg = document.getElementById('actualImagePreview');
+            actualImg.src = actualUrl;
+            actualImg.alt = altText;
+            actualImg.width = width;
+            
+            if(isAutoHeight) {
+                actualImg.removeAttribute('height'); // Tự động tỉ lệ
+            } else {
+                actualImg.height = heightInput.value; // Có thể làm méo ảnh
+            }
+        }
+
+        // 3. Tương tác Video (Đã nâng cấp sử dụng thẻ video thật)
+        function updateVideoDemo() {
+            const hasControls = document.getElementById('chkControls').checked;
+            const hasAutoplay = document.getElementById('chkAutoplay').checked;
+            const hasMuted = document.getElementById('chkMuted').checked;
+            const hasLoop = document.getElementById('chkLoop').checked;
+            const hasPoster = document.getElementById('chkPoster').checked;
+
+            // Cập nhật text trong Code Preview
+            document.getElementById('codeControls').className = hasControls ? 'text-yellow-300' : 'hidden';
+            document.getElementById('codeAutoplay').className = hasAutoplay ? 'text-yellow-300' : 'hidden';
+            document.getElementById('codeMuted').className = hasMuted ? 'text-yellow-300' : 'hidden';
+            document.getElementById('codeLoop').className = hasLoop ? 'text-yellow-300' : 'hidden';
+            document.getElementById('codePoster').className = hasPoster ? 'text-yellow-300' : 'hidden';
+
+            // Tạo chuỗi HTML cho video mới
+            let videoHTML = `<video src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" width="100%" class="w-full h-full object-contain bg-black rounded-lg" `;
+            
+            if (hasControls) videoHTML += `controls `;
+            if (hasAutoplay) videoHTML += `autoplay `;
+            if (hasMuted) videoHTML += `muted `;
+            if (hasLoop) videoHTML += `loop `;
+            if (hasPoster) videoHTML += `poster="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" `;
+            
+            videoHTML += `>Trình duyệt của bạn không hỗ trợ thẻ video.</video>`;
+
+            // Render lại vùng chứa video để các thuộc tính như autoplay kích hoạt lại từ đầu
+            const container = document.getElementById('realVideoContainer');
+            container.innerHTML = videoHTML;
+            
+            // Xử lý cảnh báo nhỏ nếu bật autoplay mà không muted (Chrome policy)
+            if(hasAutoplay && !hasMuted) {
+                // Tạo một toast nhỏ thông báo
+                const toast = document.createElement('div');
+                toast.className = 'absolute top-4 bg-yellow-100 text-yellow-800 text-xs px-3 py-1 rounded shadow-md z-20 border border-yellow-300 animate-bounce';
+                toast.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Autoplay có thể bị trình duyệt chặn vì chưa bật <b>muted</b>!';
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+            }
+        }
+
+        // Xóa hàm loadIframeMock vì đã dùng thuộc tính target của thẻ <a> 
+
+        function setIframeMenuActive(clickedEl) {
+            // Xóa trạng thái active của tất cả menu items
+            const items = document.querySelectorAll('.iframe-menu-item');
+            items.forEach(el => {
+                el.classList.remove('bg-slate-100', 'border-slate-300', 'shadow-inner', 'font-bold');
+            });
+            // Thêm trạng thái active (bôi xám) cho item vừa được click
+            clickedEl.classList.add('bg-slate-100', 'border-slate-300', 'shadow-inner', 'font-bold');
+
+            // Cập nhật hiển thị mã HTML của thẻ a tương ứng
+            const fileName = clickedEl.getAttribute('data-file');
+            const targetName = clickedEl.getAttribute('target');
+            const codeDisplay = document.getElementById('iframeCodeDisplay');
+            
+            // Lấy nội dung text từ mục menu được click để hiển thị chính xác nội dung
+            const linkText = clickedEl.innerText.trim();
+            
+            if (fileName) {
+                codeDisplay.innerHTML = `
+                    <div class="flex items-center text-blue-400 mb-2 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-code mr-2"></i> Mã HTML sinh ra
+                    </div>
+                    <div>
+                        <span class="text-slate-400">&lt;</span><span class="text-pink-400 font-bold">a</span> 
+                        <span class="text-purple-400">href</span>="<span class="text-green-400">${fileName}</span>" 
+                        <span class="text-purple-400 ml-2">target</span>="<span class="text-blue-400 font-bold">${targetName}</span>"<span class="text-slate-400">&gt;</span><br>
+                        <span class="text-yellow-300 ml-4 md:ml-8 text-base bg-slate-700 px-2 py-0.5 rounded"> ${linkText} </span><br>
+                        <span class="text-slate-400">&lt;/</span><span class="text-pink-400 font-bold">a</span><span class="text-slate-400">&gt;</span>
+                    </div>
+                `;
+            }
+        }
+
+        // 5. Quiz Logic
+        const questions = [
+            {
+                q: "1. Thẻ HTML nào sau đây được dùng để chèn ảnh?",
+                options: ["&lt;image&gt;", "&lt;img&gt;", "&lt;pic&gt;", "&lt;picture&gt;"],
+                correct: 1
+            },
+            {
+                q: "2. Thuộc tính nào BẮT BUỘC phải có trong thẻ chèn ảnh?",
+                options: ["alt", "width", "height", "src"],
+                correct: 3
+            },
+            {
+                q: "3. Định dạng tệp video phổ biến nhất chạy trực tiếp trên hầu hết trình duyệt là?",
+                options: ["mp4", "mp3", "gif", "jpeg"],
+                correct: 0
+            },
+            {
+                q: "4. Thẻ &lt;audio&gt; KHÔNG có thuộc tính nào sau đây?",
+                options: ["src", "controls", "width", "autoplay"],
+                correct: 2
+            },
+            {
+                q: "5. Để tạo khung nội tuyến hiển thị một trang web khác, ta dùng thẻ gì?",
+                options: ["&lt;frame&gt;", "&lt;inline&gt;", "&lt;iframe&gt;", "&lt;a&gt;"],
+                correct: 2
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, qIndex) => {
+                let optionsHtml = '';
+                q.options.forEach((opt, oIndex) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition quiz-option group" data-q="${qIndex}" data-o="${oIndex}">
+                            <input type="radio" name="q${qIndex}" value="${oIndex}" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <span class="text-slate-700 font-medium group-hover:text-blue-600">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="mb-6 quiz-question" id="questionBox${qIndex}">
+                        <h3 class="font-bold text-slate-800 mb-3">${q.q}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            let allAnswered = true;
+
+            questions.forEach((q, qIndex) => {
+                const selected = document.querySelector(`input[name="q${qIndex}"]:checked`);
+                const qBox = document.getElementById(`questionBox${qIndex}`);
+                
+                if(!selected) {
+                    allAnswered = false;
+                    qBox.classList.add('border-l-4', 'border-red-400', 'pl-3');
+                    return;
+                } else {
+                    qBox.classList.remove('border-l-4', 'border-red-400', 'pl-3');
+                }
+
+                const labels = qBox.querySelectorAll('.quiz-option');
+                labels.forEach(l => {
+                    l.classList.remove('bg-green-50', 'border-green-300', 'bg-red-50', 'border-red-300');
+                    l.querySelector('input').disabled = true; // Khóa sau khi nộp
+                });
+
+                const selectedVal = parseInt(selected.value);
+                const correctLabel = document.querySelector(`label[data-q="${qIndex}"][data-o="${q.correct}"]`);
+                const selectedLabel = document.querySelector(`label[data-q="${qIndex}"][data-o="${selectedVal}"]`);
+
+                if(selectedVal === q.correct) {
+                    score++;
+                    selectedLabel.classList.add('bg-green-50', 'border-green-400');
+                    selectedLabel.innerHTML += ' <i class="fa-solid fa-circle-check text-green-500 ml-auto"></i>';
+                } else {
+                    selectedLabel.classList.add('bg-red-50', 'border-red-400');
+                    selectedLabel.innerHTML += ' <i class="fa-solid fa-circle-xmark text-red-500 ml-auto"></i>';
+                    correctLabel.classList.add('bg-green-50', 'border-green-400');
+                }
+            });
+
+            if(!allAnswered) {
+                alert("Bạn vui lòng trả lời đầy đủ các câu hỏi nhé!");
+                return;
+            }
+
+            const scoreDisplay = document.getElementById('quizScore');
+            scoreDisplay.innerText = `Hoàn thành! Đúng ${score}/5 câu 🎯`;
+            scoreDisplay.classList.remove('hidden');
+            scoreDisplay.className = `font-bold text-lg ${score >= 4 ? 'text-green-600' : 'text-orange-500'}`;
+            
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('retryBtn').classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            renderQuiz();
+            document.getElementById('quizScore').classList.add('hidden');
+            document.getElementById('submitBtn').classList.remove('hidden');
+            document.getElementById('retryBtn').classList.add('hidden');
+        }
+
+        // Init
+        renderQuiz();
+        // Gọi hàm khởi tạo video mặc định
+        updateVideoDemo();
+
+    </script>
+</body>
+</html>

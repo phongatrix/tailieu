@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 10: Lưu trữ dữ liệu và khai thác thông tin</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background-color: #fdfbf7; 
+            color: #475569; 
+            font-size: 17px;
+            line-height: 1.65;
+        }
+
+        h1, h2, h3, h4, .heading-font {
+            font-family: 'Nunito', 'Quicksand', sans-serif;
+        }
+
+        p, li, td, .content-text {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 17px;
+            font-weight: 500;
+            color: #475569;
+            letter-spacing: 0.01em;
+        }
+
+        .studygram-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .studygram-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.06); }
+        .bg-pastel-pink { background-color: #ffe4e1; }
+        .bg-pastel-blue { background-color: #e6f2ff; }
+        .bg-pastel-green { background-color: #e8f5e9; }
+        .bg-pastel-yellow { background-color: #fff9c4; }
+        .bg-pastel-purple { background-color: #f3e5f5; }
+        .text-pastel-pink { color: #ff8da1; }
+        .text-pastel-blue { color: #64b5f6; }
+        .text-pastel-green { color: #81c784; }
+        
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .mindmap-node { position: relative; padding: 15px; border-radius: 12px; font-weight: bold; text-align: center; width: 100%; z-index: 2; font-size: 16px;}
+        .mindmap-arrow { text-align: center; color: #cbd5e1; font-size: 24px; padding: 10px 0;}
+
+        /* Custom Table */
+        table { border-collapse: separate; border-spacing: 0 8px; width: 100%; }
+        th { background: #f1f5f9; padding: 12px 16px; text-align: left; border-radius: 8px; font-weight: 700; font-size: 16px; color: #1e293b;}
+        td { background: white; padding: 12px 16px; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; font-size: 16.5px; transition: background-color 0.3s, border 0.3s;}
+        td:first-child { border-left: 1px solid #f1f5f9; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        td:last-child { border-right: 1px solid #f1f5f9; border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+        
+        .highlight-edit { animation: pulseGreen 1.5s; background-color: #e8f5e9 !important; }
+        .highlight-delete { animation: fadeOutRed 1.5s forwards; }
+        @keyframes pulseGreen { 0% { background-color: white; } 50% { background-color: #81c784; color: white;} 100% { background-color: #e8f5e9; } }
+        @keyframes fadeOutRed { 0% { background-color: #ffcdd2; opacity: 1; } 100% { opacity: 0.3; background-color: #ffebee; text-decoration: line-through;} }
+        
+        /* Removed highlight-filter-row class */
+
+        /* Styles for editable cell */
+        .editable-cell {
+            border: 2px dashed #3b82f6 !important;
+            background-color: #eff6ff !important;
+            outline: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            caret-color: #2563eb;
+        }
+        .editable-cell:focus {
+            border-color: #2563eb !important;
+            background-color: #fff !important;
+        }
+
+        .quiz-option:hover { background-color: #f1f5f9; cursor: pointer; }
+        .quiz-correct { background-color: #d4edda !important; border-color: #c3e6cb !important; color: #155724 !important; }
+        .quiz-wrong { background-color: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24 !important; }
+
+        /* Hiệu ứng nảy 3D khi hover card */
+        .concept-card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .concept-card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Hiệu ứng lơ lửng cho icon */
+        .icon-float { animation: floatIcon 3s ease-in-out infinite; }
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Hiệu ứng cảnh báo (chớp đỏ/cam) */
+        .warning-pulse { animation: pulseWarning 2s infinite; }
+        @keyframes pulseWarning {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; text-shadow: 0 0 15px rgba(234, 88, 12, 0.6); color: #ea580c; }
+        }
+
+        /* Hiệu ứng nhịp đập cho chữ VS */
+        .vs-text { animation: vsBeat 1.5s infinite; }
+        @keyframes vsBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.25) rotate(10deg); text-shadow: 0 0 15px rgba(253, 186, 116, 0.8); }
+        }
+
+        /* Hiệu ứng tia sáng quét ngang (Barcode) */
+        .scan-effect { position: relative; overflow: hidden; }
+        .scan-effect::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.7), transparent);
+            transform: skewX(-20deg);
+        }
+        .scan-effect:hover::after { animation: scanLine 1.2s forwards; }
+        @keyframes scanLine { 100% { left: 200%; } }
+
+        /* Hiệu ứng lắc lư (Công tơ điện) */
+        .swing-icon:hover i { animation: swing 1s ease-in-out infinite; }
+        @keyframes swing {
+            20% { transform: rotate(15deg); }
+            40% { transform: rotate(-10deg); }
+            60% { transform: rotate(5deg); }
+            80% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* Hiệu ứng pop-up cho các tag chữ (Thêm, xóa, sửa...) */
+        .tag-pop { transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: inline-block;}
+        .tag-pop:hover { transform: scale(1.15) translateY(-3px); }
+
+        /* ================= STYLE CHO MODAL MÔ PHỎNG IOT ================= */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: #fdfbf7;
+            margin: auto;
+            padding: 0;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 600px;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-header {
+            padding: 20px;
+            background-color: #e8f5e9;
+            color: #166534;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #bbf7d0;
+        }
+        .close-modal {
+            color: #166534;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal:hover { color: #dc2626; }
+        .modal-body { padding: 25px; }
+
+        /* Simulate Barcode Scanner */
+        .scanner-container {
+            position: relative;
+            width: 200px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .barcode-lines {
+            font-size: 60px;
+            letter-spacing: -5px;
+            color: #333;
+        }
+        .laser-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background-color: transparent;
+            box-shadow: 0 0 10px red;
+            z-index: 10;
+        }
+        .scanner-container.scanning .laser-line {
+            background-color: red;
+            animation: scanVertical 1s linear infinite alternate;
+        }
+        @keyframes scanVertical {
+            0% { left: 10%; }
+            100% { left: 90%; }
+        }
+
+        /* Simulate Smart Meter */
+        .meter-container {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 8px solid #3b82f6;
+            margin: 0 auto 20px;
+            position: relative;
+            background: #eff6ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+        }
+        .meter-value { font-size: 28px; font-weight: bold; color: #1e40af; font-family: 'Courier New', Courier, monospace;}
+        .meter-unit { font-size: 14px; color: #64748b; font-weight: bold;}
+        .meter-spinner {
+            position: absolute;
+            top: -8px; left: -8px; right: -8px; bottom: -8px;
+            border-radius: 50%;
+            border: 8px solid transparent;
+            border-top-color: #f59e0b;
+            animation: spinMeter 2s linear infinite;
+        }
+        @keyframes spinMeter { 100% { transform: rotate(360deg); } }
+        
+        .sim-log-box {
+            background: #1e293b;
+            color: #10b981;
+            font-family: monospace;
+            padding: 15px;
+            border-radius: 8px;
+            height: 120px;
+            overflow-y: auto;
+            font-size: 14px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .sim-log-box p { margin: 0 0 5px 0; font-family: monospace; font-size: 14px;}
+        .sim-log-box p span.time { color: #94a3b8; margin-right: 10px; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-3 tracking-tight">
+                <span class="text-pastel-blue"><i class="fa-solid fa-database"></i> Bài 10:</span> Lưu Trữ & Khai Thác Dữ Liệu
+            </h1>
+            <p class="text-gray-500 font-bold text-lg"><i class="fa-solid fa-book-open"></i> Phục vụ quản lí - Tin học 11</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap justify-center gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+            <button onclick="openTab('tong-quan')" class="tab-btn active bg-pastel-blue text-blue-700 px-6 py-3 rounded-xl font-bold transition flex items-center gap-2" id="btn-tong-quan">
+                <i class="fa-solid fa-map"></i> Tổng quan
+            </button>
+            <button onclick="openTab('khai-niem')" class="tab-btn hover:bg-gray-50 px-6 py-3 rounded-xl font-bold text-gray-600 transition flex items-center gap-2" id="btn-khai-niem">
+                <i class="fa-solid fa-shapes"></i> Khái niệm
+            </button>
+            <button onclick="openTab('mo-phong')" class="tab-btn hover:bg-gray-50 px-6 py-3 rounded-xl font-bold text-gray-600 transition flex items-center gap-2" id="btn-mo-phong">
+                <i class="fa-solid fa-laptop-code"></i> Tương tác Mô phỏng
+            </button>
+            <button onclick="openTab('luyen-tap')" class="tab-btn hover:bg-gray-50 px-6 py-3 rounded-xl font-bold text-gray-600 transition flex items-center gap-2" id="btn-luyen-tap">
+                <i class="fa-solid fa-gamepad"></i> Luyện tập
+            </button>
+        </nav>
+
+        <!-- Tab 1: Tổng quan -->
+        <div id="tong-quan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Mục tiêu -->
+                <div class="studygram-card p-6 border-l-8 border-blue-400">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-pastel-blue flex items-center justify-center text-2xl text-blue-500">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Mục tiêu bài học</h2>
+                    </div>
+                    <ul class="space-y-3.5 text-[17px] font-medium text-slate-700">
+                        <li class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-lg"></i>
+                            <span>Biết được sự cần thiết phải lưu trữ dữ liệu cho bài toán quản lí.</span>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-check text-green-500 mt-1 text-lg"></i>
+                            <span>Biết cách khai thác thông tin từ dữ liệu lưu trữ.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Kiến thức cốt lõi -->
+                <div class="studygram-card p-6 border-l-8 border-yellow-400">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-pastel-yellow flex items-center justify-center text-2xl text-yellow-600">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Kiến thức cốt lõi</h2>
+                    </div>
+                    <ul class="space-y-3.5 text-[17px] font-medium text-slate-700">
+                        <li class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-star text-yellow-400 mt-1 text-lg"></i>
+                            <span>Quản lí là phổ biến, mục đích chính: xử lí thông tin -> ra quyết định.</span>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-star text-yellow-400 mt-1 text-lg"></i>
+                            <span>Dữ liệu cần cập nhật thường xuyên, truy xuất nhiều tiêu chí.</span>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-star text-yellow-400 mt-1 text-lg"></i>
+                            <span>Thu thập tự động (IoT) giúp giảm công sức, nâng cao hiệu quả.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="studygram-card p-6 bg-white">
+                <h2 class="text-2xl font-bold text-center mb-6 text-gray-800"><i class="fa-solid fa-project-diagram text-purple-500"></i> Mối quan hệ các khái niệm</h2>
+                <div class="flex flex-col md:flex-row items-center justify-between max-w-4xl mx-auto">
+                    <div class="mindmap-node bg-pastel-pink text-pink-700 shadow-md">
+                        <i class="fa-solid fa-download block text-2xl mb-2"></i>
+                        Thu thập & Lưu trữ
+                    </div>
+                    <div class="mindmap-arrow md:rotate-270"><i class="fa-solid fa-arrow-right"></i><i class="fa-solid fa-arrow-down md:hidden"></i></div>
+                    
+                    <div class="mindmap-node bg-pastel-blue text-blue-700 shadow-md">
+                        <i class="fa-solid fa-pen-to-square block text-2xl mb-2"></i>
+                        Cập nhật dữ liệu
+                    </div>
+                    <div class="mindmap-arrow"><i class="fa-solid fa-arrow-right"></i><i class="fa-solid fa-arrow-down md:hidden"></i></div>
+                    
+                    <div class="mindmap-node bg-pastel-green text-green-700 shadow-md">
+                        <i class="fa-solid fa-magnifying-glass-chart block text-2xl mb-2"></i>
+                        Truy xuất & Khai thác
+                    </div>
+                    <div class="mindmap-arrow"><i class="fa-solid fa-arrow-right"></i><i class="fa-solid fa-arrow-down md:hidden"></i></div>
+                    
+                    <div class="mindmap-node bg-pastel-yellow text-yellow-700 shadow-md">
+                        <i class="fa-solid fa-gavel block text-2xl mb-2"></i>
+                        Ra quyết định (Quản lí)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Khái niệm -->
+        <div id="khai-niem" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card 1 -->
+                <div class="studygram-card concept-card-hover border-b-4 border-transparent hover:border-blue-400 p-6 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full bg-pastel-blue flex items-center justify-center text-4xl text-blue-500 mb-4 shadow-inner icon-float">
+                        <i class="fa-solid fa-file-pen"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800">Cập nhật dữ liệu</h3>
+                    <p class="text-[17px] font-medium text-slate-600 mb-4 leading-relaxed">Các công việc thực hiện thường xuyên để thay đổi dữ liệu đã lưu.</p>
+                    <div class="flex gap-3 text-[15.5px] font-bold text-blue-700 bg-blue-50 px-4 py-3 rounded-xl border border-blue-100 w-full justify-center">
+                        <span class="tag-pop bg-white px-2 py-1 rounded shadow-sm text-blue-600"><i class="fa-solid fa-plus"></i> Thêm</span>  
+                        <span class="tag-pop bg-white px-2 py-1 rounded shadow-sm text-red-500"><i class="fa-solid fa-trash"></i> Xóa</span>  
+                        <span class="tag-pop bg-white px-2 py-1 rounded shadow-sm text-green-600"><i class="fa-solid fa-pen"></i> Sửa</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="studygram-card concept-card-hover border-b-4 border-transparent hover:border-pink-400 p-6 flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full bg-pastel-pink flex items-center justify-center text-4xl text-pink-500 mb-4 shadow-inner icon-float" style="animation-delay: 0.5s;">
+                        <i class="fa-solid fa-filter"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800">Truy xuất dữ liệu</h3>
+                    <p class="text-[17px] font-medium text-slate-600 mb-4 leading-relaxed">Lấy dữ liệu ra theo các tiêu chí cụ thể (không làm thay đổi dữ liệu gốc).</p>
+                    <div class="flex gap-3 text-[15.5px] font-bold text-pink-700 bg-pink-50 px-4 py-3 rounded-xl border border-pink-100 w-full justify-center">
+                        <span class="tag-pop bg-white px-2 py-1 rounded shadow-sm text-pink-600"><i class="fa-solid fa-search"></i> Tìm kiếm</span> 
+                        <span class="tag-pop bg-white px-2 py-1 rounded shadow-sm text-purple-600"><i class="fa-solid fa-sort"></i> Sắp xếp</span> 
+                        <span class="tag-pop bg-white px-2 py-1 rounded shadow-sm text-indigo-500"><i class="fa-solid fa-link"></i> Ghép bảng</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning Card -->
+            <div class="studygram-card p-6 mt-6 bg-orange-50 border border-orange-200 transition-all duration-500 hover:shadow-xl hover:border-orange-400 group">
+                <h3 class="text-xl font-bold text-orange-600 mb-5 text-center flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation warning-pulse text-2xl"></i> Chú ý dễ nhầm lẫn!
+                </h3>
+                <div class="flex flex-col md:flex-row gap-4 items-stretch justify-center relative">
+                    <div class="bg-white p-5 rounded-2xl flex-1 shadow-sm text-center border-2 border-transparent transition-transform duration-300 hover:-translate-y-2 hover:border-orange-300 hover:shadow-md cursor-pointer">
+                        <h4 class="font-bold text-gray-800 text-lg border-b pb-2 mb-3">Truy xuất dữ liệu</h4>
+                        <p class="text-[16.5px] font-medium text-slate-600 leading-relaxed">Chỉ <b>tìm, lọc, sắp xếp</b> những dữ liệu <br>ĐÃ CÓ SẴN.<br><i class="text-slate-400 text-sm mt-2 block">(VD: Tìm HS điểm >= 8)</i></p>
+                    </div>
+                    
+                    <div class="flex items-center justify-center text-3xl text-orange-400 font-extrabold vs-text z-10 my-2 md:my-0">VS</div>
+                    
+                    <div class="bg-white p-5 rounded-2xl flex-1 shadow-sm text-center border-2 border-transparent transition-transform duration-300 hover:-translate-y-2 hover:border-orange-300 hover:shadow-md cursor-pointer">
+                        <h4 class="font-bold text-gray-800 text-lg border-b pb-2 mb-3">Khai thác thông tin</h4>
+                        <p class="text-[16.5px] font-medium text-slate-600 leading-relaxed">Phải <b>phân tích, thống kê, tính toán</b> để ra thông tin MỚI.<br><i class="text-slate-400 text-sm mt-2 block">(VD: Tính tỉ lệ % HS Giỏi)</i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thu thập dữ liệu tự động -->
+            <div class="studygram-card p-6 mt-6 border border-gray-100">
+                <h3 class="text-2xl font-bold mb-6 text-center text-green-600 flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-robot animate-bounce"></i> Thu thập dữ liệu tự động (IoT)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div onclick="openModal('barcodeModal')" class="bg-pastel-green p-6 rounded-2xl flex flex-col items-center justify-center text-center scan-effect concept-card-hover cursor-pointer border border-green-200 shadow-sm relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                        <div class="text-6xl text-green-600 mb-4 transition-transform duration-300 group-hover:scale-110">
+                            <i class="fa-solid fa-barcode"></i>
+                        </div>
+                        <h4 class="font-bold text-lg mb-2 text-gray-800">Mã vạch siêu thị</h4>
+                        <p class="text-[16.5px] font-medium text-slate-600 leading-relaxed mb-3">Không nhập thủ công. Quét mã -> Tự động cập nhật hoá đơn, kho hàng, doanh thu.</p>
+                        <span class="mt-auto bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 shadow-sm"><i class="fa-solid fa-play"></i> Nhấn để mô phỏng</span>
+                    </div>
+                    
+                    <div onclick="openModal('meterModal')" class="bg-pastel-green p-6 rounded-2xl flex flex-col items-center justify-center text-center swing-icon concept-card-hover cursor-pointer border border-green-200 shadow-sm relative overflow-hidden group">
+                         <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                        <div class="text-6xl text-green-600 mb-4">
+                            <i class="fa-solid fa-gauge-high"></i>
+                        </div>
+                        <h4 class="font-bold text-lg mb-2 text-gray-800">Công tơ điện tử</h4>
+                        <p class="text-[16.5px] font-medium text-slate-600 leading-relaxed mb-3">Tự động gửi thông số điện (áp, dòng) về trung tâm. Giúp phân tích quá tải lưới điện.</p>
+                        <span class="mt-auto bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 shadow-sm"><i class="fa-solid fa-play"></i> Nhấn để mô phỏng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals Mô phỏng -->
+        
+        <!-- Modal Barcode -->
+        <div id="barcodeModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-xl font-bold"><i class="fa-solid fa-barcode"></i> Mô phỏng Máy Quét Mã Vạch</h3>
+                    <span class="close-modal" onclick="closeModal('barcodeModal')">&times;</span>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-4 text-slate-600 font-medium">Nhấn vào mã vạch bên dưới để thực hiện quét (mô phỏng tiếng "tít").</p>
+                    
+                    <div id="scannerArea" class="scanner-container" onclick="simulateScan()">
+                        <div class="laser-line"></div>
+                        <div class="barcode-lines">||| |||| | ||</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2 mb-4 text-sm font-bold">
+                        <div class="bg-blue-50 p-2 rounded border border-blue-200 text-blue-700"><span id="scannedCount">0</span> SP</div>
+                        <div class="bg-green-50 p-2 rounded border border-green-200 text-green-700">Tồn kho: <span id="inventoryCount">150</span></div>
+                        <div class="bg-yellow-50 p-2 rounded border border-yellow-200 text-yellow-700"><span id="totalRevenue">0</span> VNĐ</div>
+                    </div>
+
+                    <div class="text-left">
+                        <h4 class="font-bold text-sm text-gray-500 mb-2">HỆ THỐNG GHI NHẬN TỰ ĐỘNG (DATABASE LOG):</h4>
+                        <div id="barcodeLog" class="sim-log-box">
+                            <p><span class="time">Hệ thống sẵn sàng...</span> Chờ tín hiệu từ máy quét.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Smart Meter -->
+        <div id="meterModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-xl font-bold"><i class="fa-solid fa-gauge-high"></i> Mô phỏng Công Tơ Điện Tử (IoT)</h3>
+                    <span class="close-modal" onclick="closeModal('meterModal')">&times;</span>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-4 text-slate-600 font-medium">Hệ thống đang tự động đọc thông số mỗi 3 giây và gửi về máy chủ trung tâm.</p>
+                    
+                    <div class="meter-container">
+                        <div class="meter-spinner"></div>
+                        <div class="meter-value" id="kwhValue">00142</div>
+                        <div class="meter-unit">kWh</div>
+                        <div class="text-xs text-blue-600 font-bold mt-1" id="currentPower">0.0 kW</div>
+                    </div>
+                    
+                    <div class="text-left">
+                        <h4 class="font-bold text-sm text-gray-500 mb-2">MÁY CHỦ NHẬN DỮ LIỆU LIÊN TỤC (DATABASE LOG):</h4>
+                        <div id="meterLog" class="sim-log-box">
+                            <p><span class="time">Kết nối thành công.</span> Bắt đầu nhận dữ liệu từ trạm ID: METER-101A</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Mô phỏng -->
+        <div id="mo-phong" class="tab-content">
+            <div class="studygram-card p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-table list-icon text-indigo-500"></i> Bảng 10.1: Bảng điểm môn Toán 11A</h2>
+                        <p class="text-[16px] font-medium text-slate-500 mt-1">Trải nghiệm các thao tác Cập nhật và Truy xuất trực quan.</p>
+                    </div>
+                    
+                    <!-- Bảng điều khiển -->
+                    <div class="flex flex-wrap gap-2 justify-end">
+                        <button onclick="startInteractiveEdit()" class="bg-blue-100 text-blue-700 px-4 py-2.5 rounded-lg font-bold hover:bg-blue-200 transition text-[15px]">
+                            <i class="fa-solid fa-pen"></i> Sửa tên (Dương Hồng Anh)
+                        </button>
+                        <button onclick="startInteractiveDelete()" class="bg-red-100 text-red-700 px-4 py-2.5 rounded-lg font-bold hover:bg-red-200 transition text-[15px]">
+                            <i class="fa-solid fa-eraser"></i> Xoá điểm 0 (Kì Duyên)
+                        </button>
+                        <button onclick="simulateFilter()" class="bg-pink-100 text-pink-700 px-4 py-2.5 rounded-lg font-bold hover:bg-pink-200 transition text-[15px]">
+                            <i class="fa-solid fa-filter"></i> Lọc điểm Cuối kì >= 8
+                        </button>
+                        <button onclick="resetTable()" class="bg-gray-200 text-gray-700 px-4 py-2.5 rounded-lg font-bold hover:bg-gray-300 transition text-[15px]">
+                            <i class="fa-solid fa-rotate-right"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table id="gradeTable">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Họ và tên</th>
+                                <th>ĐĐG thường xuyên</th>
+                                <th>ĐĐG giữa kì</th>
+                                <th>ĐĐG cuối kì</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr id="row-1">
+                                <td>1</td>
+                                <td id="name-1" class="font-semibold text-slate-800 transition-all duration-300 relative">Dương Hồng Anh</td>
+                                <td>8, 7, 7</td>
+                                <td>9</td>
+                                <td class="final-grade font-bold text-blue-600">8</td>
+                            </tr>
+                            <tr id="row-2">
+                                <td>2</td>
+                                <td class="font-semibold text-slate-800">Lương Việt Anh</td>
+                                <td>5, 6, 5</td>
+                                <td>5</td>
+                                <td class="final-grade font-bold text-blue-600">5</td>
+                            </tr>
+                            <tr id="row-3">
+                                <td>3</td>
+                                <td class="font-semibold text-slate-800">Nguyễn Kì Duyên</td>
+                                <td id="scores-3" class="transition-all duration-300 relative">7, 8, <span id="score-to-delete" class="text-red-500 font-bold px-1 rounded transition-all duration-300">0</span></td>
+                                <td>10</td>
+                                <td class="final-grade font-bold text-blue-600">9</td>
+                            </tr>
+                            <tr id="row-4">
+                                <td>4</td>
+                                <td class="font-semibold text-slate-800">Bùi Quý Dương</td>
+                                <td>5, 7, 7</td>
+                                <td>6</td>
+                                <td class="final-grade font-bold text-blue-600">6</td>
+                            </tr>
+                            <tr id="row-5">
+                                <td>5</td>
+                                <td class="font-semibold text-slate-800">Đỗ Hồng Dương</td>
+                                <td>7, 8, 6</td>
+                                <td>6</td>
+                                <td class="final-grade font-bold text-blue-600">7</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="sim-status" class="mt-4 p-3.5 bg-gray-50 border border-gray-200 rounded-lg text-[16px] text-gray-600 font-medium text-center italic transition-all duration-300">
+                    Hãy nhấn các nút phía trên để mô phỏng thao tác quản lí.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Luyện tập -->
+        <div id="luyen-tap" class="tab-content">
+            <!-- Câu hỏi thảo luận -->
+            <div class="studygram-card p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-purple-600"><i class="fa-regular fa-comments"></i> Câu hỏi tương tác</h2>
+                <div class="space-y-4">
+                    <details class="bg-pastel-purple p-4 rounded-xl cursor-pointer">
+                        <summary class="font-bold text-purple-800 text-[17px]">Theo em, hoạt động quản lí điểm có cần lưu trữ dữ liệu không? Nếu có, đó là những dữ liệu gì?</summary>
+                        <p class="mt-3 text-[16.5px] font-medium text-slate-700 bg-white p-3.5 rounded-lg leading-relaxed">
+                            <b>Gợi ý đáp án:</b> Có. Cần lưu trữ dữ liệu điểm của từng môn học bao gồm điểm đánh giá thường xuyên, đánh giá giữa kì, đánh giá cuối kì...
+                        </p>
+                    </details>
+                    <details class="bg-pastel-purple p-4 rounded-xl cursor-pointer">
+                        <summary class="font-bold text-purple-800 text-[17px]">Cập nhật dữ liệu là gì? Tại sao dữ liệu cần được cập nhật thường xuyên?</summary>
+                        <p class="mt-3 text-[16.5px] font-medium text-slate-700 bg-white p-3.5 rounded-lg leading-relaxed">
+                            <b>Gợi ý đáp án:</b> Cập nhật dữ liệu là việc thêm, xoá, và chỉnh sửa dữ liệu. Dữ liệu cần cập nhật thường xuyên vì trong thực tế luôn có sự thay đổi (sai sót cần sửa, học sinh mới thêm vào, điểm nhập sai cần xóa/sửa) để đảm bảo thông tin quản lí luôn chính xác.
+                        </p>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Quiz -->
+            <div class="studygram-card p-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800"><i class="fa-solid fa-list-check text-green-500"></i> Trắc nghiệm Ôn tập</h2>
+                
+                <div id="quiz-container">
+                    <!-- Q1 -->
+                    <div class="mb-6 border-b pb-4">
+                        <p class="font-bold text-[17.5px] mb-3 text-slate-800 leading-relaxed">1. Công việc "Cập nhật dữ liệu" bao gồm những thao tác nào dưới đây?</p>
+                        <div class="space-y-2.5">
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q1" value="0" class="mr-2"> A. Phân tích, thống kê, tính toán</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q1" value="1" class="mr-2"> B. Thêm, xoá, chỉnh sửa dữ liệu</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q1" value="0" class="mr-2"> C. Tìm kiếm, sắp xếp, lọc dữ liệu</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q1" value="0" class="mr-2"> D. Thu thập tự động bằng máy móc</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Q2 -->
+                    <div class="mb-6 border-b pb-4">
+                        <p class="font-bold text-[17.5px] mb-3 text-slate-800 leading-relaxed">2. Việc lập danh sách học sinh có điểm học kì >= 8 thuộc công việc nào?</p>
+                        <div class="space-y-2.5">
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q2" value="0" class="mr-2"> A. Cập nhật dữ liệu</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q2" value="1" class="mr-2"> B. Truy xuất dữ liệu (Lọc)</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q2" value="0" class="mr-2"> C. Khai thác thông tin</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q2" value="0" class="mr-2"> D. Thu thập dữ liệu</label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="mb-6 border-b pb-4">
+                        <p class="font-bold text-[17.5px] mb-3 text-slate-800 leading-relaxed">3. Mục đích chính của công việc quản lí là gì?</p>
+                        <div class="space-y-2.5">
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q3" value="0" class="mr-2"> A. Để lưu trữ càng nhiều dữ liệu càng tốt</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q3" value="0" class="mr-2"> B. Để tạo ra cơ sở dữ liệu lớn (Data Science)</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q3" value="1" class="mr-2"> C. Xử lí thông tin để đưa ra các quyết định</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q3" value="0" class="mr-2"> D. Để thay thế con người bằng tự động hoá</label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="mb-6 border-b pb-4">
+                        <p class="font-bold text-[17.5px] mb-3 text-slate-800 leading-relaxed">4. Thiết bị nào sau đây KHÔNG được sách giáo khoa lấy làm ví dụ cho việc thu thập dữ liệu tự động?</p>
+                        <div class="space-y-2.5">
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q4" value="0" class="mr-2"> A. Máy quét mã vạch ở siêu thị</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q4" value="0" class="mr-2"> B. Công tơ điện tử đo điện</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q4" value="0" class="mr-2"> C. Hệ thống kết nối vạn vật (IoT)</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q4" value="1" class="mr-2"> D. Máy chấm công bằng vân tay</label>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="mb-6 pb-4">
+                        <p class="font-bold text-[17.5px] mb-3 text-slate-800 leading-relaxed">5. Dựa vào bảng điểm, lập bảng phân loại kết quả học tập (tính tỉ lệ phần trăm Giỏi, Khá, TB) được gọi là:</p>
+                        <div class="space-y-2.5">
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q5" value="0" class="mr-2"> A. Truy xuất dữ liệu</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q5" value="0" class="mr-2"> B. Cập nhật dữ liệu</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q5" value="1" class="mr-2"> C. Khai thác thông tin</label>
+                            <label class="block p-3 rounded-lg border border-gray-200 quiz-option text-[16.5px] font-medium text-slate-700"><input type="radio" name="q5" value="0" class="mr-2"> D. Sắp xếp dữ liệu</label>
+                        </div>
+                    </div>
+
+                    <button onclick="checkQuiz()" class="w-full bg-pastel-blue text-blue-700 font-bold text-lg py-3.5 rounded-xl hover:bg-blue-200 transition shadow-md">
+                        <i class="fa-solid fa-check-double"></i> Nộp Bài & Xem Điểm
+                    </button>
+                    
+                    <div id="quiz-result" class="mt-6 text-center text-2xl font-bold hidden transition-all duration-500"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching logic
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-pastel-blue', 'text-blue-700');
+                el.classList.add('hover:bg-gray-50', 'text-gray-600');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('hover:bg-gray-50', 'text-gray-600');
+            activeBtn.classList.add('bg-pastel-blue', 'text-blue-700');
+        }
+
+        // Simulation Logic
+        const statusBox = document.getElementById('sim-status');
+        
+        // --- NEW LOGIC FOR INTERACTIVE EDIT ---
+        function startInteractiveEdit() {
+            resetTableSilent();
+            const nameCell = document.getElementById('name-1');
+            
+            // Scroll to the cell to ensure it's visible
+            nameCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Make it editable
+            nameCell.contentEditable = "true";
+            nameCell.classList.add('editable-cell');
+            
+            // Update status
+            statusBox.innerHTML = '<span class="text-blue-600"><i class="fa-solid fa-keyboard animate-pulse"></i> <b>Chế độ Sửa:</b> Hãy sửa "Hồng" thành "Hoàng" rồi ấn <b>Enter</b>.</span>';
+            
+            // Focus and place cursor at the end
+            nameCell.focus();
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(nameCell);
+            range.collapse(false); // false means to the end
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            // Add event listener for Enter key
+            nameCell.addEventListener('keydown', handleEditKeydown);
+            // Handle clicking outside
+            nameCell.addEventListener('blur', handleEditBlur);
+        }
+
+        function finishEdit(nameCell, newText) {
+            nameCell.contentEditable = "false";
+            nameCell.classList.remove('editable-cell');
+            nameCell.removeEventListener('keydown', handleEditKeydown);
+            nameCell.removeEventListener('blur', handleEditBlur);
+            
+            // If they typed something close to Hoang, or exactly Hoang
+            if (newText.toLowerCase().includes('hoàng') || newText.toLowerCase().includes('hoang')) {
+                nameCell.innerHTML = "Dương <b>Hoàng</b> Anh";
+                nameCell.classList.add('highlight-edit');
+                statusBox.innerHTML = '<span class="text-green-600"><i class="fa-solid fa-check"></i> <b>Cập nhật (Sửa):</b> Đã sửa thành công "Dương Hoàng Anh". Dữ liệu mới đã được lưu.</span>';
+                setTimeout(() => nameCell.classList.remove('highlight-edit'), 1500);
+            } else {
+                 nameCell.innerHTML = newText;
+                 nameCell.classList.add('highlight-edit');
+                 statusBox.innerHTML = `<span class="text-green-600"><i class="fa-solid fa-check"></i> <b>Cập nhật (Sửa):</b> Đã sửa thành "${newText}".</span>`;
+                 setTimeout(() => nameCell.classList.remove('highlight-edit'), 1500);
+            }
+        }
+
+        function handleEditKeydown(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent adding a new line
+                finishEdit(e.target, e.target.innerText.trim());
+            }
+        }
+        
+        function handleEditBlur(e) {
+             // If user clicks away without pressing enter, we can optionally save or revert. Let's save.
+             finishEdit(e.target, e.target.innerText.trim());
+        }
+        
+        // --- NEW LOGIC FOR INTERACTIVE DELETE ---
+        function startInteractiveDelete() {
+            resetTableSilent();
+            const scoresCell = document.getElementById('scores-3');
+            
+            // Scroll to the cell to ensure it's visible
+            scoresCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Set initial text for editing, removing the inner span to make it plain text editing
+            scoresCell.innerText = "7, 8, 0";
+            
+            // Make it editable
+            scoresCell.contentEditable = "true";
+            scoresCell.classList.add('editable-cell');
+            
+            // Update status
+            statusBox.innerHTML = '<span class="text-red-600"><i class="fa-solid fa-keyboard animate-pulse"></i> <b>Chế độ Xóa:</b> Hãy xóa số "0" và dấu phẩy thừa rồi ấn <b>Enter</b>.</span>';
+            
+            // Focus and place cursor at the end
+            scoresCell.focus();
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(scoresCell);
+            range.collapse(false); // false means to the end
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            // Add event listeners
+            scoresCell.addEventListener('keydown', handleDeleteKeydown);
+            scoresCell.addEventListener('blur', handleDeleteBlur);
+        }
+
+        function finishDelete(scoresCell, newText) {
+            scoresCell.contentEditable = "false";
+            scoresCell.classList.remove('editable-cell');
+            scoresCell.removeEventListener('keydown', handleDeleteKeydown);
+            scoresCell.removeEventListener('blur', handleDeleteBlur);
+            
+            // Clean up the text (remove trailing commas/spaces)
+            let cleanedText = newText.replace(/,\s*0$/, '').replace(/,\s*$/, '').trim();
+            
+            if (cleanedText === "7, 8") {
+                scoresCell.innerHTML = "7, 8";
+                scoresCell.classList.add('highlight-edit');
+                statusBox.innerHTML = '<span class="text-green-600"><i class="fa-solid fa-check"></i> <b>Cập nhật (Xóa):</b> Đã xóa thành công điểm 0 của Nguyễn Kì Duyên.</span>';
+            } else {
+                 scoresCell.innerHTML = cleanedText;
+                 scoresCell.classList.add('highlight-edit');
+                 statusBox.innerHTML = `<span class="text-green-600"><i class="fa-solid fa-check"></i> <b>Cập nhật:</b> Đã thay đổi thành "${cleanedText}".</span>`;
+            }
+            setTimeout(() => scoresCell.classList.remove('highlight-edit'), 1500);
+        }
+
+        function handleDeleteKeydown(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                finishDelete(e.target, e.target.innerText.trim());
+            }
+        }
+        
+        function handleDeleteBlur(e) {
+             finishDelete(e.target, e.target.innerText.trim());
+        }
+        // ----------------------------------------
+
+        function simulateDelete() {
+            resetTableSilent();
+            const scoreSpan = document.getElementById('score-to-delete');
+            scoreSpan.classList.add('highlight-delete');
+            statusBox.innerHTML = '<span class="text-red-600"><i class="fa-solid fa-trash"></i> <b>Cập nhật (Xóa):</b> Đã xóa điểm 0 của Nguyễn Kì Duyên (vì học sinh có lí do).</span>';
+            setTimeout(() => {
+                scoreSpan.innerText = "";
+                scoreSpan.classList.remove('highlight-delete', 'bg-red-100');
+            }, 1500);
+        }
+
+        function simulateFilter() {
+            // Hoàn thành các thao tác chỉnh sửa đang dang dở (nếu có) trước khi lọc
+            const nameCell = document.getElementById('name-1');
+            if (nameCell && nameCell.isContentEditable) finishEdit(nameCell, nameCell.innerText.trim());
+            const scoresCell = document.getElementById('scores-3');
+            if (scoresCell && scoresCell.isContentEditable) finishDelete(scoresCell, scoresCell.innerText.trim());
+
+            const rows = document.querySelectorAll('#tableBody tr');
+            let count = 0;
+            rows.forEach(row => {
+                // Xóa trạng thái lọc cũ
+                row.style.opacity = '1';
+                row.style.backgroundColor = 'white';
+                
+                // Áp dụng bộ lọc mới (Chỉ làm mờ, không đóng khung đỏ)
+                const finalGrade = parseInt(row.querySelector('.final-grade').innerText);
+                if (finalGrade < 8) {
+                    row.style.opacity = '0.2';
+                } else {
+                    row.style.opacity = '1';
+                    row.style.backgroundColor = 'white';
+                    count++;
+                }
+            });
+            statusBox.innerHTML = `<span class="text-pink-600"><i class="fa-solid fa-filter"></i> <b>Truy xuất (Lọc):</b> Tìm thấy ${count} học sinh có điểm cuối kì >= 8. Dữ liệu gốc không bị thay đổi.</span>`;
+        }
+
+        function resetTableSilent() {
+            const nameCell = document.getElementById('name-1');
+            const scoresCell = document.getElementById('scores-3');
+            
+            // Clean up any ongoing edit state without resetting data
+            if(nameCell && nameCell.isContentEditable) {
+                nameCell.contentEditable = "false";
+                nameCell.classList.remove('editable-cell', 'highlight-edit');
+                nameCell.removeEventListener('keydown', handleEditKeydown);
+                nameCell.removeEventListener('blur', handleEditBlur);
+            }
+            
+            // Clean up delete state without resetting data
+            if(scoresCell && scoresCell.isContentEditable) {
+                scoresCell.contentEditable = "false";
+                scoresCell.classList.remove('editable-cell', 'highlight-edit');
+                scoresCell.removeEventListener('keydown', handleDeleteKeydown);
+                scoresCell.removeEventListener('blur', handleDeleteBlur);
+            }
+            
+            // Clear filter UI visuals
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                row.style.opacity = '1';
+                row.style.backgroundColor = 'white';
+            });
+        }
+
+        function resetTable() {
+            resetTableSilent();
+            
+            // Restore Original Data Content
+            const nameCell = document.getElementById('name-1');
+            if(nameCell) nameCell.innerHTML = "Dương Hồng Anh";
+            
+            const scoresCell = document.getElementById('scores-3');
+            if(scoresCell) {
+                scoresCell.innerHTML = '7, 8, <span id="score-to-delete" class="text-red-500 font-bold px-1 rounded transition-all duration-300">0</span>';
+            }
+            
+            statusBox.innerHTML = "Đã khôi phục dữ liệu Bảng 10.1 ban đầu.";
+        }
+
+        // Quiz Logic
+        function checkQuiz() {
+            let score = 0;
+            const answers = ['1', '1', '1', '1', '1'];
+            
+            document.querySelectorAll('.quiz-option').forEach(el => {
+                el.classList.remove('quiz-correct', 'quiz-wrong');
+            });
+
+            for(let i=1; i<=5; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if(selected) {
+                    if(selected.value === answers[i-1]) {
+                        score++;
+                        selected.parentElement.classList.add('quiz-correct');
+                    } else {
+                        selected.parentElement.classList.add('quiz-wrong');
+                        document.querySelector(`input[name="q${i}"][value="1"]`).parentElement.classList.add('quiz-correct');
+                    }
+                } else {
+                    document.querySelector(`input[name="q${i}"][value="1"]`).parentElement.classList.add('quiz-correct');
+                }
+            }
+
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.style.display = 'block';
+            if(score === 5) {
+                resultDiv.innerHTML = `🎉 Tuyệt vời! Bạn đạt ${score}/5 điểm!`;
+                resultDiv.className = "mt-6 text-center text-2xl font-bold text-green-600 bg-green-100 p-4 rounded-xl transition-all duration-500";
+            } else if (score >= 3) {
+                resultDiv.innerHTML = `👍 Khá lắm! Bạn đạt ${score}/5 điểm!`;
+                resultDiv.className = "mt-6 text-center text-2xl font-bold text-blue-600 bg-blue-100 p-4 rounded-xl transition-all duration-500";
+            } else {
+                resultDiv.innerHTML = `💪 Cố gắng ôn lại nhé! Bạn đạt ${score}/5 điểm.`;
+                resultDiv.className = "mt-6 text-center text-2xl font-bold text-orange-600 bg-orange-100 p-4 rounded-xl transition-all duration-500";
+            }
+        }
+
+        /* ================= LOGIC MÔ PHỎNG IOT ================= */
+        
+        // Điều khiển Modal
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('show');
+            if (modalId === 'meterModal') startMeterSimulation();
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            if (modalId === 'meterModal') stopMeterSimulation();
+        }
+
+        // Đóng modal khi click ra ngoài
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+                stopMeterSimulation();
+            }
+        }
+
+        // --- Mô phỏng Quét Mã Vạch ---
+        let itemsScanned = 0;
+        let inventory = 150;
+        let revenue = 0;
+        let isScanning = false;
+
+        function getTimestamp() {
+            const now = new Date();
+            return `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+        }
+
+        function simulateScan() {
+            if(isScanning) return;
+            isScanning = true;
+            
+            const scannerArea = document.getElementById('scannerArea');
+            scannerArea.classList.add('scanning');
+            
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime); 
+                oscillator.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.1); 
+            } catch(e) { console.log("Audio not supported"); }
+
+            setTimeout(() => {
+                scannerArea.classList.remove('scanning');
+                
+                // Cập nhật số liệu
+                itemsScanned++;
+                inventory--;
+                const price = Math.floor(Math.random() * 5 + 1) * 10000; 
+                revenue += price;
+                
+                document.getElementById('scannedCount').innerText = itemsScanned;
+                document.getElementById('inventoryCount').innerText = inventory;
+                document.getElementById('totalRevenue').innerText = revenue.toLocaleString();
+
+                // Ghi log
+                const logBox = document.getElementById('barcodeLog');
+                const logLine = document.createElement('p');
+                logLine.innerHTML = `<span class="time">[${getTimestamp()}]</span> INSERT: Mã Hàng SP0${Math.floor(Math.random()*99)}. Giá: ${price.toLocaleString()}đ -> Cập nhật CSDL.`;
+                logBox.appendChild(logLine);
+                logBox.scrollTop = logBox.scrollHeight; 
+                
+                isScanning = false;
+            }, 800); 
+        }
+
+        // --- Mô phỏng Công Tơ Điện ---
+        let meterInterval;
+        let currentKwh = 142;
+
+        function startMeterSimulation() {
+            const logBox = document.getElementById('meterLog');
+            
+            meterInterval = setInterval(() => {
+                const power = (Math.random() * (2.5 - 0.5) + 0.5).toFixed(1); 
+                currentKwh += parseFloat(power) / 3600 * 3; 
+                
+                document.getElementById('currentPower').innerText = `${power} kW`;
+                document.getElementById('kwhValue').innerText = Math.floor(currentKwh).toString().padStart(5, '0');
+
+                const logLine = document.createElement('p');
+                logLine.innerHTML = `<span class="time">[${getTimestamp()}]</span> UPDATE: Công suất ${power}kW, Tổng: ${Math.floor(currentKwh)}kWh -> Lưu trữ.`;
+                
+                if(parseFloat(power) > 2.0) {
+                    logLine.innerHTML += ` <span style="color: #ef4444;">[CẢNH BÁO TẢI CAO]</span>`;
+                }
+
+                logBox.appendChild(logLine);
+                logBox.scrollTop = logBox.scrollHeight;
+            }, 2500); 
+        }
+
+        function stopMeterSimulation() {
+            clearInterval(meterInterval);
+            const logBox = document.getElementById('meterLog');
+            const logLine = document.createElement('p');
+            logLine.innerHTML = `<span class="time">[${getTimestamp()}]</span> Hệ thống tạm ngưng kết nối.`;
+            logBox.appendChild(logLine);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+    </script>
+</body>
+</html>

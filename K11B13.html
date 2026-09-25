@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 13: Cơ Sở Dữ Liệu Quan Hệ</title>
+    <!-- Tailwind CSS cho layout và styling hiện đại -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome cho Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Nunito mang phong cách Studygram, bo tròn, dễ thương -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            pink: '#fce7f3',
+                            green: '#dcfce7',
+                            yellow: '#fef08a',
+                            purple: '#f3e8ff',
+                            orange: '#ffedd5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hiệu ứng bảng mô phỏng */
+        .sim-table th { background-color: #e2e8f0; color: #475569; padding: 8px; border: 1px solid #cbd5e1;}
+        .sim-table td { padding: 8px; border: 1px solid #cbd5e1; text-align: center; transition: all 0.3s; }
+        .sim-table tr:nth-child(even) { background-color: #f8fafc; }
+        .sim-table tr:hover { background-color: #f1f5f9; cursor: pointer; }
+        
+        /* Class dùng để highlight tương tác */
+        .highlight-row { background-color: #fef08a !important; transform: scale(1.02); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .highlight-col { background-color: #dcfce7 !important; }
+        .highlight-key { background-color: #fce7f3 !important; font-weight: bold; color: #db2777; }
+        .highlight-link { animation: pulseLink 1.5s infinite; background-color: #e0f2fe !important; border: 2px solid #3b82f6 !important; }
+
+        @keyframes pulseLink {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        /* Mindmap Styles */
+        .mindmap-node { @apply bg-white px-6 py-3 rounded-2xl shadow-sm border-2 font-bold text-center z-10 relative transition-transform hover:scale-105; }
+        .mindmap-line { @apply absolute bg-slate-300 z-0; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8">
+
+    <!-- Header -->
+    <header class="w-full max-w-5xl px-4 text-center mb-8">
+        <span class="bg-pastel-pink text-pink-700 px-4 py-1 rounded-full text-sm font-bold tracking-wider uppercase shadow-sm">Tin học 11 - Kết nối tri thức</span>
+        <h1 class="text-4xl font-extrabold mt-4 text-slate-800 drop-shadow-sm">BÀI 13: CƠ SỞ DỮ LIỆU QUAN HỆ</h1>
+        <p class="mt-2 text-slate-500 font-medium">Học tập trực quan - Tương tác thông minh</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="w-full max-w-5xl px-4 mb-6 flex flex-wrap justify-center gap-2">
+        <button onclick="openTab('tab1', this)" class="tab-btn active bg-indigo-500 text-white px-5 py-2.5 rounded-full font-bold shadow-md hover:bg-indigo-600 transition flex items-center gap-2">
+            <i class="fa-solid fa-map"></i> Mục tiêu & Sơ đồ
+        </button>
+        <button onclick="openTab('tab2', this)" class="tab-btn bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold shadow-sm border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+            <i class="fa-solid fa-layer-group"></i> Khái niệm cốt lõi
+        </button>
+        <button onclick="openTab('tab3', this)" class="tab-btn bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold shadow-sm border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Mô phỏng Tương tác
+        </button>
+        <button onclick="openTab('tab4', this)" class="tab-btn bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold shadow-sm border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+            <i class="fa-solid fa-code-compare"></i> Lưu ý & Phân tích
+        </button>
+        <button onclick="openTab('tab5', this)" class="tab-btn bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold shadow-sm border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2">
+            <i class="fa-solid fa-pen-nib"></i> Trắc nghiệm
+        </button>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="w-full max-w-5xl px-4">
+        
+        <!-- ================= TAB 1: MỤC TIÊU & SƠ ĐỒ ================= -->
+        <section id="tab1" class="tab-content active bg-white rounded-3xl shadow-xl p-8 border-t-8 border-indigo-400">
+            <div class="grid md:grid-cols-3 gap-8">
+                
+                <!-- Mục tiêu -->
+                <div class="md:col-span-1 bg-pastel-blue rounded-2xl p-6 shadow-inner">
+                    <h2 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-2xl"></i> Mục tiêu bài học
+                    </h2>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3 text-slate-700 font-medium">
+                            <i class="fa-solid fa-check text-green-500 mt-1"></i>
+                            Hiểu được mô hình CSDL quan hệ.
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-700 font-medium">
+                            <i class="fa-solid fa-check text-green-500 mt-1"></i>
+                            Nắm rõ: Bản ghi, Trường (thuộc tính).
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-700 font-medium">
+                            <i class="fa-solid fa-check text-green-500 mt-1"></i>
+                            Phân biệt: Khoá, Khoá chính, Khoá ngoại.
+                        </li>
+                        <li class="flex items-start gap-3 text-slate-700 font-medium">
+                            <i class="fa-solid fa-check text-green-500 mt-1"></i>
+                            Hiểu cơ chế Liên kết dữ liệu (Join).
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Sơ đồ tư duy -->
+                <div class="md:col-span-2 bg-slate-50 rounded-2xl p-6 border-2 border-dashed border-slate-200 overflow-x-auto flex justify-center">
+                    <!-- Wrapper với min-width rộng hơn để chống ép khối -->
+                    <div class="min-w-[700px] w-full flex flex-col items-center">
+                        
+                        <!-- Level 1: MÔ HÌNH -->
+                        <div class="mindmap-node border-indigo-500 text-indigo-700 bg-indigo-100 w-72 shadow-md z-10 hover:-translate-y-1 transition-transform cursor-default">
+                            <i class="fa-solid fa-database text-2xl mb-1 text-indigo-600"></i><br>
+                            <span class="font-extrabold text-lg uppercase tracking-wide">Mô Hình CSDL Quan Hệ</span>
+                        </div>
+
+                        <div class="w-0.5 h-8 bg-indigo-300"></div>
+
+                        <!-- Level 2: BẢNG -->
+                        <div class="mindmap-node border-slate-400 text-slate-700 bg-white w-64 shadow-sm z-10 py-3 relative hover:-translate-y-1 transition-transform cursor-default">
+                            <i class="fa-solid fa-table text-slate-500 mr-2"></i> Lưu trữ bằng <span class="font-black text-slate-800">CÁC BẢNG</span>
+                        </div>
+
+                        <div class="w-0.5 h-6 bg-slate-300"></div>
+
+                        <!-- Fork Level 3: HÀNG & CỘT -->
+                        <div class="w-full flex relative">
+                            <!-- Đường ngang nối tâm 2 nhánh chính -->
+                            <div class="absolute top-0 left-[25%] right-[25%] h-0.5 bg-slate-300"></div>
+                            
+                            <!-- LEFT BRANCH: HÀNG -->
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-0.5 h-6 bg-slate-300"></div>
+                                <div class="mindmap-node border-pink-400 text-pink-700 bg-pink-50 w-44 shadow-sm z-10 hover:-translate-y-1 transition-transform cursor-default">
+                                    <i class="fa-solid fa-bars mb-1 text-pink-500 text-xl"></i><br>
+                                    <span class="font-black text-xl">HÀNG</span><br>
+                                    <span class="text-sm font-medium">Bản ghi (Record)</span>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT BRANCH: CỘT -->
+                            <div class="flex-1 flex flex-col items-center">
+                                <div class="w-0.5 h-6 bg-slate-300"></div>
+                                <div class="mindmap-node border-green-400 text-green-700 bg-green-50 w-44 shadow-sm z-10 hover:-translate-y-1 transition-transform cursor-default">
+                                    <i class="fa-solid fa-columns mb-1 text-green-500 text-xl"></i><br>
+                                    <span class="font-black text-xl">CỘT</span><br>
+                                    <span class="text-sm font-medium">Trường (Field)</span>
+                                </div>
+
+                                <div class="w-0.5 h-6 bg-slate-300"></div>
+
+                                <!-- Fork Level 4: KHOÁ -->
+                                <div class="w-full flex relative">
+                                    <!-- Đường ngang nối tâm 2 khoá -->
+                                    <div class="absolute top-0 left-[25%] right-[25%] h-0.5 bg-slate-300"></div>
+                                    
+                                    <!-- KHOÁ CHÍNH -->
+                                    <div class="flex-1 flex flex-col items-center">
+                                        <div class="w-0.5 h-6 bg-slate-300"></div>
+                                        <div class="mindmap-node border-orange-400 text-orange-700 bg-orange-50 text-sm px-2 py-3 shadow-sm z-10 w-32 hover:-translate-y-1 transition-transform cursor-default">
+                                            <i class="fa-solid fa-key text-orange-500 mb-1 text-lg"></i><br>
+                                            <span class="font-extrabold">KHOÁ CHÍNH</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- KHOÁ NGOẠI -->
+                                    <div class="flex-1 flex flex-col items-center">
+                                        <div class="w-0.5 h-6 bg-slate-300"></div>
+                                        <div class="mindmap-node border-blue-400 text-blue-700 bg-blue-50 text-sm px-2 py-3 shadow-sm z-10 w-32 hover:-translate-y-1 transition-transform cursor-default">
+                                            <i class="fa-solid fa-link text-blue-500 mb-1 text-lg"></i><br>
+                                            <span class="font-extrabold">KHOÁ NGOẠI</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Merge Level 5: LIÊN KẾT -->
+                                <div class="w-full flex relative">
+                                    <div class="flex-1 flex justify-center"><div class="w-0.5 h-6 bg-slate-300"></div></div>
+                                    <div class="flex-1 flex justify-center"><div class="w-0.5 h-6 bg-slate-300"></div></div>
+                                    <!-- Đường ngang gộp nhánh (nằm dưới cùng khối flex) -->
+                                    <div class="absolute bottom-0 left-[25%] right-[25%] h-0.5 bg-slate-300"></div>
+                                </div>
+                                <!-- Đường dọc cuối cùng trước khi tới Liên Kết -->
+                                <div class="w-0.5 h-6 bg-purple-300"></div>
+                                
+                                <div class="mindmap-node border-purple-500 text-purple-800 bg-purple-100 shadow-md z-10 px-4 py-3 w-64 hover:-translate-y-1 transition-transform cursor-default">
+                                    <i class="fa-solid fa-people-arrows text-xl mb-1 text-purple-600"></i><br>
+                                    <span class="font-black text-lg">LIÊN KẾT DỮ LIỆU</span><br>
+                                    <span class="text-xs font-medium opacity-80">(Ghép nối bảng qua Khoá)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: KHÁI NIỆM CỐT LÕI ================= -->
+        <section id="tab2" class="tab-content bg-white rounded-3xl shadow-xl p-8 border-t-8 border-pink-400">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center">TỪ ĐIỂN KHÁI NIỆM TRỰC QUAN</h2>
+            <p class="text-center text-slate-500 mb-8 text-sm"><i class="fa-solid fa-lightbulb text-yellow-500"></i> Rẽ chuột (Hover) vào các nút bên dưới để xem minh hoạ trực tiếp trên Bảng!</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                
+                <!-- Bảng minh hoạ (Infographic part) -->
+                <div class="bg-white p-4 rounded-xl shadow-md border border-slate-100 overflow-x-auto relative">
+                    <h3 class="text-center font-bold text-slate-600 mb-2">Bảng Nhạc sĩ (Ví dụ)</h3>
+                    <table class="sim-table w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th id="th-aid" class="w-1/3">Aid (Mã nhạc sĩ)</th>
+                                <th id="th-tenns">TenNS (Tên nhạc sĩ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="tr-1">
+                                <td id="td-1-aid">1</td>
+                                <td>Đỗ Nhuận</td>
+                            </tr>
+                            <tr id="tr-2">
+                                <td id="td-2-aid">2</td>
+                                <td>Văn Cao</td>
+                            </tr>
+                            <tr id="tr-3">
+                                <td id="td-3-aid">3</td>
+                                <td>Hoàng Việt</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Các khái niệm (Text part - Interactive) -->
+                <div class="space-y-4">
+                    <!-- Concept 1 -->
+                    <div class="bg-pastel-pink rounded-xl p-4 cursor-pointer hover:shadow-md transition border border-pink-200"
+                         onmouseenter="highlightElement(['tr-2'], 'highlight-row')" onmouseleave="removeHighlight(['tr-2'], 'highlight-row')">
+                        <h4 class="font-bold text-pink-700"><i class="fa-solid fa-bars text-xl w-6"></i> 1. Bản ghi (Record)</h4>
+                        <p class="text-sm text-slate-700 mt-1">Mỗi <b>hàng</b> của bảng. Tập hợp thông tin về một đối tượng cụ thể (VD: Nhạc sĩ Văn Cao).</p>
+                    </div>
+
+                    <!-- Concept 2 -->
+                    <div class="bg-pastel-green rounded-xl p-4 cursor-pointer hover:shadow-md transition border border-green-200"
+                         onmouseenter="highlightElement(['th-tenns', 'tr-1 td:nth-child(2)', 'tr-2 td:nth-child(2)', 'tr-3 td:nth-child(2)'], 'highlight-col')" 
+                         onmouseleave="removeHighlight(['th-tenns', 'tr-1 td:nth-child(2)', 'tr-2 td:nth-child(2)', 'tr-3 td:nth-child(2)'], 'highlight-col')">
+                        <h4 class="font-bold text-green-700"><i class="fa-solid fa-columns text-xl w-6"></i> 2. Trường (Field)</h4>
+                        <p class="text-sm text-slate-700 mt-1">Mỗi <b>cột</b> trong bảng. Thể hiện <b>thuộc tính</b> của đối tượng (VD: Tên nhạc sĩ). Dữ liệu trong 1 trường cùng 1 kiểu (Kiểu dữ liệu).</p>
+                    </div>
+
+                    <!-- Concept 3 -->
+                    <div class="bg-pastel-yellow rounded-xl p-4 cursor-pointer hover:shadow-md transition border border-yellow-200"
+                         onmouseenter="highlightElement(['th-aid', 'td-1-aid', 'td-2-aid', 'td-3-aid'], 'highlight-key')" 
+                         onmouseleave="removeHighlight(['th-aid', 'td-1-aid', 'td-2-aid', 'td-3-aid'], 'highlight-key')">
+                        <h4 class="font-bold text-yellow-700"><i class="fa-solid fa-key text-xl w-6"></i> 3. Khoá chính (Primary Key)</h4>
+                        <p class="text-sm text-slate-700 mt-1">Trường (hoặc nhóm trường) xác định <b>duy nhất</b> một bản ghi. Thường chọn khoá có ít trường nhất (VD: Aid).</p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Quan hệ giữa các bảng -->
+            <div class="mt-8 bg-pastel-blue p-5 rounded-2xl border border-blue-200 flex flex-col md:flex-row items-center gap-6">
+                <div class="flex-1">
+                    <h4 class="font-bold text-blue-800 text-lg"><i class="fa-solid fa-link"></i> Khoá ngoại & Liên kết dữ liệu</h4>
+                    <p class="text-sm text-slate-700 mt-2">
+                        <b>Khoá ngoại:</b> Trường ở bảng này (A) nhưng làm khoá chính ở bảng khác (B). Tạo ra <i>quan hệ</i> giữa 2 bảng.<br><br>
+                        <b>Liên kết dữ liệu (Join):</b> Ghép nối dữ liệu hai bảng dựa theo khoá (Ví dụ: Ghép bảng Bản nhạc và Nhạc sĩ qua trường <b>Aid</b>).
+                    </p>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <!-- Infographic small -->
+                    <div class="bg-white p-3 rounded-lg text-xs text-center border-2 border-dashed border-blue-300">
+                        <span class="font-bold text-pink-600">Bảng BẢN NHẠC</span><br>
+                        (Mid, <span class="bg-blue-100 px-1 font-bold rounded">Aid</span>, TenBN)
+                        <div class="my-1"><i class="fa-solid fa-arrow-down text-blue-500"></i> (Khoá ngoại)</div>
+                        <span class="font-bold text-green-600">Bảng NHẠC SĨ</span><br>
+                        (<span class="bg-yellow-100 px-1 font-bold rounded">Aid</span>, TenNS)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: MÔ PHỎNG TƯƠNG TÁC ================= -->
+        <section id="tab3" class="tab-content bg-white rounded-3xl shadow-xl p-8 border-t-8 border-green-400">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2 text-center">CSDL ÂM NHẠC - HOẠT ĐỘNG 1</h2>
+            <p class="text-center text-slate-500 mb-6">Mô phỏng truy xuất dữ liệu có quan hệ (Dựa theo Hình 13.1 & 13.2 SGK)</p>
+
+            <!-- Bảng điều khiển tương tác -->
+            <div class="bg-slate-50 p-4 rounded-xl mb-6 flex flex-wrap gap-4 justify-center items-center shadow-inner">
+                <span class="font-bold text-slate-700"><i class="fa-solid fa-gamepad"></i> Nhiệm vụ:</span>
+                <button onclick="runSimulation1()" class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg font-bold hover:bg-indigo-200 transition text-sm">
+                    1. Tìm Nhạc sĩ sáng tác "Trường ca sông Lô"
+                </button>
+                <button onclick="runSimulation2()" class="bg-pink-100 text-pink-700 px-4 py-2 rounded-lg font-bold hover:bg-pink-200 transition text-sm">
+                    2. Tìm Ca sĩ thể hiện Bản thu âm 0005 TN
+                </button>
+                <button onclick="resetSimulation()" class="bg-slate-200 text-slate-600 px-4 py-2 rounded-lg font-bold hover:bg-slate-300 transition text-sm">
+                    <i class="fa-solid fa-rotate-right"></i> Đặt lại
+                </button>
+            </div>
+
+            <!-- Vùng hiển thị CSDL -->
+            <div class="grid md:grid-cols-2 gap-4">
+                
+                <!-- Bảng Nhạc Sĩ -->
+                <div class="border rounded-lg overflow-hidden relative">
+                    <div class="bg-pastel-pink font-bold text-center py-2 text-pink-800 text-sm">a) Nhạc sĩ</div>
+                    <table class="sim-table w-full text-xs">
+                        <thead><tr><th>Aid</th><th>TenNS</th></tr></thead>
+                        <tbody>
+                            <tr id="ns-1"><td>1</td><td>Đỗ Nhuận</td></tr>
+                            <tr id="ns-2"><td id="ns-aid-2">2</td><td id="ns-ten-2">Văn Cao</td></tr>
+                            <tr id="ns-3"><td>3</td><td>Hoàng Việt</td></tr>
+                            <tr id="ns-4"><td>4</td><td>Nguyễn Tài Tuệ</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bảng Bản Nhạc -->
+                <div class="border rounded-lg overflow-hidden">
+                    <div class="bg-pastel-blue font-bold text-center py-2 text-blue-800 text-sm">c) Bản nhạc</div>
+                    <table class="sim-table w-full text-xs">
+                        <thead><tr><th>Mid</th><th>Aid</th><th>TenBN</th></tr></thead>
+                        <tbody>
+                            <tr><td>0001</td><td>1</td><td>Du kích sông Thao</td></tr>
+                            <tr id="bn-2"><td>0002</td><td id="bn-aid-2">2</td><td id="bn-ten-2">Trường ca sông Lô</td></tr>
+                            <tr><td>0003</td><td>3</td><td>Tình ca</td></tr>
+                            <tr id="bn-4"><td>0004</td><td>4</td><td id="bn-ten-4">Xa khơi</td></tr>
+                            <tr><td>0005</td><td>1</td><td>Việt Nam quê hương tôi</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bảng Ca sĩ -->
+                <div class="border rounded-lg overflow-hidden">
+                    <div class="bg-pastel-green font-bold text-center py-2 text-green-800 text-sm">b) Ca sĩ</div>
+                    <table class="sim-table w-full text-xs">
+                        <thead><tr><th>Sid</th><th>TenCS</th></tr></thead>
+                        <tbody>
+                            <tr><td>TK</td><td>Trần Khánh</td></tr>
+                            <tr><td>LD</td><td>Lê Dung</td></tr>
+                            <tr id="cs-tn"><td id="cs-sid-tn">TN</td><td id="cs-ten-tn">Tân Nhân</td></tr>
+                            <tr><td>QH</td><td>Quốc Hương</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bảng Bản thu âm -->
+                <div class="border rounded-lg overflow-hidden">
+                    <div class="bg-pastel-yellow font-bold text-center py-2 text-yellow-800 text-sm">d) Bản thu âm</div>
+                    <table class="sim-table w-full text-xs">
+                        <thead><tr><th>Mid</th><th>Sid</th></tr></thead>
+                        <tbody>
+                            <tr><td>0001</td><td>TK</td></tr>
+                            <tr><td>0001</td><td>LD</td></tr>
+                            <tr><td>0005</td><td>TK</td></tr>
+                            <tr id="bta-0005-tn"><td id="bta-mid-5">0005</td><td id="bta-sid-tn">TN</td></tr>
+                            <tr><td>0004</td><td>QH</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Giải thích Step-by-step -->
+            <div id="sim-result" class="mt-6 text-center text-lg font-bold text-indigo-700 min-h-[40px] transition-all">
+                <!-- Nội dung giải thích hiện tại đây -->
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: LƯU Ý & PHÂN TÍCH ================= -->
+        <section id="tab4" class="tab-content bg-white rounded-3xl shadow-xl p-8 border-t-8 border-orange-400">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center">TẠI SAO LẠI PHẢI CHIA BẢNG?</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <!-- Bảng Gộp (Không tốt) -->
+                <div class="bg-red-50 p-5 rounded-2xl border-2 border-red-200">
+                    <div class="flex items-center justify-center gap-2 mb-4 text-red-600 font-bold text-lg">
+                        <i class="fa-regular fa-face-frown text-2xl"></i> Nếu chỉ tạo 1 bảng duy nhất (Bảng NBC)
+                    </div>
+                    
+                    <!-- Infographic bảng dư thừa -->
+                    <div class="bg-white rounded p-2 text-xs border border-red-300 mb-4 opacity-80">
+                        <table class="w-full text-center">
+                            <tr class="font-bold border-b bg-red-100"><td>TenNS</td><td>TenBN</td><td>TenCS</td></tr>
+                            <tr><td>Văn Cao</td><td>Trường ca sông Lô</td><td>Lê Dung</td></tr>
+                            <tr class="bg-red-200"><td class="text-red-700 font-bold">Van Cao</td><td>Trường ca sông Lô</td><td>Tân Nhân</td></tr>
+                        </table>
+                    </div>
+
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li><i class="fa-solid fa-xmark text-red-500 w-5"></i> <b>Dư thừa dữ liệu:</b> Tên nhạc sĩ, ca sĩ bị lặp lại nhiều lần.</li>
+                        <li><i class="fa-solid fa-xmark text-red-500 w-5"></i> <b>Tiêu tốn không gian:</b> Lưu trữ văn bản dài lặp đi lặp lại.</li>
+                        <li><i class="fa-solid fa-xmark text-red-500 w-5"></i> <b>Dễ mắc lỗi, mất nhất quán:</b> Gõ sai tên (Văn Cao / Van Cao) sẽ gây lỗi tìm kiếm. Khó sửa đổi đồng loạt.</li>
+                    </ul>
+                </div>
+
+                <!-- Bảng Phân tách (Tốt - CSDL Quan hệ) -->
+                <div class="bg-green-50 p-5 rounded-2xl border-2 border-green-200">
+                    <div class="flex items-center justify-center gap-2 mb-4 text-green-600 font-bold text-lg">
+                        <i class="fa-regular fa-face-smile text-2xl"></i> Tạo CSDL quan hệ (Nhiều bảng)
+                    </div>
+                    
+                    <!-- Infographic bảng tối ưu -->
+                    <div class="flex justify-center gap-2 mb-4">
+                        <div class="bg-white rounded p-2 text-xs border border-green-300 shadow-sm text-center">
+                            Bảng Nhạc Sĩ
+                        </div>
+                        <i class="fa-solid fa-arrow-right-arrow-left text-green-400 mt-2"></i>
+                        <div class="bg-white rounded p-2 text-xs border border-green-300 shadow-sm text-center">
+                            Bảng Bản Nhạc
+                        </div>
+                    </div>
+
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li><i class="fa-solid fa-check text-green-500 w-5"></i> <b>Nhất quán dữ liệu:</b> Mỗi đối tượng (Nhạc sĩ, Ca sĩ) chỉ lưu 1 lần ở 1 bảng.</li>
+                        <li><i class="fa-solid fa-check text-green-500 w-5"></i> <b>Dễ dàng cập nhật:</b> Đổi tên Nhạc sĩ chỉ cần sửa 1 lần duy nhất ở Bảng Nhạc sĩ.</li>
+                        <li><i class="fa-solid fa-check text-green-500 w-5"></i> <b>Liên kết linh hoạt:</b> Dùng khoá (Aid, Mid, Sid) để ghép nối tạo ra dữ liệu đầy đủ khi cần.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phân biệt Khoá -->
+            <div class="mt-8 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-3 border-b pb-2"><i class="fa-solid fa-triangle-exclamation text-orange-500"></i> Nội dung dễ nhầm lẫn</h3>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="font-bold text-indigo-600">Khoá (Key) vs Khoá chính (Primary Key)</span>
+                        <p class="mt-1 text-slate-600">Một bảng có thể có <span class="underline decoration-pink-300">nhiều Khoá</span> (những tập thuộc tính định danh được bản ghi). Nhưng người ta chỉ chọn ra <b>duy nhất 1 Khoá</b> (thường có ít trường nhất) làm <b>Khoá chính</b>.</p>
+                    </div>
+                    <div>
+                        <span class="font-bold text-indigo-600">Kiểu dữ liệu của trường</span>
+                        <p class="mt-1 text-slate-600">Việc quy định kiểu dữ liệu (Số, Xâu kí tự, Logic, Ngày tháng) giúp: 1. Hạn chế lãng phí lưu trữ; 2. Kiểm soát tính đúng đắn khi nhập liệu.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: TRẮC NGHIỆM ================= -->
+        <section id="tab5" class="tab-content bg-white rounded-3xl shadow-xl p-8 border-t-8 border-yellow-400">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2 text-center">ÔN TẬP NHANH</h2>
+            <p class="text-center text-slate-500 mb-8 text-sm">5 câu hỏi bám sát kiến thức SGK. Hãy chọn đáp án đúng nhất!</p>
+
+            <form id="quiz-form" class="space-y-6 max-w-3xl mx-auto">
+                <!-- Q1 -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">Câu 1: CSDL quan hệ lưu trữ dữ liệu dưới dạng nào?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q1" value="A" class="w-4 h-4 text-indigo-600"> Các danh sách liên kết.
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q1" value="B" class="w-4 h-4 text-indigo-600"> Các bảng có quan hệ với nhau.
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q1" value="C" class="w-4 h-4 text-indigo-600"> Một bảng duy nhất chứa tất cả thông tin.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">Câu 2: Về mặt cấu trúc, mỗi hàng của bảng trong CSDL quan hệ được gọi là gì?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q2" value="A" class="w-4 h-4 text-indigo-600"> Trường (Field)
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q2" value="B" class="w-4 h-4 text-indigo-600"> Khoá (Key)
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q2" value="C" class="w-4 h-4 text-indigo-600"> Bản ghi (Record)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">Câu 3: Phát biểu nào sau đây ĐÚNG về Khoá chính (Primary Key)?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q3" value="A" class="w-4 h-4 text-indigo-600"> Là trường xác định duy nhất một bản ghi của bảng.
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q3" value="B" class="w-4 h-4 text-indigo-600"> Một bảng có thể chọn nhiều khoá chính cùng lúc.
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q3" value="C" class="w-4 h-4 text-indigo-600"> Luôn luôn bao gồm tất cả các trường trong bảng.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">Câu 4: Người ta gọi việc ghép nối dữ liệu hai bảng với nhau theo khoá là gì?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q4" value="A" class="w-4 h-4 text-indigo-600"> Cập nhật dữ liệu
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q4" value="B" class="w-4 h-4 text-indigo-600"> Truy xuất dữ liệu
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q4" value="C" class="w-4 h-4 text-indigo-600"> Liên kết (Join) dữ liệu
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-700 mb-3">Câu 5: Mục đích của việc xác định kiểu dữ liệu của các trường là:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q5" value="A" class="w-4 h-4 text-indigo-600"> Tạo ra mối quan hệ giữa các bảng.
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q5" value="B" class="w-4 h-4 text-indigo-600"> Hạn chế lãng phí dung lượng và kiểm soát tính đúng đắn của dữ liệu nhập.
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded transition">
+                            <input type="radio" name="q5" value="C" class="w-4 h-4 text-indigo-600"> Để hệ thống tự động sinh ra dữ liệu.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="text-center pt-4">
+                    <button type="button" onclick="checkQuiz()" class="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-full font-bold shadow-md hover:bg-yellow-500 transition transform hover:scale-105 text-lg">
+                        <i class="fa-solid fa-check-double"></i> Chấm Điểm
+                    </button>
+                </div>
+                
+                <div id="quiz-result" class="hidden mt-4 p-4 rounded-xl text-center font-bold text-lg border-2"></div>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Logic JS -->
+    <script>
+        // --- 1. Tabs Logic ---
+        function openTab(tabId, btn) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            // Remove active classes from all buttons
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-indigo-500', 'text-white', 'shadow-md');
+                b.classList.add('bg-white', 'text-slate-600', 'shadow-sm', 'border', 'border-slate-200');
+            });
+            
+            // Show current tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Style active button
+            btn.classList.remove('bg-white', 'text-slate-600', 'shadow-sm', 'border', 'border-slate-200');
+            btn.classList.add('bg-indigo-500', 'text-white', 'shadow-md');
+        }
+
+        // --- 2. Interactive Highlights (Tab 2) ---
+        function highlightElement(ids, className) {
+            ids.forEach(id => {
+                const el = document.getElementById(id) || document.querySelector(id);
+                if(el) el.classList.add(className);
+            });
+        }
+        function removeHighlight(ids, className) {
+            ids.forEach(id => {
+                const el = document.getElementById(id) || document.querySelector(id);
+                if(el) el.classList.remove(className);
+            });
+        }
+
+        // --- 3. Simulation Logic (Tab 3) ---
+        function resetSimulation() {
+            document.querySelectorAll('.sim-table td, .sim-table tr, .sim-table th').forEach(el => {
+                el.classList.remove('highlight-row', 'highlight-link', 'highlight-key');
+            });
+            document.getElementById('sim-result').innerHTML = '';
+        }
+
+        // Mô phỏng 1: Tìm nhạc sĩ "Trường ca sông Lô"
+        function runSimulation1() {
+            resetSimulation();
+            const resDiv = document.getElementById('sim-result');
+            
+            // Bước 1: Tìm trong bảng Bản nhạc
+            resDiv.innerHTML = "Bước 1: Tìm <i>'Trường ca sông Lô'</i> trong Bảng <b>Bản nhạc</b>...";
+            setTimeout(() => {
+                document.getElementById('bn-2').classList.add('highlight-row');
+                
+                // Bước 2: Lấy mã Aid
+                setTimeout(() => {
+                    resDiv.innerHTML = "Bước 2: Tìm thấy, xác định được mã nhạc sĩ (Khoá ngoại) <b>Aid = 2</b>.";
+                    document.getElementById('bn-aid-2').classList.add('highlight-link');
+                    
+                    // Bước 3: Liên kết sang bảng Nhạc sĩ
+                    setTimeout(() => {
+                        resDiv.innerHTML = "Bước 3: Liên kết <b>Aid = 2</b> sang Bảng <b>Nhạc sĩ</b>...";
+                        document.getElementById('ns-aid-2').classList.add('highlight-link');
+                        
+                        // Bước 4: Ra kết quả
+                        setTimeout(() => {
+                            document.getElementById('ns-2').classList.add('highlight-row');
+                            resDiv.innerHTML = "<span class='text-green-600'><i class='fa-solid fa-check'></i> Kết quả: Tác giả là <b>Văn Cao</b>.</span>";
+                        }, 1500);
+                    }, 1500);
+                }, 1500);
+            }, 500);
+        }
+
+        // Mô phỏng 2: Tìm ca sĩ thu âm 0005 TN
+        function runSimulation2() {
+            resetSimulation();
+            const resDiv = document.getElementById('sim-result');
+            
+            resDiv.innerHTML = "Bước 1: Xác định dòng <i>0005 TN</i> trong Bảng <b>Bản thu âm</b>...";
+            setTimeout(() => {
+                document.getElementById('bta-0005-tn').classList.add('highlight-row');
+                
+                setTimeout(() => {
+                    resDiv.innerHTML = "Bước 2: Lấy mã ca sĩ (Khoá ngoại) <b>Sid = TN</b>...";
+                    document.getElementById('bta-sid-tn').classList.add('highlight-link');
+                    
+                    setTimeout(() => {
+                        resDiv.innerHTML = "Bước 3: Tham chiếu <b>Sid = TN</b> vào Bảng <b>Ca sĩ</b>...";
+                        document.getElementById('cs-sid-tn').classList.add('highlight-link');
+                        
+                        setTimeout(() => {
+                            document.getElementById('cs-tn').classList.add('highlight-row');
+                            resDiv.innerHTML = "<span class='text-pink-600'><i class='fa-solid fa-check'></i> Kết quả: Ca sĩ thể hiện là <b>Tân Nhân</b>.</span>";
+                        }, 1500);
+                    }, 1500);
+                }, 1500);
+            }, 500);
+        }
+
+        // --- 4. Quiz Logic (Tab 5) ---
+        function checkQuiz() {
+            const answers = {
+                q1: 'B', // Các bảng có quan hệ
+                q2: 'C', // Bản ghi
+                q3: 'A', // Xác định duy nhất
+                q4: 'C', // Liên kết (Join)
+                q5: 'B'  // Hạn chế lãng phí, kiểm soát đúng đắn
+            };
+            
+            let score = 0;
+            let total = 5;
+            
+            for(let key in answers) {
+                const selected = document.querySelector(`input[name="${key}"]:checked`);
+                if(selected && selected.value === answers[key]) {
+                    score++;
+                }
+            }
+            
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'border-green-300', 'bg-red-100', 'text-red-800', 'border-red-300');
+            
+            if(score === total) {
+                resultDiv.classList.add('bg-green-100', 'text-green-800', 'border-green-300');
+                resultDiv.innerHTML = `🎉 Xuất sắc! Bạn đạt ${score}/${total} điểm. Nắm rất vững kiến thức!`;
+            } else {
+                resultDiv.classList.add('bg-red-100', 'text-red-800', 'border-red-300');
+                resultDiv.innerHTML = `Cố gắng lên! Bạn đạt ${score}/${total} điểm. Hãy đọc lại phần Khái niệm cốt lõi nhé.`;
+            }
+        }
+    </script>
+</body>
+</html>

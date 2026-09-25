@@ -1,0 +1,2942 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 4: Giao thức mạng</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            purple: '#f3e8ff',
+                            green: '#dcfce7',
+                            yellow: '#fef3c7',
+                            pink: '#fce7f3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .shake { animation: shake 0.5s; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        .study-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .study-card:hover {
+            transform: translateY(-5px);
+            border-color: #e2e8f0;
+        }
+        
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            height: 200px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .flip-card-front {
+            background-color: white;
+            border: 2px solid #e2e8f0;
+        }
+        .flip-card-back {
+            background-color: #f8fafc;
+            transform: rotateY(180deg);
+            border: 2px solid #e2e8f0;
+        }
+
+        .diagram-part:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* TCP Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        /* Hiệu ứng đường truyền phát sáng */
+        @keyframes pulse-wire {
+            0%, 100% { opacity: 0.3; stroke-width: 3; }
+            50% { opacity: 0.9; stroke-width: 5; }
+        }
+        .wire-active {
+            animation: pulse-wire 1s infinite ease-in-out;
+        }
+        
+        .dash-anim {
+            stroke-dasharray: 8, 8;
+            animation: dash 1s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -16; }
+        }
+
+        /* Hiệu ứng in tài liệu */
+        @keyframes print-paper {
+            0% { transform: translateY(-10px) scale(0.6); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(18px) scale(1); opacity: 1; }
+        }
+        .paper-printed {
+            animation: print-paper 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 font-sans">
+
+    <header class="max-w-5xl mx-auto text-center mb-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+        <h1 class="title-gradient">Bài 4: Giao Thức Mạng</h1>
+        <p class="text-slate-500 mt-2 font-medium text-sm md:text-base"><i class="fa-solid fa-bullseye text-blue-400 mr-2"></i>Mục tiêu: Hiểu và mô tả sơ lược vai trò, chức năng của giao thức mạng và giao thức TCP/IP.</p>
+    </header>
+
+    <nav class="max-w-5xl mx-auto flex flex-wrap justify-center gap-3 mb-8">
+        <button onclick="switchTab('tong-quan', this)" class="tab-btn active bg-blue-500 text-white px-6 py-3 rounded-full font-bold shadow-md hover:bg-blue-600 transition"><i class="fa-solid fa-map mr-2"></i>Tổng Quan</button>
+        <button onclick="switchTab('truc-quan', this)" class="tab-btn bg-white text-slate-600 px-6 py-3 rounded-full font-bold shadow-sm border border-slate-200 hover:bg-slate-50 transition"><i class="fa-solid fa-diagram-project mr-2"></i>Mô Phỏng</button>
+        <button onclick="switchTab('chi-tiet', this)" class="tab-btn bg-white text-slate-600 px-6 py-3 rounded-full font-bold shadow-sm border border-slate-200 hover:bg-slate-50 transition"><i class="fa-solid fa-magnifying-glass mr-2"></i>Chi Tiết</button>
+        <button onclick="switchTab('thuc-hanh', this)" class="tab-btn bg-white text-slate-600 px-6 py-3 rounded-full font-bold shadow-sm border border-slate-200 hover:bg-slate-50 transition"><i class="fa-solid fa-gamepad mr-2"></i>Thực Hành</button>
+    </nav>
+
+    <main class="max-w-5xl mx-auto">
+
+        <section id="tong-quan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="study-card p-6 bg-gradient-to-br from-white to-pastel-blue md:col-span-2 flex flex-col">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="icon-box bg-blue-100 text-blue-500"><i class="fa-solid fa-book-open"></i></div>
+                        <h2 class="text-xl font-bold text-slate-800">Giao thức mạng là gì?</h2>
+                    </div>
+                    
+                    <div class="flex-1 bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-400 relative overflow-hidden">
+                        <p class="text-slate-600 mb-4 z-10 relative">
+                            Là tập hợp các <strong>quy định</strong> về cách thức giao tiếp để truyền dữ liệu giữa các đối tượng tham gia mạng. Hãy tưởng tượng...
+                        </p>
+
+                        <!-- Mô phỏng Hoạt cảnh truyền tin -->
+                        <div class="flex justify-between items-center relative h-40 mt-8 bg-slate-50 rounded-xl p-4 border border-slate-100 overflow-hidden shadow-inner">
+                            <div class="absolute top-1/2 left-8 right-8 h-0.5 bg-slate-300 -translate-y-1/2 z-0 border-t border-dashed border-slate-400"></div>
+
+                            <div id="proto-packet" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-30 opacity-0 pointer-events-none" style="left: 15%;">
+                                <div id="proto-packet-content" class="px-3 py-1.5 rounded-full shadow-lg text-[10px] font-bold whitespace-nowrap transition-all duration-300"></div>
+                            </div>
+
+                            <div class="text-center z-10 bg-white p-3 rounded-2xl shadow-sm border border-slate-200 relative min-w-[90px] transition-all" id="user1-box">
+                                <img src="https://cdn-icons-png.flaticon.com/512/4333/4333609.png" alt="Người Việt" class="w-12 h-12 mx-auto mb-2">
+                                <p id="user1-text" class="text-[10px] font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded shadow-inner border border-blue-100">"Xin chào!"</p>
+                            </div>
+                            
+                            <div class="flex-1 mx-2 relative h-full flex justify-center items-center pointer-events-none">
+                                <div id="protocol-center-box" class="bg-blue-500 text-white p-3 rounded-xl shadow-md z-20 relative group transition-all duration-500 text-center flex flex-col items-center pointer-events-auto border-2 border-blue-400">
+                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mb-1.5 relative">
+                                        <i class="fa-solid fa-language text-lg relative z-10"></i>
+                                        <div class="absolute inset-0 bg-white/30 rounded-full animate-ping opacity-75"></div>
+                                    </div>
+                                    <p class="text-xs font-bold tracking-wide uppercase">Giao thức mạng</p>
+                                    <p class="text-[9px] mt-1 bg-blue-600/80 px-2 py-0.5 rounded-full font-medium border border-blue-400/50">(Bộ thông dịch chung)</p>
+                                </div>
+                            </div>
+
+                            <div class="text-center z-10 bg-white p-3 rounded-2xl shadow-sm border border-slate-200 relative min-w-[90px] transition-all" id="user2-box">
+                                <img src="https://cdn-icons-png.flaticon.com/512/4333/4333615.png" alt="Người nước ngoài" class="w-12 h-12 mx-auto mb-2">
+                                <p id="user2-text" class="text-[10px] font-bold bg-green-50 text-green-700 px-2 py-1 rounded shadow-inner border border-green-100">"Hello!"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="study-card p-6 bg-pastel-pink border-dashed border-2 border-pink-300">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="fa-solid fa-triangle-exclamation text-pink-500 text-2xl"></i>
+                        <h2 class="text-lg font-bold text-slate-800">Dễ nhầm lẫn</h2>
+                    </div>
+                    <ul class="space-y-4 text-sm">
+                        <li class="bg-white/60 p-3 rounded-lg">
+                            <span class="font-bold text-red-500">Sai:</span> Internet chỉ là web, mạng xã hội. <br>
+                            <span class="font-bold text-green-600">Đúng:</span> Internet là mạng toàn cầu hoạt động theo <strong>giao thức TCP/IP</strong>.
+                        </li>
+                        <li class="bg-white/60 p-3 rounded-lg">
+                            <span class="font-bold text-red-500">Sai:</span> Địa chỉ IP và MAC giống nhau.<br>
+                            <span class="font-bold text-green-600">Đúng:</span> MAC gắn với phần cứng (LAN). IP dùng để định tuyến toàn cầu.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-12">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front flex-col justify-center items-center">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-file-code text-purple-400 text-5xl"></i>
+                                <h3 class="text-3xl font-bold text-slate-700">1. Định dạng</h3>
+                            </div>
+                        </div>
+                        <div class="flip-card-back flex-col justify-center items-center">
+                            <i class="fa-solid fa-envelope-open-text text-purple-500 text-4xl mb-2"></i>
+                            <p class="text-lg text-slate-700 mb-2 font-bold">Cấu trúc dữ liệu</p>
+                            <p class="text-sm text-slate-600">Quy định gói tin phải có phần đầu (header) thế nào, dữ liệu đặt ở đâu, độ dài bao nhiêu...</p>
+                            <div class="mt-3 bg-purple-100 p-1.5 rounded text-xs font-mono text-purple-700">[Header | Data | Checksum]</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front flex-col justify-center items-center">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-brain text-green-400 text-5xl"></i>
+                                <h3 class="text-3xl font-bold text-slate-700">2. Ý nghĩa</h3>
+                            </div>
+                        </div>
+                        <div class="flip-card-back flex-col justify-center items-center">
+                            <i class="fa-solid fa-lightbulb text-green-500 text-4xl mb-2"></i>
+                            <p class="text-lg text-slate-700 mb-2 font-bold">Ý nghĩa thông tin</p>
+                            <p class="text-sm text-slate-600">Các bit trong gói tin đó có nghĩa là gì? Ví dụ: bit này là địa chỉ người nhận, bit kia là lệnh yêu cầu kết nối.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front flex-col justify-center items-center">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-gears text-yellow-400 text-5xl"></i>
+                                <div class="flex flex-col items-center">
+                                    <h3 class="text-3xl font-bold text-slate-700">3. Cách xử lý</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flip-card-back flex-col justify-center items-center">
+                            <i class="fa-solid fa-stopwatch text-yellow-500 text-4xl mb-2"></i>
+                            <p class="text-lg text-slate-700 mb-2 font-bold">Quy trình & Thời gian</p>
+                            <p class="text-sm text-slate-600">Khi nào thì gửi? Nếu gặp lỗi thì làm gì? Tốc độ truyền thế nào để hai bên khớp nhau?</p>
+                            <div class="mt-3 flex gap-2 justify-center"><i class="fa-solid fa-arrow-right text-yellow-600 text-lg"></i><i class="fa-solid fa-triangle-exclamation text-red-500 text-lg"></i><i class="fa-solid fa-rotate-right text-blue-500 text-lg"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="study-card p-6 bg-white relative overflow-visible z-10">
+                <h2 class="text-xl font-bold text-center mb-8"><i class="fa-solid fa-link text-indigo-500 mr-2"></i>Kiến thức cốt lõi: Bộ đôi TCP/IP</h2>
+                <p class="text-center text-slate-500 mb-6 text-sm">Di chuột vào từng phần để xem vai trò của chúng.</p>
+                
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 relative z-20">
+                    <div class="diagram-part w-full md:w-1/3 bg-pastel-green p-6 rounded-2xl text-center relative group hover:bg-green-100 transition duration-300 cursor-pointer">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-xl font-bold border-4 border-white shadow-sm transition group-hover:scale-110"><i class="fa-solid fa-route"></i></div>
+                        <h3 class="font-bold text-lg mt-4 mb-2 text-green-800 transition group-hover:text-green-900">Giao thức IP</h3>
+                        <p class="text-sm font-medium">Tìm đường đi</p>
+                        
+                        <div class="tooltip opacity-0 visibility-hidden absolute top-full left-1/2 -translate-x-1/2 mt-4 w-64 bg-slate-800 text-white text-xs p-4 rounded-xl shadow-lg transition-all duration-300 z-50 pointer-events-none">
+                            <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-slate-800 rotate-45"></div>
+                            <ul class="text-left space-y-2">
+                                <li class="flex items-start"><i class="fa-solid fa-map-pin text-green-400 mt-1 mr-2"></i>Gán địa chỉ số (IP) duy nhất cho mỗi thiết bị.</li>
+                                <li class="flex items-start"><i class="fa-solid fa-signs-post text-green-400 mt-1 mr-2"></i>Định tuyến các gói tin qua các mạng khác nhau để đến đích.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="text-3xl text-slate-300 rotate-90 md:rotate-0 animate-bounce">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+
+                    <div class="diagram-part w-full md:w-1/3 bg-pastel-purple p-6 rounded-2xl text-center relative group hover:bg-purple-100 transition duration-300 cursor-pointer">
+                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center text-xl font-bold border-4 border-white shadow-sm transition group-hover:scale-110"><i class="fa-solid fa-box-check"></i></div>
+                        <h3 class="font-bold text-lg mt-4 mb-2 text-purple-800 transition group-hover:text-purple-900">Giao thức TCP</h3>
+                        <p class="text-sm font-medium">Đảm bảo an toàn</p>
+                        
+                        <div class="tooltip opacity-0 visibility-hidden absolute top-full left-1/2 -translate-x-1/2 mt-4 w-64 bg-slate-800 text-white text-xs p-4 rounded-xl shadow-lg transition-all duration-300 z-50 pointer-events-none">
+                            <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-slate-800 rotate-45"></div>
+                            <ul class="text-left space-y-2">
+                                <li class="flex items-start"><i class="fa-solid fa-scissors text-purple-400 mt-1 mr-2"></i>Chia nhỏ dữ liệu thành các gói tin và đánh số thứ tự.</li>
+                                <li class="flex items-start"><i class="fa-solid fa-shield-halved text-purple-400 mt-1 mr-2"></i>Kiểm tra lỗi và yêu cầu gửi lại nếu gói tin bị mất hoặc hỏng.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="truc-quan" class="tab-content">
+            <!-- Mô phỏng 1: TCP chia nhỏ gói tin -->
+            <div class="study-card p-6 mb-8 bg-white">
+                <div class="flex items-center gap-4 mb-6 border-b pb-4">
+                    <div class="icon-box bg-purple-100 text-purple-600"><i class="fa-solid fa-scissors"></i></div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Mô phỏng TCP: Chia và ráp gói tin</h2>
+                        <p class="text-sm text-slate-500">Dữ liệu được cắt nhỏ, đi theo các đường khác nhau và được ráp lại ở đích đến. Lắp ráp đúng thứ tự dù đến khác thời điểm.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-6 relative overflow-hidden h-[280px] flex items-center justify-between border-2 border-slate-100">
+                    <div class="z-10 bg-white p-4 rounded-xl shadow-md text-center border-2 border-purple-200 min-w-[90px]">
+                        <i class="fa-solid fa-laptop text-3xl text-slate-600"></i>
+                        <p class="text-xs font-bold mt-2">Máy Gửi</p>
+                        <div class="w-12 h-16 bg-slate-100 flex flex-col rounded mx-auto mt-2 relative border border-slate-300 overflow-hidden" id="source-file">
+                            <div id="spkt3" class="w-full h-1/3 bg-blue-400 transition-all duration-500 z-10 border-b border-white/30"></div>
+                            <div id="spkt2" class="w-full h-1/3 bg-green-400 transition-all duration-500 z-10 border-b border-white/30"></div>
+                            <div id="spkt1" class="w-full h-1/3 bg-red-400 transition-all duration-500 z-10"></div>
+                            <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white z-20 drop-shadow-md transition-opacity duration-300" id="source-file-text">File</span>
+                        </div>
+                    </div>
+
+                    <div class="relative flex-1 h-full mx-4" id="tcp-animation-area">
+                        <div class="absolute top-[20%] left-1/2 -translate-x-1/2 w-8 h-8 bg-slate-200 rounded-full flex justify-center items-center text-xs text-slate-500 shadow border border-slate-300"><i class="fa-solid fa-wifi"></i></div>
+                        <div class="absolute top-[50%] left-[30%] -translate-y-1/2 w-8 h-8 bg-slate-200 rounded-full flex justify-center items-center text-xs text-slate-500 shadow border border-slate-300"><i class="fa-solid fa-wifi"></i></div>
+                        <div class="absolute bottom-[20%] left-[60%] w-8 h-8 bg-slate-200 rounded-full flex justify-center items-center text-xs text-slate-500 shadow border border-slate-300"><i class="fa-solid fa-wifi"></i></div>
+
+                        <div id="pkt1" class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-red-400 text-white text-xs flex items-center justify-center font-bold rounded shadow-lg opacity-0 z-30">1</div>
+                        <div id="pkt2" class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-green-400 text-white text-xs flex items-center justify-center font-bold rounded shadow-lg opacity-0 z-30">2</div>
+                        <div id="pkt3" class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-blue-400 text-white text-xs flex items-center justify-center font-bold rounded shadow-lg opacity-0 z-30">3</div>
+                    </div>
+
+                    <div class="z-10 bg-white p-4 rounded-xl shadow-md text-center border-2 border-purple-200 min-w-[90px]">
+                        <i class="fa-solid fa-server text-3xl text-slate-600"></i>
+                        <p class="text-xs font-bold mt-2">Máy Nhận</p>
+                        <div class="w-12 h-16 bg-slate-100 flex flex-col rounded mx-auto mt-2 border border-slate-300 overflow-hidden relative">
+                            <div id="dpkt3" class="w-full h-1/3 bg-blue-400 opacity-0 transition-all duration-300 scale-90 border-b border-white/30"></div>
+                            <div id="dpkt2" class="w-full h-1/3 bg-green-400 opacity-0 transition-all duration-300 scale-90 border-b border-white/30"></div>
+                            <div id="dpkt1" class="w-full h-1/3 bg-red-400 opacity-0 transition-all duration-300 scale-90"></div>
+                            
+                            <div id="dest-success" class="absolute inset-0 bg-green-500/90 flex flex-col items-center justify-center text-white opacity-0 transition-opacity duration-500 z-20">
+                                <i class="fa-solid fa-check-circle text-lg mb-1"></i>
+                                <span class="text-[9px] font-bold">XONG</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-6">
+                    <button onclick="runTCPAnimation()" class="bg-purple-500 text-white px-8 py-2.5 rounded-full font-bold hover:bg-purple-600 shadow-md transition-all active:scale-95"><i class="fa-solid fa-play mr-2"></i> Chạy mô phỏng</button>
+                </div>
+            </div>
+
+            <div class="study-card p-6 bg-white">
+                <div class="flex items-center gap-4 mb-6 border-b pb-4">
+                    <div class="icon-box bg-green-100 text-green-600"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Trạm Phân Loại Gói Tin (Router IP)</h2>
+                        <p class="text-sm text-slate-500">Nhấn nút "Tạo mới gói tin" để phát sinh 2 - 3 IP. Router sẽ tự động tra cứu Bảng định tuyến và lần lượt chuyển từng gói tin vào đúng cổng tương ứng.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div id="interactive-area" class="flex-1 bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 relative min-h-[350px] flex flex-col justify-center items-center overflow-hidden">
+                        
+                        <svg id="routing-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10">
+                            <path id="dynamic-path" d="" fill="none" stroke-width="4" stroke-dasharray="0" stroke-dashoffset="0" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2 max-w-[130px]" id="packet-queue-container"></div>
+
+                        <div id="active-packet" style="position: absolute; left: 0; top: 0; pointer-events: none;" class="opacity-0 z-40">
+                            <div class="bg-yellow-100 border-2 border-yellow-400 p-2 rounded-xl shadow-lg flex flex-col items-center justify-center min-w-[95px]">
+                                <i class="fa-solid fa-box text-yellow-600 text-lg mb-0.5"></i>
+                                <span id="active-packet-badge" class="text-[9px] font-bold text-yellow-800">GÓI TIN</span>
+                                <span id="active-packet-ip" class="text-[11px] font-mono font-bold bg-white px-1.5 py-0.5 rounded text-slate-700 shadow-inner">172.18.1.5</span>
+                            </div>
+                        </div>
+
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-16 h-12 bg-slate-200 rounded-r-full z-0 opacity-70"></div>
+
+                        <div id="core-router" class="w-24 h-24 bg-blue-500 rounded-2xl flex flex-col items-center justify-center text-white shadow-lg z-20 relative border-4 border-blue-300 transition-all duration-300">
+                            <i class="fa-solid fa-router text-3xl"></i>
+                            <span class="text-xs font-bold mt-1">ROUTER</span>
+                        </div>
+
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-20">
+                            <button id="port-btn-1" onclick="routePacket(1)" class="port-btn group relative flex items-center justify-end w-32 bg-indigo-100 hover:bg-indigo-200 border-2 border-indigo-300 p-2 rounded-xl transition cursor-pointer">
+                                <span class="text-xs font-bold text-indigo-700 mr-2">Cổng 1</span>
+                                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:bg-indigo-500 group-hover:text-white transition"><i class="fa-solid fa-arrow-right"></i></div>
+                            </button>
+                            
+                            <button id="port-btn-2" onclick="routePacket(2)" class="port-btn group relative flex items-center justify-end w-32 bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 p-2 rounded-xl transition cursor-pointer">
+                                <span class="text-xs font-bold text-emerald-700 mr-2">Cổng 2</span>
+                                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:bg-emerald-500 group-hover:text-white transition"><i class="fa-solid fa-arrow-right"></i></div>
+                            </button>
+                            
+                            <button id="port-btn-3" onclick="routePacket(3)" class="port-btn group relative flex items-center justify-end w-32 bg-orange-100 hover:bg-orange-200 border-2 border-orange-300 p-2 rounded-xl transition cursor-pointer">
+                                <span class="text-xs font-bold text-orange-700 mr-2">Cổng 3</span>
+                                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:bg-orange-500 group-hover:text-white transition"><i class="fa-solid fa-arrow-right"></i></div>
+                            </button>
+                        </div>
+
+                        <div id="route-feedback" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-md text-xs sm:text-sm font-bold opacity-0 transition-opacity z-30 pointer-events-none text-center max-w-[95%]"></div>
+                    </div>
+
+                    <div class="flex-1">
+                        <div class="bg-slate-800 text-white p-4 rounded-t-xl flex justify-between items-center">
+                            <h3 class="font-bold"><i class="fa-solid fa-table-list mr-2 text-blue-400"></i>Bảng Định Tuyến</h3>
+                            <span class="text-xs bg-slate-600 px-2 py-1 rounded">Luật xử lý</span>
+                        </div>
+                        <table class="w-full text-sm text-left border-collapse border-x-2 border-b-2 border-slate-200 rounded-b-xl overflow-hidden shadow-sm">
+                            <thead class="text-xs text-slate-500 uppercase bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-3 border-b">Nếu IP bắt đầu bằng...</th>
+                                    <th class="px-4 py-3 border-b text-center">Chuyển tới Cổng</th>
+                                    <th class="px-4 py-3 border-b">Đích đến</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-indigo-50 hover:bg-indigo-100 transition">
+                                    <td class="px-4 py-3 border-b font-mono text-indigo-700 font-bold">172.18.*.*</td>
+                                    <td class="px-4 py-3 border-b text-center font-bold text-lg text-indigo-600">1</td>
+                                    <td class="px-4 py-3 border-b text-slate-600">Hưng Yên</td>
+                                </tr>
+                                <tr class="bg-emerald-50 hover:bg-emerald-100 transition">
+                                    <td class="px-4 py-3 border-b font-mono text-emerald-700 font-bold">113.23.12.*</td>
+                                    <td class="px-4 py-3 border-b text-center font-bold text-lg text-emerald-600">2</td>
+                                    <td class="px-4 py-3 border-b text-slate-600">Quảng Ninh</td>
+                                </tr>
+                                <tr class="bg-orange-50 hover:bg-orange-100 transition">
+                                    <td class="px-4 py-3 border-b font-mono text-orange-700 font-bold">Khác (Bất kỳ)</td>
+                                    <td class="px-4 py-3 border-b text-center font-bold text-lg text-orange-600">3</td>
+                                    <td class="px-4 py-3 border-b text-slate-600">Cổng Mặc định</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-4 flex flex-wrap gap-2 justify-between items-center bg-blue-50 p-3 rounded-lg border border-blue-100">
+                            <p class="text-xs text-blue-800"><i class="fa-solid fa-circle-info mr-1"></i>Kí hiệu * đại diện cho bất kỳ số nào từ 0-255.</p>
+                            <button id="btn-create-packet" onclick="generateNewBatchIP(true)" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-600 active:scale-95 transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-rotate mr-1"></i>Tạo mới gói tin (2-3 IP)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="chi-tiet" class="tab-content">
+            <div class="flex flex-col gap-6">
+                
+                <!-- Mô phỏng NÂNG CẤP THEO HÌNH ẢNH: Phân biệt IP và MAC -->
+                <div class="study-card p-6 bg-white">
+                    <div class="flex items-center gap-4 mb-4 border-b pb-4">
+                        <div class="icon-box bg-blue-100 text-blue-600"><i class="fa-solid fa-id-card"></i></div>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">Mô phỏng: Phân biệt IP và MAC</h2>
+                            <p class="text-sm text-slate-500">Mỗi loại địa chỉ đóng một vai trò khác nhau tuỳ thuộc vào phạm vi kết nối (Nội bộ LAN hay Toàn cầu Internet).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <!-- Vùng trực quan mô phỏng được nâng cấp -->
+                        <div id="ip-mac-sim-area" class="flex-1 bg-slate-50 rounded-2xl border-2 border-slate-200 p-4 relative min-h-[460px] flex flex-col justify-between overflow-hidden shadow-inner">
+                            
+                            <!-- Khung thông báo bước diễn tiến & giải thích chậm rãi -->
+                            <div class="w-full flex justify-between items-center bg-white/95 px-3 py-2 rounded-xl border border-slate-200 shadow-sm z-30 min-h-[44px]">
+                                <div class="flex items-center gap-2">
+                                    <span id="step-badge" class="bg-slate-200 text-slate-700 text-[11px] font-bold px-2 py-0.5 rounded-md">Trạng thái</span>
+                                    <span id="step-desc" class="text-xs font-semibold text-slate-600">Chọn 1 trong 2 hành động bên dưới để bắt đầu mô phỏng chi tiết.</span>
+                                </div>
+                                <div id="status-spinner" class="hidden text-xs text-blue-500 animate-spin">
+                                    <i class="fa-solid fa-circle-notch"></i>
+                                </div>
+                            </div>
+
+                            <!-- SVG Đường kết nối vật lý & tín hiệu di chuyển -->
+                            <svg id="wire-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10">
+                                <!-- Đường cáp ngang: Máy tính <-> Switch/Router/Modem -->
+                                <line id="wire-pc-gw" x1="0" y1="0" x2="0" y2="0" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="6,6" stroke-linecap="round"></line>
+                                <!-- Đường cáp ngang: Switch/Router/Modem <-> Web Server -->
+                                <line id="wire-gw-srv" x1="0" y1="0" x2="0" y2="0" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="6,6" stroke-linecap="round"></line>
+                                <!-- Đường cáp chéo nhánh: Switch/Router/Modem <-> Máy in LAN -->
+                                <line id="wire-gw-prn" x1="0" y1="0" x2="0" y2="0" stroke="#fca5a5" stroke-width="4" stroke-dasharray="6,6" stroke-linecap="round"></line>
+                                <!-- Đường tín hiệu xung điện phát sáng khi truyền -->
+                                <line id="wire-active-path" x1="0" y1="0" x2="0" y2="0" stroke="transparent" stroke-width="5" stroke-linecap="round"></line>
+                            </svg>
+
+                            <!-- Bố cục thiết bị theo đúng sơ đồ cập nhật mới -->
+                            <div class="flex flex-col justify-between flex-1 relative z-20 my-auto py-2">
+                                
+                                <div class="flex justify-between items-center w-full px-2 sm:px-6">
+                                    
+                                    <!-- Node 1: Máy tính -->
+                                    <div id="node-pc" class="text-center relative flex flex-col items-center">
+                                        <div id="pc-box" class="w-20 h-20 bg-white border-2 border-blue-200 rounded-2xl flex flex-col items-center justify-center text-3xl shadow-sm z-20 relative transition-all duration-300">
+                                            <i class="fa-solid fa-laptop text-slate-700"></i>
+                                            <!-- Mini preview trang web hiển thị khi nhận phản hồi -->
+                                            <div id="pc-screen-web" class="absolute inset-1.5 bg-blue-500 rounded-xl flex flex-col items-center justify-center text-white text-[9px] font-bold opacity-0 transition-opacity duration-300 shadow-inner">
+                                                <i class="fa-solid fa-globe mb-0.5 text-xs"></i>
+                                                <span>200 OK</span>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs font-bold mt-2 block bg-blue-50 text-blue-800 px-2.5 py-1 rounded-full border border-blue-200 shadow-sm">Máy tính</span>
+                                        <div class="text-[9px] font-mono text-slate-400 mt-1">MAC: 00:1A:..:01</div>
+                                    </div>
+
+                                    <!-- Node Trung tâm: Switch / Router / Modem (Thiết bị điều phối trung tâm) -->
+                                    <div id="node-gateway" class="text-center relative flex flex-col items-center">
+                                        <div id="gateway-box" class="w-24 h-24 bg-white border-2 border-red-500 rounded-2xl flex flex-col items-center justify-center p-1.5 shadow-md z-20 relative transition-all duration-300">
+                                            <div class="flex items-center gap-1.5 text-slate-700 text-xs mb-1">
+                                                <i class="fa-solid fa-network-wired text-red-500 text-sm"></i>
+                                                <i class="fa-solid fa-route text-blue-500 text-xs"></i>
+                                            </div>
+                                            <span class="text-[12px] font-black text-red-600 leading-snug tracking-wide text-center uppercase">
+                                                Switch<br>Router<br>Modem
+                                            </span>
+                                        </div>
+                                        <span class="text-[9px] font-bold mt-1.5 block bg-red-50 text-red-700 px-2 py-0.5 rounded-full border border-red-200 shadow-sm">Thiết bị trung tâm</span>
+                                    </div>
+
+                                    <!-- Node 3: Web Server -->
+                                    <div id="node-server" class="text-center relative flex flex-col items-center">
+                                        <div id="server-box" class="w-20 h-20 bg-white border-2 border-blue-300 rounded-2xl flex flex-col items-center justify-center text-3xl shadow-sm z-20 relative transition-all duration-300">
+                                            <i class="fa-solid fa-server text-blue-600"></i>
+                                            <!-- Server Status Indicator -->
+                                            <div id="server-status" class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                                        </div>
+                                        <span class="text-xs font-bold mt-2 block bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full border border-blue-200 shadow-sm">Web Server</span>
+                                        <div class="text-[9px] font-mono text-slate-400 mt-1">IP: 14.160.25.88</div>
+                                    </div>
+                                </div>
+
+                                <!-- Hàng 2: Nhánh nối xuống Máy in (LAN) đặt ở phía dưới bên phải -->
+                                <div class="flex justify-end items-center w-full px-4 sm:px-12 mt-4">
+                                    <!-- Node 4: Máy in (LAN) nằm ở nhánh rẽ từ Switch/Router -->
+                                    <div id="node-printer" class="text-center relative flex flex-col items-center">
+                                        <div id="printer-box" class="w-20 h-20 bg-white border-2 border-orange-300 rounded-2xl flex flex-col items-center justify-center text-3xl shadow-sm z-20 relative transition-all duration-300">
+                                            <i class="fa-solid fa-print text-orange-500"></i>
+                                            <!-- Trang giấy in chạy ra -->
+                                            <div id="printed-paper" class="absolute -bottom-2 bg-yellow-100 border border-yellow-300 rounded text-[8px] font-mono text-yellow-800 px-1 py-0.5 shadow-md hidden">
+                                                <i class="fa-solid fa-file-lines mr-0.5"></i>Doc.pdf
+                                            </div>
+                                        </div>
+                                        <span class="text-xs font-bold mt-1.5 block bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full border border-orange-200 shadow-sm">Máy in (LAN)</span>
+                                        <div class="text-[9px] font-mono text-slate-400 mt-0.5">MAC: 00:1A:..:99</div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Gói tin chuyển động (Packet) chi tiết di chuyển dọc đường kết nối -->
+                            <div id="ip-mac-packet" class="absolute opacity-0 z-40 pointer-events-none transition-all" style="left:0; top:0;">
+                                <div id="packet-inner-card" class="rounded-xl shadow-xl px-2.5 py-1.5 flex items-center gap-1.5 border text-xs font-bold whitespace-nowrap">
+                                    <i id="packet-icon" class="fa-solid fa-envelope"></i>
+                                    <div class="flex flex-col text-left">
+                                        <span id="packet-title" class="text-[9px] font-extrabold uppercase leading-none">FRAME</span>
+                                        <span id="packet-addr" class="text-[10px] font-mono leading-tight">MAC -> 00:1A:..:99</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hai nút hành động theo đúng giao diện mô phỏng -->
+                            <div class="flex flex-wrap justify-center gap-4 z-20 pt-3 border-t border-slate-200/80 mt-2">
+                                <button id="btn-action-mac" onclick="simSendIPMACNew('mac')" class="bg-orange-50 hover:bg-orange-100 active:scale-95 border-2 border-orange-200 text-orange-700 px-5 py-2.5 rounded-2xl text-sm font-bold shadow-sm transition flex items-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-print text-base text-orange-500"></i>
+                                    <span>In tài liệu (Nội bộ)</span>
+                                </button>
+                                <button id="btn-action-ip" onclick="simSendIPMACNew('ip')" class="bg-blue-50 hover:bg-blue-100 active:scale-95 border-2 border-blue-200 text-blue-700 px-5 py-2.5 rounded-2xl text-sm font-bold shadow-sm transition flex items-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-globe text-base text-blue-500"></i>
+                                    <span>Truy cập Web</span>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Cột giải thích lý thuyết bên phải -->
+                        <div class="flex-1 space-y-4 flex flex-col justify-center">
+                            <div class="bg-white rounded-xl p-4 flex gap-4 shadow-sm border border-slate-100 relative overflow-hidden transition hover:shadow-md">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-400"></div>
+                                <div class="w-1/3 flex items-center pl-2">
+                                    <span class="font-bold text-blue-600 text-sm">Địa chỉ IPv4</span>
+                                </div>
+                                <div class="w-2/3 text-sm text-slate-600 leading-relaxed">
+                                    Dài <strong class="text-slate-800">4 byte</strong> (VD: 192.168.1.3). Dùng để định tuyến trên Internet. Gán bằng phần mềm.
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-xl p-4 flex gap-4 shadow-sm border border-slate-100 relative overflow-hidden transition hover:shadow-md">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-orange-400"></div>
+                                <div class="w-1/3 flex items-center pl-2">
+                                    <span class="font-bold text-orange-600 text-sm">Địa chỉ MAC</span>
+                                </div>
+                                <div class="w-2/3 text-sm text-slate-600 leading-relaxed">
+                                    Dài <strong class="text-slate-800">6 byte</strong>. Địa chỉ phần cứng gắn vào card mạng. Chỉ truyền dữ liệu trong cùng một mạng LAN (Ethernet).
+                                </div>
+                            </div>
+                            
+                            <div class="mt-2 p-4 bg-slate-50 rounded-xl border border-slate-200 hidden md:block">
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-bold w-10 text-blue-500 uppercase">IPv4</span>
+                                        <div class="flex gap-1">
+                                            <span class="bg-blue-100 border border-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs font-mono">192</span>.
+                                            <span class="bg-blue-100 border border-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs font-mono">168</span>.
+                                            <span class="bg-blue-100 border border-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs font-mono">1</span>.
+                                            <span class="bg-blue-100 border border-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs font-mono">3</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-bold w-10 text-orange-500 uppercase">MAC</span>
+                                        <div class="flex gap-1">
+                                            <span class="bg-orange-100 border border-orange-200 text-orange-800 px-1 py-0.5 rounded text-[10px] font-mono">00</span>:
+                                            <span class="bg-orange-100 border border-orange-200 text-orange-800 px-1 py-0.5 rounded text-[10px] font-mono">1A</span>:
+                                            <span class="bg-orange-100 border border-orange-200 text-orange-800 px-1 py-0.5 rounded text-[10px] font-mono">2B</span>:
+                                            <span class="bg-orange-100 border border-orange-200 text-orange-800 px-1 py-0.5 rounded text-[10px] font-mono">3C</span>:
+                                            <span class="bg-orange-100 border border-orange-200 text-orange-800 px-1 py-0.5 rounded text-[10px] font-mono">4D</span>:
+                                            <span class="bg-orange-100 border border-orange-200 text-orange-800 px-1 py-0.5 rounded text-[10px] font-mono">5E</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Các Giao thức bổ trợ trên Internet -->
+                <div class="study-card p-6 bg-white">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4 border-b-2 border-blue-200 inline-block"><i class="fa-solid fa-book-bookmark text-blue-500 mr-2"></i>Các Giao thức bổ trợ trên Internet</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm hover:-translate-y-1 transition duration-300">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold"><i class="fa-solid fa-code"></i></div>
+                                <h3 class="font-bold text-blue-800">HTTP</h3>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                <strong class="text-blue-700">Hypertext Transfer Protocol:</strong> Giao thức quy định cách biểu diễn và mã hóa các trang web, giúp trình duyệt tải nội dung từ máy chủ.
+                            </p>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm hover:-translate-y-1 transition duration-300">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center font-bold"><i class="fa-solid fa-address-book"></i></div>
+                                <h3 class="font-bold text-amber-800">DNS</h3>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                <strong class="text-amber-700">Domain Name System:</strong> Hệ thống dịch từ tên miền dạng chữ (như moet.edu.vn) sang địa chỉ IP dạng số mà máy tính có thể hiểu được.
+                            </p>
+                        </div>
+
+                        <div class="bg-purple-50 border border-purple-200 p-4 rounded-xl shadow-sm hover:-translate-y-1 transition duration-300">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center font-bold"><i class="fa-solid fa-tower-broadcast"></i></div>
+                                <h3 class="font-bold text-purple-800">ICMP</h3>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                <strong class="text-purple-700">Internet Control Message Protocol:</strong> Cho phép gửi yêu cầu đến thiết bị mạng để lấy thông tin phản hồi (VD: lệnh ping kiểm tra kết nối).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trạm Mô phỏng Đa Giao Thức -->
+                <div class="study-card p-6 bg-white">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4 border-b-2 border-purple-200 inline-block"><i class="fa-solid fa-layer-group text-purple-500 mr-2"></i>Trạm Mô phỏng Đa Giao Thức</h2>
+                    <p class="text-sm text-slate-500 mb-6">Chọn một hoạt động để xem cách các giao thức phối hợp làm việc ở hậu trường.</p>
+
+                    <div class="flex flex-wrap gap-2 mb-6 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                        <button onclick="switchProtoSim('email')" id="btn-sim-email" class="flex-1 bg-white text-rose-500 border border-rose-200 px-4 py-2 rounded-lg font-bold text-sm shadow-sm transition hover:bg-rose-50"><i class="fa-solid fa-envelope-open-text mr-2"></i>Email</button>
+                        <button onclick="switchProtoSim('ethernet')" id="btn-sim-ethernet" class="flex-1 bg-transparent text-emerald-600 border border-transparent px-4 py-2 rounded-lg font-bold text-sm transition hover:bg-emerald-50"><i class="fa-solid fa-network-wired mr-2"></i>Ethernet (LAN)</button>
+                        <button onclick="switchProtoSim('web')" id="btn-sim-web" class="flex-1 bg-transparent text-blue-600 border border-transparent px-4 py-2 rounded-lg font-bold text-sm transition hover:bg-blue-50"><i class="fa-solid fa-globe mr-2"></i>Duyệt Web</button>
+                        <button onclick="switchProtoSim('icmp')" id="btn-sim-icmp" class="flex-1 bg-transparent text-purple-600 border border-transparent px-4 py-2 rounded-lg font-bold text-sm transition hover:bg-purple-50"><i class="fa-solid fa-terminal mr-2"></i>Lệnh Ping (ICMP)</button>
+                    </div>
+
+                    <div class="relative bg-slate-50 rounded-2xl border-2 border-slate-200 p-4 md:p-8 min-h-[400px] overflow-hidden flex flex-col justify-between shadow-inner">
+                        
+                        <!-- Mô phỏng Email -->
+                        <div id="sim-view-email" class="proto-sim-view block h-full flex flex-col">
+                            <div class="text-center mb-2">
+                                <span class="bg-rose-100 text-rose-700 text-xs font-bold px-3 py-1 rounded-full border border-rose-200">Giao thức: SMTP, POP3, IMAP</span>
+                            </div>
+                            
+                            <div id="email-sim-stage" class="flex-1 relative mt-4 min-h-[160px] flex justify-between items-center px-6 sm:px-16 overflow-hidden">
+                                
+                                <!-- SVG Đường kết nối Email chạy qua tâm các thiết bị -->
+                                <svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                                    <!-- Tuyến 1: Người gửi <-> Mail Server -->
+                                    <line id="email-wire-1" x1="0" y1="0" x2="0" y2="0" stroke="#cbd5e1" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"></line>
+                                    <!-- Tuyến 2: Mail Server <-> Người nhận -->
+                                    <line id="email-wire-2" x1="0" y1="0" x2="0" y2="0" stroke="#cbd5e1" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"></line>
+                                    <!-- Tuyến tín hiệu phát sáng khi truyền -->
+                                    <line id="email-wire-active" x1="0" y1="0" x2="0" y2="0" stroke="transparent" stroke-width="4" stroke-linecap="round"></line>
+                                </svg>
+
+                                <!-- Nút 1: Người gửi -->
+                                <div id="email-node-sender" class="text-center z-10 relative flex flex-col items-center">
+                                    <div id="email-sender-box" class="w-16 h-16 bg-white border-2 border-slate-300 rounded-2xl flex items-center justify-center text-2xl shadow-sm transition-all duration-300">
+                                        <i class="fa-solid fa-user-pen text-slate-600"></i>
+                                    </div>
+                                    <span class="text-xs font-bold mt-2 block bg-white px-2.5 py-0.5 rounded shadow-sm text-slate-700">Người gửi</span>
+                                </div>
+
+                                <!-- Nút 2: Mail Server -->
+                                <div id="email-node-server" class="text-center z-10 relative flex flex-col items-center">
+                                    <div id="email-server-box" class="w-20 h-20 bg-rose-500 border-4 border-rose-300 rounded-2xl flex flex-col items-center justify-center text-3xl text-white shadow-lg transition-all duration-300 relative">
+                                        <i class="fa-solid fa-server"></i>
+                                        <span id="email-server-badge" class="absolute -top-2 -right-2 bg-emerald-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow hidden animate-pulse">1 thư</span>
+                                    </div>
+                                    <span class="text-xs font-bold mt-2 block bg-white text-rose-700 px-3 py-1 rounded shadow-sm border border-rose-100">Mail Server</span>
+                                </div>
+
+                                <!-- Nút 3: Người nhận -->
+                                <div id="email-node-receiver" class="text-center z-10 relative flex flex-col items-center">
+                                    <div id="email-receiver-box" class="w-16 h-16 bg-white border-2 border-slate-300 rounded-2xl flex items-center justify-center text-2xl shadow-sm transition-all duration-300">
+                                        <i class="fa-solid fa-user-check text-slate-600"></i>
+                                    </div>
+                                    <span class="text-xs font-bold mt-2 block bg-white px-2.5 py-0.5 rounded shadow-sm text-slate-700">Người nhận</span>
+                                </div>
+
+                                <!-- Gói thư di chuyển chuẩn xác dọc theo đường kết nối -->
+                                <div id="email-envelope" class="absolute opacity-0 z-30 pointer-events-none transition-all flex flex-col items-center" style="left: 0; top: 0;">
+                                    <div id="email-packet-card" class="bg-white border-2 border-rose-400 rounded-xl px-3 py-1.5 shadow-xl flex items-center gap-1.5 text-rose-600 whitespace-nowrap">
+                                        <i class="fa-solid fa-envelope text-base"></i>
+                                        <span id="email-lbl" class="text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded border border-rose-200">SMTP</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center gap-4 mt-6 z-10 relative">
+                                <button id="btn-email-send" onclick="runSimEmail(1)" class="bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-rose-600 active:scale-95 transition cursor-pointer flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i>1. Gửi thư (SMTP)</button>
+                                <button id="btn-email-recv" onclick="runSimEmail(2)" class="bg-rose-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-rose-600 active:scale-95 transition cursor-pointer flex items-center gap-2"><i class="fa-solid fa-inbox"></i>2. Nhận thư (POP3/IMAP)</button>
+                            </div>
+                            
+                            <div class="flex justify-center mt-3">
+                                <p id="email-desc" class="text-sm text-center text-slate-700 min-h-[44px] bg-white px-6 py-2.5 rounded-xl border border-slate-200 shadow-sm w-full max-w-2xl flex items-center justify-center">Nhấn <strong>"1. Gửi thư (SMTP)"</strong> hoặc <strong>"2. Nhận thư (POP3/IMAP)"</strong> để quan sát quá trình truyền tải email.</p>
+                            </div>
+                        </div>
+
+                        <!-- Mô phỏng Ethernet -->
+                        <div id="sim-view-ethernet" class="proto-sim-view hidden h-full flex flex-col">
+                            <div class="text-center mb-2">
+                                <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">Giao thức: Ethernet (LAN)</span>
+                            </div>
+
+                            <!-- Khung cấu trúc Frame trực quan chuẩn theo sơ đồ -->
+                            <div class="w-full max-w-2xl mx-auto bg-white p-3.5 rounded-2xl shadow-sm border-2 border-emerald-400 relative z-10 mb-3" id="eth-frame-card">
+                                <div class="flex items-center justify-between border-b border-emerald-100 pb-1.5 mb-2">
+                                    <p class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-cube text-emerald-600"></i>Cấu trúc Khung (Frame) truyền tải
+                                    </p>
+                                    <span id="eth-frame-status" class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md font-mono">Chờ phát lệnh</span>
+                                </div>
+                                <div class="flex gap-1.5 h-14 text-center items-stretch">
+                                    <div id="frame-f-dst" class="w-1/4 bg-orange-50 border-2 border-orange-300 rounded-xl flex flex-col justify-center items-center px-1 transition-all duration-300">
+                                        <span class="text-[11px] font-bold text-orange-800 leading-tight">MAC Đích</span>
+                                        <span id="frame-f-dst-val" class="text-[9px] font-mono text-orange-600 font-semibold mt-0.5">00:1A:..:99</span>
+                                        <span id="frame-f-dst-note" class="text-[8px] text-orange-500 font-medium hidden">6 bytes</span>
+                                    </div>
+                                    <div id="frame-f-src" class="w-1/4 bg-blue-50 border-2 border-blue-300 rounded-xl flex flex-col justify-center items-center px-1 transition-all duration-300">
+                                        <span class="text-[11px] font-bold text-blue-800 leading-tight">MAC Nguồn</span>
+                                        <span id="frame-f-src-val" class="text-[9px] font-mono text-blue-600 font-semibold mt-0.5">00:1A:..:01</span>
+                                        <span id="frame-f-src-note" class="text-[8px] text-blue-500 font-medium hidden">6 bytes</span>
+                                    </div>
+                                    <div id="frame-f-data" class="w-2/4 bg-slate-50 border-2 border-slate-300 rounded-xl flex flex-col justify-center items-center px-1 relative overflow-hidden transition-all duration-300">
+                                        <span class="text-[11px] font-bold text-slate-800 leading-tight z-10">Dữ liệu (Giới hạn size)</span>
+                                        <span id="frame-f-data-val" class="text-[9px] font-mono text-slate-500 z-10 mt-0.5">46 - 1500 bytes</span>
+                                        <div id="eth-data-fill" class="absolute left-0 top-0 bottom-0 bg-emerald-200 opacity-60 w-0 transition-all duration-700"></div>
+                                    </div>
+                                    <div id="frame-f-fcs" class="w-1/4 bg-red-50 border-2 border-red-300 rounded-xl flex flex-col justify-center items-center px-1 transition-all duration-300">
+                                        <span class="text-[10px] font-bold text-red-800 leading-tight">Mã kiểm tra</span>
+                                        <span id="frame-f-fcs-val" class="text-[8px] font-mono text-red-600 mt-0.5">(Phát hiện lỗi)</span>
+                                        <span id="frame-f-fcs-note" class="text-[8px] text-red-500 font-medium hidden">CRC-32</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sân khấu truyền tải Frame dọc theo đường cáp giữa các thiết bị mạng LAN -->
+                            <div id="eth-lan-stage" class="relative flex-1 min-h-[140px] flex justify-between items-center px-4 sm:px-14 my-1 overflow-hidden">
+                                <svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                                    <!-- Tuyến cáp mạng LAN 1: Máy A <-> Switch -->
+                                    <line id="eth-wire-1" x1="0" y1="0" x2="0" y2="0" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="6,4" stroke-linecap="round"></line>
+                                    <!-- Tuyến cáp mạng LAN 2: Switch <-> Máy B -->
+                                    <line id="eth-wire-2" x1="0" y1="0" x2="0" y2="0" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="6,4" stroke-linecap="round"></line>
+                                    <!-- Tuyến tín hiệu phát sáng khi truyền -->
+                                    <line id="eth-wire-active" x1="0" y1="0" x2="0" y2="0" stroke="transparent" stroke-width="5" stroke-linecap="round"></line>
+                                </svg>
+
+                                <!-- Thiết bị 1: Máy tính A (Nguồn) -->
+                                <div id="eth-node-pca" class="text-center z-10 relative flex flex-col items-center">
+                                    <div id="eth-pca-box" class="w-16 h-16 bg-white border-2 border-blue-300 rounded-2xl flex flex-col items-center justify-center text-2xl text-blue-600 shadow-sm transition-all duration-300">
+                                        <i class="fa-solid fa-laptop"></i>
+                                    </div>
+                                    <span class="text-[11px] font-bold mt-1.5 block bg-white px-2 py-0.5 rounded shadow-sm text-slate-700 border border-slate-200">Máy A (Nguồn)</span>
+                                    <span class="text-[9px] font-mono text-slate-400 mt-0.5">00:1A:..:01</span>
+                                </div>
+
+                                <!-- Thiết bị 2: Switch LAN điều phối trung tâm -->
+                                <div id="eth-node-switch" class="text-center z-10 relative flex flex-col items-center">
+                                    <div id="eth-switch-box" class="w-20 h-16 bg-emerald-500 border-2 border-emerald-300 rounded-2xl flex flex-col items-center justify-center text-white shadow-md transition-all duration-300 relative">
+                                        <i class="fa-solid fa-network-wired text-xl"></i>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider mt-0.5">Switch LAN</span>
+                                    </div>
+                                    <span class="text-[10px] font-bold mt-1.5 block bg-white px-2 py-0.5 rounded shadow-sm text-emerald-700 border border-emerald-100">Bảng định tuyến MAC</span>
+                                </div>
+
+                                <!-- Thiết bị 3: Máy tính B (Đích nhận) -->
+                                <div id="eth-node-pcb" class="text-center z-10 relative flex flex-col items-center">
+                                    <div id="eth-pcb-box" class="w-16 h-16 bg-white border-2 border-orange-300 rounded-2xl flex flex-col items-center justify-center text-2xl text-orange-600 shadow-sm transition-all duration-300 relative">
+                                        <i class="fa-solid fa-desktop"></i>
+                                        <span id="eth-pcb-badge" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-emerald-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden"><i class="fa-solid fa-check"></i></span>
+                                        <span id="eth-pcb-badge-err" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden"><i class="fa-solid fa-xmark"></i></span>
+                                    </div>
+                                    <span class="text-[11px] font-bold mt-1.5 block bg-white px-2 py-0.5 rounded shadow-sm text-slate-700 border border-slate-200">Máy B (Đích)</span>
+                                    <span class="text-[9px] font-mono text-slate-400 mt-0.5">00:1A:..:99</span>
+                                </div>
+
+                                <!-- Khung (Frame) đầy đủ 4 trường thành phần di chuyển thực tế trên đường truyền -->
+                                <div id="eth-frame-flying" class="absolute opacity-0 z-30 pointer-events-none transition-all flex flex-col items-center" style="left: 0; top: 0;">
+                                    <div id="eth-flying-card" class="bg-white border-2 border-emerald-500 rounded-xl shadow-xl p-1 flex items-center gap-1 text-[9px] font-bold whitespace-nowrap">
+                                        <span id="fly-f-dst" class="bg-orange-100 text-orange-800 border border-orange-200 px-1.5 py-0.5 rounded">ĐÍCH: ..99</span>
+                                        <span id="fly-f-src" class="bg-blue-100 text-blue-800 border border-blue-200 px-1.5 py-0.5 rounded">NGUỒN: ..01</span>
+                                        <span id="fly-f-data" class="bg-slate-100 text-slate-800 border border-slate-200 px-1.5 py-0.5 rounded">DATA</span>
+                                        <span id="fly-f-fcs" class="bg-red-100 text-red-700 border border-red-200 px-1 py-0.5 rounded font-mono">FCS: OK</span>
+                                    </div>
+                                    <span id="eth-flying-tag" class="text-[9px] font-mono font-bold text-emerald-700 mt-0.5 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 shadow-sm">Ethernet Frame</span>
+                                </div>
+                            </div>
+
+                            <!-- Ba biểu tượng nguyên lý đặc trưng của giao thức Ethernet -->
+                            <div class="flex gap-6 sm:gap-10 justify-center w-full mt-2 pt-2 border-t border-slate-200/80">
+                                <div id="badge-eth-mac" class="text-center opacity-70 transition-all cursor-help" title="Căn cứ địa chỉ MAC phần cứng">
+                                    <div class="w-10 h-10 mx-auto bg-white rounded-full flex items-center justify-center text-orange-500 shadow border border-slate-100 transition-all"><i class="fa-solid fa-address-card text-base"></i></div>
+                                    <span class="text-[10px] font-bold mt-1 block text-slate-700">Xác định MAC</span>
+                                </div>
+                                <div id="badge-eth-limit" class="text-center opacity-70 transition-all cursor-help" title="Khung quy định kích thước tối thiểu 64 byte, tối đa 1518 byte">
+                                    <div class="w-10 h-10 mx-auto bg-white rounded-full flex items-center justify-center text-slate-500 shadow border border-slate-100 transition-all"><i class="fa-solid fa-ruler-horizontal text-base"></i></div>
+                                    <span class="text-[10px] font-bold mt-1 block text-slate-700">Khung giới hạn</span>
+                                </div>
+                                <div id="badge-eth-collision" class="text-center opacity-70 transition-all cursor-help" title="Cơ chế CSMA/CD kiểm soát đụng độ">
+                                    <div class="w-10 h-10 mx-auto bg-white rounded-full flex items-center justify-center text-red-500 shadow border border-slate-100 transition-all"><i class="fa-solid fa-car-burst text-base"></i></div>
+                                    <span class="text-[10px] font-bold mt-1 block text-slate-700">Xử lí đụng độ</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Hai nút hành động: Hợp lệ & Xử lý đụng độ -->
+                            <div class="flex flex-wrap justify-center gap-3 mt-3 z-10 relative">
+                                <button id="btn-run-eth" onclick="runSimEthernet('valid')" class="bg-emerald-500 text-white px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-md hover:bg-emerald-600 active:scale-95 transition cursor-pointer flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-check"></i>1. Gửi Frame Hợp Lệ
+                                </button>
+                                <button id="btn-run-eth-collision" onclick="runSimEthernet('collision')" class="bg-rose-500 text-white px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-md hover:bg-rose-600 active:scale-95 transition cursor-pointer flex items-center gap-2">
+                                    <i class="fa-solid fa-car-burst"></i>2. Gửi Lỗi & Xử Lý Đụng Độ (CSMA/CD)
+                                </button>
+                            </div>
+                            <div class="flex justify-center mt-2">
+                                <p id="eth-desc" class="text-xs text-center text-slate-700 min-h-[42px] bg-white px-5 py-2 rounded-xl border border-slate-200 shadow-sm w-full max-w-2xl flex items-center justify-center">Chọn một trong hai chế độ: <strong>"1. Gửi Frame Hợp Lệ"</strong> hoặc <strong>"2. Gửi Lỗi & Xử Lý Đụng Độ"</strong> để quan sát phản ứng của giao thức Ethernet.</p>
+                            </div>
+                        </div>
+
+                        <!-- Mô phỏng Web -->
+                        <div id="sim-view-web" class="proto-sim-view hidden h-full flex flex-col">
+                            <div class="text-center mb-2">
+                                <span class="bg-blue-100 text-blue-700 text-sm font-bold px-4 py-1.5 rounded-full border border-blue-200 shadow-sm">Giao thức: HTTP, DNS</span>
+                            </div>
+
+                            <div class="flex-1 relative flex justify-between items-start px-4 sm:px-12 w-full max-w-4xl mx-auto h-[260px] pt-4">
+                                
+                                <!-- Các đường kết nối màu xanh nét đứt có mũi tên chỉ hướng -->
+                                <svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                                    <defs>
+                                        <marker id="arrow-blue-end" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+                                        </marker>
+                                    </defs>
+
+                                    <!-- Mũi tên 1: Trình duyệt -> Máy chủ DNS -->
+                                    <line id="web-line-b-to-d" x1="0" y1="0" x2="0" y2="0" stroke="#2563eb" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-blue-end)" class="transition-all duration-300"></line>
+                                    <!-- Mũi tên 2: Máy chủ DNS -> Web Server -->
+                                    <line id="web-line-d-to-s" x1="0" y1="0" x2="0" y2="0" stroke="#2563eb" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-blue-end)" class="transition-all duration-300"></line>
+                                    <!-- Mũi tên 3: Web Server -> Trình duyệt (đường ngang trên) -->
+                                    <line id="web-line-s-to-b" x1="0" y1="0" x2="0" y2="0" stroke="#2563eb" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-blue-end)" class="transition-all duration-300"></line>
+                                </svg>
+
+                                <!-- Nút 1: Trình duyệt (Phía trên bên trái) -->
+                                <div id="web-node-browser" class="text-center z-10 relative flex flex-col items-center">
+                                    <div id="web-browser-box" class="w-20 h-20 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-4xl shadow-sm transition-all duration-300">
+                                        <i class="fa-solid fa-computer text-slate-700"></i>
+                                    </div>
+                                    <span class="text-xs font-bold mt-2 block bg-white px-2 py-0.5 rounded shadow-sm text-slate-700">Trình duyệt</span>
+                                    <div class="mt-1 bg-white border border-slate-200 rounded text-[10px] px-1.5 py-0.5 font-mono text-slate-500 shadow-sm">moet.edu.vn</div>
+                                </div>
+
+                                <!-- Nút 2: Máy chủ DNS (Ở giữa, phía dưới, ngay trên nút bấm) -->
+                                <div id="web-node-dns" class="text-center z-10 relative flex flex-col items-center self-end mb-1">
+                                    <div id="web-dns-box" class="w-16 h-16 bg-white border-4 border-amber-300 rounded-full flex flex-col items-center justify-center text-amber-500 shadow-sm transition-all duration-300">
+                                        <i class="fa-solid fa-address-book text-2xl"></i>
+                                    </div>
+                                    <span class="text-xs font-bold mt-1.5 block bg-white px-2 py-0.5 rounded shadow-sm text-slate-700">Máy chủ DNS</span>
+                                </div>
+
+                                <!-- Nút 3: Web Server (Phía trên bên phải) -->
+                                <div id="web-node-server" class="text-center z-10 relative flex flex-col items-center">
+                                    <div id="web-server-box" class="w-20 h-20 bg-blue-500 border-2 border-blue-400 rounded-2xl flex items-center justify-center text-4xl text-white shadow-md transition-all duration-300">
+                                        <i class="fa-solid fa-globe"></i>
+                                    </div>
+                                    <span class="text-xs font-bold mt-2 block bg-white px-2 py-0.5 rounded shadow-sm text-blue-700">Web Server</span>
+                                    <div class="mt-1 bg-white border border-slate-200 rounded text-[10px] px-1.5 py-0.5 font-mono text-slate-500 shadow-sm">14.160.x.x</div>
+                                </div>
+
+                                <!-- Gói tin di chuyển theo chu trình màu xanh -->
+                                <div id="web-packet-anim" class="absolute w-auto px-3 py-1.5 rounded flex justify-center items-center shadow-lg transition-all opacity-0 z-30 font-bold text-[11px] whitespace-nowrap pointer-events-none" style="left:0; top:0;"></div>
+                            </div>
+
+                            <div class="flex justify-center mt-2 z-20 relative">
+                                <button id="btn-run-web" onclick="runSimWebEnhanced()" class="bg-blue-500 text-white px-8 py-3 rounded-xl text-base font-bold shadow-md hover:bg-blue-600 active:scale-95 transition-all cursor-pointer flex items-center gap-2">
+                                    <i class="fa-solid fa-magnifying-glass"></i>Truy cập Website
+                                </button>
+                            </div>
+                            <div class="flex justify-center mt-3">
+                                <p id="web-desc-enhanced" class="text-sm text-center text-slate-700 min-h-[44px] bg-white px-6 py-3 rounded-xl border border-slate-200 shadow-sm w-full max-w-3xl">Nhấn <strong>"Truy cập Website"</strong> để xem DNS phân giải tên miền và HTTP tải trang web về theo chu trình mũi tên xanh.</p>
+                            </div>
+                        </div>
+
+                        <!-- Mô phỏng ICMP -->
+                        <div id="sim-view-icmp" class="proto-sim-view hidden h-full flex flex-col">
+                            <div class="text-center mb-6">
+                                <span class="bg-purple-100 text-purple-700 text-sm font-bold px-4 py-1.5 rounded-full border border-purple-200 shadow-sm">Giao thức: ICMP (Kiểm tra kết nối)</span>
+                            </div>
+
+                            <div class="flex-1 relative flex flex-col lg:flex-row gap-8 items-center px-4 md:px-8 w-full">
+                                
+                                <div class="w-full lg:w-1/2 relative h-40 flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                                    
+                                    <!-- Đường kết nối Ping -->
+                                    <svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                                        <line id="icmp-line" x1="0" y1="0" x2="0" y2="0" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4" class="transition-all duration-300"></line>
+                                    </svg>
+
+                                    <!-- Nút 1: Máy tính -->
+                                    <div id="icmp-node-client" class="text-center z-10 relative flex flex-col items-center">
+                                        <div id="icmp-client-box" class="w-16 h-16 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-3xl shadow-sm transition-all duration-300">
+                                            <i class="fa-solid fa-laptop-code text-slate-700"></i>
+                                        </div>
+                                        <span class="text-xs font-bold mt-2 block bg-slate-50 px-2 py-0.5 rounded shadow-sm text-slate-700 border border-slate-100">Máy của bạn</span>
+                                    </div>
+                                    
+                                    <!-- Đám mây Internet ở giữa -->
+                                    <div id="icmp-cloud" class="text-slate-200 text-6xl z-0 relative transition-transform duration-300"><i class="fa-solid fa-cloud"></i></div>
+
+                                    <!-- Nút 2: Server đích -->
+                                    <div id="icmp-node-server" class="text-center z-10 relative flex flex-col items-center">
+                                        <div id="icmp-target-box" class="w-16 h-16 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-3xl shadow-sm transition-all duration-300">
+                                            <i class="fa-solid fa-server text-slate-700"></i>
+                                        </div>
+                                        <span class="text-xs font-bold mt-2 block bg-slate-50 px-2 py-0.5 rounded shadow-sm text-slate-700 border border-slate-100">8.8.8.8</span>
+                                    </div>
+
+                                    <!-- Gói tin Ping di chuyển -->
+                                    <div id="icmp-packet-anim" class="absolute w-auto px-2 py-1 rounded-full flex justify-center items-center shadow-md transition-all opacity-0 z-30 font-bold text-[10px] whitespace-nowrap pointer-events-none text-white bg-purple-500" style="left:0; top:0;">
+                                        <i class="fa-solid fa-wifi"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Màn hình Command Prompt -->
+                                <div class="w-full lg:w-1/2 bg-slate-900 rounded-2xl p-4 shadow-lg h-56 flex flex-col font-mono text-[11px] md:text-xs text-green-400 overflow-hidden relative border-4 border-slate-800">
+                                    <div class="flex items-center gap-2 border-b border-slate-700 pb-2 mb-3">
+                                        <div class="flex gap-1.5">
+                                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                        </div>
+                                        <span class="text-slate-400 ml-2 font-sans font-semibold text-xs">Command Prompt</span>
+                                    </div>
+                                    <div id="terminal-content-enhanced" class="flex-1 overflow-y-auto space-y-1 scroll-smooth">
+                                        <div class="text-slate-300">C:\Users\Student> <span id="typing-cmd-enhanced"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center mt-8 z-20 relative">
+                                <button id="btn-run-icmp" onclick="runSimICMPEnhanced()" class="bg-purple-500 text-white px-8 py-3 rounded-xl text-base font-bold shadow-md hover:bg-purple-600 active:scale-95 transition-all cursor-pointer flex items-center gap-2">
+                                    <i class="fa-solid fa-terminal"></i>Thực thi lệnh Ping
+                                </button>
+                            </div>
+                            <div class="flex justify-center mt-6">
+                                <p id="icmp-desc-enhanced" class="text-sm text-center text-slate-700 min-h-[44px] bg-white px-6 py-3 rounded-xl border border-slate-200 shadow-sm w-full max-w-3xl">Giao thức ICMP gửi gói tin "Echo Request" đi và chờ "Echo Reply" về để đo thời gian phản hồi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="thuc-hanh" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="study-card p-6 bg-white">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-calculator text-blue-500 mr-2"></i>Chuyển đổi địa chỉ IP</h2>
+                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">Vận dụng trang 25</span>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Nhập IP hệ thập phân (VD: 131.214.23.16) hoặc Nhị phân để thấy kết quả.</p>
+
+                    <div class="space-y-4 bg-slate-50 p-4 rounded-xl">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Dạng Thập Phân (Dot-decimal)</label>
+                            <input type="text" id="ip-dec" placeholder="Ví dụ: 192.168.1.1" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 font-mono text-sm" onkeyup="convertIP('dec')">
+                        </div>
+                        <div class="flex justify-center text-slate-400"><i class="fa-solid fa-arrow-right-arrow-left rotate-90 md:rotate-0"></i></div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Dạng Nhị Phân (Binary)</label>
+                            <input type="text" id="ip-bin" placeholder="Ví dụ: 11000000 10101000 00000001 00000001" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 font-mono text-sm" onkeyup="convertIP('bin')">
+                        </div>
+                        <p id="ip-error" class="text-xs text-red-500 hidden"></p>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <p class="text-xs font-bold text-yellow-800">Kiểm tra kết quả trong SGK:</p>
+                        <p class="text-xs text-yellow-700 mt-1 cursor-pointer hover:underline" onclick="document.getElementById('ip-bin').value='11000000 10101000 00001101 11010010'; convertIP('bin');">Nhấp thử: 11000000 10101000 00001101 11010010</p>
+                        <p class="text-xs text-yellow-700 mt-1 cursor-pointer hover:underline" onclick="document.getElementById('ip-dec').value='131.214.23.16'; convertIP('dec');">Nhấp thử: 131.214.23.16</p>
+                    </div>
+                </div>
+
+                <div class="study-card p-6 bg-white">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-list-check text-green-500 mr-2"></i>Ôn tập nhanh (5 Câu)</h2>
+                    
+                    <div id="quiz-container" class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                    
+                    <div class="mt-4 pt-4 border-t flex justify-between items-center">
+                        <p id="quiz-score" class="font-bold text-slate-700 text-sm">Chưa làm</p>
+                        <button onclick="checkQuiz()" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-600 transition cursor-pointer">Nộp bài</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- Khởi tạo SVG và toạ độ ---
+        function updateWireCoordinates() {
+            const area = document.getElementById('ip-mac-sim-area');
+            const pc = document.getElementById('pc-box');
+            const gw = document.getElementById('gateway-box');
+            const printer = document.getElementById('printer-box');
+            const server = document.getElementById('server-box');
+            
+            const wirePcGw = document.getElementById('wire-pc-gw');
+            const wireGwSrv = document.getElementById('wire-gw-srv');
+            const wireGwPrn = document.getElementById('wire-gw-prn');
+
+            if (area && pc && gw && printer && server && wirePcGw && wireGwSrv && wireGwPrn) {
+                const aRect = area.getBoundingClientRect();
+                const pcRect = pc.getBoundingClientRect();
+                const gwRect = gw.getBoundingClientRect();
+                const prRect = printer.getBoundingClientRect();
+                const srvRect = server.getBoundingClientRect();
+
+                const pcCenter = { x: pcRect.left + pcRect.width / 2 - aRect.left, y: pcRect.top + pcRect.height / 2 - aRect.top };
+                const gwCenter = { x: gwRect.left + gwRect.width / 2 - aRect.left, y: gwRect.top + gwRect.height / 2 - aRect.top };
+                const prCenter = { x: prRect.left + prRect.width / 2 - aRect.left, y: prRect.top + prRect.height / 2 - aRect.top };
+                const srvCenter = { x: srvRect.left + srvRect.width / 2 - aRect.left, y: srvRect.top + srvRect.height / 2 - aRect.top };
+
+                // Cáp Máy tính <-> Switch/Router/Modem
+                wirePcGw.setAttribute('x1', pcCenter.x);
+                wirePcGw.setAttribute('y1', pcCenter.y);
+                wirePcGw.setAttribute('x2', gwCenter.x);
+                wirePcGw.setAttribute('y2', gwCenter.y);
+
+                // Cáp Switch/Router/Modem <-> Web Server (Internet)
+                wireGwSrv.setAttribute('x1', gwCenter.x);
+                wireGwSrv.setAttribute('y1', gwCenter.y);
+                wireGwSrv.setAttribute('x2', srvCenter.x);
+                wireGwSrv.setAttribute('y2', srvCenter.y);
+
+                // Cáp Switch/Router/Modem <-> Máy in (LAN nhánh rẽ)
+                wireGwPrn.setAttribute('x1', gwCenter.x);
+                wireGwPrn.setAttribute('y1', gwCenter.y);
+                wireGwPrn.setAttribute('x2', prCenter.x);
+                wireGwPrn.setAttribute('y2', prCenter.y);
+            }
+            
+            updateWebSimCoordinates();
+            updateICMPSimCoordinates();
+            updateEmailSimCoordinates();
+            updateEthernetSimCoordinates();
+        }
+
+        // --- Cập nhật SVG cho Mô phỏng Ethernet LAN ---
+        function updateEthernetSimCoordinates() {
+            const pcaBox = document.getElementById('eth-pca-box');
+            const switchBox = document.getElementById('eth-switch-box');
+            const pcbBox = document.getElementById('eth-pcb-box');
+            const wire1 = document.getElementById('eth-wire-1');
+            const wire2 = document.getElementById('eth-wire-2');
+            if (!pcaBox || !switchBox || !pcbBox || !wire1 || !wire2) return;
+            const stage = document.getElementById('eth-lan-stage');
+            if (!stage || stage.offsetWidth === 0) return;
+
+            const sRect = stage.getBoundingClientRect();
+            const getCenter = (el) => {
+                const r = el.getBoundingClientRect();
+                return {
+                    x: r.left + r.width / 2 - sRect.left,
+                    y: r.top + r.height / 2 - sRect.top
+                };
+            };
+            const pA = getCenter(pcaBox);
+            const pSw = getCenter(switchBox);
+            const pB = getCenter(pcbBox);
+
+            wire1.setAttribute('x1', pA.x);
+            wire1.setAttribute('y1', pA.y);
+            wire1.setAttribute('x2', pSw.x);
+            wire1.setAttribute('y2', pSw.y);
+
+            wire2.setAttribute('x1', pSw.x);
+            wire2.setAttribute('y1', pSw.y);
+            wire2.setAttribute('x2', pB.x);
+            wire2.setAttribute('y2', pB.y);
+        }
+
+        // --- Cập nhật SVG cho Mô phỏng Email: Người gửi -> Server -> Người nhận ---
+        function updateEmailSimCoordinates() {
+            const senderBox = document.getElementById('email-sender-box');
+            const serverBox = document.getElementById('email-server-box');
+            const receiverBox = document.getElementById('email-receiver-box');
+            const wire1 = document.getElementById('email-wire-1');
+            const wire2 = document.getElementById('email-wire-2');
+            if (!senderBox || !serverBox || !receiverBox || !wire1 || !wire2) return;
+            const stage = document.getElementById('email-sim-stage');
+            if (!stage || stage.offsetWidth === 0) return;
+
+            const sRect = stage.getBoundingClientRect();
+            const getCenter = (el) => {
+                const r = el.getBoundingClientRect();
+                return {
+                    x: r.left + r.width / 2 - sRect.left,
+                    y: r.top + r.height / 2 - sRect.top
+                };
+            };
+            const pSender = getCenter(senderBox);
+            const pServer = getCenter(serverBox);
+            const pReceiver = getCenter(receiverBox);
+
+            wire1.setAttribute('x1', pSender.x);
+            wire1.setAttribute('y1', pSender.y);
+            wire1.setAttribute('x2', pServer.x);
+            wire1.setAttribute('y2', pServer.y);
+
+            wire2.setAttribute('x1', pServer.x);
+            wire2.setAttribute('y1', pServer.y);
+            wire2.setAttribute('x2', pReceiver.x);
+            wire2.setAttribute('y2', pReceiver.y);
+        }
+
+        // --- Cập nhật SVG cho Mô phỏng Web: Kết nối tam giác màu xanh ---
+        function updateWebSimCoordinates() {
+            const browserNode = document.getElementById('web-node-browser');
+            const dnsNode = document.getElementById('web-node-dns');
+            const serverNode = document.getElementById('web-node-server');
+            
+            const lineBtoD = document.getElementById('web-line-b-to-d');
+            const lineDtoS = document.getElementById('web-line-d-to-s');
+            const lineStoB = document.getElementById('web-line-s-to-b');
+            
+            if (!browserNode || !dnsNode || !serverNode || !lineBtoD || !lineDtoS || !lineStoB) return;
+            
+            const container = lineBtoD.closest('svg').parentElement;
+            if (container.offsetWidth === 0) return;
+            
+            const cRect = container.getBoundingClientRect();
+            
+            const getCenter = (nodeId) => {
+                const box = document.getElementById(nodeId).firstElementChild;
+                const rect = box.getBoundingClientRect();
+                return {
+                    x: rect.left + rect.width / 2 - cRect.left,
+                    y: rect.top + rect.height / 2 - cRect.top
+                };
+            };
+            
+            const bPos = getCenter('web-node-browser');
+            const dPos = getCenter('web-node-dns');
+            const sPos = getCenter('web-node-server');
+            
+            // Hàm rút ngắn đường vẽ để mũi tên không chạm sát vào icon
+            function shortenLine(p1, p2, offsetStart, offsetEnd) {
+                const dx = p2.x - p1.x;
+                const dy = p2.y - p1.y;
+                const length = Math.sqrt(dx*dx + dy*dy);
+                if (length === 0) return {x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y};
+                return {
+                    x1: p1.x + dx * (offsetStart / length),
+                    y1: p1.y + dy * (offsetStart / length),
+                    x2: p2.x - dx * (offsetEnd / length),
+                    y2: p2.y - dy * (offsetEnd / length)
+                };
+            }
+
+            // 1. Mũi tên 1: Trình duyệt -> Máy chủ DNS
+            const lBtoD = shortenLine(bPos, dPos, 48, 40);
+            lineBtoD.setAttribute('x1', lBtoD.x1);
+            lineBtoD.setAttribute('y1', lBtoD.y1);
+            lineBtoD.setAttribute('x2', lBtoD.x2);
+            lineBtoD.setAttribute('y2', lBtoD.y2);
+
+            // 2. Mũi tên 2: Máy chủ DNS -> Web Server
+            const lDtoS = shortenLine(dPos, sPos, 40, 48);
+            lineDtoS.setAttribute('x1', lDtoS.x1);
+            lineDtoS.setAttribute('y1', lDtoS.y1);
+            lineDtoS.setAttribute('x2', lDtoS.x2);
+            lineDtoS.setAttribute('y2', lDtoS.y2);
+
+            // 3. Mũi tên 3: Web Server -> Trình duyệt (đường ngang trên)
+            const lStoB = shortenLine(sPos, bPos, 48, 48);
+            lineStoB.setAttribute('x1', lStoB.x1);
+            lineStoB.setAttribute('y1', lStoB.y1);
+            lineStoB.setAttribute('x2', lStoB.x2);
+            lineStoB.setAttribute('y2', lStoB.y2);
+        }
+
+        // --- Cập nhật SVG cho Mô phỏng ICMP ---
+        function updateICMPSimCoordinates() {
+            const clientNode = document.getElementById('icmp-node-client');
+            const serverNode = document.getElementById('icmp-node-server');
+            const lineIcmp = document.getElementById('icmp-line');
+            
+            if (!clientNode || !serverNode || !lineIcmp) return;
+            
+            const container = lineIcmp.closest('svg').parentElement;
+            if (container.offsetWidth === 0) return;
+            
+            const cRect = container.getBoundingClientRect();
+            
+            const getCenter = (nodeId) => {
+                const box = document.getElementById(nodeId).firstElementChild;
+                const rect = box.getBoundingClientRect();
+                return {
+                    x: rect.left + rect.width / 2 - cRect.left,
+                    y: rect.top + rect.height / 2 - cRect.top
+                };
+            };
+            
+            const cPos = getCenter('icmp-node-client');
+            const sPos = getCenter('icmp-node-server');
+            
+            lineIcmp.setAttribute('x1', cPos.x);
+            lineIcmp.setAttribute('y1', cPos.y);
+            lineIcmp.setAttribute('x2', sPos.x);
+            lineIcmp.setAttribute('y2', sPos.y);
+        }
+
+        window.addEventListener('resize', updateWireCoordinates);
+        window.addEventListener('load', () => {
+            setTimeout(updateWireCoordinates, 150);
+        });
+
+        // --- Quản lý Tabs ---
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn bg-white text-slate-600 px-6 py-3 rounded-full font-bold shadow-sm border border-slate-200 hover:bg-slate-50 transition";
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            btnElement.className = "tab-btn active bg-blue-500 text-white px-6 py-3 rounded-full font-bold shadow-md hover:bg-blue-600 transition";
+
+            if (tabId === 'chi-tiet') {
+                setTimeout(updateWireCoordinates, 100);
+            }
+        }
+
+        // --- Mô phỏng Truyền tin (Tab Tổng quan) ---
+        function startProtocolLoop() {
+            const packet = document.getElementById('proto-packet');
+            const content = document.getElementById('proto-packet-content');
+            const protoBox = document.getElementById('protocol-center-box');
+            const user1Txt = document.getElementById('user1-text');
+            const user2Txt = document.getElementById('user2-text');
+            const user1Box = document.getElementById('user1-box');
+            const user2Box = document.getElementById('user2-box');
+
+            if (!packet || !content) return;
+
+            async function loop() {
+                // Lượt 1: Trái -> Phải
+                user1Txt.innerHTML = '<i class="fa-solid fa-comment-dots mr-1 text-blue-500"></i>"Xin chào!"';
+                user1Box.classList.add('scale-105', 'border-blue-300');
+                user2Txt.innerHTML = 'Đang chờ...';
+                user2Txt.className = 'text-[10px] font-bold bg-slate-50 text-slate-400 px-2 py-1 rounded shadow-inner border border-slate-100';
+
+                packet.style.transition = 'none';
+                packet.style.left = '15%'; 
+                packet.style.opacity = '1';
+                content.innerHTML = '"Xin chào!"';
+                content.className = 'bg-blue-50 text-blue-700 border-2 border-blue-200 px-3 py-1.5 rounded-full shadow-md text-[10px] font-bold whitespace-nowrap';
+                
+                await new Promise(r => setTimeout(r, 600));
+                user1Box.classList.remove('scale-105', 'border-blue-300');
+
+                packet.style.transition = 'left 1.2s ease-in-out';
+                packet.style.left = '50%';
+                
+                await new Promise(r => setTimeout(r, 1200));
+
+                packet.style.opacity = '0'; 
+                protoBox.classList.add('ring-4', 'ring-blue-300', 'scale-105'); 
+                
+                await new Promise(r => setTimeout(r, 800));
+                protoBox.classList.remove('ring-4', 'ring-blue-300', 'scale-105');
+                packet.style.opacity = '1'; 
+
+                content.innerHTML = '<i class="fa-solid fa-language mr-1 opacity-70"></i>"Hello!"';
+                content.className = 'bg-green-50 text-green-700 border-2 border-green-300 px-3 py-1.5 rounded-full shadow-md text-[10px] font-bold whitespace-nowrap';
+
+                packet.style.transition = 'left 1.2s ease-in-out';
+                packet.style.left = '85%';
+                
+                await new Promise(r => setTimeout(r, 1200));
+
+                packet.style.opacity = '0';
+                user2Box.classList.add('scale-105', 'border-green-300');
+                user2Txt.innerHTML = '<i class="fa-solid fa-check mr-1 text-green-500"></i>"Hello!"';
+                user2Txt.className = 'text-[10px] font-bold bg-green-100 text-green-700 px-2 py-1 rounded shadow-inner border border-green-200';
+
+                await new Promise(r => setTimeout(r, 1500));
+                user2Box.classList.remove('scale-105', 'border-green-300');
+
+                // Lượt 2: Phải -> Trái
+                user2Txt.innerHTML = '<i class="fa-solid fa-comment-dots mr-1 text-green-500"></i>"How are you?"';
+                user2Box.classList.add('scale-105', 'border-green-300');
+                user1Txt.innerHTML = 'Đang chờ...';
+                user1Txt.className = 'text-[10px] font-bold bg-slate-50 text-slate-400 px-2 py-1 rounded shadow-inner border border-slate-100';
+
+                packet.style.transition = 'none';
+                packet.style.left = '85%'; 
+                packet.style.opacity = '1';
+                content.innerHTML = '"How are you?"';
+                content.className = 'bg-green-50 text-green-700 border-2 border-green-200 px-3 py-1.5 rounded-full shadow-md text-[10px] font-bold whitespace-nowrap';
+                
+                await new Promise(r => setTimeout(r, 600));
+                user2Box.classList.remove('scale-105', 'border-green-300');
+
+                packet.style.transition = 'left 1.2s ease-in-out';
+                packet.style.left = '50%';
+                
+                await new Promise(r => setTimeout(r, 1200));
+
+                packet.style.opacity = '0';
+                protoBox.classList.add('ring-4', 'ring-blue-300', 'scale-105');
+                
+                await new Promise(r => setTimeout(r, 800));
+                protoBox.classList.remove('ring-4', 'ring-blue-300', 'scale-105');
+                packet.style.opacity = '1';
+
+                content.innerHTML = '<i class="fa-solid fa-language mr-1 opacity-70"></i>"Bạn khỏe không?"';
+                content.className = 'bg-blue-50 text-blue-700 border-2 border-blue-300 px-3 py-1.5 rounded-full shadow-md text-[10px] font-bold whitespace-nowrap';
+
+                packet.style.transition = 'left 1.2s ease-in-out';
+                packet.style.left = '15%';
+                
+                await new Promise(r => setTimeout(r, 1200));
+
+                packet.style.opacity = '0';
+                user1Box.classList.add('scale-105', 'border-blue-300');
+                user1Txt.innerHTML = '<i class="fa-solid fa-check mr-1 text-blue-500"></i>"Bạn khỏe không?"';
+                user1Txt.className = 'text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded shadow-inner border border-blue-200';
+
+                await new Promise(r => setTimeout(r, 1500));
+                user1Box.classList.remove('scale-105', 'border-blue-300');
+
+                loop();
+            }
+
+            loop();
+        }
+
+        // --- Mô phỏng TCP Chia cắt và Lắp ráp (Tab Mô phỏng) ---
+        function runTCPAnimation() {
+            if (window.isTCPSimRunning) return;
+            window.isTCPSimRunning = true;
+
+            const btn = document.querySelector('button[onclick="runTCPAnimation()"]');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang truyền...';
+            btn.classList.add('opacity-70', 'cursor-not-allowed', 'pointer-events-none');
+            
+            const area = document.getElementById('tcp-animation-area');
+            const w = area.offsetWidth;
+            
+            const spkt1 = document.getElementById('spkt1'), spkt2 = document.getElementById('spkt2'), spkt3 = document.getElementById('spkt3');
+            const dpkt1 = document.getElementById('dpkt1'), dpkt2 = document.getElementById('dpkt2'), dpkt3 = document.getElementById('dpkt3');
+            const p1 = document.getElementById('pkt1'), p2 = document.getElementById('pkt2'), p3 = document.getElementById('pkt3');
+            const sText = document.getElementById('source-file-text');
+            const successOverlay = document.getElementById('dest-success');
+
+            // 1. Reset
+            spkt1.style.opacity = 1; spkt2.style.opacity = 1; spkt3.style.opacity = 1;
+            spkt1.style.transform = 'translate(0, 0) scale(1)'; spkt2.style.transform = 'translate(0, 0) scale(1)'; spkt3.style.transform = 'translate(0, 0) scale(1)';
+            sText.style.opacity = 1;
+
+            dpkt1.style.opacity = 0; dpkt2.style.opacity = 0; dpkt3.style.opacity = 0;
+            dpkt1.style.transform = 'scale(0.8)'; dpkt2.style.transform = 'scale(0.8)'; dpkt3.style.transform = 'scale(0.8)';
+            successOverlay.style.opacity = 0;
+
+            [p1, p2, p3].forEach(p => {
+                p.style.transition = 'none';
+                p.style.opacity = 0;
+                p.style.transform = `translate(0px, 0px) scale(0.5)`;
+                p.style.borderRadius = '0.25rem';
+            });
+
+            void area.offsetWidth;
+
+            let t = 0;
+
+            // 2. Chia nhỏ gói tin tại nguồn
+            t += 600;
+            setTimeout(() => {
+                sText.style.opacity = 0;
+                spkt3.style.transform = 'translate(-8px, -4px) scale(0.9)';
+                spkt2.style.transform = 'translate(10px, 0px) scale(0.9)';
+                spkt1.style.transform = 'translate(-5px, 6px) scale(0.9)';
+            }, t);
+
+            t += 800;
+            setTimeout(() => {
+                spkt1.style.opacity = 0.2; spkt2.style.opacity = 0.2; spkt3.style.opacity = 0.2;
+
+                [p1, p2, p3].forEach(p => p.style.transition = 'all 0.5s ease-out');
+                
+                p3.style.opacity = 1; p3.style.transform = `translate(0px, -30px) scale(1)`;
+                p2.style.opacity = 1; p2.style.transform = `translate(0px, 0px) scale(1)`;
+                p1.style.opacity = 1; p1.style.transform = `translate(0px, 30px) scale(1)`;
+            }, t);
+
+            // 3. Di chuyển qua Router
+            t += 800;
+            setTimeout(() => {
+                p1.style.transition = 'transform 2.5s ease-in-out';
+                p2.style.transition = 'transform 3.2s ease-in-out';
+                p3.style.transition = 'transform 2.0s ease-in-out';
+
+                const r1X = w * 0.45; const r1Y = -40;
+                const r2X = w * 0.3;  const r2Y = 0;
+                const r3X = w * 0.6;  const r3Y = 40;
+
+                p3.style.transform = `translate(${r1X}px, ${r1Y}px)`;
+                p2.style.transform = `translate(${r2X}px, ${r2Y}px)`;
+                p1.style.transform = `translate(${r3X}px, ${r3Y}px)`;
+            }, t);
+
+            // 4. Ráp gói tin tại đích
+            t += 2000;
+            const bufferX = w - 65;
+            const finalX = w + 20;
+
+            setTimeout(() => { 
+                p3.style.transition = 'all 1.2s ease-in-out';
+                p3.style.transform = `translate(${bufferX}px, -32px)`;
+                p3.style.borderRadius = '0.5rem 0.5rem 0 0';
+            }, t);
+
+            setTimeout(() => { 
+                p1.style.transition = 'all 1.5s ease-in-out';
+                p1.style.transform = `translate(${bufferX}px, 32px)`;
+                p1.style.borderRadius = '0 0 0.5rem 0.5rem';
+            }, t + 500);
+
+            setTimeout(() => { 
+                p2.style.transition = 'all 2.0s ease-in-out';
+                p2.style.transform = `translate(${bufferX}px, 0px)`;
+                p2.style.borderRadius = '0';
+            }, t + 1200);
+
+            // 5. Đưa khối hoàn chỉnh vào Máy nhận
+            const moveInTime = t + 1200 + 2000 + 800; 
+            
+            setTimeout(() => {
+                [p1, p2, p3].forEach(p => {
+                    p.style.transition = 'all 0.8s ease-in';
+                    const currentY = p.id === 'pkt1' ? 32 : (p.id === 'pkt3' ? -32 : 0);
+                    p.style.transform = `translate(${finalX}px, ${currentY}px) scale(0.5)`;
+                    p.style.opacity = 0;
+                });
+
+                setTimeout(() => {
+                    dpkt3.style.opacity = 1; dpkt3.style.transform = 'scale(1)';
+                    dpkt2.style.opacity = 1; dpkt2.style.transform = 'scale(1)';
+                    dpkt1.style.opacity = 1; dpkt1.style.transform = 'scale(1)';
+                    
+                    setTimeout(() => { successOverlay.style.opacity = 1; }, 400);
+                }, 400);
+
+            }, moveInTime);
+
+            // 6. Reset nút
+            const finishTime = moveInTime + 1500; 
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-rotate-right mr-2"></i> Chạy lại';
+                btn.classList.remove('opacity-70', 'cursor-not-allowed', 'pointer-events-none');
+                window.isTCPSimRunning = false;
+            }, finishTime);
+        }
+
+        // --- Mô phỏng Định tuyến Router IP (Tab Mô phỏng) ---
+        const ipTestCases = [
+            { ip: "172.18.5.10", targetPort: 1, dest: "Hưng Yên", rule: "172.18.*.*" },
+            { ip: "172.18.255.1", targetPort: 1, dest: "Hưng Yên", rule: "172.18.*.*" },
+            { ip: "113.23.12.99", targetPort: 2, dest: "Quảng Ninh", rule: "113.23.12.*" },
+            { ip: "113.23.12.5", targetPort: 2, dest: "Quảng Ninh", rule: "113.23.12.*" },
+            { ip: "192.168.1.1", targetPort: 3, dest: "Cổng Mặc định", rule: "Khác" },
+            { ip: "8.8.8.8", targetPort: 3, dest: "Cổng Mặc định", rule: "Khác" },
+            { ip: "126.13.4.5", targetPort: 3, dest: "Cổng Mặc định", rule: "Khác" }
+        ];
+        
+        let currentBatch = [];
+        let isRouting = false;
+
+        function generateNewBatchIP(autoRoute = true) {
+            if (isRouting) return; 
+            const count = Math.random() < 0.5 ? 2 : 3; 
+            
+            const shuffled = [...ipTestCases].sort(() => 0.5 - Math.random());
+            currentBatch = [];
+            const usedPorts = new Set();
+            
+            for (const item of shuffled) {
+                if (!usedPorts.has(item.targetPort) && currentBatch.length < count) {
+                    currentBatch.push(item);
+                    usedPorts.add(item.targetPort);
+                }
+            }
+            while (currentBatch.length < count) {
+                const remaining = shuffled.find(it => !currentBatch.includes(it));
+                currentBatch.push(remaining || shuffled[0]);
+            }
+
+            renderPacketQueue();
+
+            const pathLine = document.getElementById('dynamic-path');
+            if (pathLine) {
+                pathLine.style.transition = 'none';
+                pathLine.style.opacity = '0';
+                pathLine.setAttribute('d', '');
+            }
+            [1, 2, 3].forEach(p => {
+                const pBtn = document.getElementById(`port-btn-${p}`);
+                if (pBtn) pBtn.classList.remove('ring-4', 'ring-emerald-400', 'scale-105', 'shadow-lg');
+            });
+
+            const feedback = document.getElementById('route-feedback');
+            if (autoRoute) {
+                isRouting = true;
+                const btn = document.getElementById('btn-create-packet');
+                if (btn) btn.classList.add('opacity-60', 'cursor-not-allowed');
+
+                feedback.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-blue-500 mr-2"></i>Đã tạo <strong>${count} gói tin</strong>. Bắt đầu tự động chuyển tuần tự từng gói qua Router...`;
+                feedback.className = "absolute bottom-3 left-1/2 -translate-x-1/2 bg-blue-50 text-blue-800 border border-blue-200 px-4 py-2 rounded-full shadow-md text-xs sm:text-sm font-bold transition-opacity duration-300 z-30 opacity-100";
+
+                setTimeout(() => {
+                    routeSequentialPackets(0);
+                }, 600);
+            } else {
+                feedback.innerHTML = `<i class="fa-solid fa-info-circle text-blue-500 mr-2"></i>Đã tạo sẵn ${count} gói tin. Nhấn "Tạo mới gói tin" để chạy mô phỏng tự động.`;
+                feedback.className = "absolute bottom-3 left-1/2 -translate-x-1/2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-full shadow-md text-xs sm:text-sm font-medium transition-opacity duration-300 z-30 opacity-100";
+            }
+        }
+
+        function renderPacketQueue() {
+            const queueContainer = document.getElementById('packet-queue-container');
+            queueContainer.innerHTML = '';
+
+            currentBatch.forEach((item, index) => {
+                const queueItem = document.createElement('div');
+                queueItem.id = `queue-card-${index}`;
+                queueItem.className = "bg-amber-50 border-2 border-amber-300 px-2 py-1 rounded-lg shadow-sm flex items-center justify-between gap-1.5 transition-all duration-300 w-full";
+                queueItem.innerHTML = `
+                    <div class="flex items-center gap-1.5 overflow-hidden">
+                        <span class="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">${index + 1}</span>
+                        <span class="font-mono font-bold text-[10px] text-slate-700 truncate">${item.ip}</span>
+                    </div>
+                    <span id="queue-status-${index}" class="text-[10px] text-amber-600 shrink-0"><i class="fa-solid fa-clock"></i></span>
+                `;
+                queueContainer.appendChild(queueItem);
+            });
+        }
+
+        function routeSequentialPackets(index) {
+            if (index >= currentBatch.length) {
+                const feedback = document.getElementById('route-feedback');
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check text-green-600 mr-2"></i>Hoàn thành! Đã tự động phân loại và định tuyến thành công cả <strong>${currentBatch.length} gói tin</strong>.`;
+                feedback.className = "absolute bottom-3 left-1/2 -translate-x-1/2 bg-green-50 text-green-800 border border-green-300 px-5 py-2.5 rounded-full shadow-lg text-xs sm:text-sm font-bold transition-opacity duration-300 z-30 opacity-100";
+
+                const btn = document.getElementById('btn-create-packet');
+                if (btn) btn.classList.remove('opacity-60', 'cursor-not-allowed');
+                isRouting = false;
+                return;
+            }
+
+            const currentPkt = currentBatch[index];
+            const container = document.getElementById('interactive-area');
+            const router = document.getElementById('core-router');
+            const port = document.getElementById(`port-btn-${currentPkt.targetPort}`);
+            const pathLine = document.getElementById('dynamic-path');
+            const activePacket = document.getElementById('active-packet');
+            const feedback = document.getElementById('route-feedback');
+            const queueCard = document.getElementById(`queue-card-${index}`);
+            const queueStatus = document.getElementById(`queue-status-${index}`);
+
+            if (queueCard) {
+                queueCard.classList.remove('bg-amber-50', 'border-amber-300');
+                queueCard.classList.add('bg-blue-100', 'border-blue-400', 'scale-105', 'shadow-md');
+            }
+            if (queueStatus) {
+                queueStatus.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-blue-600"></i>';
+            }
+
+            document.getElementById('active-packet-badge').innerText = `GÓI ${index + 1}/${currentBatch.length}`;
+            document.getElementById('active-packet-ip').innerText = currentPkt.ip;
+
+            const cRect = container.getBoundingClientRect();
+            const qRect = queueCard ? queueCard.getBoundingClientRect() : { left: cRect.left + 30, top: cRect.top + 100, width: 90, height: 40 };
+            const rRect = router.getBoundingClientRect();
+            const portRect = port.getBoundingClientRect();
+
+            const startX = qRect.left + qRect.width / 2 - cRect.left;
+            const startY = qRect.top + qRect.height / 2 - cRect.top;
+            const midX = rRect.left + rRect.width / 2 - cRect.left;
+            const midY = rRect.top + rRect.height / 2 - cRect.top;
+            const endX = portRect.left + 35 - cRect.left;
+            const endY = portRect.top + portRect.height / 2 - cRect.top;
+
+            activePacket.style.transition = 'none';
+            activePacket.style.transform = `translate(${startX}px, ${startY}px) translate(-50%, -50%) scale(1)`;
+            activePacket.style.opacity = '1';
+
+            pathLine.setAttribute('d', `M ${startX} ${startY} L ${midX} ${midY} L ${endX} ${endY}`);
+            pathLine.setAttribute('stroke', '#10b981'); 
+            const pathLength = pathLine.getTotalLength();
+            pathLine.style.transition = 'none';
+            pathLine.style.strokeDasharray = pathLength;
+            pathLine.style.strokeDashoffset = pathLength;
+            pathLine.style.opacity = '1';
+
+            void activePacket.offsetWidth; 
+
+            pathLine.style.transition = 'stroke-dashoffset 2.0s linear';
+            pathLine.style.strokeDashoffset = '0';
+
+            feedback.innerHTML = `<i class="fa-solid fa-arrow-right-arrow-left text-blue-500 mr-1.5"></i>Gói ${index + 1}: IP <strong>${currentPkt.ip}</strong> đang tiến vào Router...`;
+            feedback.className = "absolute bottom-3 left-1/2 -translate-x-1/2 bg-white text-blue-800 border border-blue-200 px-4 py-2 rounded-full shadow-md text-xs sm:text-sm font-semibold transition-opacity duration-300 z-30 opacity-100";
+
+            activePacket.style.transition = 'transform 1.0s cubic-bezier(0.4, 0, 0.2, 1)';
+            activePacket.style.transform = `translate(${midX}px, ${midY}px) translate(-50%, -50%) scale(0.85)`;
+
+            setTimeout(() => {
+                router.classList.add('scale-105', 'ring-4', 'ring-blue-300');
+                feedback.innerHTML = `<i class="fa-solid fa-magnifying-glass text-indigo-500 mr-1.5"></i>Router đối chiếu Bảng định tuyến: IP <strong>${currentPkt.ip}</strong> khớp luật <strong>${currentPkt.rule}</strong> -> Chọn <strong>Cổng ${currentPkt.targetPort}</strong>`;
+
+                setTimeout(() => {
+                    router.classList.remove('scale-105', 'ring-4', 'ring-blue-300');
+
+                    activePacket.style.transition = 'transform 1.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease-in';
+                    activePacket.style.transform = `translate(${endX}px, ${endY}px) translate(-50%, -50%) scale(0.3)`;
+                    activePacket.style.opacity = '0'; 
+
+                    setTimeout(() => {
+                        port.classList.add('ring-4', 'ring-emerald-400', 'scale-105', 'shadow-lg');
+                        
+                        if (queueCard) {
+                            queueCard.classList.remove('bg-blue-100', 'border-blue-400', 'scale-105');
+                            queueCard.classList.add('bg-emerald-50', 'border-emerald-400');
+                        }
+                        if (queueStatus) {
+                            queueStatus.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+                        }
+
+                        feedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i>Gói ${index + 1} (${currentPkt.ip}) -> Đã chuyển tới <strong>Cổng ${currentPkt.targetPort} (${currentPkt.dest})</strong>`;
+                        feedback.className = "absolute bottom-3 left-1/2 -translate-x-1/2 bg-emerald-50 text-emerald-800 border border-emerald-300 px-4 py-2 rounded-full shadow-md text-xs sm:text-sm font-bold transition-opacity duration-300 z-30 opacity-100";
+
+                        setTimeout(() => {
+                            pathLine.style.transition = 'opacity 0.4s ease';
+                            pathLine.style.opacity = '0';
+                            port.classList.remove('ring-4', 'ring-emerald-400', 'scale-105', 'shadow-lg');
+
+                            setTimeout(() => {
+                                routeSequentialPackets(index + 1);
+                            }, 400);
+
+                        }, 700);
+
+                    }, 1000); 
+
+                }, 500); 
+
+            }, 1000); 
+        }
+
+        function routePacket(selectedPort) {
+            if (isRouting) return;
+            const feedback = document.getElementById('route-feedback');
+            feedback.innerHTML = '<i class="fa-solid fa-info-circle text-blue-500 mr-2"></i>Hãy nhấn nút <strong>"Tạo mới gói tin (2-3 IP)"</strong> để Router tự động thực hiện định tuyến.';
+            feedback.className = "absolute bottom-3 left-1/2 -translate-x-1/2 bg-blue-50 text-blue-800 border border-blue-200 px-4 py-2 rounded-full shadow-md text-xs sm:text-sm font-bold transition-opacity duration-300 z-30 opacity-100";
+        }
+
+        // --- Mô phỏng Phân biệt IP và MAC (Tab Chi tiết) ---
+        let isNewIPMACRunning = false;
+
+        function simSendIPMACNew(type) {
+            if (isNewIPMACRunning) return;
+            isNewIPMACRunning = true;
+
+            updateWireCoordinates();
+
+            const area = document.getElementById('ip-mac-sim-area');
+            const pcBox = document.getElementById('pc-box');
+            const gwBox = document.getElementById('gateway-box');
+            const printerBox = document.getElementById('printer-box');
+            const serverBox = document.getElementById('server-box');
+            
+            const packet = document.getElementById('ip-mac-packet');
+            const pInner = document.getElementById('packet-inner-card');
+            const pIcon = document.getElementById('packet-icon');
+            const pTitle = document.getElementById('packet-title');
+            const pAddr = document.getElementById('packet-addr');
+            
+            const stepBadge = document.getElementById('step-badge');
+            const stepDesc = document.getElementById('step-desc');
+            const spinner = document.getElementById('status-spinner');
+            const wireActive = document.getElementById('wire-active-path');
+            const printedPaper = document.getElementById('printed-paper');
+            const pcScreenWeb = document.getElementById('pc-screen-web');
+            const serverStatus = document.getElementById('server-status');
+
+            const btnMac = document.getElementById('btn-action-mac');
+            const btnIp = document.getElementById('btn-action-ip');
+
+            // Khóa nút tương tác
+            btnMac.classList.add('opacity-50', 'pointer-events-none');
+            btnIp.classList.add('opacity-50', 'pointer-events-none');
+            spinner.classList.remove('hidden');
+
+            // Reset visual states
+            printedPaper.classList.add('hidden');
+            pcScreenWeb.style.opacity = '0';
+            serverStatus.className = 'absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-500';
+            pcBox.classList.remove('ring-4', 'ring-orange-300', 'ring-blue-300', 'ring-emerald-400');
+            gwBox.classList.remove('ring-4', 'ring-red-400', 'ring-blue-400', 'ring-orange-400', 'scale-105');
+            printerBox.classList.remove('ring-4', 'ring-orange-400', 'scale-105');
+            serverBox.classList.remove('ring-4', 'ring-blue-400', 'scale-105');
+
+            const aRect = area.getBoundingClientRect();
+            const pcRect = pcBox.getBoundingClientRect();
+            const gwRect = gwBox.getBoundingClientRect();
+            const prRect = printerBox.getBoundingClientRect();
+            const srvRect = serverBox.getBoundingClientRect();
+
+            // Toạ độ tâm của các nút mạng
+            const pcPos = { x: pcRect.left + pcRect.width / 2 - aRect.left, y: pcRect.top + pcRect.height / 2 - aRect.top };
+            const gwPos = { x: gwRect.left + gwRect.width / 2 - aRect.left, y: gwRect.top + gwRect.height / 2 - aRect.top };
+            const prPos = { x: prRect.left + prRect.width / 2 - aRect.left, y: prRect.top + prRect.height / 2 - aRect.top };
+            const srvPos = { x: srvRect.left + srvRect.width / 2 - aRect.left, y: srvRect.top + srvRect.height / 2 - aRect.top };
+
+            if (type === 'mac') {
+                stepBadge.className = 'bg-orange-100 text-orange-800 text-[11px] font-bold px-2.5 py-0.5 rounded-md border border-orange-200';
+                stepBadge.innerText = 'Bước 1/4: Đóng gói Frame MAC';
+                stepDesc.innerHTML = 'Máy tính chuẩn bị gửi lệnh in tới máy in trong cùng mạng LAN -> <strong>Đóng gói địa chỉ MAC đích: 00:1A:..:99</strong>';
+
+                pInner.className = 'bg-orange-500 text-white rounded-xl shadow-xl px-3 py-1.5 flex items-center gap-1.5 border border-orange-400 text-xs font-bold whitespace-nowrap';
+                pIcon.className = 'fa-solid fa-print text-sm';
+                pTitle.innerText = 'ETHERNET FRAME';
+                pAddr.innerText = 'MAC Đích: 00:1A:..:99';
+
+                packet.style.transition = 'none';
+                packet.style.transform = `translate(${pcPos.x}px, ${pcPos.y}px) translate(-50%, -50%) scale(0.6)`;
+                packet.style.opacity = '1';
+
+                pcBox.classList.add('ring-4', 'ring-orange-300');
+
+                setTimeout(() => {
+                    stepBadge.innerText = 'Bước 2/4: Di chuyển tới Switch trung tâm';
+                    stepDesc.innerHTML = 'Gói tin chạy chậm theo cáp mạng LAN đến <strong>Switch / Router / Modem</strong>...';
+
+                    wireActive.setAttribute('x1', pcPos.x);
+                    wireActive.setAttribute('y1', pcPos.y);
+                    wireActive.setAttribute('x2', gwPos.x);
+                    wireActive.setAttribute('y2', gwPos.y);
+                    wireActive.setAttribute('stroke', '#f97316');
+                    wireActive.classList.add('wire-active');
+
+                    packet.style.transition = 'transform 2.0s cubic-bezier(0.4, 0, 0.2, 1)';
+                    packet.style.transform = `translate(${gwPos.x}px, ${gwPos.y}px) translate(-50%, -50%) scale(1)`;
+
+                    setTimeout(() => {
+                        wireActive.classList.remove('wire-active');
+                        gwBox.classList.add('ring-4', 'ring-orange-400', 'scale-105');
+
+                        stepBadge.innerText = 'Bước 3/4: Switch điều phối theo bảng MAC';
+                        stepDesc.innerHTML = '<span class="text-orange-600 font-bold"><i class="fa-solid fa-magnifying-glass mr-1"></i>Switch tra bảng MAC:</span> Phát hiện MAC 00:1A:..:99 nằm ở cổng nối xuống Máy in (LAN) -> Chuyển tiếp gói tin!';
+
+                        setTimeout(() => {
+                            gwBox.classList.remove('scale-105', 'ring-orange-400');
+
+                            wireActive.setAttribute('x1', gwPos.x);
+                            wireActive.setAttribute('y1', gwPos.y);
+                            wireActive.setAttribute('x2', prPos.x);
+                            wireActive.setAttribute('y2', prPos.y);
+                            wireActive.setAttribute('stroke', '#ea580c');
+                            wireActive.classList.add('wire-active');
+
+                            packet.style.transition = 'transform 2.0s cubic-bezier(0.4, 0, 0.2, 1)';
+                            packet.style.transform = `translate(${prPos.x}px, ${prPos.y}px) translate(-50%, -50%) scale(1)`;
+
+                            setTimeout(() => {
+                                wireActive.setAttribute('stroke', 'transparent');
+                                wireActive.classList.remove('wire-active');
+
+                                stepBadge.innerText = 'Bước 4/4: Máy in nhận lệnh & Xuất bản in';
+                                stepDesc.innerHTML = '<span class="text-orange-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Đúng địa chỉ MAC card mạng:</span> Máy in nhận lệnh và xuất bản in ra ngoài!';
+
+                                printerBox.classList.add('ring-4', 'ring-orange-400', 'scale-105');
+                                printedPaper.classList.remove('hidden');
+                                printedPaper.classList.add('paper-printed');
+
+                                setTimeout(() => {
+                                    packet.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                                    packet.style.transform = `translate(${prPos.x}px, ${prPos.y}px) translate(-50%, -50%) scale(0.2)`;
+                                    packet.style.opacity = '0';
+
+                                    stepBadge.className = 'bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-0.5 rounded-md border border-emerald-200';
+                                    stepBadge.innerText = 'Hoàn thành';
+                                    stepDesc.innerHTML = '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check-circle mr-1"></i>Truyền nội bộ LAN thành công!</span> Switch định tuyến trực tiếp bằng <strong>địa chỉ MAC</strong> của phần cứng, không cần IP Internet.';
+
+                                    setTimeout(finishSim, 1500);
+                                }, 1200);
+
+                            }, 2000);
+
+                        }, 1200);
+
+                    }, 2000);
+
+                }, 1000);
+
+            } else {
+                stepBadge.className = 'bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-0.5 rounded-md border border-blue-200';
+                stepBadge.innerText = 'Bước 1/6: Đóng gói IP Packet';
+                stepDesc.innerHTML = 'Trình duyệt cần tải website -> <strong>Đóng gói địa chỉ IP Đích toàn cầu: 14.160.25.88</strong>';
+
+                pInner.className = 'bg-blue-600 text-white rounded-xl shadow-xl px-3 py-1.5 flex items-center gap-1.5 border border-blue-400 text-xs font-bold whitespace-nowrap';
+                pIcon.className = 'fa-solid fa-globe text-sm';
+                pTitle.innerText = 'IP PACKET';
+                pAddr.innerText = 'IP Đích: 14.160.25.88';
+
+                packet.style.transition = 'none';
+                packet.style.transform = `translate(${pcPos.x}px, ${pcPos.y}px) translate(-50%, -50%) scale(0.6)`;
+                packet.style.opacity = '1';
+
+                pcBox.classList.add('ring-4', 'ring-blue-300');
+
+                setTimeout(() => {
+                    stepBadge.innerText = 'Bước 2/6: Chuyển gói tin tới Gateway';
+                    stepDesc.innerHTML = 'Gói tin chạy chậm theo cáp mạng đến <strong>Router / Modem (Default Gateway)</strong>...';
+
+                    wireActive.setAttribute('x1', pcPos.x);
+                    wireActive.setAttribute('y1', pcPos.y);
+                    wireActive.setAttribute('x2', gwPos.x);
+                    wireActive.setAttribute('y2', gwPos.y);
+                    wireActive.setAttribute('stroke', '#3b82f6');
+                    wireActive.classList.add('wire-active');
+
+                    packet.style.transition = 'transform 2.0s cubic-bezier(0.4, 0, 0.2, 1)';
+                    packet.style.transform = `translate(${gwPos.x}px, ${gwPos.y}px) translate(-50%, -50%) scale(1)`;
+
+                    setTimeout(() => {
+                        wireActive.classList.remove('wire-active');
+                        gwBox.classList.add('ring-4', 'ring-blue-400', 'scale-105');
+
+                        stepBadge.innerText = 'Bước 3/6: Router/Modem định tuyến ra WAN';
+                        stepDesc.innerHTML = '<span class="text-blue-600 font-bold"><i class="fa-solid fa-route mr-1"></i>Router nhận diện IP đích (14.160.25.88):</span> Nằm ngoài mạng LAN -> Định tuyến qua cổng WAN ra Internet tới Web Server!';
+
+                        setTimeout(() => {
+                            gwBox.classList.remove('scale-105', 'ring-blue-400');
+
+                            wireActive.setAttribute('x1', gwPos.x);
+                            wireActive.setAttribute('y1', gwPos.y);
+                            wireActive.setAttribute('x2', srvPos.x);
+                            wireActive.setAttribute('y2', srvPos.y);
+                            wireActive.setAttribute('stroke', '#2563eb');
+                            wireActive.classList.add('wire-active');
+
+                            packet.style.transition = 'transform 2.2s cubic-bezier(0.4, 0, 0.2, 1)';
+                            packet.style.transform = `translate(${srvPos.x}px, ${srvPos.y}px) translate(-50%, -50%) scale(1)`;
+
+                            setTimeout(() => {
+                                wireActive.setAttribute('stroke', 'transparent');
+                                wireActive.classList.remove('wire-active');
+
+                                stepBadge.innerText = 'Bước 4/6: Web Server xử lý & Tạo phản hồi';
+                                stepDesc.innerHTML = '<span class="text-blue-600 font-bold">Khớp địa chỉ IP!</span> Web Server đang tải dữ liệu trang web (HTTP 200 OK)...';
+
+                                serverBox.classList.add('ring-4', 'ring-blue-400', 'scale-105');
+                                serverStatus.className = 'absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
+                                packet.style.opacity = '0';
+
+                                setTimeout(() => {
+                                    serverStatus.className = 'absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-500';
+                                    serverBox.classList.remove('scale-105', 'ring-blue-400');
+
+                                    stepBadge.innerText = 'Bước 5/6: Phản hồi từ Web Server về Thiết bị trung tâm';
+                                    stepDesc.innerHTML = 'Web Server gửi gói tin <strong>HTTP RESPONSE</strong> chạy dọc theo cáp nối và dừng lại ở <strong>Thiết bị trung tâm</strong>...';
+
+                                    pInner.className = 'bg-emerald-600 text-white rounded-xl shadow-xl px-3 py-1.5 flex items-center gap-1.5 border border-emerald-400 text-xs font-bold whitespace-nowrap';
+                                    pIcon.className = 'fa-solid fa-code text-sm';
+                                    pTitle.innerText = 'HTTP RESPONSE';
+                                    pAddr.innerText = 'Data: 200 OK';
+
+                                    packet.style.transition = 'none';
+                                    packet.style.transform = `translate(${srvPos.x}px, ${srvPos.y}px) translate(-50%, -50%) scale(0.6)`;
+                                    packet.style.opacity = '1';
+
+                                    wireActive.setAttribute('x1', srvPos.x);
+                                    wireActive.setAttribute('y1', srvPos.y);
+                                    wireActive.setAttribute('x2', gwPos.x);
+                                    wireActive.setAttribute('y2', gwPos.y);
+                                    wireActive.setAttribute('stroke', '#10b981');
+                                    wireActive.classList.add('wire-active');
+
+                                    void packet.offsetWidth;
+
+                                    packet.style.transition = 'transform 2.0s cubic-bezier(0.4, 0, 0.2, 1)';
+                                    packet.style.transform = `translate(${gwPos.x}px, ${gwPos.y}px) translate(-50%, -50%) scale(1)`;
+
+                                    setTimeout(() => {
+                                        wireActive.classList.remove('wire-active');
+                                        wireActive.setAttribute('stroke', 'transparent');
+                                        gwBox.classList.add('ring-4', 'ring-emerald-400', 'scale-105');
+
+                                        stepBadge.innerText = 'Bước 5.1/6: Thiết bị trung tâm tiếp nhận phản hồi';
+                                        stepDesc.innerHTML = '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-arrows-split-up-and-left mr-1"></i>Dừng tại Thiết bị trung tâm:</span> Switch/Router/Modem nhận gói phản hồi, tra cứu và chuyển tiếp dọc đường kết nối về Máy tính...';
+
+                                        setTimeout(() => {
+                                            gwBox.classList.remove('scale-105', 'ring-emerald-400');
+
+                                            stepBadge.innerText = 'Bước 6/6: Chuyển dữ liệu về Máy tính';
+                                            stepDesc.innerHTML = 'Gói tin tiếp tục chạy dọc theo đường cáp nội bộ về đến <strong>Máy tính</strong>...';
+
+                                            wireActive.setAttribute('x1', gwPos.x);
+                                            wireActive.setAttribute('y1', gwPos.y);
+                                            wireActive.setAttribute('x2', pcPos.x);
+                                            wireActive.setAttribute('y2', pcPos.y);
+                                            wireActive.setAttribute('stroke', '#10b981');
+                                            wireActive.classList.add('wire-active');
+
+                                            packet.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                                            packet.style.transform = `translate(${pcPos.x}px, ${pcPos.y}px) translate(-50%, -50%) scale(1)`;
+
+                                            setTimeout(() => {
+                                                wireActive.setAttribute('stroke', 'transparent');
+                                                wireActive.classList.remove('wire-active');
+                                                packet.style.opacity = '0';
+
+                                                pcScreenWeb.style.opacity = '1';
+                                                pcBox.classList.add('ring-4', 'ring-emerald-400', 'scale-105');
+
+                                                stepBadge.className = 'bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-0.5 rounded-md border border-emerald-200';
+                                                stepBadge.innerText = 'Hoàn thành';
+                                                stepDesc.innerHTML = '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Định tuyến bằng IP thành công!</span> Dữ liệu đã qua thiết bị trung tâm và trang web hiển thị hoàn chỉnh.';
+
+                                                setTimeout(finishSim, 1800);
+
+                                            }, 1800);
+
+                                        }, 1200);
+
+                                    }, 2000);
+
+                                }, 1500);
+
+                            }, 2200);
+
+                        }, 1200);
+
+                    }, 2000);
+
+                }, 1000);
+            }
+
+            function finishSim() {
+                btnMac.classList.remove('opacity-50', 'pointer-events-none');
+                btnIp.classList.remove('opacity-50', 'pointer-events-none');
+                spinner.classList.add('hidden');
+                
+                pcBox.classList.remove('scale-105', 'ring-4', 'ring-orange-300', 'ring-blue-300', 'ring-emerald-400');
+                gwBox.classList.remove('scale-105', 'ring-4', 'ring-red-400', 'ring-blue-400', 'ring-orange-400', 'ring-emerald-400');
+                printerBox.classList.remove('scale-105', 'ring-4', 'ring-orange-400');
+                serverBox.classList.remove('scale-105', 'ring-4', 'ring-blue-400');
+                
+                isNewIPMACRunning = false;
+            }
+        }
+
+        // --- Mô phỏng Đa Giao Thức (Email, Ethernet, Web, ICMP) ---
+        let activeProtoSim = 'email';
+        let isProtoSimRunning = false;
+
+        function switchProtoSim(type) {
+            if (isProtoSimRunning) return;
+            activeProtoSim = type;
+
+            ['email', 'ethernet', 'web', 'icmp'].forEach(t => {
+                const btn = document.getElementById(`btn-sim-${t}`);
+                const view = document.getElementById(`sim-view-${t}`);
+                
+                btn.className = "flex-1 bg-transparent border border-transparent px-4 py-2 rounded-lg font-bold text-sm transition";
+                if(t === 'email') btn.classList.add('text-rose-600', 'hover:bg-rose-50');
+                if(t === 'ethernet') btn.classList.add('text-emerald-600', 'hover:bg-emerald-50');
+                if(t === 'web') btn.classList.add('text-blue-600', 'hover:bg-blue-50');
+                if(t === 'icmp') btn.classList.add('text-purple-600', 'hover:bg-purple-50');
+                
+                view.classList.add('hidden');
+            });
+
+            const activeBtn = document.getElementById(`btn-sim-${type}`);
+            const activeView = document.getElementById(`sim-view-${type}`);
+            
+            activeBtn.classList.remove('bg-transparent', 'border-transparent');
+            activeBtn.classList.add('bg-white', 'shadow-sm');
+            if(type === 'email') activeBtn.classList.add('border-rose-200');
+            if(type === 'ethernet') activeBtn.classList.add('border-emerald-200');
+            if(type === 'web') activeBtn.classList.add('border-blue-200');
+            if(type === 'icmp') activeBtn.classList.add('border-purple-200');
+            
+            activeView.classList.remove('hidden');
+            activeView.classList.add('block');
+            
+            if (type === 'email') {
+                setTimeout(updateEmailSimCoordinates, 50);
+            }
+            if (type === 'ethernet') {
+                setTimeout(updateEthernetSimCoordinates, 50);
+            }
+            if (type === 'web') {
+                setTimeout(updateWebSimCoordinates, 50);
+            }
+            if (type === 'icmp') {
+                setTimeout(updateICMPSimCoordinates, 50);
+            }
+        }
+
+        function runSimEmail(step) {
+            if (isProtoSimRunning) return;
+            isProtoSimRunning = true;
+            
+            updateEmailSimCoordinates();
+
+            const stage = document.getElementById('email-sim-stage');
+            const senderBox = document.getElementById('email-sender-box');
+            const serverBox = document.getElementById('email-server-box');
+            const receiverBox = document.getElementById('email-receiver-box');
+            const serverBadge = document.getElementById('email-server-badge');
+            
+            const env = document.getElementById('email-envelope');
+            const pCard = document.getElementById('email-packet-card');
+            const lbl = document.getElementById('email-lbl');
+            const desc = document.getElementById('email-desc');
+            const wireActive = document.getElementById('email-wire-active');
+            
+            const btnSend = document.getElementById('btn-email-send');
+            const btnRecv = document.getElementById('btn-email-recv');
+
+            btnSend.classList.add('opacity-50', 'pointer-events-none');
+            btnRecv.classList.add('opacity-50', 'pointer-events-none');
+
+            const sRect = stage.getBoundingClientRect();
+            const getCenter = (el) => {
+                const r = el.getBoundingClientRect();
+                return {
+                    x: r.left + r.width / 2 - sRect.left,
+                    y: r.top + r.height / 2 - sRect.top
+                };
+            };
+
+            const pSender = getCenter(senderBox);
+            const pServer = getCenter(serverBox);
+            const pReceiver = getCenter(receiverBox);
+
+            if (step === 1) {
+                // Bước 1: Gửi thư (SMTP) - Từ Người gửi đến Mail Server
+                lbl.innerText = 'SMTP';
+                lbl.className = 'text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded border border-rose-200';
+                pCard.className = 'bg-white border-2 border-rose-400 rounded-xl px-3 py-1.5 shadow-xl flex items-center gap-1.5 text-rose-600 whitespace-nowrap';
+
+                desc.innerHTML = '<i class="fa-solid fa-paper-plane text-rose-500 mr-2"></i><strong>Giao thức SMTP:</strong> Máy người gửi đóng gói email và truyền từ từ dọc theo đường cáp lên <strong>Mail Server</strong>...';
+
+                // Đặt thư tại tâm Người gửi
+                env.style.transition = 'none';
+                env.style.transform = `translate(${pSender.x}px, ${pSender.y}px) translate(-50%, -50%) scale(0.6)`;
+                env.style.opacity = '1';
+
+                senderBox.classList.add('ring-4', 'ring-rose-300');
+
+                // Kích hoạt đường truyền phát sáng
+                wireActive.setAttribute('x1', pSender.x);
+                wireActive.setAttribute('y1', pSender.y);
+                wireActive.setAttribute('x2', pServer.x);
+                wireActive.setAttribute('y2', pServer.y);
+                wireActive.setAttribute('stroke', '#f43f5e');
+                wireActive.classList.add('dash-anim');
+
+                void env.offsetWidth;
+
+                // Di chuyển nhịp nhàng, êm dịu (2.2s)
+                setTimeout(() => {
+                    env.style.transition = 'transform 2.2s cubic-bezier(0.4, 0, 0.2, 1)';
+                    env.style.transform = `translate(${pServer.x}px, ${pServer.y}px) translate(-50%, -50%) scale(1)`;
+
+                    setTimeout(() => {
+                        wireActive.classList.remove('dash-anim');
+                        wireActive.setAttribute('stroke', 'transparent');
+                        senderBox.classList.remove('ring-4', 'ring-rose-300');
+
+                        serverBox.classList.add('ring-4', 'ring-rose-400', 'scale-105');
+                        serverBadge.classList.remove('hidden');
+
+                        env.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                        env.style.opacity = '0';
+
+                        desc.innerHTML = '<i class="fa-solid fa-circle-check text-rose-600 mr-2"></i><strong>Hoàn thành SMTP:</strong> Mail Server đã tiếp nhận và lưu trữ bức thư an toàn trong hòm thư đến.';
+
+                        setTimeout(() => {
+                            serverBox.classList.remove('ring-4', 'ring-rose-400', 'scale-105');
+                            btnSend.classList.remove('opacity-50', 'pointer-events-none');
+                            btnRecv.classList.remove('opacity-50', 'pointer-events-none');
+                            isProtoSimRunning = false;
+                        }, 1200);
+
+                    }, 2200);
+
+                }, 400);
+
+            } else if (step === 2) {
+                // Bước 2: Nhận thư (POP3/IMAP) - Từ Mail Server đến Người nhận
+                lbl.innerText = 'POP3 / IMAP';
+                lbl.className = 'text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded border border-indigo-200';
+                pCard.className = 'bg-white border-2 border-indigo-400 rounded-xl px-3 py-1.5 shadow-xl flex items-center gap-1.5 text-indigo-600 whitespace-nowrap';
+
+                desc.innerHTML = '<i class="fa-solid fa-inbox text-indigo-600 mr-2"></i><strong>Giao thức POP3 / IMAP:</strong> Người nhận gửi yêu cầu kéo thư từ <strong>Mail Server</strong> về máy tính cá nhân...';
+
+                // Đặt thư tại tâm Mail Server
+                env.style.transition = 'none';
+                env.style.transform = `translate(${pServer.x}px, ${pServer.y}px) translate(-50%, -50%) scale(0.6)`;
+                env.style.opacity = '1';
+
+                serverBox.classList.add('ring-4', 'ring-indigo-300');
+
+                // Kích hoạt đường truyền phát sáng
+                wireActive.setAttribute('x1', pServer.x);
+                wireActive.setAttribute('y1', pServer.y);
+                wireActive.setAttribute('x2', pReceiver.x);
+                wireActive.setAttribute('y2', pReceiver.y);
+                wireActive.setAttribute('stroke', '#6366f1');
+                wireActive.classList.add('dash-anim');
+
+                void env.offsetWidth;
+
+                // Di chuyển nhịp nhàng, êm dịu (2.2s)
+                setTimeout(() => {
+                    env.style.transition = 'transform 2.2s cubic-bezier(0.4, 0, 0.2, 1)';
+                    env.style.transform = `translate(${pReceiver.x}px, ${pReceiver.y}px) translate(-50%, -50%) scale(1)`;
+
+                    setTimeout(() => {
+                        wireActive.classList.remove('dash-anim');
+                        wireActive.setAttribute('stroke', 'transparent');
+                        serverBox.classList.remove('ring-4', 'ring-indigo-300');
+                        serverBadge.classList.add('hidden');
+
+                        receiverBox.classList.add('ring-4', 'ring-emerald-400', 'scale-105');
+
+                        env.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                        env.style.opacity = '0';
+
+                        desc.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i><strong>Hoàn thành POP3 / IMAP:</strong> Thư đã được đồng bộ và tải thành công về phần mềm hòm thư của người nhận!';
+
+                        setTimeout(() => {
+                            receiverBox.classList.remove('ring-4', 'ring-emerald-400', 'scale-105');
+                            btnSend.classList.remove('opacity-50', 'pointer-events-none');
+                            btnRecv.classList.remove('opacity-50', 'pointer-events-none');
+                            isProtoSimRunning = false;
+                        }, 1200);
+
+                    }, 2200);
+
+                }, 400);
+            }
+        }
+
+        // --- Mô phỏng Chi tiết Ethernet: Đóng gói và Truyền Frame mang đầy đủ 4 trường ---
+        function runSimEthernet(mode = 'valid') {
+            if (isProtoSimRunning) return;
+            isProtoSimRunning = true;
+            
+            updateEthernetSimCoordinates();
+
+            const stage = document.getElementById('eth-lan-stage');
+            const pcaBox = document.getElementById('eth-pca-box');
+            const switchBox = document.getElementById('eth-switch-box');
+            const pcbBox = document.getElementById('eth-pcb-box');
+            const pcbBadge = document.getElementById('eth-pcb-badge');
+            const pcbBadgeErr = document.getElementById('eth-pcb-badge-err');
+            
+            const frameFlying = document.getElementById('eth-frame-flying');
+            const flyingCard = document.getElementById('eth-flying-card');
+            const flyingTag = document.getElementById('eth-flying-tag');
+            const flyFcs = document.getElementById('fly-f-fcs');
+            const wireActive = document.getElementById('eth-wire-active');
+            const fill = document.getElementById('eth-data-fill');
+            const desc = document.getElementById('eth-desc');
+            const statusBadge = document.getElementById('eth-frame-status');
+            const frameCard = document.getElementById('eth-frame-card');
+
+            const btnValid = document.getElementById('btn-run-eth');
+            const btnCollision = document.getElementById('btn-run-eth-collision');
+
+            const fDst = document.getElementById('frame-f-dst');
+            const fSrc = document.getElementById('frame-f-src');
+            const fData = document.getElementById('frame-f-data');
+            const fFcs = document.getElementById('frame-f-fcs');
+            const fFcsVal = document.getElementById('frame-f-fcs-val');
+            const fFcsNote = document.getElementById('frame-f-fcs-note');
+            const fDstNote = document.getElementById('frame-f-dst-note');
+            const fSrcNote = document.getElementById('frame-f-src-note');
+
+            const badgeMac = document.getElementById('badge-eth-mac');
+            const badgeLimit = document.getElementById('badge-eth-limit');
+            const badgeCollision = document.getElementById('badge-eth-collision');
+
+            // Khóa nút tương tác
+            btnValid.classList.add('opacity-50', 'pointer-events-none');
+            btnCollision.classList.add('opacity-50', 'pointer-events-none');
+            pcbBadge.classList.add('hidden');
+            pcbBadgeErr.classList.add('hidden');
+
+            const sRect = stage.getBoundingClientRect();
+            const getCenter = (el) => {
+                const r = el.getBoundingClientRect();
+                return {
+                    x: r.left + r.width / 2 - sRect.left,
+                    y: r.top + r.height / 2 - sRect.top
+                };
+            };
+            const pA = getCenter(pcaBox);
+            const pSw = getCenter(switchBox);
+            const pB = getCenter(pcbBox);
+
+            // Reset frame card
+            frameCard.className = "w-full max-w-2xl mx-auto bg-white p-3.5 rounded-2xl shadow-sm border-2 border-emerald-400 relative z-10 mb-3 transition-all duration-300";
+            flyingCard.className = "bg-white border-2 border-emerald-500 rounded-xl shadow-xl p-1 flex items-center gap-1 text-[9px] font-bold whitespace-nowrap";
+            flyFcs.className = "bg-red-100 text-red-700 border border-red-200 px-1 py-0.5 rounded font-mono";
+            flyFcs.innerText = "FCS: OK";
+            flyingTag.className = "text-[9px] font-mono font-bold text-emerald-700 mt-0.5 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 shadow-sm";
+            flyingTag.innerText = "Ethernet Frame";
+
+            if (mode === 'valid') {
+                // ==========================================
+                // TRƯỜNG HỢP 1: TRUYỀN FRAME HỢP LỆ (THÀNH CÔNG)
+                // ==========================================
+                statusBadge.innerText = "Giai đoạn 1: Đóng gói Header MAC";
+                statusBadge.className = "text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md font-mono";
+                desc.innerHTML = '<i class="fa-solid fa-address-card text-blue-600 mr-2"></i><strong>Giai đoạn 1 (Header MAC):</strong> Máy A thiết lập <strong>MAC Đích (..99)</strong> & <strong>MAC Nguồn (..01)</strong> (mỗi địa chỉ 6 byte).';
+
+                badgeMac.classList.add('opacity-100', 'scale-110');
+                fDst.classList.add('ring-2', 'ring-orange-400');
+                fSrc.classList.add('ring-2', 'ring-blue-400');
+                fDstNote.classList.remove('hidden');
+                fSrcNote.classList.remove('hidden');
+
+                setTimeout(() => {
+                    // Giai đoạn 2: Nạp Payload Dữ liệu
+                    statusBadge.innerText = "Giai đoạn 2: Giới hạn Payload";
+                    statusBadge.className = "text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md font-mono";
+                    desc.innerHTML = '<i class="fa-solid fa-ruler-horizontal text-emerald-600 mr-2"></i><strong>Giai đoạn 2 (Dữ liệu/Payload):</strong> Kiểm tra kích thước gói nằm trong ngưỡng MTU chuẩn (<strong>46 - 1500 bytes</strong>) để tránh nghẽn mạng.';
+
+                    badgeMac.classList.remove('scale-110');
+                    badgeLimit.classList.add('opacity-100', 'scale-110');
+                    fData.classList.add('ring-2', 'ring-emerald-400');
+                    fill.style.width = '100%';
+
+                    setTimeout(() => {
+                        // Giai đoạn 3: Tính toán mã kiểm tra lỗi FCS (CRC-32)
+                        statusBadge.innerText = "Giai đoạn 3: Tính mã kiểm tra FCS";
+                        statusBadge.className = "text-[10px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md font-mono";
+                        desc.innerHTML = '<i class="fa-solid fa-shield-halved text-purple-600 mr-2"></i><strong>Giai đoạn 3 (Mã kiểm tra FCS):</strong> Tính toán mã đa thức <strong>CRC-32 (4 bytes)</strong> đặt ở cuối Frame để bên nhận phát hiện bit lỗi.';
+
+                        badgeLimit.classList.remove('scale-110');
+                        fFcs.classList.add('ring-2', 'ring-purple-400');
+                        fFcsVal.innerText = "CRC-32 Hợp lệ";
+                        fFcsNote.classList.remove('hidden');
+
+                        setTimeout(() => {
+                            // Giai đoạn 4: Frame hoàn chỉnh rời Máy A truyền tới Switch
+                            statusBadge.innerText = "Giai đoạn 4: Truyền cáp LAN tới Switch";
+                            statusBadge.className = "text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md font-mono";
+                            desc.innerHTML = '<i class="fa-solid fa-network-wired text-emerald-600 mr-2"></i><strong>Giai đoạn 4 (Truyền tải):</strong> Khung Ethernet nguyên vẹn 4 trường đang di chuyển theo cáp mạng LAN tới Switch...';
+
+                            pcaBox.classList.add('ring-4', 'ring-blue-300');
+
+                            frameFlying.style.transition = 'none';
+                            frameFlying.style.transform = `translate(${pA.x}px, ${pA.y}px) translate(-50%, -50%) scale(0.6)`;
+                            frameFlying.style.opacity = '1';
+
+                            wireActive.setAttribute('x1', pA.x);
+                            wireActive.setAttribute('y1', pA.y);
+                            wireActive.setAttribute('x2', pSw.x);
+                            wireActive.setAttribute('y2', pSw.y);
+                            wireActive.setAttribute('stroke', '#10b981');
+                            wireActive.classList.add('dash-anim');
+
+                            void frameFlying.offsetWidth;
+
+                            frameFlying.style.transition = 'transform 2.0s cubic-bezier(0.4, 0, 0.2, 1)';
+                            frameFlying.style.transform = `translate(${pSw.x}px, ${pSw.y}px) translate(-50%, -50%) scale(1)`;
+
+                            setTimeout(() => {
+                                pcaBox.classList.remove('ring-4', 'ring-blue-300');
+                                wireActive.classList.remove('dash-anim');
+                                wireActive.setAttribute('stroke', 'transparent');
+
+                                // Giai đoạn 5: Switch đọc MAC Đích và chuyển tiếp
+                                switchBox.classList.add('ring-4', 'ring-emerald-300', 'scale-105');
+                                desc.innerHTML = '<i class="fa-solid fa-magnifying-glass text-emerald-600 mr-2"></i><strong>Giai đoạn 5 (Switch điều phối):</strong> Switch tra bảng MAC, phát hiện <strong>MAC Đích (..99)</strong> nằm ở cổng Máy B và chuyển tiếp.';
+
+                                setTimeout(() => {
+                                    switchBox.classList.remove('ring-4', 'ring-emerald-300', 'scale-105');
+
+                                    wireActive.setAttribute('x1', pSw.x);
+                                    wireActive.setAttribute('y1', pSw.y);
+                                    wireActive.setAttribute('x2', pB.x);
+                                    wireActive.setAttribute('y2', pB.y);
+                                    wireActive.setAttribute('stroke', '#10b981');
+                                    wireActive.classList.add('dash-anim');
+
+                                    frameFlying.style.transition = 'transform 2.0s cubic-bezier(0.4, 0, 0.2, 1)';
+                                    frameFlying.style.transform = `translate(${pB.x}px, ${pB.y}px) translate(-50%, -50%) scale(1)`;
+
+                                    setTimeout(() => {
+                                        wireActive.classList.remove('dash-anim');
+                                        wireActive.setAttribute('stroke', 'transparent');
+
+                                        // Giai đoạn 6: Máy B đối chiếu MAC & kiểm tra mã FCS
+                                        pcbBox.classList.add('ring-4', 'ring-emerald-400', 'scale-105');
+                                        pcbBadge.classList.remove('hidden');
+
+                                        statusBadge.innerText = "Hoàn thành: Hợp lệ 100%";
+                                        statusBadge.className = "text-[10px] font-bold text-emerald-800 bg-emerald-200 px-2 py-0.5 rounded-md font-mono";
+                                        desc.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i><strong>Giai đoạn 6 (Xác thực FCS):</strong> Máy B đối chiếu đúng MAC card mạng và kiểm tra <strong>FCS khớp 100% (0 lỗi bit)</strong> -> Tiếp nhận dữ liệu trọn vẹn!';
+
+                                        frameFlying.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                                        frameFlying.style.transform = `translate(${pB.x}px, ${pB.y}px) translate(-50%, -50%) scale(0.3)`;
+                                        frameFlying.style.opacity = '0';
+
+                                        setTimeout(resetEthernetUI, 1600);
+
+                                    }, 2000);
+
+                                }, 1200);
+
+                            }, 2000);
+
+                        }, 900);
+
+                    }, 900);
+
+                }, 900);
+
+            } else {
+                // ==========================================
+                // TRƯỜNG HỢP 2: GỬI LỖI & XỬ LÝ ĐỤNG ĐỘ (CSMA/CD)
+                // ==========================================
+                statusBadge.innerText = "Giai đoạn 1: Đóng gói Frame...";
+                statusBadge.className = "text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md font-mono";
+                desc.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i><strong>Giai đoạn 1:</strong> Máy A nạp dữ liệu nhưng đường truyền có tín hiệu khác cùng phát sinh đồng thời.';
+
+                fDst.classList.add('ring-2', 'ring-orange-400');
+                fSrc.classList.add('ring-2', 'ring-blue-400');
+                fData.classList.add('ring-2', 'ring-amber-400');
+                fFcs.classList.add('ring-2', 'ring-amber-400');
+                fill.style.width = '100%';
+
+                setTimeout(() => {
+                    // Giai đoạn 2: Frame rời Máy A và va chạm tín hiệu trên đường truyền
+                    statusBadge.innerText = "Giai đoạn 2: Đang truyền & Dò sóng";
+                    statusBadge.className = "text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md font-mono";
+                    desc.innerHTML = '<i class="fa-solid fa-wave-square text-amber-600 mr-2"></i><strong>Giai đoạn 2 (Carrier Sense):</strong> Frame bắt đầu vào đường cáp LAN. Đột ngột phát sinh điện áp xung đột trên kênh chung!';
+
+                    pcaBox.classList.add('ring-4', 'ring-amber-300');
+
+                    frameFlying.style.transition = 'none';
+                    frameFlying.style.transform = `translate(${pA.x}px, ${pA.y}px) translate(-50%, -50%) scale(0.6)`;
+                    frameFlying.style.opacity = '1';
+
+                    wireActive.setAttribute('x1', pA.x);
+                    wireActive.setAttribute('y1', pA.y);
+                    wireActive.setAttribute('x2', pSw.x);
+                    wireActive.setAttribute('y2', pSw.y);
+                    wireActive.setAttribute('stroke', '#f59e0b');
+                    wireActive.classList.add('dash-anim');
+
+                    void frameFlying.offsetWidth;
+
+                    // Di chuyển tới điểm giữa (vị trí đụng độ)
+                    const midCableX = (pA.x + pSw.x) / 2;
+                    const midCableY = (pA.y + pSw.y) / 2;
+
+                    frameFlying.style.transition = 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+                    frameFlying.style.transform = `translate(${midCableX}px, ${midCableY}px) translate(-50%, -50%) scale(1.05)`;
+
+                    setTimeout(() => {
+                        // GIAI ĐOẠN 3: XẢY RA ĐỤNG ĐỘ TÍN HIỆU (COLLISION)
+                        wireActive.setAttribute('stroke', '#ef4444');
+                        wireActive.classList.add('wire-active');
+
+                        badgeCollision.classList.add('opacity-100', 'scale-125');
+                        frameCard.className = "w-full max-w-2xl mx-auto bg-red-50 p-3.5 rounded-2xl shadow-md border-2 border-red-500 relative z-10 mb-3 transition-all duration-300";
+
+                        // Thay đổi Frame thành trạng thái lỗi
+                        flyingCard.className = "bg-red-50 border-2 border-red-500 rounded-xl shadow-xl p-1 flex items-center gap-1 text-[9px] font-bold whitespace-nowrap animate-shake";
+                        flyFcs.className = "bg-red-600 text-white px-1 py-0.5 rounded font-mono animate-pulse";
+                        flyFcs.innerText = "FCS: LỖI BIT!";
+                        flyingTag.className = "text-[9px] font-mono font-bold text-red-700 mt-0.5 bg-red-100 px-1.5 py-0.2 rounded border border-red-300 shadow-sm";
+                        flyingTag.innerText = "Corrupted Frame";
+
+                        fFcs.classList.remove('ring-purple-400');
+                        fFcs.classList.add('ring-2', 'ring-red-600', 'bg-red-100');
+                        fFcsVal.innerText = "❌ Sai lệch CRC";
+                        fFcsNote.classList.remove('hidden');
+                        fFcsNote.innerText = "FCS Mismatch";
+
+                        statusBadge.innerText = "💥 ĐỤNG ĐỘ (Collision Detection)";
+                        statusBadge.className = "text-[10px] font-bold text-red-800 bg-red-200 px-2 py-0.5 rounded-md font-mono animate-pulse";
+                        desc.innerHTML = '<span class="text-red-600 font-bold"><i class="fa-solid fa-burst mr-1.5"></i>Giai đoạn 3 (Phát hiện đụng độ):</span> Hai tín hiệu va chạm làm biến dạng dữ liệu! <strong>Mã kiểm tra FCS bị hỏng</strong> (Lỗi bit nghiêm trọng).';
+
+                        setTimeout(() => {
+                            // GIAI ĐOẠN 4: CSMA/CD PHÁT TÍN HIỆU GÂY NGHẼN (JAMMING SIGNAL)
+                            statusBadge.innerText = "Giai đoạn 4: CSMA/CD phát Jamming Signal";
+                            statusBadge.className = "text-[10px] font-bold text-orange-800 bg-orange-200 px-2 py-0.5 rounded-md font-mono";
+                            desc.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-orange-600 mr-2"></i><strong>Giai đoạn 4 (Jamming Signal):</strong> Máy A phát hiện đụng độ, lập tức gửi tín hiệu cảnh báo kẹt mạng để tất cả thiết bị hủy gói tin hỏng.';
+
+                            pcaBox.classList.add('ring-4', 'ring-red-500');
+                            frameFlying.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                            frameFlying.style.transform = `translate(${midCableX}px, ${midCableY}px) translate(-50%, -50%) scale(0.2)`;
+                            frameFlying.style.opacity = '0';
+
+                            setTimeout(() => {
+                                wireActive.classList.remove('wire-active', 'dash-anim');
+                                wireActive.setAttribute('stroke', 'transparent');
+
+                                // GIAI ĐOẠN 5: THUẬT TOÁN LÙI THỜI GIAN NGẪU NHIÊN (BACKOFF ALGORITHM)
+                                statusBadge.innerText = "Giai đoạn 5: Backoff & Chờ truyền lại";
+                                statusBadge.className = "text-[10px] font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded-md font-mono";
+                                desc.innerHTML = '<i class="fa-solid fa-clock-rotate-left text-blue-600 mr-2"></i><strong>Giai đoạn 5 (Backoff Algorithm):</strong> Máy A hủy bỏ Frame hỏng, kích hoạt thuật toán lùi ngẫu nhiên (chờ <em>Backoff time</em>) rồi sẽ tự động gửi lại sau!';
+
+                                pcbBadgeErr.classList.remove('hidden');
+
+                                setTimeout(resetEthernetUI, 2200);
+
+                            }, 1400);
+
+                        }, 1800);
+
+                    }, 1200);
+
+                }, 1000);
+            }
+
+            function resetEthernetUI() {
+                fDst.classList.remove('ring-2', 'ring-orange-400');
+                fSrc.classList.remove('ring-2', 'ring-blue-400');
+                fData.classList.remove('ring-2', 'ring-emerald-400', 'ring-amber-400');
+                fFcs.classList.remove('ring-2', 'ring-purple-400', 'ring-red-600', 'bg-red-100');
+                fill.style.width = '0%';
+
+                fFcsVal.innerText = "(Phát hiện lỗi)";
+                fFcsNote.classList.add('hidden');
+                fDstNote.classList.add('hidden');
+                fSrcNote.classList.add('hidden');
+
+                badgeMac.classList.remove('opacity-100', 'scale-110');
+                badgeLimit.classList.remove('opacity-100', 'scale-110');
+                badgeCollision.classList.remove('opacity-100', 'scale-110', 'scale-125');
+
+                pcaBox.classList.remove('ring-4', 'ring-blue-300', 'ring-amber-300', 'ring-red-500');
+                pcbBox.classList.remove('ring-4', 'ring-emerald-400', 'scale-105');
+                frameCard.className = "w-full max-w-2xl mx-auto bg-white p-3.5 rounded-2xl shadow-sm border-2 border-emerald-400 relative z-10 mb-3";
+
+                btnValid.classList.remove('opacity-50', 'pointer-events-none');
+                btnCollision.classList.remove('opacity-50', 'pointer-events-none');
+                isProtoSimRunning = false;
+            }
+        }
+
+        // --- Mô phỏng Web: Trình duyệt -> DNS -> Web Server -> Trình duyệt (Màu xanh dương) ---
+        function runSimWebEnhanced() {
+            if (isProtoSimRunning) return;
+            isProtoSimRunning = true;
+            
+            updateWebSimCoordinates();
+            
+            const btn = document.getElementById('btn-run-web');
+            const desc = document.getElementById('web-desc-enhanced');
+            const pkt = document.getElementById('web-packet-anim');
+            
+            const browserBox = document.getElementById('web-browser-box');
+            const dnsBox = document.getElementById('web-dns-box');
+            const serverBox = document.getElementById('web-server-box');
+            
+            const lineBtoD = document.getElementById('web-line-b-to-d');
+            const lineDtoS = document.getElementById('web-line-d-to-s');
+            const lineStoB = document.getElementById('web-line-s-to-b');
+            
+            btn.classList.add('opacity-50', 'pointer-events-none');
+            
+            const container = lineBtoD.closest('svg').parentElement;
+            const cRect = container.getBoundingClientRect();
+            
+            const getCenter = (nodeId) => {
+                const box = document.getElementById(nodeId).firstElementChild;
+                const rect = box.getBoundingClientRect();
+                return {
+                    x: rect.left + rect.width / 2 - cRect.left,
+                    y: rect.top + rect.height / 2 - cRect.top
+                };
+            };
+            
+            const bPos = getCenter('web-node-browser');
+            const dPos = getCenter('web-node-dns');
+            const sPos = getCenter('web-node-server');
+            
+            // BƯỚC 1: Trình duyệt -> Máy chủ DNS (theo mũi tên xanh 1)
+            desc.innerHTML = '<i class="fa-solid fa-magnifying-glass text-blue-600 mr-2"></i><strong>Bước 1 (Trình duyệt &rarr; Máy chủ DNS):</strong> Trình duyệt gửi truy vấn hỏi địa chỉ IP của tên miền <strong>moet.edu.vn</strong>.';
+            
+            pkt.className = "absolute w-auto px-3 py-1.5 bg-blue-50 border-2 border-blue-400 text-blue-800 rounded-lg flex justify-center items-center shadow-md transition-all opacity-0 z-30 font-bold text-[11px] whitespace-nowrap pointer-events-none";
+            pkt.innerHTML = '<i class="fa-solid fa-question-circle mr-1.5 text-blue-500"></i>Hỏi IP: moet.edu.vn?';
+            
+            pkt.style.transition = 'none';
+            pkt.style.transform = `translate(${bPos.x}px, ${bPos.y}px) translate(-50%, -50%) scale(0.6)`;
+            pkt.style.opacity = '1';
+            
+            browserBox.classList.add('ring-4', 'ring-blue-300');
+            lineBtoD.classList.add('dash-anim');
+            lineBtoD.setAttribute('stroke', '#1d4ed8');
+            
+            void pkt.offsetWidth;
+            
+            // Di chuyển từ Trình duyệt xuống Máy chủ DNS
+            pkt.style.transition = 'transform 1.4s ease-in-out';
+            pkt.style.transform = `translate(${dPos.x}px, ${dPos.y}px) translate(-50%, -50%) scale(1)`;
+            
+            setTimeout(() => {
+                browserBox.classList.remove('ring-4', 'ring-blue-300');
+                dnsBox.classList.add('ring-4', 'ring-amber-400', 'scale-110');
+                lineBtoD.classList.remove('dash-anim');
+                lineBtoD.setAttribute('stroke', '#2563eb');
+                
+                // BƯỚC 2: Máy chủ DNS -> Web Server (theo mũi tên xanh 2)
+                desc.innerHTML = '<i class="fa-solid fa-address-book text-amber-500 mr-2"></i><strong>Bước 2 (Máy chủ DNS &rarr; Web Server):</strong> DNS phân giải thành công IP (<strong>14.160.x.x</strong>) và chuyển tiếp yêu cầu tới <strong>Web Server</strong>.';
+                
+                pkt.className = "absolute w-auto px-3 py-1.5 bg-sky-50 border-2 border-sky-400 text-sky-800 rounded-lg flex justify-center items-center shadow-md transition-all opacity-100 z-30 font-bold text-[11px] whitespace-nowrap pointer-events-none";
+                pkt.innerHTML = '<i class="fa-solid fa-share-nodes mr-1.5 text-sky-600"></i>IP 14.160.x.x &rarr; Yêu cầu HTTP';
+                
+                setTimeout(() => {
+                    dnsBox.classList.remove('ring-4', 'ring-amber-400', 'scale-110');
+                    lineDtoS.classList.add('dash-anim');
+                    lineDtoS.setAttribute('stroke', '#1d4ed8');
+                    
+                    // Di chuyển từ Máy chủ DNS lên Web Server
+                    pkt.style.transition = 'transform 1.4s ease-in-out';
+                    pkt.style.transform = `translate(${sPos.x}px, ${sPos.y}px) translate(-50%, -50%) scale(1)`;
+                    
+                    setTimeout(() => {
+                        serverBox.classList.add('ring-4', 'ring-blue-400', 'scale-110');
+                        lineDtoS.classList.remove('dash-anim');
+                        lineDtoS.setAttribute('stroke', '#2563eb');
+                        
+                        // BƯỚC 3: Web Server -> Trình duyệt (theo mũi tên xanh 3, đường ngang trên)
+                        desc.innerHTML = '<i class="fa-solid fa-file-code text-blue-600 mr-2"></i><strong>Bước 3 (Web Server &rarr; Trình duyệt):</strong> Web Server xử lý và truyền trực tiếp mã HTML/nội dung trang web (<strong>HTTP 200 OK</strong>) về cho Trình duyệt.';
+                        
+                        pkt.className = "absolute w-auto px-3 py-1.5 bg-blue-100 border-2 border-blue-500 text-blue-900 rounded-lg flex justify-center items-center shadow-md transition-all opacity-100 z-30 font-bold text-[11px] whitespace-nowrap pointer-events-none";
+                        pkt.innerHTML = '<i class="fa-solid fa-check-double mr-1.5 text-blue-600"></i>HTTP 200 OK (HTML/Trang web)';
+                        
+                        setTimeout(() => {
+                            serverBox.classList.remove('ring-4', 'ring-blue-400', 'scale-110');
+                            lineStoB.classList.add('dash-anim');
+                            lineStoB.setAttribute('stroke', '#1d4ed8');
+                            
+                            // Di chuyển từ Web Server ngang qua Trình duyệt
+                            pkt.style.transition = 'transform 1.6s ease-in-out';
+                            pkt.style.transform = `translate(${bPos.x}px, ${bPos.y}px) translate(-50%, -50%) scale(0.85)`;
+                            
+                            setTimeout(() => {
+                                browserBox.classList.add('ring-4', 'ring-blue-400', 'scale-105');
+                                lineStoB.classList.remove('dash-anim');
+                                lineStoB.setAttribute('stroke', '#2563eb');
+                                
+                                pkt.style.opacity = '0';
+                                
+                                desc.innerHTML = '<i class="fa-solid fa-circle-check text-blue-600 mr-2"></i><strong>Hoàn tất:</strong> Trình duyệt đã nhận đầy đủ mã trang web và hiển thị nội dung theo đúng chu trình 3 bước của mũi tên xanh!';
+                                
+                                setTimeout(() => {
+                                    browserBox.classList.remove('ring-4', 'ring-blue-400', 'scale-105');
+                                    btn.classList.remove('opacity-50', 'pointer-events-none');
+                                    isProtoSimRunning = false;
+                                }, 1400);
+                                
+                            }, 1600);
+                            
+                        }, 800);
+                        
+                    }, 1400);
+                    
+                }, 800);
+                
+            }, 1400);
+        }
+
+        // --- HIỆU CHỈNH: Mô phỏng ICMP mới ---
+        function runSimICMPEnhanced() {
+            if (isProtoSimRunning) return;
+            isProtoSimRunning = true;
+            
+            updateICMPSimCoordinates();
+
+            const btn = document.getElementById('btn-run-icmp');
+            const pkt = document.getElementById('icmp-packet-anim');
+            const clientBox = document.getElementById('icmp-client-box');
+            const serverBox = document.getElementById('icmp-target-box');
+            const cloud = document.getElementById('icmp-cloud');
+            const lineIcmp = document.getElementById('icmp-line');
+            const termContent = document.getElementById('terminal-content-enhanced');
+            const desc = document.getElementById('icmp-desc-enhanced');
+            
+            btn.classList.add('opacity-50', 'pointer-events-none');
+            
+            const container = lineIcmp.closest('svg').parentElement;
+            const cRect = container.getBoundingClientRect();
+            
+            const getCenter = (nodeId) => {
+                const box = document.getElementById(nodeId).firstElementChild;
+                const rect = box.getBoundingClientRect();
+                return {
+                    x: rect.left + rect.width / 2 - cRect.left,
+                    y: rect.top + rect.height / 2 - cRect.top
+                };
+            };
+            
+            const cPos = getCenter('icmp-node-client');
+            const sPos = getCenter('icmp-node-server');
+            
+            // Reset Terminal
+            termContent.innerHTML = '<div class="text-slate-300">C:\\Users\\Student> <span id="typing-cmd-enhanced"></span></div>';
+            const cmdText = "ping 8.8.8.8";
+            let typeIdx = 0;
+            
+            const typeInterval = setInterval(() => {
+                const cmdEl = document.getElementById('typing-cmd-enhanced');
+                if (cmdEl) cmdEl.textContent += cmdText[typeIdx];
+                typeIdx++;
+                if (typeIdx === cmdText.length) {
+                    clearInterval(typeInterval);
+                    startPingSequence();
+                }
+            }, 50);
+
+            function startPingSequence() {
+                const header = document.createElement('div');
+                header.className = 'text-slate-300 mt-1';
+                header.textContent = 'Pinging 8.8.8.8 with 32 bytes of data:';
+                termContent.appendChild(header);
+
+                let pingCount = 0;
+                const maxPings = 3;
+
+                function singlePing() {
+                    if (pingCount >= maxPings) {
+                        const summary = document.createElement('div');
+                        summary.className = 'text-slate-300 mt-1';
+                        summary.innerHTML = '<br>Ping statistics for 8.8.8.8:<br>    Packets: Sent = 3, Received = 3, Lost = 0 (0% loss)';
+                        termContent.appendChild(summary);
+                        termContent.scrollTop = termContent.scrollHeight;
+                        
+                        desc.innerHTML = '<strong>Hoàn thành:</strong> Lệnh ping dùng ICMP gửi thành công 3 gói tin đi và về mà không bị rớt mạng.';
+                        btn.classList.remove('opacity-50', 'pointer-events-none');
+                        isProtoSimRunning = false;
+                        return;
+                    }
+
+                    desc.innerHTML = `<strong>Lượt ${pingCount + 1}:</strong> Máy bạn đang gửi gói tin <span class="text-purple-600 font-bold">Echo Request</span> đến IP đích 8.8.8.8 qua Internet.`;
+                    
+                    pkt.className = "absolute w-auto px-3 py-1.5 bg-purple-500 border border-purple-400 text-white rounded-full flex justify-center items-center shadow-lg transition-all opacity-0 z-30 font-bold text-[10px] whitespace-nowrap pointer-events-none";
+                    pkt.innerHTML = 'REQ <i class="fa-solid fa-arrow-right ml-1.5"></i>';
+                    
+                    pkt.style.transition = 'none';
+                    pkt.style.transform = `translate(${cPos.x}px, ${cPos.y}px) translate(-50%, -50%) scale(0.7)`;
+                    pkt.style.opacity = '1';
+                    
+                    clientBox.classList.add('ring-4', 'ring-purple-300');
+                    lineIcmp.classList.add('dash-anim');
+                    lineIcmp.setAttribute('stroke', '#a855f7');
+                    
+                    void pkt.offsetWidth;
+                    
+                    // Client -> Server
+                    pkt.style.transition = 'transform 1.0s ease-in-out';
+                    pkt.style.transform = `translate(${sPos.x}px, ${sPos.y}px) translate(-50%, -50%) scale(1)`;
+                    cloud.classList.add('scale-110', 'text-purple-200');
+                    
+                    setTimeout(() => {
+                        clientBox.classList.remove('ring-4', 'ring-purple-300');
+                        cloud.classList.remove('scale-110', 'text-purple-200');
+                        serverBox.classList.add('ring-4', 'ring-purple-400', 'scale-110');
+                        lineIcmp.classList.remove('dash-anim');
+                        
+                        desc.innerHTML = `<strong>Lượt ${pingCount + 1}:</strong> Máy chủ 8.8.8.8 nhận được và phản hồi lại bằng <span class="text-green-600 font-bold">Echo Reply</span>.`;
+                        pkt.className = "absolute w-auto px-3 py-1.5 bg-green-500 border border-green-400 text-white rounded-full flex justify-center items-center shadow-lg transition-all opacity-100 z-30 font-bold text-[10px] whitespace-nowrap pointer-events-none";
+                        pkt.innerHTML = '<i class="fa-solid fa-arrow-left mr-1.5"></i> REP';
+                        
+                        setTimeout(() => {
+                            serverBox.classList.remove('ring-4', 'ring-purple-400', 'scale-110');
+                            
+                            lineIcmp.classList.add('dash-anim');
+                            lineIcmp.setAttribute('stroke', '#22c55e');
+                            
+                            // Server -> Client
+                            pkt.style.transform = `translate(${cPos.x}px, ${cPos.y}px) translate(-50%, -50%) scale(0.7)`;
+                            cloud.classList.add('scale-110', 'text-green-200');
+                            
+                            setTimeout(() => {
+                                cloud.classList.remove('scale-110', 'text-green-200');
+                                lineIcmp.classList.remove('dash-anim');
+                                lineIcmp.setAttribute('stroke', '#cbd5e1');
+                                
+                                pkt.style.opacity = '0';
+                                
+                                const timeMs = Math.floor(Math.random() * 20) + 10;
+                                const replyLine = document.createElement('div');
+                                replyLine.textContent = `Reply from 8.8.8.8: bytes=32 time=${timeMs}ms TTL=117`;
+                                termContent.appendChild(replyLine);
+                                termContent.scrollTop = termContent.scrollHeight;
+                                
+                                pingCount++;
+                                setTimeout(singlePing, 600);
+                                
+                            }, 1000);
+                            
+                        }, 600);
+                        
+                    }, 1000);
+                }
+
+                setTimeout(singlePing, 500);
+            }
+        }
+
+        // --- Công cụ Chuyển đổi IP ---
+        function convertIP(source) {
+            const decInput = document.getElementById('ip-dec');
+            const binInput = document.getElementById('ip-bin');
+            const err = document.getElementById('ip-error');
+            err.classList.add('hidden');
+
+            try {
+                if (source === 'dec') {
+                    const val = decInput.value.trim();
+                    if (!val) { binInput.value = ''; return; }
+                    
+                    const parts = val.split('.');
+                    if (parts.length !== 4) throw new Error("Phải có 4 cụm số cách nhau bởi dấu chấm.");
+                    
+                    let binArr = [];
+                    for (let p of parts) {
+                        let num = parseInt(p, 10);
+                        if (isNaN(num) || num < 0 || num > 255) throw new Error("Giá trị mỗi cụm phải từ 0 đến 255.");
+                        binArr.push(num.toString(2).padStart(8, '0'));
+                    }
+                    binInput.value = binArr.join(' ');
+                } else {
+                    const val = binInput.value.trim().replace(/\s+/g, '');
+                    if (!val) { decInput.value = ''; return; }
+                    if (val.length !== 32 || !/^[01]+$/.test(val)) throw new Error("Đúng 32 bit nhị phân (0 và 1).");
+                    
+                    let decArr = [];
+                    for(let i=0; i<32; i+=8) {
+                        let byte = val.substring(i, i+8);
+                        decArr.push(parseInt(byte, 2));
+                    }
+                    decInput.value = decArr.join('.');
+                    if(!binInput.value.includes(' ')) {
+                         binInput.value = val.match(/.{1,8}/g).join(' ');
+                    }
+                }
+            } catch (e) {
+                err.textContent = e.message;
+                err.classList.remove('hidden');
+                if (source === 'dec') binInput.value = '';
+                else decInput.value = '';
+            }
+        }
+
+        // --- Chức năng Trắc nghiệm (Quiz) ---
+        const questions = [
+            {
+                q: "1. Câu trả lời chính xác về mặt công nghệ cho câu hỏi 'Internet là gì?' là:",
+                opts: ["Là web và chat", "Là một mạng xã hội", "Là mạng toàn cầu hoạt động theo giao thức TCP/IP", "Là phần mềm gửi thư"],
+                ans: 2
+            },
+            {
+                q: "2. Giao thức mạng (Network protocol) là gì?",
+                opts: ["Thiết bị kết nối các máy tính", "Tập hợp các quy định về cách thức giao tiếp để truyền dữ liệu", "Phần mềm chống virus trên mạng", "Tên gọi khác của địa chỉ IP"],
+                ans: 1
+            },
+            {
+                q: "3. Chức năng chính của Giao thức IP là gì?",
+                opts: ["Bảo mật dữ liệu", "Đánh địa chỉ và định tuyến để dẫn dữ liệu", "Gửi thư điện tử", "Phát hiện lỗi truyền"],
+                ans: 1
+            },
+            {
+                q: "4. Giao thức nào đảm bảo việc truyền dữ liệu đến từng ứng dụng một cách chính xác, tin cậy?",
+                opts: ["Giao thức IP", "Giao thức MAC", "Giao thức TCP", "Giao thức Ethernet"],
+                ans: 2
+            },
+            {
+                q: "5. Kích thước của địa chỉ IPv4 là bao nhiêu?",
+                opts: ["4 bit", "4 byte", "6 byte", "32 byte"],
+                ans: 1
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            let html = '';
+            questions.forEach((q, idx) => {
+                html += `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 quiz-q" data-idx="${idx}">
+                    <p class="font-bold text-sm text-slate-800 mb-2">${q.q}</p>
+                    <div class="space-y-2">
+                        ${q.opts.map((opt, oIdx) => `
+                            <label class="flex items-center gap-2 text-sm cursor-pointer p-2 rounded hover:bg-slate-100 transition">
+                                <input type="radio" name="q${idx}" value="${oIdx}" class="accent-blue-500 w-4 h-4">
+                                <span>${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function checkQuiz() {
+            let score = 0;
+            const qDivs = document.querySelectorAll('.quiz-q');
+            
+            qDivs.forEach((div) => {
+                const idx = div.getAttribute('data-idx');
+                const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                const correctAns = questions[idx].ans;
+                
+                div.classList.remove('bg-green-50', 'border-green-300', 'bg-red-50', 'border-red-300');
+                
+                if (selected) {
+                    if (parseInt(selected.value) === correctAns) {
+                        score++;
+                        div.classList.add('bg-green-50', 'border-green-300');
+                    } else {
+                        div.classList.add('bg-red-50', 'border-red-300');
+                    }
+                } else {
+                    div.classList.add('bg-red-50', 'border-red-300');
+                }
+            });
+
+            const scoreDisplay = document.getElementById('quiz-score');
+            scoreDisplay.innerHTML = `Điểm: <span class="${score===5?'text-green-500':'text-red-500'} text-lg">${score}/5</span>`;
+        }
+
+        renderQuiz();
+
+        // --- Sự kiện DOMContentLoaded ---
+        window.addEventListener('DOMContentLoaded', () => {
+            generateNewBatchIP(false);
+            startProtocolLoop();
+        });
+    </script>
+</body>
+</html>

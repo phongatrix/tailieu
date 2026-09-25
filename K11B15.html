@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 15: Bảo mật & An toàn CSDL</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            pink: '#fce7f3',
+                            green: '#dcfce7',
+                            yellow: '#fef9c3',
+                            purple: '#f3e8ff',
+                            orange: '#ffedd5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .study-card {
+            transition: all 0.3s ease;
+        }
+        .study-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .flip-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="text-slate-700 antialiased h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm py-4 px-6 md:px-12 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-pastel-purple flex items-center justify-center text-purple-600 text-xl shadow-sm">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800 leading-tight">BÀI 15</h1>
+                    <p class="text-sm font-semibold text-purple-500">Bảo mật & An toàn hệ CSDL</p>
+                </div>
+            </div>
+            <!-- Navigation Tabs -->
+            <nav class="hidden md:flex gap-2 bg-slate-100 p-1 rounded-xl">
+                <button onclick="openTab('tab-tongquan')" class="tab-btn active px-4 py-2 rounded-lg font-semibold text-sm transition-all bg-white text-purple-600 shadow-sm" data-target="tab-tongquan"><i class="fa-solid fa-map mr-2"></i>Tổng quan</button>
+                <button onclick="openTab('tab-baomat')" class="tab-btn px-4 py-2 rounded-lg font-semibold text-sm text-slate-500 hover:text-slate-700 transition-all" data-target="tab-baomat"><i class="fa-solid fa-shield-halved mr-2"></i>Bảo mật</button>
+                <button onclick="openTab('tab-antoan')" class="tab-btn px-4 py-2 rounded-lg font-semibold text-sm text-slate-500 hover:text-slate-700 transition-all" data-target="tab-antoan"><i class="fa-solid fa-life-ring mr-2"></i>An toàn</button>
+                <button onclick="openTab('tab-ontap')" class="tab-btn px-4 py-2 rounded-lg font-semibold text-sm text-slate-500 hover:text-slate-700 transition-all" data-target="tab-ontap"><i class="fa-solid fa-pen-clip mr-2"></i>Ôn tập</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Nav (Bottom) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-2 z-50">
+        <button onclick="openTab('tab-tongquan')" class="tab-btn active flex flex-col items-center p-2 text-purple-600" data-target="tab-tongquan"><i class="fa-solid fa-map text-lg mb-1"></i><span class="text-[10px] font-bold">Tổng quan</span></button>
+        <button onclick="openTab('tab-baomat')" class="tab-btn flex flex-col items-center p-2 text-slate-400" data-target="tab-baomat"><i class="fa-solid fa-shield-halved text-lg mb-1"></i><span class="text-[10px] font-bold">Bảo mật</span></button>
+        <button onclick="openTab('tab-antoan')" class="tab-btn flex flex-col items-center p-2 text-slate-400" data-target="tab-antoan"><i class="fa-solid fa-life-ring text-lg mb-1"></i><span class="text-[10px] font-bold">An toàn</span></button>
+        <button onclick="openTab('tab-ontap')" class="tab-btn flex flex-col items-center p-2 text-slate-400" data-target="tab-ontap"><i class="fa-solid fa-pen-clip text-lg mb-1"></i><span class="text-[10px] font-bold">Ôn tập</span></button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
+        <div class="max-w-6xl mx-auto">
+
+            <!-- TAB 1: TỔNG QUAN -->
+            <div id="tab-tongquan" class="tab-content active">
+                
+                <!-- Mục tiêu -->
+                <div class="bg-gradient-to-r from-pastel-purple to-pastel-blue rounded-3xl p-6 md:p-8 mb-8 shadow-sm flex flex-col md:flex-row items-center gap-6">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm text-purple-500 text-4xl">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-2">Mục tiêu bài học</h2>
+                        <p class="text-slate-700 font-medium">Hiểu được <span class="bg-yellow-200 px-1 rounded">tầm quan trọng</span> và <span class="bg-yellow-200 px-1 rounded">một số biện pháp</span> bảo vệ hệ CSDL.</p>
+                    </div>
+                </div>
+
+                <!-- Khái niệm cốt lõi (Infographic style) -->
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center"><i class="fa-solid fa-key text-yellow-500 mr-2"></i> Các khái niệm & Thuật ngữ quan trọng</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="study-card bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center text-center gap-2">
+                        <div class="w-12 h-12 bg-pastel-blue rounded-full flex items-center justify-center text-blue-500 text-xl"><i class="fa-solid fa-users-gear"></i></div>
+                        <h3 class="font-bold text-sm">Phân quyền</h3>
+                        <p class="text-xs text-slate-500">Lập danh sách & xác định quyền hạn truy cập CSDL.</p>
+                    </div>
+                    <div class="study-card bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center text-center gap-2">
+                        <div class="w-12 h-12 bg-pastel-green rounded-full flex items-center justify-center text-green-500 text-xl"><i class="fa-solid fa-file-signature"></i></div>
+                        <h3 class="font-bold text-sm">Log file</h3>
+                        <p class="text-xs text-slate-500">Biên bản lưu trữ truy xuất để kiểm tra, phân tích.</p>
+                    </div>
+                    <div class="study-card bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center text-center gap-2">
+                        <div class="w-12 h-12 bg-pastel-orange rounded-full flex items-center justify-center text-orange-500 text-xl"><i class="fa-solid fa-shield"></i></div>
+                        <h3 class="font-bold text-sm">Bảo mật</h3>
+                        <p class="text-xs text-slate-500">Chính sách bảo vệ chống xâm nhập trái phép.</p>
+                    </div>
+                    <div class="study-card bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center text-center gap-2">
+                        <div class="w-12 h-12 bg-pastel-pink rounded-full flex items-center justify-center text-pink-500 text-xl"><i class="fa-solid fa-floppy-disk"></i></div>
+                        <h3 class="font-bold text-sm">Sao lưu</h3>
+                        <p class="text-xs text-slate-500">Lưu dữ liệu dự phòng để phục hồi khi hỏng hóc.</p>
+                    </div>
+                </div>
+
+                <!-- Mối quan hệ (Mindmap) -->
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center"><i class="fa-solid fa-diagram-project text-blue-500 mr-2"></i> Mối quan hệ kiến thức</h2>
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col items-center">
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 w-full">
+                        <div class="bg-pastel-blue px-6 py-4 rounded-2xl text-center w-full md:w-1/3 shadow-sm relative">
+                            <i class="fa-solid fa-shield-halved text-2xl text-blue-500 mb-2"></i>
+                            <h3 class="font-bold text-blue-800">1. Bảo mật CSDL</h3>
+                            <p class="text-xs text-blue-600 mt-1">Chống truy cập, phá hoại trái phép</p>
+                        </div>
+                        
+                        <div class="text-2xl text-slate-300 md:-rotate-90 rotate-0"><i class="fa-solid fa-plus"></i></div>
+                        
+                        <div class="bg-pastel-green px-6 py-4 rounded-2xl text-center w-full md:w-1/3 shadow-sm relative">
+                            <i class="fa-solid fa-life-ring text-2xl text-green-500 mb-2"></i>
+                            <h3 class="font-bold text-green-800">2. An toàn dữ liệu</h3>
+                            <p class="text-xs text-green-600 mt-1">Chống sai lạc, mất mát do sự cố</p>
+                        </div>
+                        
+                        <div class="text-2xl text-slate-300 md:-rotate-90 rotate-0"><i class="fa-solid fa-arrow-down"></i></div>
+                        
+                        <div class="bg-gradient-to-r from-purple-100 to-pink-100 px-6 py-4 rounded-2xl text-center w-full md:w-1/3 shadow-sm border-2 border-purple-200">
+                            <i class="fa-solid fa-check-double text-2xl text-purple-500 mb-2"></i>
+                            <h3 class="font-bold text-purple-800">Chính sách bảo vệ CSDL</h3>
+                            <p class="text-xs text-purple-600 mt-1">Toàn diện, hiệu quả</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: BẢO MẬT -->
+            <div id="tab-baomat" class="tab-content">
+                
+                <!-- Sơ đồ chính sách -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-clipboard-list text-pink-500 mr-2"></i> 4 Yếu tố của Chính sách bảo mật</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div class="bg-white border-l-4 border-red-400 p-4 rounded-r-xl shadow-sm">
+                            <i class="fa-solid fa-brain text-red-400 mb-2"></i>
+                            <h4 class="font-bold text-sm">1. Ý thức & Trách nhiệm</h4>
+                            <p class="text-xs text-slate-500">Bảo vệ tài khoản, không tiết lộ thông tin truy cập.</p>
+                        </div>
+                        <div class="bg-white border-l-4 border-blue-400 p-4 rounded-r-xl shadow-sm">
+                            <i class="fa-solid fa-network-wired text-blue-400 mb-2"></i>
+                            <h4 class="font-bold text-sm">2. An ninh mạng</h4>
+                            <p class="text-xs text-slate-500">Bảo vệ phần cứng, phần mềm chống tấn công mạng.</p>
+                        </div>
+                        <div class="bg-white border-l-4 border-green-400 p-4 rounded-r-xl shadow-sm">
+                            <i class="fa-solid fa-user-lock text-green-400 mb-2"></i>
+                            <h4 class="font-bold text-sm">3. Phân quyền</h4>
+                            <p class="text-xs text-slate-500">Danh sách nhóm người dùng & tài khoản truy xuất.</p>
+                        </div>
+                        <div class="bg-white border-l-4 border-orange-400 p-4 rounded-r-xl shadow-sm">
+                            <i class="fa-solid fa-eye text-orange-400 mb-2"></i>
+                            <h4 class="font-bold text-sm">4. Giám sát (Log file)</h4>
+                            <p class="text-xs text-slate-500">Lập biên bản lưu trữ hoạt động để kiểm tra, phân tích.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Phân Quyền -->
+                <h2 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-gamepad text-purple-500 mr-2"></i> Tương tác: Phân quyền Website Âm nhạc</h2>
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                    <p class="text-sm text-slate-500 mb-4 text-center">Hãy click chọn một nhóm người dùng để xem quyền hạn của họ trong CSDL.</p>
+                    
+                    <!-- Roles -->
+                    <div class="flex flex-wrap justify-center gap-3 mb-8">
+                        <button onclick="simulateRole('guest')" id="btn-guest" class="role-btn px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">Nhóm 1: Guest</button>
+                        <button onclick="simulateRole('mod')" id="btn-mod" class="role-btn px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">Nhóm 2: Moderator</button>
+                        <button onclick="simulateRole('master')" id="btn-master" class="role-btn px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">Nhóm 3: Master_mod</button>
+                        <button onclick="simulateRole('admin')" id="btn-admin" class="role-btn px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">Nhóm 4: Admin</button>
+                    </div>
+
+                    <!-- Simulator Screen -->
+                    <div class="bg-slate-800 rounded-2xl p-6 text-white max-w-2xl mx-auto relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+                        <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-2">
+                            <span class="font-mono text-sm"><i class="fa-solid fa-server mr-2"></i>CSDL_MUSIC</span>
+                            <span id="sim-user-badge" class="px-2 py-1 bg-slate-700 rounded text-xs font-bold text-slate-300">Chưa đăng nhập</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 font-mono text-sm">
+                            <div id="perm-select" class="perm-card p-4 rounded-xl bg-slate-700/50 border border-slate-600 flex items-center opacity-30 transition-all">
+                                <i class="fa-solid fa-magnifying-glass text-blue-400 mr-3 text-xl"></i>
+                                <div><div class="font-bold text-blue-400">SELECT</div><div class="text-[10px] text-slate-400">Xem/Tìm kiếm nhạc</div></div>
+                            </div>
+                            <div id="perm-insert" class="perm-card p-4 rounded-xl bg-slate-700/50 border border-slate-600 flex items-center opacity-30 transition-all">
+                                <i class="fa-solid fa-plus text-green-400 mr-3 text-xl"></i>
+                                <div><div class="font-bold text-green-400">INSERT</div><div class="text-[10px] text-slate-400">Thêm bài hát mới</div></div>
+                            </div>
+                            <div id="perm-update" class="perm-card p-4 rounded-xl bg-slate-700/50 border border-slate-600 flex items-center opacity-30 transition-all">
+                                <i class="fa-solid fa-pen text-yellow-400 mr-3 text-xl"></i>
+                                <div><div class="font-bold text-yellow-400">UPDATE/DELETE</div><div class="text-[10px] text-slate-400">Sửa/Xóa dữ liệu</div></div>
+                            </div>
+                            <div id="perm-structure" class="perm-card p-4 rounded-xl bg-slate-700/50 border border-slate-600 flex items-center opacity-30 transition-all">
+                                <i class="fa-solid fa-wrench text-red-400 mr-3 text-xl"></i>
+                                <div><div class="font-bold text-red-400">FULL ADMIN</div><div class="text-[10px] text-slate-400">Đổi cấu trúc, xóa bảng</div></div>
+                            </div>
+                        </div>
+                        <div id="sim-desc" class="mt-6 text-center text-xs text-slate-400 italic min-h-[20px]">Chọn một nhóm ở trên để xem quyền.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: AN TOÀN -->
+            <div id="tab-antoan" class="tab-content">
+                
+                <div class="bg-pastel-yellow p-4 rounded-2xl mb-6 text-sm text-yellow-800 shadow-sm border border-yellow-200">
+                    <strong>Định nghĩa:</strong> Bảo đảm an toàn dữ liệu là việc đảm bảo để dữ liệu trong CSDL không bị sai lạc, mất mát khi hệ thống phần cứng, phần mềm gặp sự cố rủi ro.
+                </div>
+
+                <h2 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-bolt text-yellow-500 mr-2"></i> Khắc phục sự cố (Click vào thẻ để lật xem giải pháp)</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Cột 1: Nguồn điện -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-blue-600 mb-4 border-b pb-2 flex items-center"><i class="fa-solid fa-plug-circle-xmark mr-2"></i> a) Sự cố nguồn điện</h3>
+                        <div class="flex flex-col gap-3">
+                            
+                            <!-- Flip Card 1 -->
+                            <div class="flip-card h-24 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                                <div class="flip-card-inner relative w-full h-full rounded-xl shadow-sm">
+                                    <div class="flip-card-front absolute w-full h-full bg-pastel-blue text-slate-700 rounded-xl flex items-center p-4 border border-blue-100">
+                                        <i class="fa-solid fa-battery-quarter text-2xl mr-3 text-blue-500"></i>
+                                        <span class="font-semibold text-sm">Điện không đủ công suất</span>
+                                        <i class="fa-solid fa-hand-pointer ml-auto text-slate-400 animate-pulse"></i>
+                                    </div>
+                                    <div class="flip-card-back absolute w-full h-full bg-blue-500 text-white rounded-xl flex items-center p-4">
+                                        <i class="fa-solid fa-check-circle text-2xl mr-3 text-white"></i>
+                                        <span class="font-semibold text-sm">Giải pháp: Xây dựng hệ thống cấp điện đủ công suất.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Flip Card 2 -->
+                            <div class="flip-card h-24 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                                <div class="flip-card-inner relative w-full h-full rounded-xl shadow-sm">
+                                    <div class="flip-card-front absolute w-full h-full bg-pastel-blue text-slate-700 rounded-xl flex items-center p-4 border border-blue-100">
+                                        <i class="fa-solid fa-fire text-2xl mr-3 text-blue-500"></i>
+                                        <span class="font-semibold text-sm">Quá tải (sử dụng đột biến)</span>
+                                        <i class="fa-solid fa-hand-pointer ml-auto text-slate-400 animate-pulse"></i>
+                                    </div>
+                                    <div class="flip-card-back absolute w-full h-full bg-blue-500 text-white rounded-xl flex items-center p-4">
+                                        <i class="fa-solid fa-check-circle text-2xl mr-3 text-white"></i>
+                                        <span class="font-semibold text-sm">Giải pháp: Thường xuyên kiểm tra, đặc biệt giờ cao điểm.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Flip Card 3 -->
+                            <div class="flip-card h-24 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                                <div class="flip-card-inner relative w-full h-full rounded-xl shadow-sm">
+                                    <div class="flip-card-front absolute w-full h-full bg-pastel-blue text-slate-700 rounded-xl flex items-center p-4 border border-blue-100">
+                                        <i class="fa-solid fa-power-off text-2xl mr-3 text-red-500"></i>
+                                        <span class="font-semibold text-sm text-red-600">Ngừng điện đột ngột</span>
+                                        <i class="fa-solid fa-hand-pointer ml-auto text-slate-400 animate-pulse"></i>
+                                    </div>
+                                    <div class="flip-card-back absolute w-full h-full bg-red-500 text-white rounded-xl flex items-center p-4">
+                                        <i class="fa-solid fa-plug-circle-bolt text-2xl mr-3 text-white"></i>
+                                        <span class="font-semibold text-sm">Giải pháp: Dùng BỘ LƯU ĐIỆN (UPS) để cấp điện ngay tức thời.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Lưu trữ -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-purple-600 mb-4 border-b pb-2 flex items-center"><i class="fa-solid fa-hard-drive mr-2"></i> b) Sự cố thiết bị lưu trữ</h3>
+                        <div class="flex flex-col gap-3">
+                            
+                            <!-- Flip Card 4 -->
+                            <div class="flip-card h-24 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                                <div class="flip-card-inner relative w-full h-full rounded-xl shadow-sm">
+                                    <div class="flip-card-front absolute w-full h-full bg-pastel-purple text-slate-700 rounded-xl flex items-center p-4 border border-purple-100">
+                                        <i class="fa-solid fa-hourglass-end text-2xl mr-3 text-purple-500"></i>
+                                        <span class="font-semibold text-sm">Hư hỏng vì quá tuổi thọ</span>
+                                        <i class="fa-solid fa-hand-pointer ml-auto text-slate-400 animate-pulse"></i>
+                                    </div>
+                                    <div class="flip-card-back absolute w-full h-full bg-purple-500 text-white rounded-xl flex items-center p-4">
+                                        <i class="fa-solid fa-recycle text-2xl mr-3 text-white"></i>
+                                        <span class="font-semibold text-sm">Giải pháp: Quản lí thời gian sử dụng, THAY THẾ trước khi hỏng.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Flip Card 5 -->
+                            <div class="flip-card h-24 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                                <div class="flip-card-inner relative w-full h-full rounded-xl shadow-sm">
+                                    <div class="flip-card-front absolute w-full h-full bg-pastel-purple text-slate-700 rounded-xl flex items-center p-4 border border-purple-100">
+                                        <i class="fa-solid fa-bug text-2xl mr-3 text-purple-500"></i>
+                                        <span class="font-semibold text-sm">Hư hỏng vì lí do khác</span>
+                                        <i class="fa-solid fa-hand-pointer ml-auto text-slate-400 animate-pulse"></i>
+                                    </div>
+                                    <div class="flip-card-back absolute w-full h-full bg-purple-500 text-white rounded-xl flex flex-col justify-center p-4 leading-tight">
+                                        <span class="font-bold text-sm"><i class="fa-solid fa-copy mr-1"></i> Giải pháp: Sao lưu định kì.</span>
+                                        <span class="text-[10px] mt-1 opacity-90">(Dùng thiết bị bảo vệ hoặc lưu 2 phiên bản kiểm tra chéo).</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: ÔN TẬP -->
+            <div id="tab-ontap" class="tab-content">
+                
+                <!-- Dễ nhầm lẫn -->
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl mb-8 flex gap-4 items-start shadow-sm">
+                    <div class="text-red-500 text-2xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div>
+                        <h3 class="font-bold text-red-700 mb-1">Nội dung dễ nhầm lẫn!</h3>
+                        <p class="text-sm text-slate-700 mb-2">Phân biệt giữa <b>Bảo mật</b> và <b>An toàn</b>:</p>
+                        <ul class="text-xs text-slate-600 list-disc ml-4 space-y-1">
+                            <li><b class="text-blue-600">Bảo mật (Security):</b> Liên quan đến <span class="bg-blue-100 px-1">con người, tài khoản</span>. Chống ai đó cố tình truy cập, ăn cắp, sửa đổi trái phép (Dùng phân quyền, mật khẩu, log file).</li>
+                            <li><b class="text-green-600">An toàn (Safety):</b> Liên quan đến <span class="bg-green-100 px-1">rủi ro vật lý, phần cứng</span>. Chống mất dữ liệu do mất điện, hỏng ổ cứng (Dùng bộ lưu điện, sao lưu).</li>
+                            <li>Quyền của <b>Moderator</b> (chỉ được THÊM) khác với <b>Master_mod</b> (được THÊM, SỬA, XOÁ dữ liệu, nhưng KHÔNG được thay đổi cấu trúc/xoá bảng).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Accordion Q&A -->
+                <h2 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-comments text-blue-500 mr-2"></i> Câu hỏi tương tác (Click để xem đáp án)</h2>
+                <div class="space-y-3 mb-8">
+                    <!-- Q1 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <button onclick="toggleAccordion('acc1')" class="w-full text-left p-4 font-bold text-sm text-slate-700 hover:bg-slate-50 flex justify-between items-center">
+                            Tại sao người dùng nhóm 1 không cần đăng nhập website âm nhạc?
+                            <i id="icon-acc1" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                        </button>
+                        <div id="acc1" class="hidden p-4 pt-0 text-sm text-slate-600 border-t border-slate-100 bg-slate-50">
+                            Vì họ được cấp tài khoản khách (guest) mặc định. Tài khoản này chỉ có quyền SELECT (tìm kiếm, xem danh sách) đối với các bảng, không thể thay đổi dữ liệu, do đó có thể mở công khai cho tất cả mọi người dùng Internet mà không sợ bị phá hoại.
+                        </div>
+                    </div>
+                    <!-- Q2 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <button onclick="toggleAccordion('acc2')" class="w-full text-left p-4 font-bold text-sm text-slate-700 hover:bg-slate-50 flex justify-between items-center">
+                            Vì sao cần phải sao lưu dữ liệu định kì?
+                            <i id="icon-acc2" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                        </button>
+                        <div id="acc2" class="hidden p-4 pt-0 text-sm text-slate-600 border-t border-slate-100 bg-slate-50">
+                            Vì các thiết bị lưu trữ (như ổ cứng) có khả năng gặp sự cố hư hỏng đột ngột (do tuổi thọ hoặc lí do khác). Việc sao lưu định kì giúp các hệ quản trị CSDL có thể phục hồi dữ liệu từ bản sao lưu gần nhất, tránh tình trạng mất mát dữ liệu không thể lấy lại được.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz -->
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center justify-between">
+                    <span><i class="fa-solid fa-list-check text-purple-500 mr-2"></i> Trắc nghiệm ôn tập (5 câu)</span>
+                    <span id="quiz-score" class="text-sm font-bold bg-purple-100 text-purple-700 px-3 py-1 rounded-full hidden">Điểm: 0/5</span>
+                </h2>
+                
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <form id="quiz-form" onsubmit="submitQuiz(event)">
+                        
+                        <!-- Câu 1 -->
+                        <div class="mb-6">
+                            <p class="font-bold text-sm mb-2 text-slate-800">Câu 1: Việc lưu lại các truy xuất của người dùng dưới dạng biên bản (log file) nhằm mục đích gì?</p>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q1" value="A"> A. Để tăng tốc độ truy xuất dữ liệu.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q1" value="B"> B. Để cấp điện ngay cho hệ thống khi mất điện.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q1" value="C"> C. Để kiểm tra, phân tích các hoạt động diễn ra bên trong hệ thống.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q1" value="D"> D. Để thay thế thiết bị lưu trữ khi hư hỏng.</label>
+                            </div>
+                        </div>
+
+                        <!-- Câu 2 -->
+                        <div class="mb-6 border-t pt-4 border-slate-100">
+                            <p class="font-bold text-sm mb-2 text-slate-800">Câu 2: Trong ví dụ về website âm nhạc, nhóm người dùng nào có quyền thêm mới bản nhạc (INSERT) nhưng KHÔNG có quyền xoá, sửa (UPDATE, DELETE)?</p>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q2" value="A"> A. Nhóm 1 (Tài khoản Guest).</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q2" value="B"> B. Nhóm 2 (Tài khoản Moderator).</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q2" value="C"> C. Nhóm 3 (Tài khoản Master_mod).</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q2" value="D"> D. Nhóm 4 (Tài khoản Admin).</label>
+                            </div>
+                        </div>
+
+                        <!-- Câu 3 -->
+                        <div class="mb-6 border-t pt-4 border-slate-100">
+                            <p class="font-bold text-sm mb-2 text-slate-800">Câu 3: Giải pháp để khắc phục sự cố hệ thống cấp điện ngừng đột ngột là gì?</p>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q3" value="A"> A. Dùng bộ lưu điện để cấp điện ngay cho hệ thống máy tính.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q3" value="B"> B. Sao lưu dữ liệu định kì.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q3" value="C"> C. Lập danh sách các nhóm người dùng.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q3" value="D"> D. Xây dựng hệ thống cấp điện đủ công suất.</label>
+                            </div>
+                        </div>
+
+                        <!-- Câu 4 -->
+                        <div class="mb-6 border-t pt-4 border-slate-100">
+                            <p class="font-bold text-sm mb-2 text-slate-800">Câu 4: Theo tài liệu, công tác bảo mật CSDL cần được thực hiện với một chính sách bảo mật toàn diện <span class="text-red-500 underline">KHÔNG</span> bao gồm quy định nào sau đây?</p>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q4" value="A"> A. Quy định liên quan đến ý thức và trách nhiệm người dùng.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q4" value="B"> B. Quy định về chức năng sao lưu định kì và phục hồi dữ liệu từ bản sao.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q4" value="C"> C. Danh sách nhóm người dùng và tài khoản truy xuất.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q4" value="D"> D. Biện pháp giám sát trạng thái hoạt động của hệ thống (lưu biên bản).</label>
+                            </div>
+                        </div>
+
+                        <!-- Câu 5 -->
+                        <div class="mb-6 border-t pt-4 border-slate-100">
+                            <p class="font-bold text-sm mb-2 text-slate-800">Câu 5: Để hạn chế sự cố thiết bị lưu trữ bị hư hỏng vì quá tuổi thọ, giải pháp là gì?</p>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q5" value="A"> A. Tổ chức phân quyền truy cập CSDL chặt chẽ.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q5" value="B"> B. Thường xuyên kiểm tra hệ thống cấp điện.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q5" value="C"> C. Không cho phép ai thay đổi cấu trúc bảng.</label>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-50"><input type="radio" name="q5" value="D"> D. Quản lí thời gian sử dụng, thay thế trước khi thiết bị đến giai đoạn thường bị hư hỏng.</label>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center mt-6">
+                            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-8 rounded-xl shadow-md transition-all transform hover:scale-105">
+                                <i class="fa-solid fa-paper-plane mr-2"></i> Chấm điểm
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- Logic Chuyển Tab ---
+        function openTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active style from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if(btn.closest('nav').classList.contains('md:hidden')) {
+                    // Mobile nav styling
+                    btn.classList.remove('text-purple-600');
+                    btn.classList.add('text-slate-400');
+                } else {
+                    // Desktop nav styling
+                    btn.classList.remove('bg-white', 'text-purple-600', 'shadow-sm');
+                    btn.classList.add('text-slate-500');
+                }
+            });
+
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight active buttons
+            document.querySelectorAll(`.tab-btn[data-target="${tabId}"]`).forEach(btn => {
+                if(btn.closest('nav').classList.contains('md:hidden')) {
+                    btn.classList.remove('text-slate-400');
+                    btn.classList.add('text-purple-600');
+                } else {
+                    btn.classList.remove('text-slate-500');
+                    btn.classList.add('bg-white', 'text-purple-600', 'shadow-sm');
+                }
+            });
+        }
+
+        // --- Logic Tương tác Phân quyền ---
+        function simulateRole(role) {
+            // Reset styles
+            document.querySelectorAll('.role-btn').forEach(b => {
+                b.classList.remove('bg-purple-100', 'text-purple-700', 'border', 'border-purple-300');
+                b.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            document.querySelectorAll('.perm-card').forEach(card => {
+                card.classList.remove('opacity-100', 'bg-slate-700', 'border-opacity-100');
+                card.classList.add('opacity-30', 'bg-slate-700/50');
+            });
+
+            const sel = document.getElementById('perm-select');
+            const ins = document.getElementById('perm-insert');
+            const upd = document.getElementById('perm-update');
+            const str = document.getElementById('perm-structure');
+            const badge = document.getElementById('sim-user-badge');
+            const desc = document.getElementById('sim-desc');
+
+            const highlight = (el) => {
+                el.classList.remove('opacity-30', 'bg-slate-700/50');
+                el.classList.add('opacity-100', 'bg-slate-700', 'border-opacity-100');
+            };
+
+            if (role === 'guest') {
+                document.getElementById('btn-guest').classList.add('bg-purple-100', 'text-purple-700', 'border', 'border-purple-300');
+                document.getElementById('btn-guest').classList.remove('bg-slate-100');
+                badge.textContent = "Tài khoản: guest"; badge.className = "px-2 py-1 rounded text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30";
+                highlight(sel);
+                desc.innerHTML = "<b>Nhóm 1:</b> Không cần đăng nhập. Chỉ được quyền xem/tìm kiếm.";
+            } 
+            else if (role === 'mod') {
+                document.getElementById('btn-mod').classList.add('bg-purple-100', 'text-purple-700', 'border', 'border-purple-300');
+                document.getElementById('btn-mod').classList.remove('bg-slate-100');
+                badge.textContent = "Tài khoản: moderator"; badge.className = "px-2 py-1 rounded text-xs font-bold bg-green-500/20 text-green-300 border border-green-500/30";
+                highlight(sel); highlight(ins);
+                desc.innerHTML = "<b>Nhóm 2:</b> Được thêm dữ liệu (nhạc, ca sĩ mới). KHÔNG được xóa, sửa.";
+            }
+            else if (role === 'master') {
+                document.getElementById('btn-master').classList.add('bg-purple-100', 'text-purple-700', 'border', 'border-purple-300');
+                document.getElementById('btn-master').classList.remove('bg-slate-100');
+                badge.textContent = "Tài khoản: master_mod"; badge.className = "px-2 py-1 rounded text-xs font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30";
+                highlight(sel); highlight(ins); highlight(upd);
+                desc.innerHTML = "<b>Nhóm 3:</b> Được thêm, xóa, sửa bản ghi dữ liệu. KHÔNG được đổi cấu trúc bảng.";
+            }
+            else if (role === 'admin') {
+                document.getElementById('btn-admin').classList.add('bg-purple-100', 'text-purple-700', 'border', 'border-purple-300');
+                document.getElementById('btn-admin').classList.remove('bg-slate-100');
+                badge.textContent = "Tài khoản: admin"; badge.className = "px-2 py-1 rounded text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30";
+                highlight(sel); highlight(ins); highlight(upd); highlight(str);
+                desc.innerHTML = "<b>Nhóm 4:</b> Toàn quyền đối với tất cả các bảng trong CSDL.";
+            }
+        }
+
+        // --- Logic Accordion ---
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if(content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // --- Logic Quiz ---
+        function submitQuiz(e) {
+            e.preventDefault();
+            const answers = {
+                q1: 'C',
+                q2: 'B',
+                q3: 'A',
+                q4: 'B', // B thuộc về An toàn dữ liệu, không phải Chính sách bảo mật (phân quyền/log/ý thức)
+                q5: 'D'
+            };
+            
+            let score = 0;
+            const form = document.getElementById('quiz-form');
+            
+            // Reset styles
+            form.querySelectorAll('label').forEach(lbl => {
+                lbl.classList.remove('bg-green-100', 'bg-red-100', 'text-green-800', 'text-red-800');
+            });
+
+            for(let key in answers) {
+                const selected = form.querySelector(`input[name="${key}"]:checked`);
+                const correctVal = answers[key];
+                
+                // Highlight correct answer anyway
+                const correctLabel = form.querySelector(`input[name="${key}"][value="${correctVal}"]`).parentElement;
+                correctLabel.classList.add('bg-green-100', 'text-green-800', 'font-bold');
+
+                if(selected) {
+                    if(selected.value === correctVal) {
+                        score++;
+                    } else {
+                        // Highlight wrong selection
+                        selected.parentElement.classList.add('bg-red-100', 'text-red-800');
+                    }
+                }
+            }
+
+            const scoreDisplay = document.getElementById('quiz-score');
+            scoreDisplay.textContent = `Điểm: ${score}/5`;
+            scoreDisplay.classList.remove('hidden');
+            scoreDisplay.classList.add('animate-pulse');
+            setTimeout(() => scoreDisplay.classList.remove('animate-pulse'), 1000);
+            
+            if(score === 5) {
+                scoreDisplay.classList.replace('text-purple-700', 'text-green-700');
+                scoreDisplay.classList.replace('bg-purple-100', 'bg-green-100');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 13: Khái niệm, vai trò của CSS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#E3F2FD',
+                            purple: '#F3E5F5',
+                            pink: '#FCE4EC',
+                            green: '#E8F5E9',
+                            yellow: '#FFF9C4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #FAFAFA; font-family: 'Quicksand', sans-serif; }
+        
+        /* Custom Title Styling as requested */
+        .main-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700; /* Bold */
+            font-size: 28px; /* 28px size */
+            text-transform: capitalize; /* Title Case */
+            background: linear-gradient(to right, #3B82F6, #9333EA); /* Blue to Purple */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        /* Interactive Element Styling */
+        .interactive-highlight:hover { transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mindmap Styling */
+        .mindmap-node { position: relative; }
+        .mindmap-connector::after {
+            content: ''; position: absolute; width: 2px; height: 30px;
+            background-color: #CBD5E1; left: 50%; bottom: -30px; transform: translateX(-50%);
+        }
+
+        /* Code Editor Simulation */
+        .code-box { font-family: monospace; }
+        .hl-selector { color: #E83E8C; font-weight: bold;}
+        .hl-property { color: #007BFF; }
+        .hl-value { color: #28A745; }
+        .hl-punctuation { color: #6C757D; }
+        
+        .pulse-border { animation: pulseBorder 2s infinite; }
+        @keyframes pulseBorder {
+            0% { border-color: rgba(59, 130, 246, 0.5); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { border-color: rgba(59, 130, 246, 0); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { border-color: rgba(59, 130, 246, 0); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen pb-10">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-pastel-blue rounded-xl flex items-center justify-center text-blue-500 text-xl">
+                    <i class="fa-brands fa-css3-alt"></i>
+                </div>
+                <h1 class="main-title">Bài 13: Khái Niệm, Vai Trò Của CSS</h1>
+            </div>
+            <div class="hidden md:flex gap-4">
+                <span class="bg-pastel-pink text-pink-600 px-3 py-1 rounded-full text-sm font-semibold"><i class="fa-solid fa-bullseye mr-1"></i> Tin học 12</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-6xl mx-auto px-4 mt-6">
+        <div class="flex overflow-x-auto gap-2 bg-white p-2 rounded-2xl shadow-sm hide-scrollbar border border-gray-100">
+            <button onclick="openTab('tab-tongquan')" class="tab-btn active px-5 py-2.5 rounded-xl font-semibold transition-all bg-pastel-blue text-blue-700 whitespace-nowrap" id="btn-tongquan">
+                <i class="fa-solid fa-compass mr-2"></i>Tổng Quan & Lịch Sử
+            </button>
+            <button onclick="openTab('tab-cautruc')" class="tab-btn px-5 py-2.5 rounded-xl font-semibold transition-all text-gray-500 hover:bg-gray-50 whitespace-nowrap" id="btn-cautruc">
+                <i class="fa-solid fa-code mr-2"></i>Cấu Trúc CSS
+            </button>
+            <button onclick="openTab('tab-cachapdung')" class="tab-btn px-5 py-2.5 rounded-xl font-semibold transition-all text-gray-500 hover:bg-gray-50 whitespace-nowrap" id="btn-cachapdung">
+                <i class="fa-solid fa-crosshairs mr-2"></i>Cách Áp Dụng
+            </button>
+            <button onclick="openTab('tab-phuongthuc')" class="tab-btn px-5 py-2.5 rounded-xl font-semibold transition-all text-gray-500 hover:bg-gray-50 whitespace-nowrap" id="btn-phuongthuc">
+                <i class="fa-solid fa-link mr-2"></i>3 Cách Thiết Lập
+            </button>
+            <button onclick="openTab('tab-luyentap')" class="tab-btn px-5 py-2.5 rounded-xl font-semibold transition-all text-gray-500 hover:bg-gray-50 whitespace-nowrap" id="btn-luyentap">
+                <i class="fa-solid fa-gamepad mr-2"></i>Luyện Tập
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-4 mt-6">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tab-tongquan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Mục tiêu -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100 flex flex-col items-center text-center interactive-highlight transition-all">
+                    <div class="w-16 h-16 bg-pastel-pink text-pink-500 rounded-full flex items-center justify-center text-3xl mb-4">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Mục Tiêu Bài Học</h3>
+                    <p class="text-gray-600">Hiểu được vai trò và ý nghĩa của mẫu định dạng CSS (Cascading Style Sheets) trong việc trình bày trang web.</p>
+                </div>
+
+                <!-- Khái niệm -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-blue-100 flex flex-col items-center text-center interactive-highlight transition-all">
+                    <div class="w-16 h-16 bg-pastel-blue text-blue-500 rounded-full flex items-center justify-center text-3xl mb-4">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Khái Niệm CSS</h3>
+                    <ul class="text-gray-600 text-left list-disc pl-5">
+                        <li>Ngôn ngữ mô tả đặc biệt để định dạng trang web.</li>
+                        <li><b>Độc lập:</b> Tách biệt hoàn toàn với mã HTML.</li>
+                        <li><b>Nguyên lý:</b> "Định nghĩa một lần, sử dụng nhiều lần".</li>
+                    </ul>
+                </div>
+
+                <!-- Vai trò -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col items-center text-center interactive-highlight transition-all">
+                    <div class="w-16 h-16 bg-pastel-purple text-purple-500 rounded-full flex items-center justify-center text-3xl mb-4">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Vai Trò & Ý Nghĩa</h3>
+                    <ul class="text-gray-600 text-left list-disc pl-5">
+                        <li>Giải quyết hạn chế làm thủ công của HTML.</li>
+                        <li>Tách biệt <b>Nội dung (HTML)</b> và <b>Giao diện (CSS)</b>.</li>
+                        <li>Giúp web gọn gàng, tải nhanh, khoa học hơn.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Lịch sử (Infographic style) -->
+            <div class="mt-8 bg-white p-8 rounded-3xl shadow-sm border border-green-100">
+                <h3 class="text-2xl font-bold text-center mb-8"><i class="fa-solid fa-clock-rotate-left mr-2 text-green-500"></i>Lịch Sử Phát Triển CSS</h3>
+                <div class="relative max-w-4xl mx-auto">
+                    <!-- Line -->
+                    <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-green-100 rounded"></div>
+                    
+                    <!-- Timeline Item 1 -->
+                    <div class="relative flex justify-between items-center mb-8 w-full">
+                        <div class="w-5/12 text-right pr-6">
+                            <h4 class="font-bold text-lg">1994 - Khởi nguồn</h4>
+                            <p class="text-sm text-gray-600">Đề xuất bởi Håkon Wium Lie tại CERN (cùng Tim Berners-Lee).</p>
+                        </div>
+                        <div class="z-10 w-10 h-10 bg-green-400 text-white rounded-full flex items-center justify-center shadow">
+                            <i class="fa-regular fa-lightbulb"></i>
+                        </div>
+                        <div class="w-5/12 pl-6"></div>
+                    </div>
+
+                    <!-- Timeline Item 2 -->
+                    <div class="relative flex justify-between items-center mb-8 w-full">
+                        <div class="w-5/12 pr-6"></div>
+                        <div class="z-10 w-10 h-10 bg-blue-400 text-white rounded-full flex items-center justify-center shadow">
+                            <i class="fa-solid fa-1"></i>
+                        </div>
+                        <div class="w-5/12 pl-6">
+                            <h4 class="font-bold text-lg">1996 - CSS1</h4>
+                            <p class="text-sm text-gray-600">Phiên bản tiêu chuẩn đầu tiên chính thức ra đời.</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 3 -->
+                    <div class="relative flex justify-between items-center mb-8 w-full">
+                        <div class="w-5/12 text-right pr-6">
+                            <h4 class="font-bold text-lg">1998 -> 2011 - CSS2</h4>
+                            <p class="text-sm text-gray-600">Khởi động 1998, bản ổn định CSS2.1 công bố 2011.</p>
+                        </div>
+                        <div class="z-10 w-10 h-10 bg-purple-400 text-white rounded-full flex items-center justify-center shadow">
+                            <i class="fa-solid fa-2"></i>
+                        </div>
+                        <div class="w-5/12 pl-6"></div>
+                    </div>
+
+                    <!-- Timeline Item 4 -->
+                    <div class="relative flex justify-between items-center w-full">
+                        <div class="w-5/12 pr-6"></div>
+                        <div class="z-10 w-10 h-10 bg-pink-400 text-white rounded-full flex items-center justify-center shadow">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <div class="w-5/12 pl-6">
+                            <h4 class="font-bold text-lg">CSS3, 4, 5...</h4>
+                            <p class="text-sm text-gray-600">Phát triển theo từng gói chức năng. Quản lý bởi tổ chức W3C.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CẤU TRÚC CSS (INTERACTIVE) -->
+        <section id="tab-cautruc" class="tab-content">
+            <div class="bg-white rounded-3xl shadow-sm border border-blue-100 overflow-hidden flex flex-col md:flex-row">
+                <!-- Trình bày lí thuyết trực quan -->
+                <div class="md:w-1/2 p-8 bg-pastel-blue flex flex-col justify-center">
+                    <p class="mb-6 text-blue-900 text-lg text-center">Mỗi mẫu CSS gồm 2 phần chính. Trỏ chuột vào mã để xem chi tiết!</p>
+                    
+                    <div class="bg-white py-8 px-4 rounded-3xl shadow-sm text-3xl text-center code-box mb-8 font-bold flex justify-center items-center gap-3">
+                        <span class="text-pink-400 bg-pink-50 px-3 py-1 rounded-xl cursor-pointer transition-all hover:scale-110 hover:shadow-md" onmouseenter="showExplain('selector')" onmouseleave="hideExplain('selector')">h1</span> 
+                        <span class="text-gray-600">{</span>
+                        <div class="bg-blue-50 px-4 py-2 rounded-xl cursor-pointer transition-all hover:scale-105 hover:shadow-md flex items-center" onmouseenter="showExplain('declaration')" onmouseleave="hideExplain('declaration')">
+                            <span class="text-blue-500">color</span><span class="text-gray-600">:</span>&nbsp;
+                            <span class="text-green-500">red</span><span class="text-gray-600">;</span>
+                        </div>
+                        <span class="text-gray-600">}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 relative min-h-[160px]">
+                        <!-- Thông báo mặc định -->
+                        <div id="explain-default" class="absolute inset-0 flex items-center justify-center text-blue-400 font-medium transition-opacity duration-300">
+                            <i class="fa-solid fa-arrow-pointer mr-2 animate-bounce"></i> Hãy rê chuột vào đoạn mã phía trên
+                        </div>
+
+                        <!-- Selector Card -->
+                        <div id="explain-selector" class="opacity-0 translate-y-4 transition-all duration-300 bg-white p-5 rounded-2xl border-2 border-pink-100 shadow-sm z-10 pointer-events-none">
+                            <h4 class="font-bold text-pink-500 mb-2 text-lg leading-tight"><i class="fa-solid fa-hand-pointer mr-2"></i>1. Bộ chọn<br>(Selector)</h4>
+                            <p class="text-sm text-gray-600">Quy định thẻ HTML nào sẽ được áp dụng (VD: h1, p, h2).</p>
+                        </div>
+
+                        <!-- Declaration Card -->
+                        <div id="explain-declaration" class="opacity-0 translate-y-4 transition-all duration-300 bg-white p-5 rounded-2xl border-2 border-blue-100 shadow-sm z-10 pointer-events-none">
+                            <h4 class="font-bold text-blue-600 mb-2 text-lg leading-tight"><i class="fa-solid fa-box mr-2"></i>2. Vùng mô tả</h4>
+                            <p class="text-sm text-gray-600">Bao bởi dấu <b>{ }</b>. Chứa các quy định dạng <code class="bg-gray-50 px-1 rounded text-xs text-gray-700">thuộc tính: giá trị;</code></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 bg-yellow-50 p-3 rounded-xl text-sm border border-yellow-200 text-yellow-800">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> <b>Lưu ý dễ nhầm:</b> Đừng quên dấu chấm phẩy <b>;</b> cuối mỗi giá trị!
+                    </div>
+                </div>
+
+                <!-- Interactive Playground -->
+                <div class="md:w-1/2 p-8 flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fa-solid fa-gamepad mr-2"></i>Thực Hành Trực Quan</h3>
+                    <p class="text-sm text-gray-600 mb-4">Thay đổi các giá trị ở cột mã CSS bên dưới để xem sự thay đổi trực tiếp lên thẻ HTML bên cạnh.</p>
+                    
+                    <div class="bg-gray-800 text-gray-100 p-4 rounded-t-xl code-box text-sm">
+                        <!-- h1 simulation -->
+                        <span class="text-pink-400">h1</span> <span class="text-white">{</span><br>
+                        &nbsp;&nbsp;<span class="text-blue-300">border:</span> 
+                        <input type="number" id="sim-border-width" value="2" class="w-12 bg-gray-700 text-green-300 border border-gray-600 rounded px-1 outline-none text-right" onchange="updateSimulation()" onkeyup="updateSimulation()">
+                        <span class="text-green-300">px</span>
+                        <select id="sim-border-style" class="bg-gray-700 text-green-300 border border-gray-600 rounded px-1 outline-none" onchange="updateSimulation()">
+                            <option value="solid">solid</option>
+                            <option value="dashed">dashed</option>
+                            <option value="dotted">dotted</option>
+                        </select>
+                        <select id="sim-border-color" class="bg-gray-700 text-green-300 border border-gray-600 rounded px-1 outline-none" onchange="updateSimulation()">
+                            <option value="blue">blue</option>
+                            <option value="red">red</option>
+                            <option value="green">green</option>
+                        </select><span class="text-white">;</span><br>
+                        <span class="text-white">}</span><br>
+                        <br>
+                        
+                        <!-- p simulation -->
+                        <span class="text-pink-400">p</span> <span class="text-white">{</span><br>
+                        &nbsp;&nbsp;<span class="text-blue-300">color:</span> 
+                        <select id="sim-color" class="bg-gray-700 text-green-300 border border-gray-600 rounded px-1 outline-none" onchange="updateSimulation()">
+                            <option value="blue">blue</option>
+                            <option value="red">red</option>
+                            <option value="green">green</option>
+                            <option value="purple">purple</option>
+                        </select><span class="text-white">;</span><br>
+                        &nbsp;&nbsp;<span class="text-blue-300">text-indent:</span> 
+                        <input type="number" id="sim-indent" value="15" class="w-16 bg-gray-700 text-green-300 border border-gray-600 rounded px-1 outline-none text-right" onchange="updateSimulation()" onkeyup="updateSimulation()">
+                        <span class="text-green-300">px</span><span class="text-white">;</span><br>
+                        <span class="text-white">}</span>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-gray-300 p-6 rounded-b-xl bg-gray-50 flex flex-col gap-4 overflow-hidden">
+                        <h1 id="sim-h1-preview" class="text-xl font-bold transition-all duration-300 bg-white p-2 text-center" style="border: 2px solid blue;">Tiêu đề bài viết</h1>
+                        <p id="sim-preview" class="transition-all duration-300 bg-white p-4 rounded shadow-sm border border-gray-200" style="color: blue; text-indent: 15px;">
+                            Đây là thẻ &lt;p&gt; mô phỏng. CSS giúp định dạng nội dung trang web nhanh hơn, thuận tiện hơn nhờ khả năng "định nghĩa một lần, sử dụng nhiều lần".
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB MỚI: CÁCH ÁP DỤNG -->
+        <section id="tab-cachapdung" class="tab-content">
+            <!-- START OF NEW SECTION: CÁC LOẠI BỘ CHỌN (SELECTORS) -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-purple-100">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2"><i class="fa-solid fa-magnifying-glass mr-2 text-purple-500"></i>Các Loại Bộ Chọn (Selectors) Mở Rộng</h3>
+                <p class="text-gray-600 mb-8">Bên cạnh việc dùng tên thẻ (Element), CSS hỗ trợ nhiều cách chọn phần tử rất mạnh mẽ. Hãy nhấp vào từng loại bên dưới để xem cách chúng nhắm mục tiêu chính xác vào các thành phần HTML!</p>
+
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Selector list -->
+                    <div class="lg:w-1/2 space-y-4">
+                        <!-- Element -->
+                        <div id="btn-sel-element" class="selector-btn p-5 border-2 border-gray-100 rounded-2xl cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-all" onclick="applySelector('element')">
+                            <h4 class="font-bold text-blue-600 text-lg mb-2"><i class="fa-solid fa-code mr-2"></i>1. Bộ chọn Thẻ (Element Selector)</h4>
+                            <code class="text-sm bg-white border border-blue-100 px-3 py-1.5 rounded-lg text-pink-500 font-bold block mb-2 w-fit">p { ... }</code>
+                            <p class="text-sm text-gray-600">Nhắm mục tiêu đến <b>tất cả</b> các thẻ có cùng tên (VD: tất cả thẻ <code>&lt;p&gt;</code>).</p>
+                        </div>
+                        <!-- Class -->
+                        <div id="btn-sel-class" class="selector-btn p-5 border-2 border-gray-100 rounded-2xl cursor-pointer hover:border-pink-300 hover:bg-pink-50 transition-all" onclick="applySelector('class')">
+                            <h4 class="font-bold text-pink-600 text-lg mb-2"><i class="fa-solid fa-circle-dot mr-2"></i>2. Bộ chọn Lớp (Class Selector)</h4>
+                            <code class="text-sm bg-white border border-pink-100 px-3 py-1.5 rounded-lg text-pink-500 font-bold block mb-2 w-fit">.highlight { ... }</code>
+                            <p class="text-sm text-gray-600">Nhắm mục tiêu các thẻ có chứa thuộc tính <code>class="highlight"</code>. Ký hiệu bằng dấu chấm <b><code>.</code></b></p>
+                        </div>
+                        <!-- ID -->
+                        <div id="btn-sel-id" class="selector-btn p-5 border-2 border-gray-100 rounded-2xl cursor-pointer hover:border-green-300 hover:bg-green-50 transition-all" onclick="applySelector('id')">
+                            <h4 class="font-bold text-green-600 text-lg mb-2"><i class="fa-solid fa-hashtag mr-2"></i>3. Bộ chọn ID (ID Selector)</h4>
+                            <code class="text-sm bg-white border border-green-100 px-3 py-1.5 rounded-lg text-pink-500 font-bold block mb-2 w-fit">#main-title { ... }</code>
+                            <p class="text-sm text-gray-600">Nhắm mục tiêu <b>duy nhất</b> một thẻ có <code>id="main-title"</code>. Ký hiệu bằng dấu thăng <b><code>#</code></b></p>
+                        </div>
+                        <!-- Group -->
+                        <div id="btn-sel-group" class="selector-btn p-5 border-2 border-gray-100 rounded-2xl cursor-pointer hover:border-orange-300 hover:bg-orange-50 transition-all" onclick="applySelector('group')">
+                            <h4 class="font-bold text-orange-600 text-lg mb-2"><i class="fa-solid fa-layer-group mr-2"></i>4. Bộ chọn Nhóm (Group Selector)</h4>
+                            <code class="text-sm bg-white border border-orange-100 px-3 py-1.5 rounded-lg text-pink-500 font-bold block mb-2 w-fit">h1, h2 { ... }</code>
+                            <p class="text-sm text-gray-600">Áp dụng chung một định dạng cho nhiều bộ chọn khác nhau. Cách nhau bằng dấu phẩy <b><code>,</code></b></p>
+                        </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="lg:w-1/2 bg-[#1E1E1E] rounded-2xl overflow-hidden flex flex-col shadow-xl border border-gray-800">
+                        <div class="bg-[#2D2D2D] px-4 py-3 text-gray-300 text-sm flex justify-between items-center border-b border-gray-700">
+                            <span class="font-mono text-xs"><i class="fa-brands fa-html5 mr-2 text-orange-500 text-base"></i>index.html</span>
+                            <span class="bg-gray-700 text-white text-[10px] px-2 py-1 rounded uppercase tracking-wider">Live Preview</span>
+                        </div>
+                        
+                        <!-- Khu vực HTML Content (Nền trắng) -->
+                        <div class="p-8 flex flex-col gap-4 bg-white" id="selector-preview-container">
+                            <style id="dynamic-selector-style"></style>
+                            
+                            <!-- Mock HTML Content -->
+                            <div class="text-gray-400 font-mono text-xs mb-[-10px]">&lt;h1 id="main-title"&gt;</div>
+                            <h1 id="mock-main-title" class="text-3xl font-bold transition-all duration-500">Tiêu đề trang web</h1>
+                            <div class="text-gray-400 font-mono text-xs mt-[-10px] mb-2">&lt;/h1&gt;</div>
+
+                            <div class="text-gray-400 font-mono text-xs mb-[-10px]">&lt;p&gt;</div>
+                            <p class="mock-p transition-all duration-500">Đây là đoạn văn bản bình thường giới thiệu về nội dung bài học.</p>
+                            <div class="text-gray-400 font-mono text-xs mt-[-10px] mb-2">&lt;/p&gt;</div>
+
+                            <div class="text-gray-400 font-mono text-xs mb-[-10px]">&lt;h2&gt;</div>
+                            <h2 class="mock-h2 text-2xl font-bold transition-all duration-500">Phần 1: Khái niệm</h2>
+                            <div class="text-gray-400 font-mono text-xs mt-[-10px] mb-2">&lt;/h2&gt;</div>
+
+                            <div class="text-gray-400 font-mono text-xs mb-[-10px]">&lt;p class="highlight"&gt;</div>
+                            <p class="mock-p highlight-target transition-all duration-500">Đoạn văn này mang nội dung đặc biệt quan trọng nên đã được gắn class!</p>
+                            <div class="text-gray-400 font-mono text-xs mt-[-10px] mb-2">&lt;/p&gt;</div>
+                        </div>
+
+                        <!-- Khối hiển thị CSS Đã được dời ra ngoài và đặt xuống dưới -->
+                        <div class="bg-[#1E1E1E] p-6 border-t-2 border-gray-700 flex-1 flex flex-col justify-center" id="current-css-display-container">
+                            <div class="border-l-4 border-purple-500 pl-4">
+                                <div class="text-gray-400 text-xs mb-2 font-sans uppercase tracking-widest">CSS Đang Áp Dụng:</div>
+                                <pre class="text-green-400 text-sm font-mono whitespace-pre-wrap m-0" id="current-css-display">/* Nhấp vào một bộ chọn ở bên trái
+   để xem kết quả tại đây */</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END OF NEW SECTION -->
+        </section>
+
+        <!-- TAB 3: 3 CÁCH THIẾT LẬP -->
+        <section id="tab-phuongthuc" class="tab-content">
+            <h3 class="text-2xl font-bold mb-6 text-center"><i class="fa-solid fa-layer-group mr-2 text-purple-500"></i>3 Phương Thức Thiết Lập Định Dạng</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- External -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-blue-500 cursor-pointer hover:-translate-y-2 transition-all relative group" onclick="showMethodDetail('external')">
+                    <div class="absolute top-2 right-2 text-blue-200 group-hover:text-blue-500 transition"><i class="fa-solid fa-arrow-pointer"></i></div>
+                    <div class="text-4xl text-blue-500 mb-4 text-center"><i class="fa-regular fa-file-code"></i></div>
+                    <h4 class="font-bold text-center text-lg mb-2">CSS Ngoài (External)</h4>
+                    <p class="text-sm text-gray-600 text-center">Viết trong tệp .css riêng. Kết nối bằng thẻ <code>&lt;link&gt;</code>.</p>
+                    <div class="mt-4 text-xs bg-blue-50 text-blue-700 p-2 rounded text-center">Tối ưu nhất cho nhiều trang web</div>
+                </div>
+
+                <!-- Internal -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-pink-500 cursor-pointer hover:-translate-y-2 transition-all relative group pulse-border" onclick="showMethodDetail('internal')">
+                     <div class="absolute top-2 right-2 text-pink-200 group-hover:text-pink-500 transition"><i class="fa-solid fa-arrow-pointer"></i></div>
+                    <div class="text-4xl text-pink-500 mb-4 text-center"><i class="fa-solid fa-file-invoice"></i></div>
+                    <h4 class="font-bold text-center text-lg mb-2">CSS Trong (Internal)</h4>
+                    <p class="text-sm text-gray-600 text-center">Viết trong cặp thẻ <code>&lt;style&gt;</code> ở phần <code>&lt;head&gt;</code> của tệp HTML.</p>
+                     <div class="mt-4 text-xs bg-pink-50 text-pink-700 p-2 rounded text-center">Áp dụng cho 1 trang HTML hiện tại</div>
+                </div>
+
+                <!-- Inline -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-green-500 cursor-pointer hover:-translate-y-2 transition-all relative group" onclick="showMethodDetail('inline')">
+                     <div class="absolute top-2 right-2 text-green-200 group-hover:text-green-500 transition"><i class="fa-solid fa-arrow-pointer"></i></div>
+                    <div class="text-4xl text-green-500 mb-4 text-center"><i class="fa-solid fa-tags"></i></div>
+                    <h4 class="font-bold text-center text-lg mb-2">CSS Nội Tuyến (Inline)</h4>
+                    <p class="text-sm text-gray-600 text-center">Viết trực tiếp vào thẻ HTML thông qua thuộc tính <code>style="..."</code>.</p>
+                     <div class="mt-4 text-xs bg-green-50 text-green-700 p-2 rounded text-center">Tốn thời gian, nhưng tải ưu tiên nhất</div>
+                </div>
+            </div>
+
+            <!-- Detail Display Area -->
+            <div class="mt-6 bg-gray-900 rounded-2xl p-6 text-gray-300 font-mono text-sm overflow-x-auto relative min-h-[250px]">
+                <div class="absolute top-0 right-0 bg-gray-800 text-gray-400 px-3 py-1 rounded-bl-lg rounded-tr-xl text-xs"><i class="fa-solid fa-desktop mr-1"></i> Code View</div>
+                
+                <div id="code-default" class="text-center mt-16 text-gray-500">
+                    <i class="fa-solid fa-hand-point-up text-3xl mb-2 animate-bounce"></i><br>
+                    Nhấp vào một phương thức ở trên để xem cách triển khai mã nguồn
+                </div>
+
+                <div id="code-external" class="hidden">
+<span class="text-gray-500">&lt;!-- Trong tệp index.html --&gt;</span>
+<span class="text-blue-400">&lt;head&gt;</span>
+  <span class="text-pink-400">&lt;link</span> <span class="text-green-300">rel=</span><span class="text-yellow-300">"stylesheet"</span> <span class="text-green-300">href=</span><span class="text-yellow-300">"styles.css"</span><span class="text-pink-400">&gt;</span>
+<span class="text-blue-400">&lt;/head&gt;</span>
+
+<span class="text-gray-500 mt-4 block">/* Trong tệp styles.css riêng biệt */</span>
+<span class="text-pink-400">h1</span> {
+  <span class="text-blue-300">color</span>: <span class="text-yellow-300">red</span>;
+}
+                </div>
+
+                <div id="code-internal" class="hidden">
+<span class="text-gray-500">&lt;!-- Viết trực tiếp trong cặp thẻ head của HTML --&gt;</span>
+<span class="text-blue-400">&lt;head&gt;</span>
+  <span class="text-pink-400">&lt;style&gt;</span>
+    <span class="text-pink-400">h1</span> {
+      <span class="text-blue-300">color</span>: <span class="text-yellow-300">red</span>;
+    }
+    <span class="text-pink-400">p</span> {
+      <span class="text-blue-300">text-indent</span>: <span class="text-yellow-300">15px</span>;
+    }
+  <span class="text-pink-400">&lt;/style&gt;</span>
+<span class="text-blue-400">&lt;/head&gt;</span>
+                </div>
+
+                <div id="code-inline" class="hidden">
+<span class="text-gray-500">&lt;!-- Viết trực tiếp vào từng thẻ HTML (Tốn thời gian nếu làm nhiều) --&gt;</span>
+<span class="text-blue-400">&lt;body&gt;</span>
+  
+  <span class="text-pink-400">&lt;h1</span> <span class="text-green-300">style=</span><span class="text-yellow-300">"color: red;"</span><span class="text-pink-400">&gt;</span>Tiêu đề bài viết<span class="text-pink-400">&lt;/h1&gt;</span>
+  
+  <span class="text-pink-400">&lt;p</span> <span class="text-green-300">style=</span><span class="text-yellow-300">"text-indent: 15px;"</span><span class="text-pink-400">&gt;</span>Nội dung đoạn văn...<span class="text-pink-400">&lt;/p&gt;</span>
+
+<span class="text-blue-400">&lt;/body&gt;</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: LUYỆN TẬP -->
+        <section id="tab-luyentap" class="tab-content">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-pen-to-square mr-2 text-orange-500"></i>Trắc Nghiệm Ôn Tập (5 Câu)</h3>
+                    <div id="score-display" class="hidden bg-green-100 text-green-700 px-4 py-2 rounded-full font-bold">Điểm: <span id="score-val">0</span>/5</div>
+                </div>
+
+                <form id="quiz-form" class="space-y-6">
+                    <!-- Q1 -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <p class="font-bold mb-3">Câu 1: CSS là viết tắt của cụm từ nào?</p>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q1" value="A"> A. Computer Style Sheets</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q1" value="B"> B. Cascading Style Sheets</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q1" value="C"> C. Creative Style Sheets</label>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <p class="font-bold mb-3">Câu 2: Cấu trúc tổng quát của một mẫu định dạng CSS bao gồm những phần chính nào?</p>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q2" value="A"> A. Thẻ HTML và Nội dung</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q2" value="B"> B. Vùng mô tả và Thuộc tính</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q2" value="C"> C. Bộ chọn (selector) và Vùng mô tả (declaration block)</label>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <p class="font-bold mb-3">Câu 3: Các quy định định dạng bên trong vùng mô tả (nằm trong {}) được viết cách nhau bởi dấu gì?</p>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q3" value="A"> A. Dấu phẩy (,)</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q3" value="B"> B. Dấu chấm phẩy (;)</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q3" value="C"> C. Dấu hai chấm (:)</label>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <p class="font-bold mb-3">Câu 4: Cách thiết lập CSS nào giúp đồng bộ định dạng cho toàn bộ hệ thống gồm nhiều trang web khác nhau tốt nhất?</p>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q4" value="A"> A. CSS ngoài (external CSS)</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q4" value="B"> B. CSS trong (internal CSS)</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q4" value="C"> C. CSS nội tuyến (inline CSS)</label>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <p class="font-bold mb-3">Câu 5: Tổ chức nào chịu trách nhiệm xây dựng và phát triển các tiêu chuẩn chung cho HTML và CSS?</p>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q5" value="A"> A. CERN</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q5" value="B"> B. Hiệp hội W3C</label>
+                        <label class="block p-2 hover:bg-white rounded cursor-pointer"><input type="radio" name="q5" value="C"> C. Microsoft</label>
+                    </div>
+
+                    <button type="button" onclick="checkAnswers()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 px-8 rounded-xl shadow hover:shadow-lg transition-all w-full md:w-auto">
+                        <i class="fa-solid fa-check-double mr-2"></i>Chấm Điểm
+                    </button>
+                    
+                    <div id="quiz-feedback" class="mt-4 text-center font-bold hidden"></div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Tab Navigation Logic
+        function openTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Reset all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-pastel-blue', 'text-blue-700');
+                btn.classList.add('text-gray-500');
+            });
+
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight selected button
+            const btnId = tabId.replace('tab-', 'btn-');
+            const activeBtn = document.getElementById(btnId);
+            activeBtn.classList.remove('text-gray-500');
+            activeBtn.classList.add('active', 'bg-pastel-blue', 'text-blue-700');
+        }
+
+        // CSS Structure Simulation Logic
+        function updateSimulation() {
+            // p simulation
+            const colorVal = document.getElementById('sim-color').value;
+            const indentVal = document.getElementById('sim-indent').value;
+            const previewText = document.getElementById('sim-preview');
+            
+            previewText.style.color = colorVal;
+            previewText.style.textIndent = indentVal + 'px';
+
+            // h1 simulation
+            const bwVal = document.getElementById('sim-border-width').value;
+            const bsVal = document.getElementById('sim-border-style').value;
+            const bcVal = document.getElementById('sim-border-color').value;
+            const h1Preview = document.getElementById('sim-h1-preview');
+
+            h1Preview.style.border = `${bwVal}px ${bsVal} ${bcVal}`;
+        }
+
+        // Method Detail Switcher Logic
+        function showMethodDetail(method) {
+            // Hide all code blocks
+            document.getElementById('code-default').classList.add('hidden');
+            document.getElementById('code-external').classList.add('hidden');
+            document.getElementById('code-internal').classList.add('hidden');
+            document.getElementById('code-inline').classList.add('hidden');
+
+            // Show target
+            document.getElementById('code-' + method).classList.remove('hidden');
+            
+            // Remove pulse from initial suggestion
+            document.querySelector('.pulse-border')?.classList.remove('pulse-border');
+        }
+
+        // Explanation Hover Logic
+        function showExplain(type) {
+            document.getElementById('explain-default').style.opacity = '0';
+            const el = document.getElementById('explain-' + type);
+            el.classList.remove('opacity-0', 'translate-y-4');
+            el.classList.add('opacity-100', 'translate-y-0');
+        }
+
+        function hideExplain(type) {
+            document.getElementById('explain-default').style.opacity = '1';
+            const el = document.getElementById('explain-' + type);
+            el.classList.remove('opacity-100', 'translate-y-0');
+            el.classList.add('opacity-0', 'translate-y-4');
+        }
+
+        // Advanced Selectors Logic
+        function applySelector(type) {
+            const styleTag = document.getElementById('dynamic-selector-style');
+            const codeDisplay = document.getElementById('current-css-display');
+            
+            let css = '';
+            let displayTxt = '';
+
+            // We apply styles to specific targets inside the mock container 
+            if (type === 'element') {
+                css = '#selector-preview-container .mock-p { background-color: #DBEAFE; color: #1E3A8A; padding: 8px; border-radius: 6px; border-left: 4px solid #3B82F6; }';
+                displayTxt = 'p {\n  background-color: #DBEAFE;\n  color: #1E3A8A;\n}';
+            } else if (type === 'class') {
+                css = '#selector-preview-container .highlight-target { background-color: #FEF08A; font-weight: bold; padding: 8px; border-radius: 6px; border: 2px dashed #CA8A04; }';
+                displayTxt = '.highlight {\n  background-color: #FEF08A;\n  font-weight: bold;\n}';
+            } else if (type === 'id') {
+                css = '#selector-preview-container #mock-main-title { color: #EF4444; text-transform: uppercase; letter-spacing: 2px; }';
+                displayTxt = '#main-title {\n  color: #EF4444;\n  text-transform: uppercase;\n}';
+            } else if (type === 'group') {
+                css = '#selector-preview-container #mock-main-title, #selector-preview-container .mock-h2 { text-decoration: underline; text-decoration-color: #8B5CF6; text-decoration-thickness: 4px; color: #6D28D9; }';
+                displayTxt = 'h1, h2 {\n  text-decoration: underline;\n  color: #6D28D9;\n}';
+            }
+
+            styleTag.innerHTML = css;
+            codeDisplay.innerText = displayTxt;
+
+            // Highlight selected button visually
+            document.querySelectorAll('.selector-btn').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-purple-200', 'bg-purple-50');
+            });
+            document.getElementById('btn-sel-' + type).classList.add('ring-4', 'ring-purple-200', 'bg-purple-50');
+        }
+
+        // Quiz Logic
+        const answers = { q1: 'B', q2: 'C', q3: 'B', q4: 'A', q5: 'B' };
+        
+        function checkAnswers() {
+            let score = 0;
+            const form = document.getElementById('quiz-form');
+            const data = new FormData(form);
+            
+            for (let [key, value] of Object.entries(answers)) {
+                const userAns = data.get(key);
+                // Reset styling
+                const labels = form.querySelectorAll(`input[name="${key}"]`);
+                labels.forEach(input => {
+                    input.parentElement.classList.remove('bg-green-100', 'bg-red-100');
+                    if (input.value === value) {
+                        input.parentElement.classList.add('bg-green-100'); // Highlight correct ans
+                    } else if (input.checked && input.value !== value) {
+                        input.parentElement.classList.add('bg-red-100'); // Highlight wrong ans chosen
+                    }
+                });
+
+                if (userAns === value) score++;
+            }
+
+            // Display Score
+            document.getElementById('score-display').classList.remove('hidden');
+            document.getElementById('score-val').innerText = score;
+            
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+            if(score === 5) {
+                feedback.innerHTML = '🎉 Tuyệt vời! Bạn đã nắm vững toàn bộ kiến thức!';
+                feedback.className = "mt-4 text-center font-bold block text-green-600";
+            } else {
+                feedback.innerHTML = '✨ Rất tốt! Hãy xem lại các câu sai được đánh dấu màu đỏ nhé.';
+                feedback.className = "mt-4 text-center font-bold block text-orange-600";
+            }
+        }
+    </script>
+</body>
+</html>

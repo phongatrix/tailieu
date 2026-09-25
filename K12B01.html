@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 1: Làm Quen Với AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            /* Giữ font Nunito làm mặc định nhưng tinh chỉnh trọng lượng cho giống hình hơn */
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        /* CẬP NHẬT KIỂU CHỮ NỘI DUNG/GIẢI THÍCH (Dựa trên hình ảnh) */
+        /* Hình ảnh cho thấy font chữ tròn, có thể là Quicksand hoặc Nunito 500, size khoảng 18px-20px */
+        .content-text, p:not(.exclude-style), ul:not(.exclude-style) li, .tab-content p, .tab-content li, .sort-item p {
+            font-family: 'Quicksand', sans-serif; /* Quicksand giống với font trong hình hơn Nunito */
+            font-size: 1.15rem; /* ~18.4px - Tăng kích thước chữ */
+            font-weight: 500; /* Medium weight - đậm hơn bình thường một chút */
+            line-height: 1.6;
+            color: #475569; /* slate-600 - Màu xám tối vừa phải */
+        }
+        
+        /* Ghi đè lại các kích thước nhỏ trong nội dung nếu có để đồng nhất theo yêu cầu */
+        .text-sm {
+            font-size: 1.05rem !important; /* Tăng kích thước text-sm trong nội dung */
+        }
+        .text-xs {
+             font-size: 0.95rem !important; /* Tăng kích thước text-xs trong nội dung */
+        }
+
+        /* Giữ nguyên kiểu cho các phần ngoại lệ (Menu, Title, Tags, UI controls) */
+        nav, .title-gradient, h1, h2, h3, h4, h5, .nav-btn, .font-bold, button, span:not(.content-text), .text-\[10px\], .text-\[11px\], .text-\[13px\], .text-\[14px\], .text-\[15px\] {
+            /* Không áp dụng style .content-text cho các phần tử này */
+        }
+        
+        /* Phục hồi kích thước chữ cho các class text cố định mà tailwind sử dụng để căn chỉnh mô phỏng */
+        .text-\[10px\] { font-size: 10px !important; }
+        .text-\[11px\] { font-size: 11px !important; }
+        .text-\[13px\] { font-size: 13px !important; }
+        .text-\[14px\] { font-size: 14px !important; }
+        .text-\[15px\] { font-size: 15px !important; }
+
+        /* Định dạng tiêu đề theo yêu cầu chính xác */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 28px;
+            font-weight: 700; /* Bold */
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Blue to Purple */
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize; /* Title Case */
+            display: inline-block;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Float animation cho icons lớn */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Pulse glow cho các điểm nhấn */
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.5)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 15px rgba(250, 204, 21, 0.8)); transform: scale(1.05); }
+        }
+        .glow-icon {
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 1; }
+            100% { top: 100%; opacity: 1; }
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.4); }
+            50% { transform: scaleY(1.6); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Flip Card Styles */
+        .perspective { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        /* Button hover effects */
+        .btn-hover-effect {
+            transition: all 0.2s ease;
+        }
+        .btn-hover-effect:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+
+    <!-- Sidebar Navigation -->
+    <nav class="w-full md:w-64 bg-white shadow-lg z-10 flex flex-col justify-between exclude-style">
+        <div class="p-6">
+            <div class="mb-8 text-center">
+                <i class="fa-solid fa-robot text-5xl text-purple-400 mb-3 drop-shadow-md"></i>
+                <h1 class="title-gradient">Bài 1: Làm Quen Với AI</h1>
+            </div>
+            <ul class="space-y-3 exclude-style">
+                <li class="exclude-style"><button onclick="switchTab('tong-quan')" id="btn-tong-quan" class="nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold bg-blue-100 text-blue-700 transition-all shadow-sm"><i class="fa-solid fa-map-location-dot w-6"></i> Tổng Quan</button></li>
+                <li class="exclude-style"><button onclick="switchTab('dac-trung')" id="btn-dac-trung" class="nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-purple-50 transition-all"><i class="fa-solid fa-brain w-6"></i> Đặc Trưng & Phân Loại</button></li>
+                <li class="exclude-style"><button onclick="switchTab('ung-dung')" id="btn-ung-dung" class="nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-pink-50 transition-all"><i class="fa-solid fa-satellite-dish w-6"></i> Ứng Dụng Thực Tế</button></li>
+                <li class="exclude-style"><button onclick="switchTab('tuong-tac')" id="btn-tuong-tac" class="nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-green-50 transition-all"><i class="fa-solid fa-gamepad w-6"></i> Tương Tác & Luyện Tập</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] relative">
+        
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tong-quan" class="tab-content active max-w-5xl mx-auto">
+            <h2 class="title-gradient mb-8"><i class="fa-solid fa-flag-checkered text-blue-400"></i> Mục tiêu & Kiến thức cốt lõi</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Mục tiêu -->
+                <div class="glass-card p-6 rounded-3xl bg-gradient-to-br from-blue-50 to-white">
+                    <h3 class="font-bold text-xl text-blue-600 mb-4 exclude-style"><i class="fa-solid fa-bullseye"></i> Mục Tiêu Bài Học</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mt-1.5 mr-3 exclude-style"></i><span>Giải thích được <b class="exclude-style font-bold">sơ lược khái niệm</b> Trí tuệ nhân tạo (AI).</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mt-1.5 mr-3 exclude-style"></i><span>Nêu được <b class="exclude-style font-bold">ví dụ minh hoạ</b> cho một số ứng dụng điển hình của AI.</span></li>
+                    </ul>
+                </div>
+
+                <!-- Khái niệm -->
+                <div class="glass-card p-6 rounded-3xl bg-gradient-to-br from-purple-50 to-white">
+                    <h3 class="font-bold text-xl text-purple-600 mb-4 exclude-style"><i class="fa-solid fa-key"></i> Từ Khóa Quan Trọng</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Giữ style cũ cho tags -->
+                        <span class="px-4 py-2 bg-white text-purple-600 rounded-full shadow-sm font-semibold text-sm exclude-style">Trí tuệ nhân tạo (AI)</span>
+                        <span class="px-4 py-2 bg-white text-blue-600 rounded-full shadow-sm font-semibold text-sm exclude-style">Phép thử Turing (1950)</span>
+                        <span class="px-4 py-2 bg-white text-pink-600 rounded-full shadow-sm font-semibold text-sm exclude-style">AI hẹp / AI tổng quát</span>
+                        <span class="px-4 py-2 bg-white text-green-600 rounded-full shadow-sm font-semibold text-sm exclude-style">Hệ chuyên gia</span>
+                        <span class="px-4 py-2 bg-white text-yellow-600 rounded-full shadow-sm font-semibold text-sm exclude-style">Học máy (Machine Learning)</span>
+                        <span class="px-4 py-2 bg-white text-red-500 rounded-full shadow-sm font-semibold text-sm exclude-style">Tự động hoá</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dòng thời gian lịch sử AI (Infographic) -->
+            <h3 class="font-bold text-xl text-gray-700 mb-6 exclude-style"><i class="fa-solid fa-clock-rotate-left"></i> Dấu Ấn Lịch Sử AI</h3>
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-center relative">
+                <div class="hidden md:block absolute h-1 bg-blue-200 w-3/4 top-1/2 -z-10 rounded"></div>
+                
+                <!-- History Item 1 -->
+                <div class="group cursor-pointer perspective w-full md:w-1/3" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                    <div class="relative preserve-3d h-48 w-full rounded-2xl shadow-md border-t-4 border-blue-400 group-hover:-translate-y-1 transition-transform">
+                        <div class="absolute backface-hidden w-full h-full bg-white rounded-2xl flex flex-col items-center justify-center p-5 text-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-500 font-bold exclude-style">Xa xưa</div>
+                            <span class="text-[10px] text-gray-400 border px-2 py-1 rounded-full animate-pulse exclude-style">Click để xem</span>
+                        </div>
+                        <div class="absolute backface-hidden rotate-y-180 w-full h-full bg-blue-50 rounded-2xl flex flex-col items-center justify-center p-5 text-center border border-blue-200">
+                            <p class="text-blue-800 content-text">Những hình dung huyền bí, thần thoại về "thông minh nhân tạo" đã có từ rất lâu.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Item 2 -->
+                <div class="group cursor-pointer perspective w-full md:w-1/3" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                    <div class="relative preserve-3d h-48 w-full rounded-2xl shadow-md border-t-4 border-purple-400 group-hover:-translate-y-1 transition-transform">
+                        <div class="absolute backface-hidden w-full h-full bg-white rounded-2xl flex flex-col items-center justify-center p-5 text-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 text-purple-500 font-bold exclude-style">1950</div>
+                            <h4 class="font-bold text-purple-700 mb-2 exclude-style">Alan Turing</h4>
+                            <span class="text-[10px] text-gray-400 border px-2 py-1 rounded-full animate-pulse exclude-style">Click để xem</span>
+                        </div>
+                        <div class="absolute backface-hidden rotate-y-180 w-full h-full bg-purple-50 rounded-2xl flex flex-col items-center justify-center p-5 text-center border border-purple-200">
+                            <p class="text-purple-800 content-text">Đưa ra <b class="exclude-style font-bold">"Phép thử Turing"</b> để đánh giá trí thông minh của máy móc qua trò chuyện.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Item 3 -->
+                <div class="group cursor-pointer perspective w-full md:w-1/3" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                    <div class="relative preserve-3d h-48 w-full rounded-2xl shadow-md border-t-4 border-pink-400 group-hover:-translate-y-1 transition-transform">
+                        <div class="absolute backface-hidden w-full h-full bg-white rounded-2xl flex flex-col items-center justify-center p-5 text-center">
+                            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3 text-pink-500 font-bold exclude-style">1956</div>
+                            <h4 class="font-bold text-pink-700 mb-2 exclude-style">ĐH Dartmouth</h4>
+                            <span class="text-[10px] text-gray-400 border px-2 py-1 rounded-full animate-pulse exclude-style">Click để xem</span>
+                        </div>
+                        <div class="absolute backface-hidden rotate-y-180 w-full h-full bg-pink-50 rounded-2xl flex flex-col items-center justify-center p-5 text-center border border-pink-200">
+                            <p class="text-pink-800 content-text">Hội thảo công nhận thuật ngữ <b class="exclude-style font-bold">AI</b>, đánh dấu sự khởi đầu của lĩnh vực khoa học này.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Core Concept -->
+            <div class="mt-8 bg-yellow-50 p-6 rounded-3xl border border-yellow-200 text-center relative overflow-hidden shadow-sm transition hover:shadow-md">
+                <i class="fa-solid fa-lightbulb absolute text-yellow-100 text-8xl -top-4 -right-4 glow-icon"></i>
+                <h3 class="font-bold text-xl text-yellow-700 mb-2 relative z-10 exclude-style">Định Nghĩa Phổ Biến</h3>
+                <p class="relative z-10 text-gray-700 content-text" style="font-size: 1.25rem;">
+                    "AI là khả năng của máy tính có thể làm những công việc <b class="exclude-style font-bold">mang tính trí tuệ của con người</b> như đọc chữ, hiểu tiếng nói, dịch thuật, lái xe hay khả năng học và ra quyết định."
+                </p>
+            </div>
+        </section>
+
+        <!-- TAB 2: ĐẶC TRƯNG & PHÂN LOẠI -->
+        <section id="dac-trung" class="tab-content max-w-5xl mx-auto">
+            <h2 class="title-gradient mb-8"><i class="fa-solid fa-network-wired text-purple-400"></i> Bản Chất Của AI</h2>
+            
+            <!-- Sơ đồ 5 đặc trưng -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm mb-10">
+                <h3 class="text-center font-bold text-2xl text-gray-700 mb-8 exclude-style">5 Đặc Trưng Cơ Bản Của AI</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 text-center">
+                    
+                    <!-- Đặc trưng 1 -->
+                    <div class="group perspective h-56 cursor-pointer" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                        <div class="relative preserve-3d w-full h-full rounded-2xl shadow-sm border border-blue-100 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-md">
+                            <!-- Mặt trước -->
+                            <div class="absolute backface-hidden w-full h-full bg-blue-50 flex flex-col items-center justify-center p-4 rounded-2xl">
+                                <i class="fa-solid fa-graduation-cap text-5xl text-blue-500 mb-4 group-hover:animate-bounce"></i>
+                                <h4 class="font-bold text-blue-700 text-xl exclude-style">Khả năng Học</h4>
+                                <span class="text-[10px] text-blue-400 mt-3 border border-blue-200 px-2 py-1 rounded-full animate-pulse exclude-style">Click xem ví dụ</span>
+                            </div>
+                            <!-- Mặt sau -->
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full bg-white border-2 border-blue-200 flex flex-col items-center justify-center p-3 rounded-2xl shadow-inner">
+                                <div class="bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase mb-2 shadow-sm exclude-style">Ví dụ thực tế</div>
+                                <i class="fa-brands fa-youtube text-4xl text-red-500 mb-2 drop-shadow-sm"></i>
+                                <p class="content-text text-sm text-center leading-snug">Gợi ý video của <b class="exclude-style font-bold">YouTube</b> tự học từ lịch sử xem của bạn.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đặc trưng 2 -->
+                    <div class="group perspective h-56 cursor-pointer" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                        <div class="relative preserve-3d w-full h-full rounded-2xl shadow-sm border border-purple-100 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-md">
+                            <!-- Mặt trước -->
+                            <div class="absolute backface-hidden w-full h-full bg-purple-50 flex flex-col items-center justify-center p-4 rounded-2xl">
+                                <i class="fa-solid fa-sitemap text-5xl text-purple-500 mb-4 group-hover:animate-pulse"></i>
+                                <h4 class="font-bold text-purple-700 text-xl exclude-style">Suy luận</h4>
+                                <span class="text-[10px] text-purple-400 mt-3 border border-purple-200 px-2 py-1 rounded-full animate-pulse exclude-style">Click xem ví dụ</span>
+                            </div>
+                            <!-- Mặt sau -->
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full bg-white border-2 border-purple-200 flex flex-col items-center justify-center p-3 rounded-2xl shadow-inner">
+                                <div class="bg-purple-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase mb-2 shadow-sm exclude-style">Ví dụ thực tế</div>
+                                <i class="fa-solid fa-user-doctor text-4xl text-purple-500 mb-2 drop-shadow-sm"></i>
+                                <p class="content-text text-sm text-center leading-snug">Hệ thống <b class="exclude-style font-bold">MYCIN</b> chẩn đoán bệnh dựa trên triệu chứng lâm sàng.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đặc trưng 3 -->
+                    <div class="group perspective h-56 cursor-pointer" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                        <div class="relative preserve-3d w-full h-full rounded-2xl shadow-sm border border-pink-100 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-md">
+                            <!-- Mặt trước -->
+                            <div class="absolute backface-hidden w-full h-full bg-pink-50 flex flex-col items-center justify-center p-4 rounded-2xl">
+                                <i class="fa-solid fa-eye text-5xl text-pink-500 mb-4 group-hover:scale-110 transition-transform"></i>
+                                <h4 class="font-bold text-pink-700 text-xl exclude-style">Nhận thức</h4>
+                                <span class="text-[10px] text-pink-400 mt-3 border border-pink-200 px-2 py-1 rounded-full animate-pulse exclude-style">Click xem ví dụ</span>
+                            </div>
+                            <!-- Mặt sau -->
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full bg-white border-2 border-pink-200 flex flex-col items-center justify-center p-3 rounded-2xl shadow-inner">
+                                <div class="bg-pink-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase mb-2 shadow-sm exclude-style">Ví dụ thực tế</div>
+                                <i class="fa-solid fa-car-side text-4xl text-slate-700 mb-2 drop-shadow-sm"></i>
+                                <p class="content-text text-sm text-center leading-snug"><b class="exclude-style font-bold">Xe tự lái</b> dùng camera, radar để nhận biết vật cản và làn đường.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đặc trưng 4 -->
+                    <div class="group perspective h-56 cursor-pointer" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                        <div class="relative preserve-3d w-full h-full rounded-2xl shadow-sm border border-green-100 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-md">
+                            <!-- Mặt trước -->
+                            <div class="absolute backface-hidden w-full h-full bg-green-50 flex flex-col items-center justify-center p-4 rounded-2xl">
+                                <i class="fa-solid fa-comments text-5xl text-green-500 mb-4 group-hover:-rotate-12 transition-transform"></i>
+                                <h4 class="font-bold text-green-700 text-xl exclude-style">Hiểu ngôn ngữ</h4>
+                                <span class="text-[10px] text-green-400 mt-3 border border-green-200 px-2 py-1 rounded-full animate-pulse exclude-style">Click xem ví dụ</span>
+                            </div>
+                            <!-- Mặt sau -->
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full bg-white border-2 border-green-200 flex flex-col items-center justify-center p-3 rounded-2xl shadow-inner">
+                                <div class="bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase mb-2 shadow-sm exclude-style">Ví dụ thực tế</div>
+                                <i class="fa-solid fa-robot text-4xl text-green-600 mb-2 drop-shadow-sm"></i>
+                                <p class="content-text text-sm text-center leading-snug">Trợ lý <b class="exclude-style font-bold">ChatGPT</b> hoặc Google Assistant trò chuyện trôi chảy với con người.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đặc trưng 5 -->
+                    <div class="group perspective h-56 cursor-pointer" onclick="this.querySelector('.preserve-3d').classList.toggle('rotate-y-180')">
+                        <div class="relative preserve-3d w-full h-full rounded-2xl shadow-sm border border-orange-100 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-md">
+                            <!-- Mặt trước -->
+                            <div class="absolute backface-hidden w-full h-full bg-orange-50 flex flex-col items-center justify-center p-4 rounded-2xl">
+                                <i class="fa-solid fa-puzzle-piece text-5xl text-orange-500 mb-4 group-hover:rotate-90 transition-transform duration-300"></i>
+                                <h4 class="font-bold text-orange-700 text-xl exclude-style">Giải quyết VĐ</h4>
+                                <span class="text-[10px] text-orange-400 mt-3 border border-orange-200 px-2 py-1 rounded-full animate-pulse exclude-style">Click xem ví dụ</span>
+                            </div>
+                            <!-- Mặt sau -->
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full bg-white border-2 border-orange-200 flex flex-col items-center justify-center p-3 rounded-2xl shadow-inner">
+                                <div class="bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase mb-2 shadow-sm exclude-style">Ví dụ thực tế</div>
+                                <i class="fa-solid fa-chess-knight text-4xl text-orange-600 mb-2 drop-shadow-sm"></i>
+                                <p class="content-text text-sm text-center leading-snug">AI tính toán hàng triệu nước đi để đánh bại nhà vô địch <b class="exclude-style font-bold">Cờ vua</b> thế giới.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÔ PHỎNG TƯƠNG TÁC ĐẶC TRƯNG -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                <!-- Mô phỏng Khả năng Học -->
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-100">
+                    <h4 class="font-bold text-blue-700 mb-3 exclude-style"><i class="fa-solid fa-graduation-cap"></i> Mô phỏng: Khả năng Học (YouTube)</h4>
+                    <p class="mb-3 content-text">AI sẽ tự điều chỉnh thuật toán, gợi ý video dựa trên dữ liệu các lượt click của bạn.</p>
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="watchVideo('nhac')" class="flex-1 py-1.5 bg-pink-100 text-pink-600 rounded-xl font-bold hover:bg-pink-200 transition exclude-style"><i class="fa-solid fa-headphones"></i> Xem Nhạc</button>
+                        <button onclick="watchVideo('game')" class="flex-1 py-1.5 bg-green-100 text-green-600 rounded-xl font-bold hover:bg-green-200 transition exclude-style"><i class="fa-solid fa-gamepad"></i> Xem Game</button>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                        <div class="text-[11px] font-bold text-gray-400 uppercase mb-2 exclude-style">Video gợi ý tiếp theo:</div>
+                        <div id="youtube-suggestions" class="flex gap-2">
+                            <div class="w-1/3 bg-gray-200 h-16 rounded-xl flex items-center justify-center text-gray-400 text-xl transition-all"><i class="fa-solid fa-video"></i></div>
+                            <div class="w-1/3 bg-gray-200 h-16 rounded-xl flex items-center justify-center text-gray-400 text-xl transition-all"><i class="fa-solid fa-video"></i></div>
+                            <div class="w-1/3 bg-gray-200 h-16 rounded-xl flex items-center justify-center text-gray-400 text-xl transition-all"><i class="fa-solid fa-video"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mô phỏng Khả năng nhận thức -->
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100">
+                    <h4 class="font-bold text-pink-700 mb-3 exclude-style"><i class="fa-solid fa-eye"></i> Mô phỏng: Nhận thức (Xe tự lái)</h4>
+                    <p class="mb-3 content-text">Dùng cảm biến, camera và radar để nhận biết môi trường xung quanh và phản ứng.</p>
+                    <div class="relative bg-slate-700 h-24 rounded-2xl overflow-hidden flex items-center mb-3 shadow-inner">
+                        <div class="absolute w-full border-t-2 border-dashed border-slate-500"></div>
+                        <div id="self-driving-car" class="absolute left-2 flex items-center z-10">
+                            <i class="fa-solid fa-car-side text-4xl text-white"></i>
+                            <div id="radar-wave" class="hidden absolute left-8 w-12 h-12 bg-pink-400 rounded-full opacity-40 animate-ping"></div>
+                        </div>
+                        <i class="fa-solid fa-person-walking text-3xl text-yellow-400 absolute right-6"></i>
+                    </div>
+                    <button onclick="startCar()" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 rounded-xl transition shadow-sm exclude-style"><i class="fa-solid fa-power-off"></i> Khởi động xe & Radar</button>
+                    <div id="car-status" class="mt-2 text-sm font-bold text-center text-gray-400 h-4 exclude-style">Xe đang dừng.</div>
+                </div>
+            </div>
+
+            <!-- Content dễ nhầm lẫn & Phân loại -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- AI vs Tự động hóa -->
+                <div class="bg-red-50 p-6 rounded-3xl border border-red-100">
+                    <h3 class="font-bold text-lg text-red-600 mb-4 exclude-style"><i class="fa-solid fa-triangle-exclamation"></i> Chú ý nhầm lẫn!</h3>
+                    <div class="flex flex-col sm:flex-row items-center gap-4 mb-4">
+                        <div class="w-full sm:w-1/2 bg-white p-4 rounded-xl text-center shadow-sm">
+                            <h4 class="font-bold text-gray-700 mb-2 exclude-style">Tự Động Hoá</h4>
+                            <p class="content-text text-sm">Lặp lại thao tác cố định, hiệu suất cao nhưng <b class="exclude-style font-bold">KHÔNG</b> có trí tuệ.</p>
+                            <i class="fa-solid fa-gears text-2xl text-gray-400 mt-2"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-red-300 exclude-style py-2">VS</div>
+                        <div class="w-full sm:w-1/2 bg-white p-4 rounded-xl text-center shadow-sm border-2 border-blue-200">
+                            <h4 class="font-bold text-blue-600 mb-2 exclude-style">Trí Tuệ Nhân Tạo</h4>
+                            <p class="content-text text-sm">Kết hợp các đặc trưng trí tuệ (học, suy luận, nhận thức...).</p>
+                            <i class="fa-solid fa-brain text-2xl text-blue-400 mt-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phân loại AI -->
+                <div class="bg-indigo-50 p-6 rounded-3xl border border-indigo-100">
+                    <h3 class="font-bold text-lg text-indigo-700 mb-4 exclude-style"><i class="fa-solid fa-layer-group"></i> 2 Loại Trí Tuệ Nhân Tạo</h3>
+                    <ul class="space-y-4">
+                        <li class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-indigo-400">
+                            <h4 class="font-bold text-indigo-600 exclude-style">1. AI Hẹp (AI Yếu)</h4>
+                            <p class="mt-1 content-text text-sm">Thiết kế để thực hiện <b class="exclude-style font-bold">một nhiệm vụ cụ thể</b> (chơi cờ, nhận dạng khuôn mặt, dự báo thời tiết). Hầu hết các AI hiện nay thuộc loại này.</p>
+                        </li>
+                        <li class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-pink-400 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-pink-500 text-white px-2 py-1 font-bold rounded-bl-lg exclude-style" style="font-size: 11px;">Mục tiêu dài hạn</div>
+                            <h4 class="font-bold text-pink-600 exclude-style">2. AI Tổng Quát (AI Mạnh)</h4>
+                            <p class="mt-1 content-text text-sm">Tự học, tự thích nghi, làm được nhiều công việc giống con người. Thực tế <b class="exclude-style font-bold">chưa đạt được</b>.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: ỨNG DỤNG THỰC TẾ -->
+        <section id="ung-dung" class="tab-content max-w-5xl mx-auto">
+            <h2 class="title-gradient mb-8"><i class="fa-solid fa-microchip text-pink-400"></i> Các Ứng Dụng Tiêu Biểu</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- MYCIN -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-col transition hover:shadow-xl hover:-translate-y-1 duration-300">
+                    <div class="h-40 bg-teal-100 flex items-center justify-center relative overflow-hidden">
+                        <!-- Graphic thay cho ảnh thật -->
+                        <i class="fa-solid fa-stethoscope text-6xl text-teal-300 absolute left-8 opacity-50 float-icon" style="animation-delay: 0s;"></i>
+                        <i class="fa-solid fa-laptop-medical text-8xl text-teal-500 z-10 hover:scale-110 transition-transform duration-500"></i>
+                        <i class="fa-solid fa-pills text-5xl text-teal-200 absolute right-12 top-6 opacity-50 float-icon" style="animation-delay: 1.5s;"></i>
+                    </div>
+                    <div class="p-6 flex-1">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-2xl text-teal-700 exclude-style">Hệ chuyên gia MYCIN</h3>
+                            <span class="bg-teal-100 text-teal-700 text-xs font-bold px-2 py-1 rounded exclude-style">Y Học | 1972</span>
+                        </div>
+                        <p class="mb-4 content-text">Phát triển tại ĐH Stanford. Mô phỏng khả năng ra quyết định của chuyên gia. Sử dụng hệ thống <b class="exclude-style font-bold">~600 luật suy diễn</b> dạng "nếu... thì...".</p>
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4">
+                            <span class="font-bold text-gray-700 exclude-style">Quy trình:</span>
+                            <ul class="list-disc pl-6 mt-2 space-y-1">
+                                <li class="content-text">Hỏi người dùng câu "có/không" hoặc câu trả lời ngắn.</li>
+                                <li class="content-text">Dự đoán vi khuẩn gây nhiễm trùng máu.</li>
+                                <li class="content-text">Đề xuất kháng sinh & liều lượng.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Mô phỏng MYCIN nâng cấp -->
+                    <div class="p-4 bg-teal-50 border-t border-teal-100 rounded-b-3xl">
+                        <h4 class="text-xs font-bold text-teal-600 uppercase mb-3 flex items-center gap-2 exclude-style"><i class="fa-solid fa-user-doctor text-lg"></i> Trợ lí Chẩn đoán MYCIN</h4>
+                        <div id="mycin-chat" class="bg-white p-3 rounded-xl shadow-inner text-sm h-48 overflow-y-auto mb-3 flex flex-col border border-teal-100">
+                            <div class="text-teal-800 bg-teal-50 p-2.5 rounded-xl rounded-tl-none max-w-[85%] mb-2 shadow-sm border border-teal-100 text-[13px] exclude-style">
+                                <strong>Hệ thống:</strong> Xin chào. Tôi là MYCIN. Vui lòng trả lời để bắt đầu quá trình đối sánh 600 luật suy diễn.<br><br>
+                                <strong>Câu 1:</strong> Bệnh nhân có biểu hiện sốt cao (>39°C) không?
+                            </div>
+                        </div>
+                        <div id="mycin-controls" class="flex gap-2">
+                            <button onclick="answerMycin(true)" class="flex-1 bg-teal-500 text-white text-sm font-bold py-2 rounded-xl hover:bg-teal-600 transition shadow-sm border-b-4 border-teal-600 active:mt-1 active:border-b-0 exclude-style"><i class="fa-solid fa-check"></i> Có (Yes)</button>
+                            <button onclick="answerMycin(false)" class="flex-1 bg-rose-400 text-white text-sm font-bold py-2 rounded-xl hover:bg-rose-500 transition shadow-sm border-b-4 border-rose-600 active:mt-1 active:border-b-0 exclude-style"><i class="fa-solid fa-xmark"></i> Không (No)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ASIMO -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-col transition hover:shadow-xl hover:-translate-y-1 duration-300">
+                    <div class="h-40 bg-blue-100 flex items-center justify-center relative overflow-hidden">
+                        <!-- Graphic thay cho ảnh thật -->
+                        <i class="fa-solid fa-earth-americas text-6xl text-blue-200 absolute left-8 opacity-50 float-icon" style="animation-delay: 0.5s;"></i>
+                        <i class="fa-solid fa-robot text-8xl text-blue-500 z-10 hover:scale-110 transition-transform duration-500"></i>
+                        <i class="fa-solid fa-music text-4xl text-blue-300 absolute right-12 bottom-6 opacity-50 float-icon" style="animation-delay: 2s;"></i>
+                    </div>
+                    <div class="p-6 flex-1">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-2xl text-blue-700 exclude-style">Robot Asimo</h3>
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded exclude-style">Honda | 1986-2000</span>
+                        </div>
+                        <p class="mb-4 content-text">Robot hình người đầu tiên trên thế giới tích hợp một loạt ứng dụng AI tự động điều khiển thay vì hướng vào một ứng dụng cụ thể.</p>
+                        
+                        <!-- Bảng điều khiển ASIMO mới -->
+                        <div class="mt-4 bg-slate-800 p-4 rounded-2xl text-white shadow-inner">
+                            <h4 class="font-bold text-blue-300 uppercase mb-3 flex justify-between items-center exclude-style" style="font-size: 11px;">
+                                <span><i class="fa-solid fa-microchip"></i> Điều khiển cảm biến</span>
+                                <span class="flex items-center gap-1 bg-green-500/20 text-green-400 px-2 py-1 rounded-full"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Trực tuyến</span>
+                            </h4>
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <button onclick="simulateAsimoVision()" class="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg flex flex-col items-center gap-1 transition text-sm border border-slate-600 focus:ring-2 focus:ring-blue-400 cursor-pointer exclude-style">
+                                    <i class="fa-solid fa-camera-retro text-xl text-blue-400"></i>
+                                    <span>Thị giác máy tính</span>
+                                </button>
+                                <button onclick="simulateAsimoVoice()" class="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg flex flex-col items-center gap-1 transition text-sm border border-slate-600 focus:ring-2 focus:ring-green-400 cursor-pointer exclude-style">
+                                    <i class="fa-solid fa-microphone-lines text-xl text-green-400"></i>
+                                    <span>Nhận diện tiếng nói</span>
+                                </button>
+                            </div>
+                            <!-- Màn hình hiển thị -->
+                            <div id="asimo-screen" class="bg-black rounded-lg h-24 border border-slate-600 flex items-center justify-center relative overflow-hidden font-mono text-sm text-green-400 p-2 shadow-[inset_0_0_10px_rgba(0,0,0,1)] exclude-style">
+                                <div class="text-slate-500"><i class="fa-solid fa-terminal"></i> Đang chờ lệnh mô phỏng...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 italic text-center px-4 content-text text-sm">
+                            Thành tựu: Gõ cồng sàn chứng khoán NY (2002), chỉ huy dàn nhạc giao hưởng (2008), chơi bóng với cựu TT Mỹ Obama (2014).
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 4: TƯƠNG TÁC & LUYỆN TẬP -->
+        <section id="tuong-tac" class="tab-content max-w-5xl mx-auto">
+            <h2 class="title-gradient mb-8"><i class="fa-solid fa-gamepad text-green-400"></i> Tương Tác & Kiểm Tra</h2>
+            
+            <!-- Hoạt động 1: Phân loại trực quan -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm mb-10 border-2 border-dashed border-gray-200">
+                <h3 class="font-bold text-xl text-gray-700 mb-2 exclude-style">Hoạt động 1: Đây có phải là AI?</h3>
+                <p class="mb-6 content-text text-sm">Nhấp vào từng hình ảnh/khái niệm bên dưới để xem nó thuộc nhóm "Trí tuệ nhân tạo" hay chỉ là "Tự động hóa".</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Item 1 -->
+                    <div class="sort-item group cursor-pointer perspective" onclick="flipCard(this, 'auto', 'Chỉ là hệ thống đóng ngắt tự động bằng cảm biến nhiệt, không có trí tuệ.')">
+                        <div class="relative preserve-3d transition-transform duration-500 h-48 w-full rounded-2xl">
+                            <div class="absolute backface-hidden w-full h-full bg-gray-50 rounded-2xl flex flex-col items-center justify-center border-2 border-gray-100 group-hover:border-blue-300">
+                                <i class="fa-solid fa-mug-hot text-4xl text-gray-400 mb-3"></i>
+                                <span class="font-bold text-base text-gray-600 exclude-style">Ấm đun nước</span>
+                                <span class="text-[10px] text-gray-400 mt-2 border px-2 py-1 rounded-full exclude-style">Click để phân loại</span>
+                            </div>
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full rounded-2xl flex flex-col items-center justify-center p-3 text-center flip-back">
+                                <!-- Content injected via JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="sort-item group cursor-pointer perspective" onclick="flipCard(this, 'ai', 'Có khả năng hiểu ngôn ngữ (văn bản/tiếng nói) của người dùng để trả kết quả.')">
+                        <div class="relative preserve-3d transition-transform duration-500 h-48 w-full rounded-2xl">
+                            <div class="absolute backface-hidden w-full h-full bg-gray-50 rounded-2xl flex flex-col items-center justify-center border-2 border-gray-100 group-hover:border-blue-300">
+                                <i class="fa-brands fa-google text-4xl text-blue-400 mb-3"></i>
+                                <span class="font-bold text-base text-gray-600 exclude-style">Tìm kiếm Internet</span>
+                                <span class="text-[10px] text-gray-400 mt-2 border px-2 py-1 rounded-full exclude-style">Click để phân loại</span>
+                            </div>
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full rounded-2xl flex flex-col items-center justify-center p-3 text-center flip-back">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="sort-item group cursor-pointer perspective" onclick="flipCard(this, 'auto', 'Chỉ sử dụng cảm biến nhận diện vật thể để mở cửa, không suy luận hay học hỏi.')">
+                        <div class="relative preserve-3d transition-transform duration-500 h-48 w-full rounded-2xl">
+                            <div class="absolute backface-hidden w-full h-full bg-gray-50 rounded-2xl flex flex-col items-center justify-center border-2 border-gray-100 group-hover:border-blue-300">
+                                <i class="fa-solid fa-door-open text-4xl text-gray-400 mb-3"></i>
+                                <span class="font-bold text-base text-gray-600 exclude-style">Cửa tự mở</span>
+                                <span class="text-[10px] text-gray-400 mt-2 border px-2 py-1 rounded-full exclude-style">Click để phân loại</span>
+                            </div>
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full rounded-2xl flex flex-col items-center justify-center p-3 text-center flip-back">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="sort-item group cursor-pointer perspective" onclick="flipCard(this, 'auto', 'Nhờ sức nước tự nhiên làm quay bánh xe, hoàn toàn là cơ học truyền thống.')">
+                        <div class="relative preserve-3d transition-transform duration-500 h-48 w-full rounded-2xl">
+                            <div class="absolute backface-hidden w-full h-full bg-gray-50 rounded-2xl flex flex-col items-center justify-center border-2 border-gray-100 group-hover:border-blue-300">
+                                <i class="fa-solid fa-dharmachakra text-4xl text-amber-600 mb-3"></i>
+                                <span class="font-bold text-base text-gray-600 exclude-style">Guồng nước quay</span>
+                                <span class="text-[10px] text-gray-400 mt-2 border px-2 py-1 rounded-full exclude-style">Click để phân loại</span>
+                            </div>
+                            <div class="absolute backface-hidden rotate-y-180 w-full h-full rounded-2xl flex flex-col items-center justify-center p-3 text-center flip-back">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hoạt động 2: Phép thử Turing -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm mb-10 border-2 border-dashed border-gray-200">
+                <h3 class="font-bold text-xl text-blue-700 mb-2 exclude-style"><i class="fa-solid fa-comments"></i> Hoạt động 2: Mô phỏng Phép thử Turing (1950)</h3>
+                <p class="mb-4 content-text text-sm">Alan Turing đề xuất: Nếu một người "thẩm vấn" không thể phân biệt đâu là máy, đâu là người qua trò chuyện văn bản, máy đó được coi là có hành vi thông minh.</p>
+                <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+                    <div id="turing-chat" class="space-y-3 h-56 overflow-y-auto mb-4 p-4 bg-white rounded-xl shadow-inner border border-gray-100 flex flex-col">
+                        <div class="text-[11px] text-center text-gray-400 bg-gray-100 py-1 px-3 rounded-full self-center exclude-style">Cuộc trò chuyện ẩn danh bắt đầu...</div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <button onclick="sendTuringMessage('Bạn có thích đọc thơ không?')" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm py-2 px-4 rounded-xl transition shadow-sm exclude-style"><i class="fa-solid fa-feather-pointed"></i> Hỏi về nghệ thuật</button>
+                        <button onclick="sendTuringMessage('Hãy tính 12345 x 67890 giúp tôi.')" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-bold text-sm py-2 px-4 rounded-xl transition shadow-sm exclude-style"><i class="fa-solid fa-calculator"></i> Hỏi về toán học</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trắc nghiệm 5 câu -->
+            <div class="bg-gradient-to-br from-green-50 to-white p-6 rounded-3xl shadow-lg border border-green-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-xl text-green-700 exclude-style"><i class="fa-solid fa-list-check"></i> Trắc nghiệm Ôn Tập</h3>
+                    <div class="bg-white px-4 py-1 rounded-full text-green-600 font-bold shadow-sm exclude-style" id="score-display">Điểm: 0/5</div>
+                </div>
+
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Câu hỏi được render bằng JS -->
+                </div>
+                
+                <button onclick="resetQuiz()" class="mt-6 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-xl transition hidden exclude-style" id="btn-reset-quiz"><i class="fa-solid fa-rotate-right"></i> Làm lại</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- Tab Switching Logic ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Reset button styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = 'nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-gray-100 transition-all';
+            });
+
+            // Show active tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Set active button style based on tab
+            const btn = document.getElementById('btn-' + tabId);
+            if(tabId === 'tong-quan') btn.className = 'nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold bg-blue-100 text-blue-700 transition-all shadow-sm';
+            if(tabId === 'dac-trung') btn.className = 'nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold bg-purple-100 text-purple-700 transition-all shadow-sm';
+            if(tabId === 'ung-dung') btn.className = 'nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold bg-pink-100 text-pink-700 transition-all shadow-sm';
+            if(tabId === 'tuong-tac') btn.className = 'nav-btn w-full text-left px-5 py-3 rounded-2xl font-semibold bg-green-100 text-green-700 transition-all shadow-sm';
+        }
+
+        // --- Interactive MYCIN Logic Nâng Cấp ---
+        let mycinStep = 0;
+        let mycinAnswers = {};
+
+        function answerMycin(ans) {
+            const chat = document.getElementById('mycin-chat');
+            const controls = document.getElementById('mycin-controls');
+
+            // Render user answer
+            chat.innerHTML += `<div class="self-end max-w-[80%] text-right mb-2"><span class="bg-teal-600 text-white text-[13px] px-3 py-1.5 rounded-xl rounded-tr-none inline-block shadow-sm transform transition hover:scale-105 exclude-style">${ans ? 'Có (Yes)' : 'Không (No)'}</span></div>`;
+            
+            mycinStep++;
+            chat.innerHTML += `<div id="mycin-typing" class="text-teal-400 text-xs mb-2 ml-1 exclude-style"><i class="fa-solid fa-ellipsis fa-fade text-lg"></i> Đang phân tích...</div>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            // Tạm khóa nút
+            Array.from(controls.children).forEach(btn => btn.disabled = true);
+
+            setTimeout(() => {
+                const typingObj = document.getElementById('mycin-typing');
+                if(typingObj) typingObj.remove();
+                Array.from(controls.children).forEach(btn => btn.disabled = false);
+
+                if (mycinStep === 1) {
+                    mycinAnswers.fever = ans;
+                    chat.innerHTML += `<div class="text-teal-800 bg-teal-50 p-2.5 rounded-xl rounded-tl-none max-w-[85%] mb-2 shadow-sm border border-teal-100 text-[13px] animate-[fadeIn_0.3s_ease-out] exclude-style">
+                        <strong>Câu 2:</strong> Kết quả xét nghiệm máu có vi khuẩn Gram-âm không?
+                    </div>`;
+                } else if (mycinStep === 2) {
+                    mycinAnswers.gram = ans;
+                    
+                    // Nút Reset
+                    controls.innerHTML = `<button onclick="resetMycin()" class="w-full bg-slate-200 text-slate-700 text-sm font-bold py-2 rounded-xl hover:bg-slate-300 transition shadow-sm border-b-4 border-slate-300 active:mt-1 active:border-b-0 btn-hover-effect exclude-style"><i class="fa-solid fa-rotate-right"></i> Bắt đầu ca khám mới</button>`;
+
+                    let conclusion = "";
+                    let prescription = "";
+                    if (mycinAnswers.fever && mycinAnswers.gram) {
+                         conclusion = "<span class='text-red-600 font-bold'>Cảnh báo: Nguy cơ cao nhiễm khuẩn huyết (Bacteremia).</span>";
+                         prescription = "Ampicillin (Liều lượng: 500mg, tiêm tĩnh mạch 8 giờ/lần).";
+                    } else if (mycinAnswers.fever || mycinAnswers.gram) {
+                         conclusion = "<span class='text-orange-600 font-bold'>Theo dõi: Có dấu hiệu viêm nhiễm lâm sàng.</span>";
+                         prescription = "Chưa kê kháng sinh. Yêu cầu nuôi cấy máu thêm.";
+                    } else {
+                         conclusion = "<span class='text-green-600 font-bold'>Kết luận: Không phát hiện dấu hiệu nhiễm trùng máu.</span>";
+                         prescription = "Tiếp tục theo dõi, không dùng kháng sinh phổ rộng.";
+                    }
+
+                    chat.innerHTML += `<div class="text-teal-900 bg-white border-2 border-teal-200 p-3 rounded-xl rounded-tl-none max-w-[95%] mb-2 text-xs shadow-md animate-[fadeIn_0.5s_ease-out] exclude-style">
+                        <h5 class="font-bold border-b-2 border-teal-100 pb-1 mb-2 text-sm flex items-center gap-2"><i class="fa-solid fa-file-medical text-teal-600"></i> Báo cáo chẩn đoán MYCIN</h5>
+                        ${conclusion}<br>
+                        <div class="mt-2 bg-teal-50 p-2 rounded border border-teal-100">
+                            <span class="font-bold text-teal-700 uppercase text-[10px]">Đề xuất điều trị:</span><br>
+                            <span class="text-[13px]">${prescription}</span>
+                        </div>
+                    </div>`;
+                }
+                chat.scrollTop = chat.scrollHeight;
+            }, 1000);
+        }
+
+        function resetMycin() {
+            mycinStep = 0;
+            mycinAnswers = {};
+            document.getElementById('mycin-chat').innerHTML = `<div class="text-teal-800 bg-teal-50 p-2.5 rounded-xl rounded-tl-none max-w-[85%] mb-2 shadow-sm border border-teal-100 text-[13px] exclude-style">
+                <strong>Hệ thống:</strong> Xin chào. Tôi là MYCIN. Vui lòng trả lời để bắt đầu quá trình đối sánh ~600 luật suy diễn.<br><br>
+                <strong>Câu 1:</strong> Bệnh nhân có biểu hiện sốt cao (>39°C) không?
+            </div>`;
+            document.getElementById('mycin-controls').innerHTML = `
+                <button onclick="answerMycin(true)" class="flex-1 bg-teal-500 text-white text-sm font-bold py-2 rounded-xl hover:bg-teal-600 transition shadow-sm border-b-4 border-teal-600 active:mt-1 active:border-b-0 exclude-style"><i class="fa-solid fa-check"></i> Có (Yes)</button>
+                <button onclick="answerMycin(false)" class="flex-1 bg-rose-400 text-white text-sm font-bold py-2 rounded-xl hover:bg-rose-500 transition shadow-sm border-b-4 border-rose-600 active:mt-1 active:border-b-0 exclude-style"><i class="fa-solid fa-xmark"></i> Không (No)</button>
+            `;
+        }
+
+        // --- Simulations Logic ---
+        let userHistory = { nhac: 0, game: 0 };
+        function watchVideo(type) {
+            userHistory[type]++;
+            const container = document.getElementById('youtube-suggestions');
+            let html = '';
+            const pref = userHistory.nhac > userHistory.game ? 'nhac' : (userHistory.game > userHistory.nhac ? 'game' : 'mixed');
+            
+            for(let i=0; i<3; i++) {
+                if(pref === 'nhac' || (pref === 'mixed' && i%2===0)) {
+                    html += `<div class="w-1/3 bg-pink-50 border border-pink-200 h-16 rounded-xl flex items-center justify-center text-pink-400 text-2xl shadow-sm scale-95 hover:scale-100 transition-transform"><i class="fa-solid fa-music"></i></div>`;
+                } else {
+                    html += `<div class="w-1/3 bg-green-50 border border-green-200 h-16 rounded-xl flex items-center justify-center text-green-400 text-2xl shadow-sm scale-95 hover:scale-100 transition-transform"><i class="fa-solid fa-gamepad"></i></div>`;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        function startCar() {
+            const car = document.getElementById('self-driving-car');
+            const radar = document.getElementById('radar-wave');
+            const status = document.getElementById('car-status');
+            
+            // Reset state
+            car.style.transition = 'none';
+            car.style.transform = 'none'; // Xóa transform cũ
+            car.style.left = '8px'; // Trả về vị trí xuất phát
+            
+            // Run simulation
+            setTimeout(() => {
+                // Dùng ease-out để mô phỏng hiệu ứng phanh giảm tốc mượt mà
+                car.style.transition = 'left 1.2s ease-out';
+                radar.classList.remove('hidden');
+                status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Xe đang chạy... Radar đang quét...';
+                status.className = "mt-2 text-sm font-bold text-center text-blue-500 h-4 exclude-style";
+                
+                // Di chuyển đến vị trí cách lề phải một khoảng an toàn (trước người đi bộ)
+                car.style.left = 'calc(100% - 110px)';
+            }, 50);
+            
+            setTimeout(() => {
+                radar.classList.add('hidden');
+                status.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Phát hiện người! Đã tự động phanh.';
+                status.className = "mt-2 text-sm font-bold text-center text-red-500 h-4 exclude-style";
+            }, 1200); // Dừng chính xác ngay khi hiệu ứng di chuyển kết thúc
+        }
+
+        function simulateAsimoVision() {
+            const screen = document.getElementById('asimo-screen');
+            screen.innerHTML = `
+                <div class="absolute inset-0 flex items-center justify-center opacity-30">
+                    <i class="fa-solid fa-person-walking text-5xl text-white"></i>
+                </div>
+                <div class="absolute top-0 left-0 w-full h-1 bg-green-400/80 shadow-[0_0_10px_3px_rgba(74,222,128,0.6)] animate-[scan_1.2s_ease-in-out_infinite_alternate] z-10"></div>
+                <div id="vision-box" class="hidden absolute border-[3px] border-green-500 w-12 h-16 flex items-start justify-center z-20">
+                    <span class="absolute -top-4 bg-green-500 text-black text-[9px] px-1 font-bold whitespace-nowrap rounded-sm">Person: 98%</span>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                const box = document.getElementById('vision-box');
+                if(box) {
+                    box.classList.remove('hidden');
+                    screen.innerHTML += `<div class="absolute top-2 right-2 flex gap-1"><div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></div><span class="text-[8px] text-red-400 font-bold">REC</span></div>`;
+                }
+            }, 1000);
+        }
+
+        function simulateAsimoVoice() {
+            const screen = document.getElementById('asimo-screen');
+            screen.innerHTML = `
+                <div class="flex items-center gap-1.5 h-12">
+                    <div class="w-1.5 bg-green-400 h-6 rounded-full animate-[wave_0.8s_ease-in-out_infinite]"></div>
+                    <div class="w-1.5 bg-green-400 h-6 rounded-full animate-[wave_1.2s_ease-in-out_infinite_0.1s]"></div>
+                    <div class="w-1.5 bg-green-400 h-6 rounded-full animate-[wave_0.9s_ease-in-out_infinite_0.2s]"></div>
+                    <div class="w-1.5 bg-green-400 h-6 rounded-full animate-[wave_1.1s_ease-in-out_infinite_0.3s]"></div>
+                    <div class="w-1.5 bg-green-400 h-6 rounded-full animate-[wave_0.7s_ease-in-out_infinite_0.4s]"></div>
+                </div>
+                <div class="absolute bottom-2 w-full text-center text-green-300 font-bold text-xs animate-pulse exclude-style" id="voice-text">ASIMO đang lắng nghe...</div>
+            `;
+
+            setTimeout(() => {
+                const text = document.getElementById('voice-text');
+                if(text) {
+                    text.classList.remove('animate-pulse');
+                    text.innerHTML = `<i class="fa-solid fa-quote-left text-[10px] text-green-500 mr-1"></i>Xin chào ASIMO, tiến lên!<i class="fa-solid fa-quote-right text-[10px] text-green-500 ml-1"></i>`;
+                }
+            }, 1800);
+        }
+
+        function sendTuringMessage(msg) {
+            const chat = document.getElementById('turing-chat');
+            // User message
+            chat.innerHTML += `<div class="self-end max-w-[80%]"><span class="bg-blue-500 text-white text-[13px] px-3 py-2 rounded-2xl rounded-tr-none inline-block shadow-sm transform transition hover:scale-105 exclude-style">${msg}</span></div>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            // Simulate AI delay
+            setTimeout(() => {
+                let replyA = msg.includes("thơ") ? "Mình thích đọc thơ lắm, nhưng bảo làm thì chịu, văn dở tệ 😂" : "Để mình lấy máy tính ra bấm đã nhé, số lớn thế ai mà nhẩm được!";
+                let replyB = msg.includes("thơ") ? "Dạ, em có thể làm thơ ạ. Đây là một đoạn: 'Mây trôi lững lờ trên bầu trời xanh...'" : "Kết quả của 12345 x 67890 là 838,102,050.";
+
+                chat.innerHTML += `
+                    <div class="self-start max-w-[90%] mt-2 flex flex-col gap-1 animate-[fadeIn_0.4s_ease-out]">
+                        <div class="text-[10px] text-gray-500 ml-1 font-bold exclude-style">Đối tượng A (Người hay Máy?):</div>
+                        <span class="bg-gray-100 border border-gray-200 text-gray-700 text-[14px] px-3 py-2 rounded-2xl rounded-tl-none inline-block shadow-sm exclude-style">${replyA}</span>
+                    </div>
+                    <div class="self-start max-w-[90%] mt-2 flex flex-col gap-1 animate-[fadeIn_0.6s_ease-out]">
+                        <div class="text-[10px] text-gray-500 ml-1 font-bold exclude-style">Đối tượng B (Người hay Máy?):</div>
+                        <span class="bg-gray-100 border border-gray-200 text-gray-700 text-[14px] px-3 py-2 rounded-2xl rounded-tl-none inline-block shadow-sm exclude-style">${replyB}</span>
+                    </div>
+                `;
+                chat.scrollTop = chat.scrollHeight;
+            }, 800);
+        }
+
+        // --- Flip Card Logic (Hoạt động 1) ---
+        function flipCard(element, type, description) {
+            if (element.classList.contains('flipped')) return;
+            
+            const inner = element.querySelector('.preserve-3d');
+            const back = element.querySelector('.flip-back');
+            
+            let badge = type === 'ai' 
+                ? '<span class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-[10px] mb-2 inline-block exclude-style">Trí tuệ nhân tạo</span>' 
+                : '<span class="bg-red-100 text-red-700 font-bold px-3 py-1 rounded-full text-[10px] mb-2 inline-block exclude-style">Tự động hoá</span>';
+                
+            let icon = type === 'ai' 
+                ? '<i class="fa-solid fa-brain text-4xl text-blue-500 mb-2"></i>' 
+                : '<i class="fa-solid fa-gears text-4xl text-red-400 mb-2"></i>';
+                
+            let bgClass = type === 'ai' ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200';
+
+            back.innerHTML = `
+                ${icon}
+                ${badge}
+                <p class="content-text text-sm mt-1 leading-tight px-1">${description}</p>
+            `;
+            
+            // Add specific background styling
+            back.className = `absolute backface-hidden rotate-y-180 w-full h-full rounded-2xl flex flex-col items-center justify-center p-3 text-center flip-back border-2 ${bgClass}`;
+            
+            inner.classList.add('rotate-y-180');
+            element.classList.add('flipped');
+        }
+
+        // --- Quiz Logic ---
+        const questions = [
+            {
+                q: "Nhà khoa học nào đã đưa ra 'phép thử' để đánh giá khả năng của máy tính trong việc thể hiện hành vi thông minh vào năm 1950?",
+                options: ["A. Alan Turing", "B. Bill Gates", "C. Steve Jobs", "D. Mark Zuckerberg"],
+                ans: 0
+            },
+            {
+                q: "Hệ thống khuyến nghị trên YouTube thể hiện đặc trưng cơ bản nào của Trí tuệ nhân tạo?",
+                options: ["A. Khả năng nhận thức", "B. Khả năng học", "C. Khả năng hiểu ngôn ngữ", "D. Khả năng giải quyết vấn đề"],
+                ans: 1
+            },
+            {
+                q: "Trí tuệ nhân tạo hẹp (AI yếu) là gì?",
+                options: ["A. Hệ thống có khả năng tự học mọi thứ giống con người.", "B. Các dây chuyền lắp ráp cơ giới hoá tự động.", "C. Hệ thống được thiết kế để thực hiện một nhiệm vụ cụ thể.", "D. Ấm đun nước tự ngắt khi sôi."],
+                ans: 2
+            },
+            {
+                q: "Hệ chuyên gia MYCIN được thiết kế ứng dụng trong lĩnh vực nào?",
+                options: ["A. Điều khiển giao thông", "B. Dự báo thời tiết", "C. Chẩn đoán y tế", "D. Dịch thuật ngôn ngữ"],
+                ans: 2
+            },
+            {
+                q: "Đâu KHÔNG phải là một đặc trưng cơ bản của hệ thống có ứng dụng AI?",
+                options: ["A. Khả năng suy luận", "B. Hoạt động lặp đi lặp lại một thao tác cơ học đơn điệu", "C. Khả năng nhận thức môi trường", "D. Khả năng hiểu ngôn ngữ"],
+                ans: 1
+            }
+        ];
+
+        let score = 0;
+        let answered = [false, false, false, false, false];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            questions.forEach((item, qIndex) => {
+                let html = `
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100" id="q-block-${qIndex}">
+                    <h4 class="content-text font-bold text-gray-800 mb-4 leading-relaxed"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm mr-2 shadow-sm exclude-style">Câu ${qIndex + 1}</span> ${item.q}</h4>
+                    <div class="space-y-2">
+                `;
+                
+                item.options.forEach((opt, oIndex) => {
+                    html += `
+                        <button onclick="checkAnswer(${qIndex}, ${oIndex})" id="btn-q${qIndex}-o${oIndex}" class="w-full text-left px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition content-text text-gray-700">
+                            ${opt}
+                        </button>
+                    `;
+                });
+                
+                html += `</div></div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function checkAnswer(qIndex, oIndex) {
+            if (answered[qIndex]) return; // prevent re-answering
+            
+            answered[qIndex] = true;
+            const correctOpt = questions[qIndex].ans;
+            
+            // disable all buttons for this question
+            questions[qIndex].options.forEach((_, i) => {
+                const btn = document.getElementById(`btn-q${qIndex}-o${i}`);
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-gray-100', 'cursor-pointer');
+                
+                if (i === correctOpt) {
+                    btn.classList.add('bg-green-100', 'border-green-400', 'text-green-800', 'font-bold');
+                    btn.innerHTML += ' <i class="fa-solid fa-check text-green-600 float-right mt-1 text-lg exclude-style"></i>';
+                }
+                
+                if (i === oIndex && i !== correctOpt) {
+                    btn.classList.add('bg-red-100', 'border-red-400', 'text-red-800', 'font-bold');
+                    btn.innerHTML += ' <i class="fa-solid fa-xmark text-red-600 float-right mt-1 text-lg exclude-style"></i>';
+                }
+            });
+
+            if (oIndex === correctOpt) {
+                score++;
+                document.getElementById('score-display').innerText = `Điểm: ${score}/5`;
+            }
+
+            // Check if all answered
+            if (answered.every(v => v === true)) {
+                document.getElementById('btn-reset-quiz').classList.remove('hidden');
+            }
+        }
+
+        function resetQuiz() {
+            score = 0;
+            answered = [false, false, false, false, false];
+            document.getElementById('score-display').innerText = `Điểm: 0/5`;
+            document.getElementById('btn-reset-quiz').classList.add('hidden');
+            renderQuiz();
+        }
+
+        // Initialize
+        renderQuiz();
+
+    </script>
+</body>
+</html>

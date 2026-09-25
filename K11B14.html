@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 14: SQL - Ngôn ngữ truy vấn có cấu trúc</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8fafc;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        .tab-btn.active {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            border-bottom: 3px solid #4f46e5;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Tùy chỉnh thanh cuộn */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-700 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 text-2xl">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">Bài 14: SQL</h1>
+                    <p class="text-sm text-slate-500 font-semibold">Ngôn ngữ truy vấn có cấu trúc</p>
+                </div>
+            </div>
+            <div class="hidden sm:flex gap-2">
+                <span class="px-3 py-1 rounded-full bg-pink-100 text-pink-600 text-xs font-bold"><i class="fas fa-bullseye mr-1"></i>Mục tiêu: Hiểu nguyên lí SQL</span>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto no-scrollbar border-t border-slate-100 mt-2">
+            <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active px-6 py-3 font-bold whitespace-nowrap transition-colors flex items-center gap-2 rounded-t-lg">
+                <i class="fas fa-map"></i> Tổng quan
+            </button>
+            <button onclick="switchTab('mindmap')" id="btn-mindmap" class="tab-btn px-6 py-3 font-bold text-slate-500 whitespace-nowrap transition-colors flex items-center gap-2 rounded-t-lg hover:bg-slate-50">
+                <i class="fas fa-sitemap"></i> Sơ đồ SQL
+            </button>
+            <button onclick="switchTab('simulation')" id="btn-simulation" class="tab-btn px-6 py-3 font-bold text-slate-500 whitespace-nowrap transition-colors flex items-center gap-2 rounded-t-lg hover:bg-slate-50">
+                <i class="fas fa-play-circle"></i> Mô phỏng
+            </button>
+            <button onclick="switchTab('quiz')" id="btn-quiz" class="tab-btn px-6 py-3 font-bold text-slate-500 whitespace-nowrap transition-colors flex items-center gap-2 rounded-t-lg hover:bg-slate-50">
+                <i class="fas fa-check-double"></i> Trắc nghiệm
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:p-8 max-w-6xl mx-auto w-full">
+
+        <!-- Tab 1: Tổng quan -->
+        <div id="tab-overview" class="tab-content animate-fade-in space-y-8">
+            
+            <!-- VS Section -->
+            <div class="glass-card rounded-2xl p-6">
+                <h2 class="text-xl font-bold mb-6 text-center text-slate-800"><i class="fas fa-exchange-alt mr-2 text-indigo-500"></i>Sự khác biệt khi truy xuất dữ liệu</h2>
+                
+                <div class="grid md:grid-cols-2 gap-6 relative">
+                    <!-- Divider for desktop -->
+                    <div class="hidden md:flex absolute inset-0 justify-center items-center pointer-events-none">
+                        <div class="w-10 h-10 rounded-full bg-white shadow border border-slate-100 flex items-center justify-center text-sm font-bold text-slate-400 z-10">VS</div>
+                        <div class="w-px h-full bg-slate-200 absolute"></div>
+                    </div>
+
+                    <!-- Lập trình thủ tục -->
+                    <div class="bg-red-50 rounded-xl p-5 border border-red-100 relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 opacity-10 text-red-500 text-8xl"><i class="fas fa-code"></i></div>
+                        <h3 class="font-bold text-red-700 text-lg mb-3 flex items-center"><i class="fas fa-file-code mr-2"></i>Lập trình "theo thủ tục"</h3>
+                        <ul class="space-y-3 text-red-900/80">
+                            <li class="flex gap-2"><i class="fas fa-times-circle text-red-400 mt-1"></i> <span>Phải biết rõ cấu trúc tệp dữ liệu.</span></li>
+                            <li class="flex gap-2"><i class="fas fa-times-circle text-red-400 mt-1"></i> <span>Phải lập trình lấy đoạn dữ liệu, kiểm tra điều kiện.</span></li>
+                            <li class="flex gap-2"><i class="fas fa-times-circle text-red-400 mt-1"></i> <span>Mất công sức, dễ nhầm lẫn.</span></li>
+                            <li class="flex gap-2"><i class="fas fa-times-circle text-red-400 mt-1"></i> <span>Phải viết lại chương trình cho bài toán khác nội dung.</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- SQL -->
+                    <div class="bg-emerald-50 rounded-xl p-5 border border-emerald-100 relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 opacity-10 text-emerald-500 text-8xl"><i class="fas fa-magic"></i></div>
+                        <h3 class="font-bold text-emerald-700 text-lg mb-3 flex items-center"><i class="fas fa-comment-dots mr-2"></i>Sử dụng ngôn ngữ SQL</h3>
+                        <ul class="space-y-3 text-emerald-900/80">
+                            <li class="flex gap-2"><i class="fas fa-check-circle text-emerald-400 mt-1"></i> <span>Chỉ cần viết yêu cầu dưới dạng câu truy vấn.</span></li>
+                            <li class="flex gap-2"><i class="fas fa-check-circle text-emerald-400 mt-1"></i> <span>Chỉ định <b>"muốn làm gì"</b>, không phải nghĩ <b>"cách để thực hiện"</b>.</span></li>
+                            <li class="flex gap-2"><i class="fas fa-check-circle text-emerald-400 mt-1"></i> <span>Mọi việc do hệ QTCSDL giải quyết.</span></li>
+                            <li class="flex gap-2"><i class="fas fa-check-circle text-emerald-400 mt-1"></i> <span>Là tiêu chuẩn cho hầu hết hệ QTCSDL (Oracle, MySQL...).</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khái niệm -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100 flex items-start gap-4 shadow-sm">
+                    <div class="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 flex-shrink-0"><i class="fas fa-info-circle text-xl"></i></div>
+                    <div>
+                        <h4 class="font-bold text-blue-900 text-lg mb-1">SQL là gì?</h4>
+                        <p class="text-blue-800 text-sm"><b>S</b>tructured <b>Q</b>uery <b>L</b>anguage - Ngôn ngữ truy vấn định chuẩn cho việc định nghĩa, cập nhật, truy xuất và điều khiển dữ liệu từ các CSDL quan hệ (từ 1970).</p>
+                    </div>
+                </div>
+                <div class="bg-purple-50 rounded-2xl p-6 border border-purple-100 flex items-start gap-4 shadow-sm">
+                    <div class="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 flex-shrink-0"><i class="fas fa-exclamation-triangle text-xl"></i></div>
+                    <div>
+                        <h4 class="font-bold text-purple-900 text-lg mb-1">Dễ nhầm lẫn: CHAR vs VARCHAR</h4>
+                        <div class="text-sm text-purple-800 mt-2 space-y-2">
+                            <p><span class="bg-purple-200 px-2 py-0.5 rounded font-bold">CHAR(n)</span>: Cố định <code class="code-font text-xs">n</code> kí tự. Dư thì thêm khoảng trắng.</p>
+                            <p><span class="bg-purple-200 px-2 py-0.5 rounded font-bold">VARCHAR(n)</span>: Thay đổi, không vượt <code class="code-font text-xs">n</code> kí tự. Không tự thêm khoảng trống.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Sơ đồ Mindmap -->
+        <div id="tab-mindmap" class="tab-content hidden animate-fade-in">
+            <h2 class="text-xl font-bold mb-6 text-center text-slate-800"><i class="fas fa-project-diagram mr-2 text-indigo-500"></i>Cấu trúc Ngôn ngữ SQL</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <!-- DDL -->
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-blue-500">
+                    <div class="text-center mb-4">
+                        <span class="inline-block px-4 py-1 bg-blue-100 text-blue-700 font-black rounded-full text-lg tracking-wider mb-2">DDL</span>
+                        <p class="text-xs font-bold text-slate-500 uppercase">Data Definition Language</p>
+                        <p class="text-sm text-slate-600">Ngôn ngữ định nghĩa dữ liệu</p>
+                    </div>
+                    <div class="space-y-2 code-font text-sm">
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-blue-600 font-bold">CREATE DATABASE</span> <span class="text-slate-400 text-xs">Khởi tạo CSDL</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-blue-600 font-bold">CREATE TABLE</span> <span class="text-slate-400 text-xs">Khởi tạo bảng</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-blue-600 font-bold">ALTER TABLE</span> <span class="text-slate-400 text-xs">Thay đổi bảng</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-blue-600 font-bold">PRIMARY KEY</span> <span class="text-slate-400 text-xs">Khoá chính</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-blue-600 font-bold">FOREIGN KEY...</span> <span class="text-slate-400 text-xs">Khoá ngoại</span></div>
+                    </div>
+                </div>
+
+                <!-- DML -->
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-emerald-500">
+                    <div class="text-center mb-4">
+                        <span class="inline-block px-4 py-1 bg-emerald-100 text-emerald-700 font-black rounded-full text-lg tracking-wider mb-2">DML</span>
+                        <p class="text-xs font-bold text-slate-500 uppercase">Data Manipulation Language</p>
+                        <p class="text-sm text-slate-600">Ngôn ngữ thao tác dữ liệu</p>
+                    </div>
+                    <div class="space-y-2 code-font text-sm">
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-emerald-600 font-bold">SELECT... FROM...</span> <span class="text-slate-400 text-xs">Lấy dữ liệu</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-emerald-600 font-bold">INSERT INTO...</span> <span class="text-slate-400 text-xs">Thêm dữ liệu</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-emerald-600 font-bold">UPDATE... SET...</span> <span class="text-slate-400 text-xs">Cập nhật</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-emerald-600 font-bold">DELETE FROM...</span> <span class="text-slate-400 text-xs">Xoá dòng</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 text-center text-xs text-slate-500">Các mệnh đề: WHERE, ORDER BY, INNER JOIN</div>
+                    </div>
+                </div>
+
+                <!-- DCL -->
+                <div class="glass-card rounded-2xl p-5 border-t-4 border-t-amber-500">
+                    <div class="text-center mb-4">
+                        <span class="inline-block px-4 py-1 bg-amber-100 text-amber-700 font-black rounded-full text-lg tracking-wider mb-2">DCL</span>
+                        <p class="text-xs font-bold text-slate-500 uppercase">Data Control Language</p>
+                        <p class="text-sm text-slate-600">Ngôn ngữ kiểm soát dữ liệu</p>
+                    </div>
+                    <div class="space-y-2 code-font text-sm">
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-amber-600 font-bold">GRANT</span> <span class="text-slate-400 text-xs">Cấp quyền</span></div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-100 flex justify-between"><span class="text-amber-600 font-bold">REVOKE</span> <span class="text-slate-400 text-xs">Thu hồi quyền</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Types Table (Visual representation) -->
+            <div class="glass-card rounded-2xl p-6">
+                <h3 class="font-bold text-slate-700 mb-4 flex items-center"><i class="fas fa-shapes mr-2 text-pink-500"></i> Các kiểu dữ liệu cơ bản (Bảng 14.2)</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="bg-pink-50 p-3 rounded-xl border border-pink-100 text-center">
+                        <div class="text-pink-600 font-bold code-font text-sm">CHAR(n)</div>
+                        <div class="text-xs text-pink-800 mt-1">Xâu độ dài cố định</div>
+                    </div>
+                    <div class="bg-pink-50 p-3 rounded-xl border border-pink-100 text-center">
+                        <div class="text-pink-600 font-bold code-font text-sm">VARCHAR(n)</div>
+                        <div class="text-xs text-pink-800 mt-1">Xâu độ dài thay đổi</div>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 text-center">
+                        <div class="text-indigo-600 font-bold code-font text-sm">INT</div>
+                        <div class="text-xs text-indigo-800 mt-1">Số nguyên</div>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 text-center">
+                        <div class="text-indigo-600 font-bold code-font text-sm">REAL</div>
+                        <div class="text-xs text-indigo-800 mt-1">Số thực (phẩy động)</div>
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 text-center">
+                        <div class="text-orange-600 font-bold code-font text-sm">BOOLEAN</div>
+                        <div class="text-xs text-orange-800 mt-1">Đúng(1) / Sai(0)</div>
+                    </div>
+                    <div class="bg-teal-50 p-3 rounded-xl border border-teal-100 text-center">
+                        <div class="text-teal-600 font-bold code-font text-sm">DATE</div>
+                        <div class="text-xs text-teal-800 mt-1">YYYY-MM-DD</div>
+                    </div>
+                    <div class="bg-teal-50 p-3 rounded-xl border border-teal-100 text-center">
+                        <div class="text-teal-600 font-bold code-font text-sm">TIME</div>
+                        <div class="text-xs text-teal-800 mt-1">HH:MM:SS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Mô phỏng SQL -->
+        <div id="tab-simulation" class="tab-content hidden animate-fade-in">
+            
+            <div class="grid lg:grid-cols-2 gap-6 h-[600px]">
+                <!-- Left: Editor -->
+                <div class="glass-card rounded-2xl flex flex-col overflow-hidden border border-slate-200 shadow-sm">
+                    <div class="bg-slate-800 p-3 flex justify-between items-center text-white">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-terminal"></i> <span class="font-bold text-sm">SQL Editor</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-slate-50 border-b border-slate-200">
+                        <p class="text-sm font-bold text-slate-600 mb-2">Chọn lệnh ví dụ (từ SGK):</p>
+                        <select id="sql-selector" class="w-full p-2 rounded border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer" onchange="loadCode()">
+                            <option value="select1">1. DML - SELECT (Lọc bài hát của Văn Cao)</option>
+                            <option value="insert1">2. DML - INSERT (Thêm Phú Quang vào Bảng Nhạc sĩ)</option>
+                            <option value="update1">3. DML - UPDATE (Sửa tên nhạc sĩ Aid=6)</option>
+                            <option value="delete1">4. DML - DELETE (Xoá bản nhạc Mid='0005')</option>
+                            <option value="grant1">5. DCL - GRANT (Cấp quyền SELECT cho guest)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex-grow bg-[#1e1e1e] p-4 font-mono text-sm overflow-auto text-green-400 relative">
+                        <pre id="code-display" class="whitespace-pre-wrap code-font">SELECT Mid, TenBN
+FROM bannhac
+WHERE Aid = 1
+ORDER BY TenBN;</pre>
+                        
+                    </div>
+                    
+                    <div class="p-4 bg-white border-t border-slate-200 flex justify-between items-center">
+                        <span class="text-xs text-slate-500"><i class="fas fa-info-circle"></i> Nhấn để xem kết quả mô phỏng</span>
+                        <button onclick="runSimulation()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold transition shadow-md flex items-center gap-2">
+                            <i class="fas fa-play"></i> Thực thi (F5)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Visual Result -->
+                <div class="glass-card rounded-2xl p-0 flex flex-col overflow-hidden border border-slate-200 shadow-sm relative">
+                    <div class="bg-indigo-50 p-3 border-b border-indigo-100 flex items-center gap-2">
+                        <i class="fas fa-table text-indigo-500"></i>
+                        <span class="font-bold text-sm text-indigo-900">Kết quả / Trạng thái CSDL</span>
+                    </div>
+                    
+                    <div class="p-4 overflow-auto flex-grow bg-white" id="result-container">
+                        <!-- Default state -->
+                        <div class="mb-4">
+                            <h4 class="text-xs font-bold bg-slate-100 inline-block px-2 py-1 rounded text-slate-600 mb-2">Bảng <code class="text-pink-600">nhacsi</code></h4>
+                            <table class="w-full text-sm border-collapse" id="tbl-nhacsi">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-600 border-b-2 border-slate-200">
+                                        <th class="p-2 text-left w-1/3">Aid (INT) PK</th>
+                                        <th class="p-2 text-left">TenNS (VARCHAR)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-100"><td class="p-2">1</td><td class="p-2">Văn Cao</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="p-2">6</td><td class="p-2">Phan Huỳnh Điểu</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xs font-bold bg-slate-100 inline-block px-2 py-1 rounded text-slate-600 mb-2">Bảng <code class="text-pink-600">bannhac</code></h4>
+                            <table class="w-full text-sm border-collapse" id="tbl-bannhac">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-600 border-b-2 border-slate-200">
+                                        <th class="p-2 text-left">Mid (CHAR) PK</th>
+                                        <th class="p-2 text-left">Aid (INT) FK</th>
+                                        <th class="p-2 text-left">TenBN (VARCHAR)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-100"><td class="p-2">0001</td><td class="p-2">1</td><td class="p-2">Tiến quân ca</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="p-2">0002</td><td class="p-2">1</td><td class="p-2">Mùa xuân đầu tiên</td></tr>
+                                    <tr class="border-b border-slate-100" id="row-delete"><td class="p-2">0005</td><td class="p-2">6</td><td class="p-2">Bản nhạc test</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Overlay for Output msg -->
+                    <div id="toast-msg" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-10 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-green-400"></i> Lệnh thực thi thành công
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Trắc nghiệm -->
+        <div id="tab-quiz" class="tab-content hidden animate-fade-in max-w-3xl mx-auto">
+            <div class="glass-card rounded-2xl p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800"><i class="fas fa-tasks text-indigo-500 mr-2"></i>Ôn tập nhanh (5 câu)</h2>
+                    <p class="text-slate-500 text-sm">Dựa trên nội dung SGK Tin học 11 - Bài 14</p>
+                </div>
+
+                <form id="quiz-form" class="space-y-6">
+                    <!-- Q1 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm question-block">
+                        <h3 class="font-bold text-slate-800 mb-3">1. SQL là viết tắt của cụm từ nào?</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q1" value="A" class="w-4 h-4 text-indigo-600">
+                                <span>A. Structured Query Language</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q1" value="B" class="w-4 h-4 text-indigo-600">
+                                <span>B. Standard Query Language</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q1" value="C" class="w-4 h-4 text-indigo-600">
+                                <span>C. System Query Logic</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm question-block">
+                        <h3 class="font-bold text-slate-800 mb-3">2. Nhóm lệnh DDL (Data Definition Language) dùng để làm gì?</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q2" value="A" class="w-4 h-4 text-indigo-600">
+                                <span>A. Cập nhật và truy xuất dữ liệu.</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q2" value="B" class="w-4 h-4 text-indigo-600">
+                                <span>B. Kiểm soát quyền người dùng đối với CSDL.</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q2" value="C" class="w-4 h-4 text-indigo-600">
+                                <span>C. Khởi tạo CSDL, khởi tạo bảng, thiết lập khoá.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm question-block">
+                        <h3 class="font-bold text-slate-800 mb-3">3. Kiểu dữ liệu nào được sử dụng cho xâu kí tự có độ dài thay đổi?</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q3" value="A" class="w-4 h-4 text-indigo-600">
+                                <span>A. CHAR(n)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q3" value="B" class="w-4 h-4 text-indigo-600">
+                                <span>B. VARCHAR(n)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q3" value="C" class="w-4 h-4 text-indigo-600">
+                                <span>C. BOOLEAN</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm question-block">
+                        <h3 class="font-bold text-slate-800 mb-3">4. Câu lệnh nào dưới đây dùng để CẤP QUYỀN truy cập cho người dùng (DCL)?</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q4" value="A" class="w-4 h-4 text-indigo-600">
+                                <span>A. GRANT</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q4" value="B" class="w-4 h-4 text-indigo-600">
+                                <span>B. REVOKE</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q4" value="C" class="w-4 h-4 text-indigo-600">
+                                <span>C. SELECT</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm question-block">
+                        <h3 class="font-bold text-slate-800 mb-3">5. Theo bảng 14.4 SGK, câu lệnh UPDATE dùng để làm gì?</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q5" value="A" class="w-4 h-4 text-indigo-600">
+                                <span>A. Xóa các dòng trong bảng thỏa mãn điều kiện.</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q5" value="B" class="w-4 h-4 text-indigo-600">
+                                <span>B. Thêm dữ liệu mới vào bảng.</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="q5" value="C" class="w-4 h-4 text-indigo-600">
+                                <span>C. Cập nhật giá trị cho trường có tên là <tên trường> trong bảng.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-4">
+                        <button type="button" onclick="submitQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold shadow-md transition transform hover:scale-105">
+                            Nộp bài & Xem điểm
+                        </button>
+                        <div id="quiz-result" class="mt-4 text-lg font-bold hidden p-4 rounded-xl"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'text-indigo-600', 'bg-e0e7ff');
+                el.classList.add('text-slate-500');
+            });
+            
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-slate-500');
+            activeBtn.classList.add('text-indigo-600');
+            
+            if(tabId === 'simulation') resetSimulation();
+        }
+
+        // --- SQL Simulation Logic ---
+        const codes = {
+            select1: `SELECT Mid, TenBN\nFROM bannhac\nWHERE Aid = 1\nORDER BY TenBN;`,
+            insert1: `INSERT INTO nhacsi VALUES\n(5, 'Phú Quang');`,
+            update1: `UPDATE nhacsi\nSET TenNS = 'Hoàng Hiệp'\nWHERE Aid = 6;`,
+            delete1: `DELETE FROM bannhac\nWHERE Mid = '0005';`,
+            grant1: `GRANT select\nON music.*\nTO guest;`
+        };
+
+        function loadCode() {
+            const val = document.getElementById('sql-selector').value;
+            document.getElementById('code-display').innerText = codes[val];
+            resetSimulation();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-msg');
+            toast.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> ${msg}`;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => { toast.classList.add('opacity-0'); }, 3000);
+        }
+
+        function resetSimulation() {
+            const container = document.getElementById('result-container');
+            container.innerHTML = `
+                <div class="mb-4 animate-fade-in">
+                    <h4 class="text-xs font-bold bg-slate-100 inline-block px-2 py-1 rounded text-slate-600 mb-2">Bảng <code class="text-pink-600">nhacsi</code></h4>
+                    <table class="w-full text-sm border-collapse" id="tbl-nhacsi">
+                        <thead><tr class="bg-slate-50 text-slate-600 border-b-2 border-slate-200"><th class="p-2 text-left w-1/3">Aid (INT)</th><th class="p-2 text-left">TenNS (VARCHAR)</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100"><td class="p-2">1</td><td class="p-2">Văn Cao</td></tr>
+                            <tr class="border-b border-slate-100" id="row-update-target"><td class="p-2">6</td><td class="p-2" id="cell-tenns-6">Phan Huỳnh Điểu</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="animate-fade-in">
+                    <h4 class="text-xs font-bold bg-slate-100 inline-block px-2 py-1 rounded text-slate-600 mb-2">Bảng <code class="text-pink-600">bannhac</code></h4>
+                    <table class="w-full text-sm border-collapse" id="tbl-bannhac">
+                        <thead><tr class="bg-slate-50 text-slate-600 border-b-2 border-slate-200"><th class="p-2 text-left">Mid (CHAR)</th><th class="p-2 text-left">Aid (INT)</th><th class="p-2 text-left">TenBN (VARCHAR)</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100 row-aid-1"><td class="p-2">0001</td><td class="p-2">1</td><td class="p-2">Tiến quân ca</td></tr>
+                            <tr class="border-b border-slate-100 row-aid-1"><td class="p-2">0002</td><td class="p-2">1</td><td class="p-2">Mùa xuân đầu tiên</td></tr>
+                            <tr class="border-b border-slate-100" id="row-delete-target"><td class="p-2">0005</td><td class="p-2">6</td><td class="p-2">Bản nhạc test</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function runSimulation() {
+            const val = document.getElementById('sql-selector').value;
+            const container = document.getElementById('result-container');
+
+            if (val === 'select1') {
+                container.innerHTML = `
+                    <div class="animate-fade-in">
+                        <h4 class="text-xs font-bold bg-indigo-100 inline-block px-2 py-1 rounded text-indigo-700 mb-2"><i class="fas fa-filter"></i> Kết quả trả về (Ảo)</h4>
+                        <table class="w-full text-sm border-collapse bg-emerald-50 border border-emerald-200 rounded overflow-hidden">
+                            <thead><tr class="bg-emerald-100 text-emerald-800"><th class="p-2 text-left">Mid</th><th class="p-2 text-left">TenBN</th></tr></thead>
+                            <tbody>
+                                <tr class="border-b border-emerald-100"><td class="p-2 font-mono">0002</td><td class="p-2">Mùa xuân đầu tiên</td></tr>
+                                <tr class="border-b border-emerald-100"><td class="p-2 font-mono">0001</td><td class="p-2">Tiến quân ca</td></tr>
+                            </tbody>
+                        </table>
+                        <p class="text-xs text-slate-500 mt-2">* Đã lọc Aid=1 và sắp xếp theo TenBN</p>
+                    </div>
+                `;
+                showToast("Truy xuất thành công");
+            } 
+            else if (val === 'insert1') {
+                resetSimulation();
+                const tbody = document.querySelector('#tbl-nhacsi tbody');
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-100 bg-emerald-100 animate-fade-in transition-colors duration-1000';
+                tr.innerHTML = '<td class="p-2 font-bold text-emerald-700">5</td><td class="p-2 font-bold text-emerald-700">Phú Quang</td>';
+                tbody.appendChild(tr);
+                setTimeout(() => tr.classList.remove('bg-emerald-100', 'text-emerald-700'), 1500);
+                showToast("Đã thêm 1 dòng vào nhacsi");
+            }
+            else if (val === 'update1') {
+                resetSimulation();
+                const cell = document.getElementById('cell-tenns-6');
+                const row = document.getElementById('row-update-target');
+                row.classList.add('bg-blue-100');
+                setTimeout(() => {
+                    cell.innerHTML = '<span class="font-bold text-blue-600">Hoàng Hiệp</span>';
+                }, 300);
+                setTimeout(() => row.classList.remove('bg-blue-100'), 1500);
+                showToast("Đã cập nhật dòng có Aid = 6");
+            }
+            else if (val === 'delete1') {
+                resetSimulation();
+                const row = document.getElementById('row-delete-target');
+                row.classList.add('bg-red-100', 'line-through', 'text-red-500');
+                setTimeout(() => {
+                    row.style.display = 'none';
+                }, 800);
+                showToast("Đã xoá dòng có Mid = '0005'");
+            }
+            else if (val === 'grant1') {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center animate-fade-in p-6">
+                        <div class="w-16 h-16 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-3xl mb-4">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-700 text-lg">Cấp quyền thành công!</h3>
+                        <p class="text-slate-500 text-sm mt-2">Người dùng <b>guest</b> hiện đã có quyền <b>SELECT</b> trên tất cả các bảng của CSDL <b>music</b>.</p>
+                        <div class="mt-4 bg-slate-100 p-3 rounded text-xs font-mono text-slate-600 w-full text-left border border-slate-200">
+                            > SYSTEM: Permission granted.<br>
+                            > USER: guest<br>
+                            > DB: music.*<br>
+                            > ROLE: select
+                        </div>
+                    </div>
+                `;
+                showToast("Cập nhật quyền thành công");
+            }
+        }
+
+        // --- Quiz Logic ---
+        const correctAnswers = { q1: 'A', q2: 'C', q3: 'B', q4: 'A', q5: 'C' };
+
+        function submitQuiz() {
+            let score = 0;
+            const form = document.getElementById('quiz-form');
+            const resultDiv = document.getElementById('quiz-result');
+            
+            // Reset colors
+            document.querySelectorAll('label').forEach(lbl => {
+                lbl.classList.remove('bg-green-50', 'border-green-400', 'bg-red-50', 'border-red-400');
+                lbl.classList.add('border-slate-100');
+            });
+
+            for (let i = 1; i <= 5; i++) {
+                const selected = form.querySelector(`input[name="q${i}"]:checked`);
+                const correctVal = correctAnswers[`q${i}`];
+                
+                // Highlight correct answer anyway
+                const correctLabel = form.querySelector(`input[name="q${i}"][value="${correctVal}"]`).parentElement;
+                correctLabel.classList.remove('border-slate-100');
+                correctLabel.classList.add('bg-green-50', 'border-green-400');
+
+                if (selected) {
+                    if (selected.value === correctVal) {
+                        score++;
+                    } else {
+                        // Highlight wrong choice
+                        selected.parentElement.classList.remove('border-slate-100');
+                        selected.parentElement.classList.add('bg-red-50', 'border-red-400');
+                    }
+                }
+            }
+
+            resultDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-yellow-100', 'text-yellow-800');
+            
+            if (score === 5) {
+                resultDiv.innerHTML = `<i class="fas fa-star text-yellow-500"></i> Tuyệt vời! Bạn đạt ${score}/5 điểm.`;
+                resultDiv.classList.add('bg-green-100', 'text-green-800');
+            } else if (score >= 3) {
+                resultDiv.innerHTML = `<i class="fas fa-thumbs-up"></i> Khá lắm! Bạn đạt ${score}/5 điểm.`;
+                resultDiv.classList.add('bg-yellow-100', 'text-yellow-800');
+            } else {
+                resultDiv.innerHTML = `<i class="fas fa-book-reader"></i> Bạn đạt ${score}/5 điểm. Hãy xem lại phần Tổng quan & Sơ đồ nhé!`;
+                resultDiv.classList.add('bg-red-100', 'text-red-800');
+            }
+        }
+    </script>
+</body>
+</html>

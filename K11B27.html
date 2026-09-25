@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 27: Công cụ vẽ và một số ứng dụng</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons (Phosphor Icons for modern look) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config for Pastel Colors & Fonts -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#E3F2FD',
+                            purple: '#F3E5F5',
+                            pink: '#FCE4EC',
+                            green: '#E8F5E9',
+                            yellow: '#FFF9C4',
+                            gray: '#F5F7FA'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #334155;
+        }
+
+        /* Glassmorphism for Tabs */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Title Styling requested */
+        .studygram-title {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            color: transparent;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Checkerboard pattern for Alpha Channel representation */
+        .checkerboard {
+            background-image: 
+                linear-gradient(45deg, #ccc 25%, transparent 25%), 
+                linear-gradient(135deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(135deg, transparent 75%, #ccc 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 0, 10px -10px, 0px 10px;
+            background-color: white;
+        }
+
+        /* Hide tabs initially */
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tool-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="font-quicksand min-h-screen flex flex-col">
+
+    <!-- Header & Navigation -->
+    <header class="glass-nav sticky top-0 z-50 px-6 py-4 shadow-sm">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="studygram-title">Bài 27: Công Cụ Vẽ Và Một Số Ứng Dụng</h1>
+            
+            <nav class="flex gap-2 bg-pastel-gray p-1 rounded-2xl shadow-inner overflow-x-auto w-full md:w-auto">
+                <button onclick="openTab('tong-quan')" id="btn-tong-quan" class="tab-btn active px-4 py-2 rounded-xl text-sm font-semibold text-blue-600 bg-white shadow-sm flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph ph-target"></i> Tổng Quan
+                </button>
+                <button onclick="openTab('cong-cu')" id="btn-cong-cu" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-500 hover:bg-white/50 flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph ph-toolbox"></i> Công Cụ
+                </button>
+                <button onclick="openTab('mo-phong')" id="btn-mo-phong" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-500 hover:bg-white/50 flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph ph-magic-wand"></i> Mô Phỏng
+                </button>
+                <button onclick="openTab('luu-y')" id="btn-luu-y" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-500 hover:bg-white/50 flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph ph-warning-circle"></i> Trọng Tâm
+                </button>
+                <button onclick="openTab('luyen-tap')" id="btn-luyen-tap" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-500 hover:bg-white/50 flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph ph-game-controller"></i> Luyện Tập
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-6xl mx-auto w-full p-6">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tong-quan" class="tab-content active">
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Mục tiêu -->
+                <div class="bg-pastel-blue rounded-3xl p-6 shadow-sm flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-blue-500 text-3xl mb-4 shadow-sm">
+                        <i class="ph ph-flag-checkered"></i>
+                    </div>
+                    <h2 class="text-xl font-bold mb-4 text-blue-800">Mục Tiêu Bài Học</h2>
+                    <ul class="text-left space-y-3 w-full">
+                        <li class="flex gap-2 items-start"><i class="ph-fill ph-check-circle text-blue-500 mt-1"></i> <span>Biết khái niệm <b>lớp ảnh (Layer)</b>.</span></li>
+                        <li class="flex gap-2 items-start"><i class="ph-fill ph-check-circle text-blue-500 mt-1"></i> <span>Biết một số <b>công cụ vẽ</b> đơn giản.</span></li>
+                        <li class="flex gap-2 items-start"><i class="ph-fill ph-check-circle text-blue-500 mt-1"></i> <span>Thực hiện tẩy, làm sạch, xoá vết xước trên ảnh.</span></li>
+                    </ul>
+                </div>
+
+                <!-- Khái niệm quan trọng -->
+                <div class="md:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                    <h2 class="text-xl font-bold mb-6 text-slate-700 flex items-center gap-2">
+                        <i class="ph ph-brain text-purple-500 text-2xl"></i> Khái Niệm Quan Trọng
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-pastel-purple rounded-2xl">
+                            <h3 class="font-bold text-purple-800 flex items-center gap-2"><i class="ph-fill ph-layers-three"></i> Lớp ảnh (Layer)</h3>
+                            <p class="text-sm mt-2">Chứa một phần hình ảnh. Giúp xử lí riêng biệt không ảnh hưởng phần khác.</p>
+                        </div>
+                        <div class="p-4 bg-pastel-pink rounded-2xl">
+                            <h3 class="font-bold text-pink-800 flex items-center gap-2"><i class="ph-fill ph-drop-half-bottom"></i> Kênh Alpha</h3>
+                            <p class="text-sm mt-2">Xác định độ trong suốt. Không có Alpha = không thể nhìn xuyên thấu xuống dưới.</p>
+                        </div>
+                        <div class="p-4 bg-pastel-green rounded-2xl">
+                            <h3 class="font-bold text-green-800 flex items-center gap-2"><i class="ph-fill ph-palette"></i> Foreground / Background</h3>
+                            <p class="text-sm mt-2">Màu nổi (màu vẽ ra) / Màu nền (màu của giấy vẽ, hiện ra khi xoá lớp ko có Alpha).</p>
+                        </div>
+                        <div class="p-4 bg-pastel-yellow rounded-2xl flex items-center justify-center relative overflow-hidden group">
+                             <div class="absolute inset-0 bg-yellow-100 flex items-center justify-center p-2 text-center text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                                Thứ tự hiển thị: Từ dưới lên trên. Có thể thay đổi bằng kéo thả!
+                             </div>
+                            <h3 class="font-bold text-yellow-800 flex items-center gap-2"><i class="ph-fill ph-sort-ascending"></i> Thứ Tự Lớp</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ví dụ thực tế Infographic -->
+            <div class="mt-8 bg-white rounded-3xl p-6 shadow-sm">
+                <h2 class="text-xl font-bold mb-4 text-slate-700 text-center">Ứng Dụng Thực Tế (Từ SGK)</h2>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <div class="flex flex-col items-center text-center max-w-[150px]">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-4xl mb-2 shadow-sm"><i class="ph-fill ph-video-camera"></i></div>
+                        <p class="text-sm font-semibold">Quay phim phông xanh</p>
+                    </div>
+                    <div class="hidden md:flex items-center text-slate-300"><i class="ph ph-arrow-right text-3xl"></i></div>
+                    <div class="flex flex-col items-center text-center max-w-[150px]">
+                        <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-4xl mb-2 shadow-sm"><i class="ph-fill ph-image"></i></div>
+                        <p class="text-sm font-semibold">Phục chế ảnh thời xưa</p>
+                    </div>
+                    <div class="hidden md:flex items-center text-slate-300"><i class="ph ph-arrow-right text-3xl"></i></div>
+                    <div class="flex flex-col items-center text-center max-w-[150px]">
+                        <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 text-4xl mb-2 shadow-sm"><i class="ph-fill ph-lightning-slash"></i></div>
+                        <p class="text-sm font-semibold">Xoá dây điện / vạch đen</p>
+                    </div>
+                    <div class="hidden md:flex items-center text-slate-300"><i class="ph ph-arrow-right text-3xl"></i></div>
+                    <div class="flex flex-col items-center text-center max-w-[150px]">
+                        <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-4xl mb-2 shadow-sm"><i class="ph-fill ph-cloud-sun"></i></div>
+                        <p class="text-sm font-semibold">Thay nền trời</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CÔNG CỤ -->
+        <section id="cong-cu" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-700">Hộp Công Cụ Vẽ (Paint Tools)</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                
+                <!-- Tool 1 -->
+                <div class="tool-card bg-white rounded-3xl p-5 shadow-sm border-t-4 border-blue-400">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="ph ph-paintbrush text-4xl text-blue-500"></i>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-bold">Paint Brush</span>
+                    </div>
+                    <p class="text-sm text-slate-600">Vẽ thêm cho lớp đang chọn. Chọn kiểu cọ trong hộp thoại Brushes.</p>
+                </div>
+
+                <!-- Tool 2 -->
+                <div class="tool-card bg-white rounded-3xl p-5 shadow-sm border-t-4 border-pink-400">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="ph ph-paint-bucket text-4xl text-pink-500"></i>
+                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full font-bold">Bucket Fill</span>
+                    </div>
+                    <p class="text-sm text-slate-600">Tô màu vùng chọn. Mặc định dùng màu nổi (Foreground).</p>
+                </div>
+
+                <!-- Tool 3 -->
+                <div class="tool-card bg-white rounded-3xl p-5 shadow-sm border-t-4 border-purple-400">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="ph ph-gradient text-4xl text-purple-500"></i>
+                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-bold">Gradient</span>
+                    </div>
+                    <p class="text-sm text-slate-600">Tô màu chuyển sắc. Mặc định: Từ màu nổi sang màu nền.</p>
+                </div>
+
+                <!-- Tool 4 -->
+                <div class="tool-card bg-white rounded-3xl p-5 shadow-sm border-t-4 border-slate-400">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="ph ph-eraser text-4xl text-slate-500"></i>
+                        <span class="bg-slate-100 text-slate-800 text-xs px-2 py-1 rounded-full font-bold">Eraser</span>
+                    </div>
+                    <p class="text-sm text-slate-600">Xoá điểm ảnh. Kết quả phụ thuộc vào việc lớp có <b>Kênh Alpha</b> hay không.</p>
+                </div>
+
+                <!-- Tool 5 -->
+                <div class="tool-card bg-white rounded-3xl p-5 shadow-sm border-t-4 border-green-400">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="ph ph-copy text-4xl text-green-500"></i>
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-bold">Clone</span>
+                    </div>
+                    <p class="text-sm text-slate-600">Vẽ bằng cách <b>sao chép chính xác</b> một vùng chọn (vùng nguồn).</p>
+                </div>
+
+                <!-- Tool 6 -->
+                <div class="tool-card bg-white rounded-3xl p-5 shadow-sm border-t-4 border-yellow-400">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="ph ph-bandaids text-4xl text-yellow-500"></i>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-bold">Healing</span>
+                    </div>
+                    <p class="text-sm text-slate-600">Vẽ bằng cách <b>kết hợp</b> điểm ảnh vùng chọn và điểm ảnh cần vẽ (chỉnh sửa mượt mà).</p>
+                </div>
+            </div>
+            
+            <!-- Relationship Mapping -->
+            <div class="mt-8 bg-pastel-gray p-6 rounded-3xl border border-dashed border-slate-300">
+                <h3 class="text-lg font-bold mb-4 text-center">Sơ Đồ Mối Quan Hệ</h3>
+                <div class="flex flex-col md:flex-row justify-center items-center gap-4 text-sm font-semibold">
+                    <div class="bg-white px-4 py-2 rounded-xl shadow-sm">Công cụ Eraser</div>
+                    <i class="ph ph-arrow-right text-slate-400"></i>
+                    <div class="bg-white px-4 py-2 rounded-xl shadow-sm border-2 border-pink-300">Tác động lên Lớp (Layer)</div>
+                    <i class="ph ph-arrow-right text-slate-400"></i>
+                    <div class="flex flex-col gap-2">
+                        <div class="bg-green-100 text-green-800 px-4 py-2 rounded-xl">Có Alpha ➔ Trở nên Trong Suốt</div>
+                        <div class="bg-red-100 text-red-800 px-4 py-2 rounded-xl">Không Alpha ➔ Ra Màu Nền (Background)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: MÔ PHỎNG (Interactive) -->
+        <section id="mo-phong" class="tab-content">
+            
+            <!-- Trạm 1: Kênh Alpha -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm mb-6">
+                <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="ph-fill ph-eraser text-pink-500"></i> Trạm 1: Hiệu ứng Kênh Alpha (Eraser Tool)</h2>
+                <p class="text-sm text-slate-500 mb-4">Hãy dùng chuột/tay kéo thả lên hai ô bên dưới để "xoá" thử. Giả sử Màu Nền (Background) đang là <b>Màu Đỏ</b>.</p>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="flex flex-col items-center">
+                        <h3 class="font-bold mb-2 text-green-600">Lớp CÓ kênh Alpha</h3>
+                        <div class="relative w-full aspect-video rounded-xl overflow-hidden border-2 border-slate-200 checkerboard cursor-crosshair">
+                            <!-- Overlay to erase -->
+                            <canvas id="canvas-alpha" class="absolute inset-0 w-full h-full"></canvas>
+                        </div>
+                        <p class="text-xs text-center mt-2">Điểm ảnh bị xoá trở nên trong suốt (hiện caro).</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <h3 class="font-bold mb-2 text-red-500">Lớp KHÔNG có kênh Alpha</h3>
+                        <div class="relative w-full aspect-video rounded-xl overflow-hidden border-2 border-slate-200 bg-red-500 cursor-crosshair">
+                            <canvas id="canvas-no-alpha" class="absolute inset-0 w-full h-full"></canvas>
+                        </div>
+                        <p class="text-xs text-center mt-2">Điểm ảnh bị xoá mang màu nền (Background).</p>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button onclick="initEraserSimulations()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-1 rounded-lg text-sm transition"><i class="ph ph-arrows-clockwise"></i> Làm lại</button>
+                </div>
+            </div>
+
+            <!-- Trạm 2: Xếp lớp ảnh -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm">
+                <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="ph-fill ph-layers-three text-blue-500"></i> Trạm 2: Thử thách xếp lớp ảnh (Hộp Layer)</h2>
+                <p class="text-sm text-slate-500 mb-4 bg-blue-50 p-3 rounded-xl border border-blue-100">
+                    <b>Bài toán SGK:</b> Có 3 lớp thứ tự từ dưới lên: 1 (Bông hoa), 2 (Quả táo), 3 (Chiếc bàn). <b>Chỉ lớp 2 có kênh Alpha</b>. Độ mờ cả 3 là 100. <br>
+                    <i>Hãy tương tác bật/tắt con mắt hiển thị bên dưới để xem kết quả!</i>
+                </p>
+                
+                <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
+                    
+                    <!-- Hộp Layer UI mô phỏng -->
+                    <div class="bg-slate-100 border border-slate-300 rounded-xl p-4 w-[250px] font-sans">
+                        <div class="text-xs border-b border-slate-300 pb-2 mb-2 flex justify-between">
+                            <span>Layers</span> <span>Opacity: 100%</span>
+                        </div>
+                        <div class="flex flex-col gap-1" id="layer-list">
+                            <!-- Layer 3 -->
+                            <div class="flex items-center gap-2 bg-white p-1 rounded border border-slate-200">
+                                <button onclick="toggleLayer(3)" class="text-slate-600 hover:text-black w-6"><i id="eye-3" class="ph-fill ph-eye"></i></button>
+                                <div class="w-8 h-6 bg-[#8B4513] text-[8px] text-white flex items-center justify-center">Không Alpha</div>
+                                <span class="text-sm font-semibold">Lớp 3: Bàn</span>
+                            </div>
+                            <!-- Layer 2 -->
+                            <div class="flex items-center gap-2 bg-slate-200 p-1 rounded border border-slate-300">
+                                <button onclick="toggleLayer(2)" class="text-slate-600 hover:text-black w-6"><i id="eye-2" class="ph-fill ph-eye"></i></button>
+                                <div class="w-8 h-6 bg-red-500 rounded-full flex items-center justify-center checkerboard border border-black/10"><div class="w-4 h-4 bg-red-500 rounded-full"></div></div>
+                                <span class="text-sm font-semibold">Lớp 2: Táo (Alpha)</span>
+                            </div>
+                            <!-- Layer 1 -->
+                            <div class="flex items-center gap-2 bg-white p-1 rounded border border-slate-200">
+                                <button onclick="toggleLayer(1)" class="text-slate-600 hover:text-black w-6"><i id="eye-1" class="ph-fill ph-eye"></i></button>
+                                <div class="w-8 h-6 bg-pink-300 flex items-center justify-center"><i class="ph-fill ph-flower"></i></div>
+                                <span class="text-sm font-semibold">Lớp 1: Hoa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Kết quả -->
+                    <div class="relative w-48 h-48 border-4 border-slate-800 rounded-xl overflow-hidden bg-white shadow-lg flex items-center justify-center">
+                        <!-- Lớp 1 (Đáy) -->
+                        <div id="view-layer-1" class="absolute inset-0 bg-pink-100 flex items-center justify-center transition-opacity">
+                            <i class="ph-fill ph-flower text-9xl text-pink-400 opacity-50"></i>
+                        </div>
+                        <!-- Lớp 2 (Giữa, có Alpha) -> Nền trong suốt, chỉ thấy quả táo -->
+                        <div id="view-layer-2" class="absolute inset-0 flex items-center justify-center transition-opacity">
+                            <div class="w-20 h-20 bg-red-500 rounded-full shadow-md z-10 flex items-center justify-center"><span class="text-white text-xs font-bold">Táo</span></div>
+                        </div>
+                        <!-- Lớp 3 (Đỉnh, Không Alpha) -> Che kín toàn bộ màn hình bằng màu cái bàn -->
+                        <div id="view-layer-3" class="absolute inset-0 bg-[#8B4513] flex items-center justify-center transition-opacity">
+                            <span class="text-white font-bold text-xl">Mặt Bàn Gỗ</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 p-4 bg-yellow-50 rounded-xl text-sm border-l-4 border-yellow-400">
+                    <p><b>Giải thích:</b> Nếu <b>Lớp 3</b> (trên cùng) không có kênh Alpha và độ mờ 100%, nó đóng vai trò như một tờ giấy đục che khuất mọi thứ bên dưới. Ta chỉ thấy cái Bàn! Tắt con mắt Lớp 3 đi, bạn sẽ thấy Lớp 2 (Táo) nằm trên Lớp 1 (Hoa), do Lớp 2 có Alpha (trong suốt ở phần xung quanh quả táo) nên ta thấy quả táo và nền hoa phía sau.</p>
+                </div>
+            </div>
+
+            <!-- Trạm 3: Clone vs Healing -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm mt-6">
+                <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="ph-fill ph-bandaids text-yellow-500"></i> Trạm 3: Clone vs Healing (Nhiệm vụ 1)</h2>
+                <p class="text-sm text-slate-500 mb-4">Thử xoá vết đen vắt ngang giữa <b>Trời xanh</b> và <b>Lá cây</b> (ranh giới màu khác biệt). <br>Kéo chuột/tay dọc theo vết đen để xoá và xem hiện tượng "lem màu" khi dùng Healing sai cách!</p>
+                
+                <div class="flex flex-col md:flex-row gap-6 items-center justify-center">
+                    <!-- Tools -->
+                    <div class="flex flex-col gap-3 w-full md:w-1/3">
+                        <button onclick="setTool3('clone')" id="btn-tool-clone" class="px-4 py-3 bg-green-100 text-green-700 rounded-xl font-bold border-2 border-green-500 shadow-sm flex justify-between items-center transition">
+                            <span>Dùng Clone (Sao chép)</span> <i class="ph-fill ph-copy text-xl"></i>
+                        </button>
+                        <button onclick="setTool3('healing')" id="btn-tool-healing" class="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold border-2 border-transparent hover:bg-yellow-50 hover:text-yellow-700 transition flex justify-between items-center">
+                            <span>Dùng Healing (Trộn màu)</span> <i class="ph-fill ph-bandaids text-xl"></i>
+                        </button>
+                        <button onclick="initCloneHealingSim()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-bold hover:bg-slate-300 mt-2 flex items-center justify-center gap-2">
+                            <i class="ph ph-arrows-clockwise"></i> Vẽ lại vết đen
+                        </button>
+                    </div>
+                    
+                    <!-- Canvas -->
+                    <div class="relative w-full md:w-2/3 aspect-video max-w-sm border-2 border-slate-300 rounded-xl overflow-hidden cursor-crosshair shadow-inner bg-white">
+                        <canvas id="canvas-clone-healing" class="absolute inset-0 w-full h-full"></canvas>
+                    </div>
+                </div>
+                <div class="text-center h-8 mt-4">
+                    <p id="msg-tram3" class="text-sm font-semibold text-slate-600 transition-all"></p>
+                </div>
+            </div>
+
+            <!-- Trạm 4: Gradient -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm mt-6">
+                <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="ph-fill ph-gradient text-purple-500"></i> Trạm 4: Thay nền trời bằng Gradient (Nhiệm vụ 2)</h2>
+                <p class="text-sm text-slate-500 mb-4 bg-purple-50 p-3 rounded-xl border border-purple-100">
+                    Bầu trời của cánh đồng hoa đã bị xoá trong suốt (thấy được lưới caro phía sau). <br>
+                    <b>Nhiệm vụ:</b> Chọn Màu Nổi (Foreground) và Màu Nền (Background), sau đó <b>nhấn giữ và kéo chuột từ trên xuống dưới</b> trong khung ảnh để tạo màu chuyển sắc cho bầu trời giống SGK!
+                </p>
+                
+                <div class="flex flex-col md:flex-row gap-6 items-center justify-center">
+                    <!-- Color pickers -->
+                    <div class="flex md:flex-col gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm w-full md:w-auto justify-center">
+                        <div class="text-center md:text-left">
+                            <label class="text-xs font-bold text-blue-600 block mb-1">Foreground (Màu Nổi)</label>
+                            <input type="color" id="color-fg" value="#3b82f6" class="w-16 h-12 rounded cursor-pointer border-none p-0 bg-transparent">
+                        </div>
+                        <div class="text-center md:text-left">
+                            <label class="text-xs font-bold text-slate-500 block mb-1">Background (Màu Nền)</label>
+                            <input type="color" id="color-bg" value="#f8fafc" class="w-16 h-12 rounded cursor-pointer border-none p-0 bg-transparent">
+                        </div>
+                    </div>
+                    
+                    <!-- Interactive Canvas -->
+                    <div class="relative w-full md:w-2/3 aspect-video max-w-md border-4 border-slate-300 rounded-xl overflow-hidden shadow-inner checkerboard" style="touch-action: none;">
+                        <!-- Layer 1: Background (Sky) -->
+                        <canvas id="canvas-sky-bg" class="absolute inset-0 w-full h-full z-0 cursor-ns-resize"></canvas>
+                        <!-- Layer 2: Foreground (Field with transparent top) -->
+                        <canvas id="canvas-field-fg" class="absolute inset-0 w-full h-full z-10 pointer-events-none"></canvas>
+                        
+                        <!-- Overlay guideline -->
+                        <div id="grad-hint" class="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center bg-black/30 text-white opacity-100 transition-opacity duration-500">
+                            <i class="ph-fill ph-arrow-circle-down text-4xl animate-bounce"></i>
+                            <span class="font-bold text-sm mt-2 drop-shadow-md">Kéo thả từ trên xuống!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: LƯU Ý -->
+        <section id="luu-y" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-700">Góc Cảnh Báo - Dễ Nhầm Lẫn</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Clone vs Healing -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-red-100 relative">
+                    <div class="absolute -top-4 -right-4 bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-md transform rotate-12"><i class="ph-fill ph-warning-diamond"></i></div>
+                    <h3 class="text-lg font-bold mb-4 text-red-600 border-b pb-2">Clone vs Healing</h3>
+                    
+                    <div class="flex gap-4 items-start mb-4">
+                        <div class="bg-green-100 text-green-700 p-3 rounded-xl w-1/2">
+                            <b>Clone (Sao chép)</b>
+                            <p class="text-sm mt-1">Copy "Y XÌ ĐÚC". Phù hợp vùng sát viền ranh giới (ví dụ: sát lá cây, viền toà nhà) để không bị lem.</p>
+                        </div>
+                        <div class="bg-yellow-100 text-yellow-700 p-3 rounded-xl w-1/2">
+                            <b>Healing (Phục hồi)</b>
+                            <p class="text-sm mt-1">Trộn màu nguồn với màu đích. Phù hợp vùng đồng nhất (như bầu trời xanh). <i>Dễ gây "LEM MÀU" nếu xoá sát ranh giới màu khác biệt!</i></p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-2 rounded-lg text-center text-sm border border-slate-200">
+                        <p class="mb-2 font-semibold">Hiện tượng Lem Màu (Healing)</p>
+                        <div class="flex justify-center gap-2">
+                            <div class="w-16 h-16 bg-blue-300 rounded border-r-4 border-green-600 flex items-center justify-center text-[10px] text-white">Ảnh Gốc</div>
+                            <i class="ph ph-arrow-right self-center"></i>
+                            <div class="w-16 h-16 bg-blue-300 rounded border-r-4 border-green-600 flex items-center justify-center relative overflow-hidden">
+                                <div class="absolute right-0 top-1/4 w-8 h-8 bg-green-500 rounded-full blur-md opacity-70"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gradient Direction -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-purple-100">
+                    <h3 class="text-lg font-bold mb-4 text-purple-600 border-b pb-2">Thao tác Gradient (Thay nền trời)</h3>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex gap-3">
+                            <div class="bg-purple-100 p-2 rounded-lg text-purple-600 h-fit"><i class="ph-fill ph-mouse-left-click"></i></div>
+                            <div>
+                                <b>Mặc định FG to BG:</b><br>
+                                Gradient chuyển từ màu Nổi (Foreground) sang màu Nền (Background). Cần chọn đúng 2 màu này trước khi kéo.
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <div class="bg-blue-100 p-2 rounded-lg text-blue-600 h-fit"><i class="ph-fill ph-arrows-down-up"></i></div>
+                            <div>
+                                <b>Hướng kéo chuột:</b><br>
+                                Kéo từ trên (sát ảnh) thẳng đứng xuống dưới để màu chuyển mượt mà tự nhiên như bầu trời thật.
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <div class="bg-pink-100 p-2 rounded-lg text-pink-600 h-fit"><i class="ph-fill ph-copy-simple"></i></div>
+                            <div>
+                                <b>Quy tắc bất thành văn:</b><br>
+                                Luôn <i>Duplicate layer</i> (nhân bản lớp) trước khi chỉnh sửa để bảo toàn ảnh gốc!
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: LUYỆN TẬP -->
+        <section id="luyen-tap" class="tab-content">
+            <div class="max-w-2xl mx-auto bg-white rounded-3xl p-6 shadow-sm border-t-8 border-indigo-400">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-slate-700">Trắc nghiệm ôn tập (5 Câu)</h2>
+                    <span id="score-display" class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-bold">Điểm: 0/5</span>
+                </div>
+                
+                <div id="quiz-container">
+                    <!-- Quiz dynamically rendered by JS -->
+                </div>
+                
+                <div id="quiz-result" class="hidden mt-6 text-center p-6 bg-green-50 rounded-2xl border border-green-200">
+                    <i class="ph-fill ph-confetti text-5xl text-green-500 mb-2"></i>
+                    <h3 class="text-xl font-bold text-green-700">Hoàn thành!</h3>
+                    <p class="text-slate-600 mt-2">Bạn đã hoàn thành bài ôn tập kiến thức Bài 27.</p>
+                    <button onclick="resetQuiz()" class="mt-4 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl font-bold transition">Làm Lại</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- Tab Navigation Logic ---
+        function openTab(tabId) {
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('text-blue-600', 'bg-white', 'shadow-sm', 'active');
+                el.classList.add('text-slate-500', 'hover:bg-white/50');
+            });
+            
+            // Show selected
+            document.getElementById(tabId).classList.add('active');
+            let btn = document.getElementById('btn-' + tabId);
+            btn.classList.remove('text-slate-500', 'hover:bg-white/50');
+            btn.classList.add('text-blue-600', 'bg-white', 'shadow-sm', 'active');
+
+            // Re-init canvas if simulation tab is opened
+            if(tabId === 'mo-phong') {
+                setTimeout(() => {
+                    initEraserSimulations();
+                    initCloneHealingSim();
+                    initGradientSim();
+                }, 100);
+            }
+        }
+
+        // --- Simulation 1: Eraser / Alpha Channel ---
+        let isDrawingAlpha = false;
+        let isDrawingNoAlpha = false;
+        let ctxAlpha, ctxNoAlpha;
+
+        function initEraserSimulations() {
+            const canvasAlpha = document.getElementById('canvas-alpha');
+            const canvasNoAlpha = document.getElementById('canvas-no-alpha');
+            
+            // Set dimensions
+            canvasAlpha.width = canvasAlpha.parentElement.clientWidth;
+            canvasAlpha.height = canvasAlpha.parentElement.clientHeight;
+            canvasNoAlpha.width = canvasNoAlpha.parentElement.clientWidth;
+            canvasNoAlpha.height = canvasNoAlpha.parentElement.clientHeight;
+            
+            ctxAlpha = canvasAlpha.getContext('2d');
+            ctxNoAlpha = canvasNoAlpha.getContext('2d');
+
+            // Fill Alpha canvas with a color image (simulate photo)
+            ctxAlpha.fillStyle = '#3b82f6'; // Blue sky
+            ctxAlpha.fillRect(0, 0, canvasAlpha.width, canvasAlpha.height);
+            // Draw a basic cloud
+            ctxAlpha.fillStyle = '#fff';
+            ctxAlpha.beginPath(); ctxAlpha.arc(50, 40, 20, 0, Math.PI * 2); ctxAlpha.fill();
+            ctxAlpha.beginPath(); ctxAlpha.arc(80, 40, 30, 0, Math.PI * 2); ctxAlpha.fill();
+            ctxAlpha.beginPath(); ctxAlpha.arc(110, 40, 20, 0, Math.PI * 2); ctxAlpha.fill();
+
+            // Fill No Alpha canvas
+            ctxNoAlpha.fillStyle = '#3b82f6';
+            ctxNoAlpha.fillRect(0, 0, canvasNoAlpha.width, canvasNoAlpha.height);
+            ctxNoAlpha.fillStyle = '#fff';
+            ctxNoAlpha.beginPath(); ctxNoAlpha.arc(50, 40, 20, 0, Math.PI * 2); ctxNoAlpha.fill();
+            ctxNoAlpha.beginPath(); ctxNoAlpha.arc(80, 40, 30, 0, Math.PI * 2); ctxNoAlpha.fill();
+            ctxNoAlpha.beginPath(); ctxNoAlpha.arc(110, 40, 20, 0, Math.PI * 2); ctxNoAlpha.fill();
+
+            // Setup eraser settings
+            ctxAlpha.lineWidth = 20;
+            ctxAlpha.lineCap = 'round';
+            ctxNoAlpha.lineWidth = 20;
+            ctxNoAlpha.lineCap = 'round';
+
+            // Event Listeners Alpha
+            canvasAlpha.onmousedown = (e) => { isDrawingAlpha = true; eraseAlpha(e); };
+            canvasAlpha.onmousemove = (e) => { if(isDrawingAlpha) eraseAlpha(e); };
+            
+            // Event Listeners No Alpha
+            canvasNoAlpha.onmousedown = (e) => { isDrawingNoAlpha = true; eraseNoAlpha(e); };
+            canvasNoAlpha.onmousemove = (e) => { if(isDrawingNoAlpha) eraseNoAlpha(e); };
+            
+            // Touch support
+            canvasAlpha.addEventListener('touchstart', (e) => { isDrawingAlpha = true; eraseAlpha(e.touches[0]); e.preventDefault();});
+            canvasAlpha.addEventListener('touchmove', (e) => { if(isDrawingAlpha) eraseAlpha(e.touches[0]); e.preventDefault();});
+            canvasAlpha.addEventListener('touchend', () => isDrawingAlpha = false);
+            
+            canvasNoAlpha.addEventListener('touchstart', (e) => { isDrawingNoAlpha = true; eraseNoAlpha(e.touches[0]); e.preventDefault();});
+            canvasNoAlpha.addEventListener('touchmove', (e) => { if(isDrawingNoAlpha) eraseNoAlpha(e.touches[0]); e.preventDefault();});
+            canvasNoAlpha.addEventListener('touchend', () => isDrawingNoAlpha = false);
+        }
+
+        function eraseAlpha(e) {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            ctxAlpha.globalCompositeOperation = 'destination-out'; // This makes it transparent
+            ctxAlpha.lineTo(x, y);
+            ctxAlpha.stroke();
+            ctxAlpha.beginPath();
+            ctxAlpha.moveTo(x, y);
+        }
+
+        function eraseNoAlpha(e) {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            ctxNoAlpha.globalCompositeOperation = 'source-over'; // Normal drawing
+            ctxNoAlpha.strokeStyle = '#ef4444'; // Red background color
+            ctxNoAlpha.lineTo(x, y);
+            ctxNoAlpha.stroke();
+            ctxNoAlpha.beginPath();
+            ctxNoAlpha.moveTo(x, y);
+        }
+
+        // --- Simulation 2: Layer Stack ---
+        let layersVisible = { 1: true, 2: true, 3: true };
+        function toggleLayer(layerNum) {
+            layersVisible[layerNum] = !layersVisible[layerNum];
+            
+            // Update eye icon
+            const eyeIcon = document.getElementById(`eye-${layerNum}`);
+            if(layersVisible[layerNum]) {
+                eyeIcon.classList.remove('ph-eye-closed', 'text-slate-300');
+                eyeIcon.classList.add('ph-eye', 'text-slate-600');
+            } else {
+                eyeIcon.classList.remove('ph-eye', 'text-slate-600');
+                eyeIcon.classList.add('ph-eye-closed', 'text-slate-300');
+            }
+
+            // Update view
+            const viewLayer = document.getElementById(`view-layer-${layerNum}`);
+            viewLayer.style.opacity = layersVisible[layerNum] ? '1' : '0';
+        }
+
+        // --- Global MouseUp (Unified for all sims) ---
+        window.addEventListener('mouseup', (e) => {
+            isDrawingAlpha = false;
+            isDrawingNoAlpha = false;
+            isDrawing3 = false;
+            if(isDraggingGrad && handleGradEndGlobal) {
+                handleGradEndGlobal(e);
+            }
+        });
+
+        // --- Simulation 3: Clone vs Healing ---
+        let tool3 = 'clone';
+        let isDrawing3 = false;
+        let ctx3;
+        
+        function setTool3(selectedTool) {
+            tool3 = selectedTool;
+            // Update button styles
+            const btnClone = document.getElementById('btn-tool-clone');
+            const btnHealing = document.getElementById('btn-tool-healing');
+            
+            if(tool3 === 'clone') {
+                btnClone.className = "px-4 py-3 bg-green-100 text-green-700 rounded-xl font-bold border-2 border-green-500 shadow-sm flex justify-between items-center transition";
+                btnHealing.className = "px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold border-2 border-transparent hover:bg-yellow-50 hover:text-yellow-700 transition flex justify-between items-center";
+                document.getElementById('msg-tram3').innerHTML = "Đang chọn: <b>Clone</b> (Sao chép nguyên bản).";
+            } else {
+                btnHealing.className = "px-4 py-3 bg-yellow-100 text-yellow-700 rounded-xl font-bold border-2 border-yellow-500 shadow-sm flex justify-between items-center transition";
+                btnClone.className = "px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold border-2 border-transparent hover:bg-green-50 hover:text-green-700 transition flex justify-between items-center";
+                document.getElementById('msg-tram3').innerHTML = "Đang chọn: <b>Healing</b> (Trộn màu với xung quanh).";
+            }
+        }
+
+        function initCloneHealingSim() {
+            const canvas3 = document.getElementById('canvas-clone-healing');
+            if(!canvas3) return;
+            canvas3.width = canvas3.parentElement.clientWidth;
+            canvas3.height = canvas3.parentElement.clientHeight;
+            ctx3 = canvas3.getContext('2d');
+            
+            // Draw Sky (Left half)
+            ctx3.fillStyle = '#87CEEB';
+            ctx3.fillRect(0, 0, canvas3.width/2, canvas3.height);
+            // Draw Leaves (Right half)
+            ctx3.fillStyle = '#228B22';
+            ctx3.fillRect(canvas3.width/2, 0, canvas3.width/2, canvas3.height);
+            
+            // Draw a black scratch across
+            ctx3.strokeStyle = '#1e293b';
+            ctx3.lineWidth = 15;
+            ctx3.lineCap = 'round';
+            ctx3.beginPath();
+            ctx3.moveTo(30, canvas3.height/2);
+            ctx3.lineTo(canvas3.width - 30, canvas3.height/2);
+            ctx3.stroke();
+            
+            document.getElementById('msg-tram3').innerHTML = "";
+            
+            // Event setup
+            const handleDraw = (e) => {
+                if(!isDrawing3) return;
+                let rect = canvas3.getBoundingClientRect();
+                let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                let x = clientX - rect.left;
+                let y = clientY - rect.top;
+                
+                let boundaryX = canvas3.width / 2;
+                
+                ctx3.beginPath();
+                ctx3.arc(x, y, 12, 0, Math.PI*2);
+                
+                if (tool3 === 'healing' && Math.abs(x - boundaryX) < 40) {
+                    // Lem màu (smudge) when near boundary
+                    ctx3.fillStyle = 'rgba(34, 139, 34, 0.6)'; // blurry green bleeding into sky
+                    ctx3.fill();
+                    document.getElementById('msg-tram3').innerHTML = '<span class="text-red-500"><i class="ph-fill ph-warning-circle"></i> Oái! Bị lem màu từ lá cây sang bầu trời rồi!</span>';
+                } else {
+                    // Clean fix based on side
+                    ctx3.fillStyle = x < boundaryX ? '#87CEEB' : '#228B22';
+                    ctx3.fill();
+                    if(tool3 === 'clone' && Math.abs(x - boundaryX) < 40) {
+                        document.getElementById('msg-tram3').innerHTML = '<span class="text-green-600"><i class="ph-fill ph-check-circle"></i> Clone sao chép rất sạch, ranh giới hoàn hảo!</span>';
+                    }
+                }
+            };
+            
+            canvas3.onmousedown = () => { isDrawing3 = true; };
+            canvas3.onmousemove = handleDraw;
+            
+            canvas3.ontouchstart = (e) => { isDrawing3 = true; e.preventDefault(); };
+            canvas3.ontouchmove = (e) => { handleDraw(e); e.preventDefault(); };
+            canvas3.ontouchend = () => { isDrawing3 = false; };
+        }
+
+        // --- Simulation 4: Gradient Sky ---
+        let ctxSky4, ctxField4, canvasSky4, canvasField4;
+        let isDraggingGrad = false;
+        let startY = 0;
+        let handleGradEndGlobal = null;
+
+        function initGradientSim() {
+            canvasSky4 = document.getElementById('canvas-sky-bg');
+            canvasField4 = document.getElementById('canvas-field-fg');
+            if(!canvasSky4) return;
+            
+            canvasSky4.width = canvasSky4.parentElement.clientWidth;
+            canvasSky4.height = canvasSky4.parentElement.clientHeight;
+            canvasField4.width = canvasSky4.width;
+            canvasField4.height = canvasSky4.height;
+            
+            ctxSky4 = canvasSky4.getContext('2d');
+            ctxField4 = canvasField4.getContext('2d');
+            
+            // Clear sky (show checkerboard behind)
+            ctxSky4.clearRect(0, 0, canvasSky4.width, canvasSky4.height);
+            document.getElementById('grad-hint').style.opacity = '1';
+            
+            // Draw Field with transparent top
+            ctxField4.clearRect(0, 0, canvasField4.width, canvasField4.height);
+            ctxField4.fillStyle = '#166534'; // Dark green grass base
+            ctxField4.beginPath();
+            ctxField4.moveTo(0, canvasField4.height);
+            ctxField4.lineTo(0, canvasField4.height/2 + 20);
+            ctxField4.quadraticCurveTo(canvasField4.width/3, canvasField4.height/2 - 20, canvasField4.width/2, canvasField4.height/2 + 10);
+            ctxField4.quadraticCurveTo(canvasField4.width*0.8, canvasField4.height/2 + 40, canvasField4.width, canvasField4.height/2 - 10);
+            ctxField4.lineTo(canvasField4.width, canvasField4.height);
+            ctxField4.fill();
+            
+            // Add some "flowers"
+            ctxField4.fillStyle = '#fde047';
+            for(let i=0; i<30; i++) {
+                ctxField4.beginPath();
+                ctxField4.arc(Math.random()*canvasField4.width, canvasField4.height/2 + 30 + Math.random()*(canvasField4.height/2), 2, 0, Math.PI*2);
+                ctxField4.fill();
+            }
+
+            // Events for drawing gradient
+            handleGradEndGlobal = (e) => {
+                if(!isDraggingGrad) return;
+                isDraggingGrad = false;
+                
+                let rect = canvasSky4.getBoundingClientRect();
+                let clientY = e.clientY;
+                if(e.changedTouches) clientY = e.changedTouches[0].clientY;
+                if(!clientY) return;
+                
+                let endY = clientY - rect.top;
+                if(Math.abs(endY - startY) < 10) return; // ignore tiny clicks
+                
+                let colorFG = document.getElementById('color-fg').value;
+                let colorBG = document.getElementById('color-bg').value;
+                
+                let grad = ctxSky4.createLinearGradient(0, startY, 0, endY);
+                grad.addColorStop(0, colorFG);
+                grad.addColorStop(1, colorBG);
+                
+                ctxSky4.fillStyle = grad;
+                ctxSky4.fillRect(0, 0, canvasSky4.width, canvasSky4.height);
+            };
+
+            const handleGradStart = (e) => {
+                isDraggingGrad = true;
+                let rect = canvasSky4.getBoundingClientRect();
+                let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                startY = clientY - rect.top;
+                document.getElementById('grad-hint').style.opacity = '0';
+            };
+
+            canvasSky4.onmousedown = handleGradStart;
+            canvasSky4.ontouchstart = (e) => { handleGradStart(e); e.preventDefault(); };
+            canvasSky4.ontouchend = handleGradEndGlobal;
+        }
+
+        // --- Quiz Logic ---
+        const quizData = [
+            {
+                q: "Lớp ảnh (Layer) đóng vai trò gì trong chỉnh sửa ảnh?",
+                opts: ["Nén dung lượng tệp ảnh nhỏ lại.", "Xử lí các phần riêng biệt mà không ảnh hưởng phần khác.", "Chỉ dùng để thêm văn bản vào ảnh.", "Chuyển ảnh màu thành ảnh đen trắng."],
+                ans: 1
+            },
+            {
+                q: "Khi dùng công cụ Eraser xoá trên lớp KHÔNG CÓ kênh Alpha, điểm ảnh bị xoá sẽ thế nào?",
+                opts: ["Trở nên trong suốt.", "Bị lỗi và đóng phần mềm.", "Sẽ có màu của nền (Background).", "Sẽ có màu nổi (Foreground)."],
+                ans: 2
+            },
+            {
+                q: "Sự khác biệt chính giữa công cụ Clone và Healing là gì?",
+                opts: ["Clone tạo viền mờ, Healing sắc nét.", "Clone sao chép chính xác, Healing kết hợp điểm ảnh nguồn và đích.", "Clone dùng tẩy xoá, Healing dùng để vẽ.", "Không có sự khác biệt, dùng thay thế nhau 100%."],
+                ans: 1
+            },
+            {
+                q: "Để thay nền trời phía sau bằng một lớp màu chuyển đơn giản (như xanh lam nhạt dần), ta dùng công cụ nào?",
+                opts: ["Paint Brush", "Clone", "Eraser", "Gradient"],
+                ans: 3
+            },
+            {
+                q: "Khi xoá vết gạch đen sát viền một chiếc lá, ta NÊN dùng công cụ nào để không bị hiện tượng lem màu lá vào vùng xoá?",
+                opts: ["Healing", "Clone", "Bucket Fill", "Gradient"],
+                ans: 1
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            if(currentQ >= quizData.length) {
+                container.innerHTML = '';
+                document.getElementById('quiz-result').classList.remove('hidden');
+                return;
+            }
+
+            const q = quizData[currentQ];
+            let html = `
+                <div class="mb-4">
+                    <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded">Câu ${currentQ + 1}/${quizData.length}</span>
+                    <h3 class="text-lg font-bold text-slate-800 mt-2">${q.q}</h3>
+                </div>
+                <div class="space-y-3">
+            `;
+            
+            q.opts.forEach((opt, idx) => {
+                html += `
+                    <button onclick="checkAnswer(${idx})" class="w-full text-left p-4 rounded-xl border-2 border-slate-100 hover:border-indigo-300 hover:bg-indigo-50 transition font-medium text-slate-600">
+                        ${String.fromCharCode(65 + idx)}. ${opt}
+                    </button>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function checkAnswer(selectedIdx) {
+            const correctIdx = quizData[currentQ].ans;
+            const buttons = document.querySelectorAll('#quiz-container button');
+            
+            // Disable all buttons
+            buttons.forEach(b => b.disabled = true);
+            
+            if(selectedIdx === correctIdx) {
+                buttons[selectedIdx].classList.replace('border-slate-100', 'border-green-500');
+                buttons[selectedIdx].classList.replace('hover:bg-indigo-50', 'bg-green-50');
+                buttons[selectedIdx].classList.add('text-green-700');
+                score++;
+                document.getElementById('score-display').innerText = `Điểm: ${score}/5`;
+            } else {
+                buttons[selectedIdx].classList.replace('border-slate-100', 'border-red-500');
+                buttons[selectedIdx].classList.replace('hover:bg-indigo-50', 'bg-red-50');
+                buttons[selectedIdx].classList.add('text-red-700');
+                
+                // Show correct
+                buttons[correctIdx].classList.replace('border-slate-100', 'border-green-500');
+                buttons[correctIdx].classList.add('bg-green-50', 'text-green-700');
+            }
+
+            setTimeout(() => {
+                currentQ++;
+                renderQuiz();
+            }, 1200);
+        }
+
+        function resetQuiz() {
+            currentQ = 0;
+            score = 0;
+            document.getElementById('score-display').innerText = `Điểm: 0/5`;
+            document.getElementById('quiz-result').classList.add('hidden');
+            renderQuiz();
+        }
+
+        // Initialize quiz on load
+        renderQuiz();
+        
+        // Handle window resize for canvas
+        window.addEventListener('resize', () => {
+             if(document.getElementById('mo-phong').classList.contains('active')) {
+                 initEraserSimulations();
+                 initCloneHealingSim();
+                 initGradientSim();
+             }
+        });
+
+    </script>
+</body>
+</html>

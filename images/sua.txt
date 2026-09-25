@@ -1,0 +1,25 @@
+sửa tiêu đề thành: 
+BÀI 10: Lưu trữ dữ liệu và khai thác thông tin
+bỏ phần cuối ảnh có logo và chữ Gemini Notebook
+
+
+
+
+
+hãy tóm tắt thật chi tiết tài liệu trên, theo đề mục từng phần
+hãy tóm tắt ngắn gọn tài liệu trên, dòng đầu tiên là tên bài học
+
+
+
+
+sửa tiêu đề thành: 
+Bài 10: Tạo liên kết
+bỏ phần cuối ảnh có logo và chữ Gemini Notebook
+
+
+
+
+
+Repo đã có thể truy cập toàn bộ trang web trên GitHub Pages
+Cấu hình hoàn tất:
+GitHub Pages: https://phongatrix.github.io/tailieu/

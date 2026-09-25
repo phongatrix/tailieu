@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 23 - Truy Xuất Dữ Liệu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        /* Tiêu đề theo yêu cầu chuẩn: Quicksand, Bold, Gradient Xanh-Tím, Title Case, 28px */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;
+            text-transform: capitalize;
+        }
+
+        /* Pastel Themes */
+        .bg-pastel-blue { background-color: #e0f2fe; }
+        .bg-pastel-pink { background-color: #fce7f3; }
+        .bg-pastel-green { background-color: #dcfce3; }
+        .bg-pastel-purple { background-color: #f3e8ff; }
+        .bg-pastel-yellow { background-color: #fef08a; }
+
+        .tab-btn.active {
+            background-color: #6366f1;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        .interactive-block:hover {
+            transform: translateY(-2px);
+            transition: all 0.2s ease;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="max-w-5xl mx-auto mb-8 text-center flex flex-col items-center gap-3">
+        <div class="p-3 bg-white rounded-full shadow-sm inline-block">
+            <i data-lucide="database" class="w-8 h-8 text-blue-500"></i>
+        </div>
+        <h1 class="title-gradient">Bài 23: Thực Hành Truy Xuất Dữ Liệu Qua Liên Kết Các Bảng</h1>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="max-w-5xl mx-auto mb-6 flex flex-wrap justify-center gap-3">
+        <button onclick="switchTab('tong-quan', this)" class="tab-btn active px-6 py-2.5 rounded-full font-bold bg-white text-gray-600 shadow-sm transition-all flex items-center gap-2">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Tổng Quan
+        </button>
+        <button onclick="switchTab('cu-phap', this)" class="tab-btn px-6 py-2.5 rounded-full font-bold bg-white text-gray-600 shadow-sm transition-all flex items-center gap-2">
+            <i data-lucide="code" class="w-4 h-4"></i> Cú Pháp & Sơ Đồ
+        </button>
+        <button onclick="switchTab('luu-y', this)" class="tab-btn px-6 py-2.5 rounded-full font-bold bg-white text-gray-600 shadow-sm transition-all flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i> Trọng Tâm
+        </button>
+        <button onclick="switchTab('tuong-tac', this)" class="tab-btn px-6 py-2.5 rounded-full font-bold bg-white text-gray-600 shadow-sm transition-all flex items-center gap-2">
+            <i data-lucide="monitor-play" class="w-4 h-4"></i> Ứng Dụng
+        </button>
+        <button onclick="switchTab('trac-nghiem', this)" class="tab-btn px-6 py-2.5 rounded-full font-bold bg-white text-gray-600 shadow-sm transition-all flex items-center gap-2">
+            <i data-lucide="check-square" class="w-4 h-4"></i> Quiz
+        </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="max-w-5xl mx-auto">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <section id="tong-quan" class="tab-content animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Mục tiêu -->
+                <div class="glass-card rounded-3xl p-6 bg-pastel-blue">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-2 bg-blue-500 rounded-xl text-white"><i data-lucide="target"></i></div>
+                        <h2 class="text-xl font-bold text-blue-900">Mục Tiêu Bài Học</h2>
+                    </div>
+                    <p class="text-lg text-blue-800 font-medium bg-white/50 p-4 rounded-2xl">
+                        Hiểu được cách thức truy xuất dữ liệu qua liên kết các bảng.
+                    </p>
+                </div>
+
+                <!-- Khái niệm -->
+                <div class="glass-card rounded-3xl p-6 bg-pastel-pink">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-2 bg-pink-500 rounded-xl text-white"><i data-lucide="book-open"></i></div>
+                        <h2 class="text-xl font-bold text-pink-900">Từ Khóa Quan Trọng</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-4 py-2 bg-white rounded-full text-pink-700 font-bold shadow-sm">Bảng (Table)</span>
+                        <span class="px-4 py-2 bg-white rounded-full text-pink-700 font-bold shadow-sm">Khoá chính</span>
+                        <span class="px-4 py-2 bg-white rounded-full text-pink-700 font-bold shadow-sm">Khoá ngoài</span>
+                        <span class="px-4 py-2 bg-white rounded-full text-pink-700 font-bold shadow-sm">Truy vấn SQL</span>
+                        <span class="px-4 py-2 bg-white rounded-full text-pink-700 font-bold shadow-sm border-2 border-pink-400">INNER JOIN</span>
+                    </div>
+                </div>
+
+                <!-- Mối quan hệ bằng Sơ đồ -->
+                <div class="glass-card rounded-3xl p-6 bg-white md:col-span-2 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-2 bg-purple-500 rounded-xl text-white"><i data-lucide="share-2"></i></div>
+                        <h2 class="text-xl font-bold text-purple-900">Mối Quan Hệ Liên Kết Bảng</h2>
+                    </div>
+                    
+                    <!-- Infographic Sơ đồ -->
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 bg-pastel-purple p-8 rounded-2xl relative">
+                        
+                        <!-- Bảng bannhac -->
+                        <div class="bg-white rounded-2xl p-4 shadow-md w-full md:w-64 border-2 border-purple-200 z-10">
+                            <h3 class="font-bold text-center text-purple-700 mb-2 border-b pb-2">Bảng bannhac</h3>
+                            <ul class="text-sm space-y-2 font-medium">
+                                <li>🔑 idBannhac</li>
+                                <li>📝 tenBannhac</li>
+                                <li class="bg-purple-100 p-1 rounded text-purple-800 border border-purple-300">🔗 idNhacsi (Khoá ngoài)</li>
+                                <li>🏷️ idTheloai</li>
+                            </ul>
+                        </div>
+
+                        <!-- Mũi tên liên kết -->
+                        <div class="hidden md:flex flex-col items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <span class="text-xs font-bold text-purple-600 bg-white px-2 py-1 rounded-full shadow-sm z-20">Tham chiếu (JOIN)</span>
+                            <div class="h-1 w-32 bg-purple-400 rounded-full my-1"></div>
+                        </div>
+                        <div class="md:hidden flex flex-col items-center my-2">
+                             <i data-lucide="arrow-down" class="text-purple-400"></i>
+                             <span class="text-xs font-bold text-purple-600 bg-white px-2 py-1 rounded-full shadow-sm my-1">Tham chiếu</span>
+                        </div>
+
+                        <!-- Bảng nhacsi -->
+                        <div class="bg-white rounded-2xl p-4 shadow-md w-full md:w-64 border-2 border-purple-200 z-10">
+                            <h3 class="font-bold text-center text-purple-700 mb-2 border-b pb-2">Bảng nhacsi</h3>
+                            <ul class="text-sm space-y-2 font-medium">
+                                <li class="bg-purple-100 p-1 rounded text-purple-800 border border-purple-300">🔑 idNhacsi (Khoá chính)</li>
+                                <li>📝 tenNhacsi</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="text-center mt-4 text-gray-600 text-sm font-medium">Để lấy tên nhạc sĩ cho bản nhạc, cần liên kết qua trường <b>idNhacsi</b>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CÚ PHÁP & VÍ DỤ -->
+        <section id="cu-phap" class="tab-content hidden animate-fade-in">
+            <!-- Cú pháp lõi -->
+            <div class="glass-card rounded-3xl p-6 bg-pastel-green mb-6 border border-green-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-green-500 rounded-xl text-white"><i data-lucide="code-2"></i></div>
+                    <h2 class="text-xl font-bold text-green-900">Kiến Thức Cốt Lõi: Cấu Trúc INNER JOIN</h2>
+                </div>
+                <div class="bg-gray-800 rounded-2xl p-6 font-mono text-sm shadow-inner overflow-x-auto text-green-300">
+                    <p><span class="text-pink-400 font-bold">SELECT</span> danh_sách_tên_trường_của_2_bảng</p>
+                    <p><span class="text-pink-400 font-bold">FROM</span> tên_bảng_a</p>
+                    <p class="pl-4"><span class="text-yellow-400 font-bold">INNER JOIN</span> tên_bảng_b</p>
+                    <p class="pl-8"><span class="text-blue-400 font-bold">ON</span> tên_bảng_a.tên_trường_a <span class="text-white">=</span> tên_bảng_b.tên_trường_b</p>
+                    <p class="text-gray-400">[WHERE ... ]</p>
+                    <p class="text-gray-400">[ORDER BY ... ];</p>
+                </div>
+                <div class="mt-4 p-3 bg-white/60 rounded-xl text-sm font-medium text-green-800">
+                    <i data-lucide="info" class="w-4 h-4 inline mb-1"></i> Để truy vấn nhiều hơn 2 bảng, hãy <b>lặp lại</b> mệnh đề <code>INNER JOIN</code>.
+                </div>
+            </div>
+
+            <!-- Interactive SQL Builder -->
+            <div class="glass-card rounded-3xl p-6 bg-white border border-gray-200 shadow-sm">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">Tương Tác: Lắp Ráp Câu Lệnh SQL</h2>
+                <p class="text-sm text-gray-500 mb-6">Nhấp vào các khối bên dưới theo đúng thứ tự để tạo câu truy vấn lấy <b class="text-blue-600">tên bản nhạc</b> và <b class="text-blue-600">tên nhạc sĩ</b>.</p>
+                
+                <!-- Blocks to click -->
+                <div class="flex flex-wrap gap-2 mb-6" id="sql-blocks">
+                    <button onclick="addSQL('SELECT ')" class="interactive-block px-3 py-2 bg-pink-100 text-pink-700 font-bold rounded-lg border border-pink-200">SELECT</button>
+                    <button onclick="addSQL('bannhac.tenBannhac, ')" class="interactive-block px-3 py-2 bg-gray-100 text-gray-700 rounded-lg border border-gray-200">bannhac.tenBannhac,</button>
+                    <button onclick="addSQL('nhacsi.tenNhacsi ')" class="interactive-block px-3 py-2 bg-gray-100 text-gray-700 rounded-lg border border-gray-200">nhacsi.tenNhacsi</button>
+                    <button onclick="addSQL('\nFROM ')" class="interactive-block px-3 py-2 bg-pink-100 text-pink-700 font-bold rounded-lg border border-pink-200">FROM</button>
+                    <button onclick="addSQL('bannhac ')" class="interactive-block px-3 py-2 bg-gray-100 text-gray-700 rounded-lg border border-gray-200">bannhac</button>
+                    <button onclick="addSQL('\nINNER JOIN ')" class="interactive-block px-3 py-2 bg-yellow-100 text-yellow-700 font-bold rounded-lg border border-yellow-200">INNER JOIN</button>
+                    <button onclick="addSQL('nhacsi ')" class="interactive-block px-3 py-2 bg-gray-100 text-gray-700 rounded-lg border border-gray-200">nhacsi</button>
+                    <button onclick="addSQL('\nON ')" class="interactive-block px-3 py-2 bg-blue-100 text-blue-700 font-bold rounded-lg border border-blue-200">ON</button>
+                    <button onclick="addSQL('bannhac.idNhacsi = nhacsi.idNhacsi;')" class="interactive-block px-3 py-2 bg-purple-100 text-purple-700 rounded-lg border border-purple-200">bannhac.idNhacsi = nhacsi.idNhacsi;</button>
+                </div>
+
+                <!-- Result Area -->
+                <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-4 min-h-[120px] relative">
+                    <button onclick="clearSQL()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <pre id="sql-result" class="font-mono text-sm text-gray-700 whitespace-pre-wrap"></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: TRỌNG TÂM LƯU Ý -->
+        <section id="luu-y" class="tab-content hidden animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Nội dung dễ nhầm lẫn -->
+                <div class="glass-card rounded-3xl p-6 bg-red-50 border border-red-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-2 bg-red-500 rounded-xl text-white"><i data-lucide="alert-triangle"></i></div>
+                        <h2 class="text-xl font-bold text-red-900">Điểm Dễ Nhầm Lẫn</h2>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-red-400">
+                            <h3 class="font-bold text-gray-800 mb-1">Trường trùng tên giữa 2 bảng</h3>
+                            <p class="text-sm text-gray-600 mb-2">Cả 2 bảng đều có <code>idNhacsi</code>. Khi viết lệnh, <b>BẮT BUỘC</b> phải chỉ rõ tên bảng phía trước.</p>
+                            <div class="flex gap-2 text-sm font-mono">
+                                <span class="bg-red-100 text-red-700 px-2 py-1 rounded line-through">idNhacsi</span>
+                                <i data-lucide="arrow-right" class="w-5 text-gray-400"></i>
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded">bannhac.idNhacsi</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-yellow-400">
+                            <h3 class="font-bold text-gray-800 mb-1">Đổi tên trường kết xuất (Bí danh)</h3>
+                            <p class="text-sm text-gray-600 mb-2">Để phân biệt các trường trùng tên trong kết quả, dùng từ khoá <code>as</code>.</p>
+                            <code class="text-xs bg-gray-100 p-2 rounded block text-blue-700">bannhac.idNhacsi <b>as</b> idNS_BN</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hỗ trợ từ HeidiSQL -->
+                <div class="glass-card rounded-3xl p-6 bg-pastel-blue border border-blue-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-2 bg-blue-500 rounded-xl text-white"><i data-lucide="cpu"></i></div>
+                        <h2 class="text-xl font-bold text-blue-900">HeidiSQL Hỗ Trợ Gì?</h2>
+                    </div>
+                    
+                    <ul class="space-y-4">
+                        <li class="flex gap-4 items-start bg-white p-4 rounded-2xl shadow-sm">
+                            <div class="p-2 bg-purple-100 text-purple-600 rounded-lg mt-1"><i data-lucide="palette"></i></div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Syntax Coloring</h3>
+                                <p class="text-sm text-gray-600">Dùng màu sắc để trợ giúp quan sát cú pháp câu truy vấn.</p>
+                                <div class="mt-2 text-xs font-mono bg-gray-800 text-white p-2 rounded">
+                                    <span class="text-pink-400">SELECT</span> * <span class="text-pink-400">FROM</span> bannhac;
+                                </div>
+                            </div>
+                        </li>
+                        <li class="flex gap-4 items-start bg-white p-4 rounded-2xl shadow-sm">
+                            <div class="p-2 bg-green-100 text-green-600 rounded-lg mt-1"><i data-lucide="mouse-pointer-click"></i></div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Gợi ý tự động (Auto-suggest)</h3>
+                                <p class="text-sm text-gray-600">Gõ tên bảng và dấu chấm (<code>.</code>), danh sách các trường sẽ hiện ra.</p>
+                                <div class="mt-2 text-xs font-mono bg-white border p-2 rounded relative">
+                                    bannhac.<b>|</b>
+                                    <div class="absolute top-6 left-14 bg-white border shadow-lg rounded w-32">
+                                        <div class="p-1 hover:bg-blue-50 border-b">🔑 idBannhac</div>
+                                        <div class="p-1 hover:bg-blue-50 bg-blue-100">📝 tenBannhac</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: ỨNG DỤNG & TƯƠNG TÁC -->
+        <section id="tuong-tac" class="tab-content hidden animate-fade-in">
+            
+            <div class="glass-card rounded-3xl p-6 bg-white shadow-sm mb-6 border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <i data-lucide="layout" class="text-blue-500"></i> Phân Tích Giao Diện (Quản lý bản thu âm)
+                </h2>
+                
+                <!-- Mô phỏng trực quan UI Figure 23.4 -->
+                <div class="bg-[#f4f5f7] border border-gray-200 p-6 rounded-xl w-full max-w-xl mx-auto mb-6 shadow-sm">
+                    <div class="grid grid-cols-[100px_1fr] gap-y-4 gap-x-2 items-center">
+                        <!-- Row 1: Bản nhạc -->
+                        <label class="text-[15px] font-bold text-slate-700">Bản nhạc:</label>
+                        <div class="relative">
+                            <select id="select-bannhac" class="appearance-none w-full bg-white border border-gray-300 text-slate-600 text-[15px] rounded-md px-3 py-2 pr-10 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-sm transition-shadow">
+                                <option value="du-kich">Du kích sông Thao, Đỗ Nhuận</option>
+                                <option value="truong-ca">Trường ca sông Lô, Văn Cao</option>
+                                <option value="all">-- Tất cả bản nhạc --</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"></i>
+                        </div>
+
+                        <!-- Row 2: Ca sĩ -->
+                        <label class="text-[15px] font-bold text-slate-700">Ca sĩ:</label>
+                        <div class="relative">
+                            <select id="select-casi" class="appearance-none w-full bg-white border border-gray-300 text-slate-600 text-[15px] rounded-md px-3 py-2 pr-10 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-sm transition-shadow">
+                                <option value="le-dung">Lê Dung</option>
+                                <option value="tran-khanh">Trần Khánh</option>
+                                <option value="all">-- Tất cả ca sĩ --</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"></i>
+                        </div>
+
+                        <!-- Row 3: Buttons -->
+                        <div class="col-start-2 flex gap-3 mt-1">
+                            <button onclick="handleAction('nhap')" class="px-5 py-1.5 bg-[#e9ecef] border border-[#ced4da] rounded text-[15px] font-bold text-slate-700 hover:bg-[#dee2e6] hover:shadow transition-all active:scale-95 shadow-sm">Nhập</button>
+                            <button onclick="handleAction('tim')" class="px-5 py-1.5 bg-[#e9ecef] border border-[#ced4da] rounded text-[15px] font-bold text-slate-700 hover:bg-[#dee2e6] hover:shadow transition-all active:scale-95 shadow-sm">Tìm</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khu vực hiển thị kết quả truy vấn thực tế -->
+                <div id="query-result-box" class="bg-white border border-gray-200 rounded-xl p-4 max-w-xl mx-auto mb-8 shadow-sm hidden animate-fade-in">
+                    <div class="flex justify-between items-center mb-3 border-b pb-2">
+                        <span class="font-bold text-sm text-blue-800 flex items-center gap-1.5">
+                            <i data-lucide="table" class="w-4 h-4"></i> Kết quả truy vấn danh sách bản thu âm:
+                        </span>
+                        <span id="record-count" class="text-xs bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full"></span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-700">
+                                    <th class="p-2 border border-gray-200">Mã</th>
+                                    <th class="p-2 border border-gray-200">Bản nhạc</th>
+                                    <th class="p-2 border border-gray-200">Ca sĩ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="result-table-body" class="text-gray-600">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi tương tác -->
+                <div class="bg-pastel-yellow p-6 rounded-2xl">
+                    <h3 class="font-bold text-yellow-900 mb-4"><i data-lucide="message-circle-question" class="inline w-5 h-5 mb-1"></i> Câu hỏi tương tác</h3>
+                    <div class="space-y-3">
+                        
+                        <!-- Q1 -->
+                        <div class="bg-white rounded-xl shadow-sm border border-yellow-200 overflow-hidden">
+                            <button onclick="toggleAnswer('ans1', this)" class="w-full text-left p-4 font-bold text-gray-700 flex justify-between items-center hover:bg-yellow-50">
+                                1. Người sử dụng có cần biết, nhớ cấu trúc bảng trong CSDL không?
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-300 chevron-icon"></i>
+                            </button>
+                            <div id="ans1" class="hidden p-4 bg-yellow-50 text-gray-600 text-sm border-t border-yellow-100">
+                                <b>Không cần.</b> Giao diện đã trừu tượng hóa cấu trúc CSDL. Người dùng chỉ cần tương tác thông qua các danh sách thả xuống (combobox) hiển thị tên tường minh (Tên bản nhạc, Tên nhạc sĩ...) thay vì các mã ID.
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="bg-white rounded-xl shadow-sm border border-yellow-200 overflow-hidden">
+                            <button onclick="toggleAnswer('ans2', this)" class="w-full text-left p-4 font-bold text-gray-700 flex justify-between items-center hover:bg-yellow-50">
+                                2. Giao diện trên có dễ hiểu, dễ sử dụng không?
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-300 chevron-icon"></i>
+                            </button>
+                            <div id="ans2" class="hidden p-4 bg-yellow-50 text-gray-600 text-sm border-t border-yellow-100">
+                                <b>Rất dễ sử dụng.</b> Thay vì phải gõ tên thủ công dễ sai sót, người dùng chỉ việc click và chọn từ hộp danh sách có sẵn dữ liệu đầy đủ.
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="bg-white rounded-xl shadow-sm border border-yellow-200 overflow-hidden">
+                            <button onclick="toggleAnswer('ans3', this)" class="w-full text-left p-4 font-bold text-gray-700 flex justify-between items-center hover:bg-yellow-50">
+                                3. Hình thức nhập liệu như vậy có hỗ trợ tính nhất quán dữ liệu không?
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-300 chevron-icon"></i>
+                            </button>
+                            <div id="ans3" class="hidden p-4 bg-yellow-50 text-gray-600 text-sm border-t border-yellow-100">
+                                <b>Có hỗ trợ tính nhất quán.</b> Bằng cách ép người dùng chọn từ danh sách đã có trong cơ sở dữ liệu, ứng dụng tránh được lỗi gõ sai chính tả, tạo ra các dữ liệu rác không khớp với dữ liệu gốc (ví dụ: gõ "Văn cao" thay vì "Văn Cao").
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: TRẮC NGHIỆM -->
+        <section id="trac-nghiem" class="tab-content hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 bg-white shadow-sm border border-gray-100">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+                    <div class="p-2 bg-indigo-500 rounded-xl text-white"><i data-lucide="award"></i></div>
+                    <h2 class="text-xl font-bold text-indigo-900">Ôn Tập Nhanh (5 Câu Hỏi)</h2>
+                </div>
+
+                <form id="quiz-form" class="space-y-6">
+                    <!-- Câu 1 -->
+                    <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                        <p class="font-bold text-gray-800 mb-3">Câu 1. Mệnh đề nào trong câu truy vấn SQL dùng để liên kết các bảng?</p>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q1" value="A"> A. JOIN (hoặc INNER JOIN)</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q1" value="B"> B. SELECT</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q1" value="C"> C. FROM</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q1" value="D"> D. ORDER BY</label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 2 -->
+                    <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                        <p class="font-bold text-gray-800 mb-3">Câu 2. Để truy vấn nhiều hơn hai bảng theo liên kết khoá ngoài, ta cần làm gì trong câu lệnh SQL?</p>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q2" value="A"> A. Sử dụng nhiều câu lệnh SELECT</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q2" value="B"> B. Lặp lại mệnh đề JOIN</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q2" value="C"> C. Không thể thực hiện được</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q2" value="D"> D. Chỉ dùng 1 mệnh đề JOIN cho tất cả</label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 3 -->
+                    <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                        <p class="font-bold text-gray-800 mb-3">Câu 3. Trong phần mềm HeidiSQL, tính năng "Syntax coloring" giúp ích gì cho người dùng?</p>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q3" value="A"> A. Tự động sửa lỗi sai chính tả</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q3" value="B"> B. Trực quan hoá mối quan hệ bảng thành sơ đồ</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q3" value="C"> C. Dùng màu sắc để trợ giúp quan sát cú pháp của câu truy vấn</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q3" value="D"> D. Tự động đổi tên các trường trùng lặp</label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 4 -->
+                    <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                        <p class="font-bold text-gray-800 mb-3">Câu 4. Trong SQL, từ khoá nào được dùng để ĐỔI TÊN trường (tạo bí danh) trong kết xuất nhằm phân biệt các trường trùng tên?</p>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q4" value="A"> A. as</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q4" value="B"> B. like</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q4" value="C"> C. is</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q4" value="D"> D. name</label>
+                        </div>
+                    </div>
+
+                    <!-- Câu 5 -->
+                    <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                        <p class="font-bold text-gray-800 mb-3">Câu 5. Trong ví dụ Nhiệm vụ 1, bảng `bannhac` liên kết với bảng `nhacsi` thông qua trường (cặp khoá) nào?</p>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q5" value="A"> A. tenBannhac</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q5" value="B"> B. tenNhacsi</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q5" value="C"> C. idNhacsi</label>
+                            <label class="flex items-center gap-2 cursor-pointer p-2 hover:bg-white rounded transition"><input type="radio" name="q5" value="D"> D. idTheloai</label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <button type="button" onclick="checkQuiz()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full shadow-md transition">Chấm Điểm</button>
+                        <div id="quiz-result" class="font-bold text-lg hidden"></div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Khởi tạo icons
+        lucide.createIcons();
+
+        // 1. Chuyển đổi Tabs
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'bg-indigo-500', 'text-white');
+                el.classList.add('bg-white', 'text-gray-600');
+            });
+            
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            if (btnElement) {
+                btnElement.classList.add('active');
+                btnElement.classList.remove('bg-white', 'text-gray-600');
+            }
+        }
+
+        // 2. Interactive SQL Builder
+        let sqlQuery = "";
+        function addSQL(text) {
+            sqlQuery += text;
+            document.getElementById('sql-result').textContent = sqlQuery;
+        }
+        function clearSQL() {
+            sqlQuery = "";
+            document.getElementById('sql-result').textContent = sqlQuery;
+        }
+
+        // 3. Toggle Answer for Interactive Questions
+        function toggleAnswer(id, btnElement) {
+            const el = document.getElementById(id);
+            const icon = btnElement.querySelector('.chevron-icon');
+            
+            if(el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                if (icon) icon.classList.add('rotate-180');
+            } else {
+                el.classList.add('hidden');
+                if (icon) icon.classList.remove('rotate-180');
+            }
+        }
+
+        // 4. Mô phỏng hành động Nhập / Tìm kiếm bản thu âm kết xuất bảng
+        const sampleData = [
+            { id: 1, bannhac: "Du kích sông Thao, Đỗ Nhuận", casi: "Lê Dung" },
+            { id: 2, bannhac: "Du kích sông Thao, Đỗ Nhuận", casi: "Trần Khánh" },
+            { id: 3, bannhac: "Trường ca sông Lô, Văn Cao", casi: "Lê Dung" },
+            { id: 4, bannhac: "Trường ca sông Lô, Văn Cao", casi: "Trần Khánh" }
+        ];
+
+        function handleAction(type) {
+            const bannhacVal = document.getElementById('select-bannhac').value;
+            const casiVal = document.getElementById('select-casi').value;
+            const resultBox = document.getElementById('query-result-box');
+            const tbody = document.getElementById('result-table-body');
+            const countBadge = document.getElementById('record-count');
+
+            if (type === 'nhap') {
+                alert('Đã thêm thành công bản thu âm mới vào CSDL!');
+                return;
+            }
+
+            // Lọc dữ liệu mô phỏng dựa trên lựa chọn
+            let filtered = sampleData.filter(item => {
+                let matchBannhac = (bannhacVal === 'all') || (item.bannhac.includes(bannhacVal === 'du-kich' ? 'Du kích' : 'Trường ca'));
+                let matchCasi = (casiVal === 'all') || (item.casi.includes(casiVal === 'le-dung' ? 'Lê Dung' : 'Trần Khánh'));
+                return matchBannhac && matchCasi;
+            });
+
+            tbody.innerHTML = '';
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-gray-400">Không tìm thấy bản thu âm phù hợp.</td></tr>`;
+                countBadge.textContent = '0 bản ghi';
+            } else {
+                filtered.forEach(row => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-blue-50 transition">
+                            <td class="p-2 border border-gray-200">${row.id}</td>
+                            <td class="p-2 border border-gray-200 font-medium">${row.bannhac}</td>
+                            <td class="p-2 border border-gray-200">${row.casi}</td>
+                        </tr>
+                    `;
+                });
+                countBadge.textContent = `${filtered.length} bản ghi`;
+            }
+
+            resultBox.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // 5. Chấm điểm Trắc nghiệm
+        function checkQuiz() {
+            const answers = {
+                q1: 'A',
+                q2: 'B',
+                q3: 'C',
+                q4: 'A',
+                q5: 'C'
+            };
+            
+            let score = 0;
+            let total = 5;
+
+            document.querySelectorAll('input[type="radio"]').forEach(el => {
+                el.parentElement.classList.remove('bg-green-100', 'bg-red-100', 'border-green-400', 'border-red-400', 'border');
+            });
+
+            for (let q in answers) {
+                const selected = document.querySelector(`input[name="${q}"]:checked`);
+                if (selected) {
+                    if (selected.value === answers[q]) {
+                        score++;
+                        selected.parentElement.classList.add('bg-green-100', 'border', 'border-green-400');
+                    } else {
+                        selected.parentElement.classList.add('bg-red-100', 'border', 'border-red-400');
+                        document.querySelector(`input[name="${q}"][value="${answers[q]}"]`).parentElement.classList.add('bg-green-100', 'border', 'border-green-400');
+                    }
+                } else {
+                     document.querySelector(`input[name="${q}"][value="${answers[q]}"]`).parentElement.classList.add('bg-green-100', 'border', 'border-green-400');
+                }
+            }
+
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.textContent = `Bạn đúng ${score}/${total} câu!`;
+            if(score === total) resultDiv.classList.add('text-green-600');
+            else if (score >= 3) resultDiv.classList.add('text-yellow-600');
+            else resultDiv.classList.add('text-red-600');
+        }
+    </script>
+</body>
+</html>

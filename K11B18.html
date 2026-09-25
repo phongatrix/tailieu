@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 18: Xác Định Cấu Trúc Bảng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background-color: #f8fafc; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Pastel Colors */
+        .bg-pastel-blue { background-color: #e0f2fe; }
+        .bg-pastel-pink { background-color: #fce7f3; }
+        .bg-pastel-green { background-color: #dcfce7; }
+        .bg-pastel-yellow { background-color: #fef08a; }
+        .bg-pastel-purple { background-color: #f3e8ff; }
+        
+        .text-pastel-blue { color: #0284c7; }
+        .text-pastel-pink { color: #db2777; }
+        .text-pastel-green { color: #16a34a; }
+        .text-pastel-purple { color: #9333ea; }
+
+        /* Custom Scrollbar for tables */
+        .table-container::-webkit-scrollbar { height: 8px; }
+        .table-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        .pk-underline { text-decoration: underline; font-weight: bold; color: #dc2626; }
+        .fk-text { color: #2563eb; font-weight: 600; cursor: pointer; }
+        .fk-text:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <h1 class="text-2xl font-bold text-center text-slate-700 mb-4">
+                <i class="fa-solid fa-database text-pastel-blue mr-2"></i> 
+                BÀI 18: THỰC HÀNH XÁC ĐỊNH CẤU TRÚC BẢNG VÀ CÁC TRƯỜNG KHOÁ
+            </h1>
+            <nav class="flex flex-wrap justify-center gap-2 md:gap-4">
+                <button onclick="openTab('tongquan')" class="tab-btn active px-4 py-2 rounded-full font-semibold transition-colors bg-pastel-blue text-pastel-blue shadow-sm border border-blue-200">
+                    <i class="fa-solid fa-bullseye mr-1"></i> Tổng quan
+                </button>
+                <button onclick="openTab('phantich')" class="tab-btn px-4 py-2 rounded-full font-semibold transition-colors bg-white text-slate-500 hover:bg-slate-50 border border-slate-200">
+                    <i class="fa-solid fa-object-ungroup mr-1"></i> Tổ chức dữ liệu
+                </button>
+                <button onclick="openTab('sodo')" class="tab-btn px-4 py-2 rounded-full font-semibold transition-colors bg-white text-slate-500 hover:bg-slate-50 border border-slate-200">
+                    <i class="fa-solid fa-diagram-project mr-1"></i> Sơ đồ Quan hệ
+                </button>
+                <button onclick="openTab('tuongtac')" class="tab-btn px-4 py-2 rounded-full font-semibold transition-colors bg-white text-slate-500 hover:bg-slate-50 border border-slate-200">
+                    <i class="fa-solid fa-brain mr-1"></i> Vận dụng
+                </button>
+                <button onclick="openTab('tracnghiem')" class="tab-btn px-4 py-2 rounded-full font-semibold transition-colors bg-white text-slate-500 hover:bg-slate-50 border border-slate-200">
+                    <i class="fa-solid fa-list-check mr-1"></i> Trắc nghiệm
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <!-- TAB 1: TỔNG QUAN -->
+        <div id="tongquan" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Mục tiêu -->
+                <div class="col-span-1 md:col-span-3 bg-white rounded-2xl p-6 shadow-sm border border-pink-100 flex items-center gap-6">
+                    <div class="bg-pastel-pink w-16 h-16 rounded-full flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-flag-checkered text-3xl text-pastel-pink"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-700 mb-2">Mục tiêu bài học</h2>
+                        <p class="text-lg text-slate-600">Hình dung được công việc xác định các bảng dữ liệu, cấu trúc của chúng và các trường khoá trước khi bước vào tạo lập CSDL.</p>
+                    </div>
+                </div>
+
+                <!-- Khái niệm -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-blue-100">
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-key text-4xl text-pastel-blue mb-2"></i>
+                        <h3 class="font-bold text-lg">Khoá chính (Primary Key)</h3>
+                    </div>
+                    <ul class="space-y-2 text-slate-600">
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Xác định duy nhất một bản ghi.</li>
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Kí hiệu: <u>Gạch chân tên trường</u>.</li>
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Kiểu DL thường dùng: <span class="bg-blue-100 px-2 rounded text-blue-700 font-mono text-sm">INT</span></li>
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Tính chất: Tự động tăng (<span class="bg-blue-100 px-2 rounded text-blue-700 font-mono text-sm">AUTO_INCREMENT</span>).</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-green-100">
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-link text-4xl text-pastel-green mb-2"></i>
+                        <h3 class="font-bold text-lg">Khoá ngoài (Foreign Key)</h3>
+                    </div>
+                    <ul class="space-y-2 text-slate-600">
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Dùng để liên kết các bảng.</li>
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Tham chiếu đến <b>khoá chính</b> của bảng khác.</li>
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>VD: <span class="font-mono text-sm">idCasi</span> trong bảng <span class="font-mono text-sm">banthuam</span> tham chiếu đến <span class="font-mono text-sm">idCasi</span> của bảng <span class="font-mono text-sm">casi</span>.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-purple-100">
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-shield-halved text-4xl text-pastel-purple mb-2"></i>
+                        <h3 class="font-bold text-lg">Khoá cấm trùng lặp (Unique)</h3>
+                    </div>
+                    <ul class="space-y-2 text-slate-600">
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Không được có 2 bản ghi trùng giá trị ở trường này.</li>
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Có thể thiết lập cho 1 cặp trường.</li>
+                        <li><i class="fa-solid fa-check text-green-400 mr-2"></i>VD: Cặp <span class="font-mono text-sm">(tenBannhac, idNhacsi)</span> trong bảng <span class="font-mono text-sm">bannhac</span>.</li>
+                    </ul>
+                </div>
+
+                <!-- Dễ nhầm lẫn -->
+                <div class="col-span-1 md:col-span-3 bg-pastel-yellow rounded-2xl p-4 flex items-center gap-4">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-orange-500"></i>
+                    <div>
+                        <h4 class="font-bold text-orange-700">Lưu ý Dễ Nhầm Lẫn!</h4>
+                        <p class="text-orange-900">Để tất cả dữ liệu vào 1 bảng duy nhất sẽ gây <b>lặp lại dữ liệu</b> (VD: Tên ca sĩ, tên nhạc sĩ bị lặp lại nhiều lần). Hậu quả: Tốn dung lượng lưu trữ và khó khăn khi cần sửa chữa thông tin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: PHÂN TÍCH & TÁCH BẢNG -->
+        <div id="phantich" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-xl font-bold mb-4 text-center text-slate-700">Tổ chức lại bảng dữ liệu: Quản lí bản thu âm</h2>
+                
+                <div class="text-center mb-6">
+                    <button onclick="toggleTableProcess()" id="btnProcess" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full font-bold shadow-md transition-all transform hover:scale-105">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Phân tích & Tách bảng
+                    </button>
+                    <p class="text-sm text-slate-500 mt-2">Click để xem quá trình chuẩn hóa từ 1 bảng to thành 4 bảng nhỏ</p>
+                </div>
+
+                <!-- Step 1: Big Table -->
+                <div id="step1" class="transition-all duration-500">
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+                        <h3 class="font-bold text-red-600 mb-2"><i class="fa-solid fa-xmark mr-2"></i> Bảng ban đầu (Dễ bị lặp dữ liệu)</h3>
+                        <div class="table-container overflow-x-auto">
+                            <table class="w-full text-sm text-left bg-white rounded-lg overflow-hidden shadow-sm">
+                                <thead class="bg-slate-100 text-slate-600">
+                                    <tr>
+                                        <th class="px-4 py-2 border">STT (idBanthuam)</th>
+                                        <th class="px-4 py-2 border bg-yellow-100">tenBannhac (Lặp)</th>
+                                        <th class="px-4 py-2 border bg-yellow-100">tenNhacsi (Lặp)</th>
+                                        <th class="px-4 py-2 border bg-yellow-100">tenCasi (Lặp)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="px-4 py-2 border">1</td><td class="px-4 py-2 border">Du kích sông Thao</td><td class="px-4 py-2 border">Đỗ Nhuận</td><td class="px-4 py-2 border text-red-500 font-bold">Doãn Tần</td></tr>
+                                    <tr><td class="px-4 py-2 border">2</td><td class="px-4 py-2 border">Trường ca Sông Lô</td><td class="px-4 py-2 border">Văn Cao</td><td class="px-4 py-2 border">Lê Dung</td></tr>
+                                    <tr><td class="px-4 py-2 border">...</td><td class="px-4 py-2 border">...</td><td class="px-4 py-2 border">...</td><td class="px-4 py-2 border">...</td></tr>
+                                    <tr><td class="px-4 py-2 border">6</td><td class="px-4 py-2 border">Tiến về Hà Nội</td><td class="px-4 py-2 border">Văn Cao</td><td class="px-4 py-2 border text-red-500 font-bold">Doãn Tần</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Small Tables -->
+                <div id="step2" class="hidden opacity-0 transition-all duration-500">
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                        <h3 class="font-bold text-green-600 mb-4"><i class="fa-solid fa-check mr-2"></i> Kết quả: 4 Bảng liên kết qua Khoá</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Table: casi -->
+                            <div class="bg-white p-3 rounded shadow-sm border border-slate-200">
+                                <h4 class="font-bold text-pastel-pink text-center mb-2">Bảng 18.2: casi</h4>
+                                <table class="w-full text-sm text-center">
+                                    <thead class="bg-pink-50"><tr><th class="border px-2 py-1"><u class="text-red-500">idCasi</u> (INT)</th><th class="border px-2 py-1">tenCasi (VARCHAR)</th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="border px-2 py-1">1</td><td class="border px-2 py-1">Trần Khánh</td></tr>
+                                        <tr><td class="border px-2 py-1">5</td><td class="border px-2 py-1 text-red-500 font-bold">Doãn Tần</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                             <!-- Table: nhacsi -->
+                             <div class="bg-white p-3 rounded shadow-sm border border-slate-200">
+                                <h4 class="font-bold text-pastel-blue text-center mb-2">Bảng 18.6: nhacsi</h4>
+                                <table class="w-full text-sm text-center">
+                                    <thead class="bg-blue-50"><tr><th class="border px-2 py-1"><u class="text-red-500">idNhacsi</u> (INT)</th><th class="border px-2 py-1">tenNhacsi (VARCHAR)</th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="border px-2 py-1">1</td><td class="border px-2 py-1">Đỗ Nhuận</td></tr>
+                                        <tr><td class="border px-2 py-1">2</td><td class="border px-2 py-1">Văn Cao</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Table: bannhac -->
+                            <div class="bg-white p-3 rounded shadow-sm border border-slate-200">
+                                <h4 class="font-bold text-pastel-green text-center mb-2">Bảng 18.7: bannhac</h4>
+                                <table class="w-full text-sm text-center">
+                                    <thead class="bg-green-50"><tr><th class="border px-2 py-1"><u class="text-red-500">idBannhac</u></th><th class="border px-2 py-1">tenBannhac</th><th class="border px-2 py-1 text-blue-600">idNhacsi (FK)</th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="border px-2 py-1">1</td><td class="border px-2 py-1">Du kích sông Thao</td><td class="border px-2 py-1 font-bold text-blue-600">1</td></tr>
+                                        <tr><td class="border px-2 py-1">2</td><td class="border px-2 py-1">Trường ca Sông Lô</td><td class="border px-2 py-1 font-bold text-blue-600">2</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Table: banthuam -->
+                            <div class="bg-white p-3 rounded shadow-sm border border-slate-200">
+                                <h4 class="font-bold text-pastel-purple text-center mb-2">Bảng 18.5: banthuam</h4>
+                                <table class="w-full text-sm text-center">
+                                    <thead class="bg-purple-50"><tr><th class="border px-2 py-1"><u class="text-red-500">idBanthuam</u></th><th class="border px-2 py-1 text-blue-600">idBannhac (FK)</th><th class="border px-2 py-1 text-blue-600">idCasi (FK)</th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="border px-2 py-1">1</td><td class="border px-2 py-1 font-bold text-blue-600">1</td><td class="border px-2 py-1 font-bold text-blue-600">5</td></tr>
+                                        <tr><td class="border px-2 py-1">6</td><td class="border px-2 py-1 font-bold text-blue-600">6</td><td class="border px-2 py-1 font-bold text-blue-600">5</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex flex-wrap gap-2 justify-center">
+                    <span class="bg-slate-100 px-3 py-1 rounded-full text-sm border border-slate-200"><span class="pk-underline">Gạch chân</span> = Khoá chính</span>
+                    <span class="bg-slate-100 px-3 py-1 rounded-full text-sm border border-slate-200"><span class="text-blue-600 font-bold">Màu xanh</span> = Khoá ngoài</span>
+                    <span class="bg-slate-100 px-3 py-1 rounded-full text-sm border border-slate-200 font-mono">VARCHAR(255)</span>
+                    <span class="bg-slate-100 px-3 py-1 rounded-full text-sm border border-slate-200 font-mono">INT, AUTO_INCREMENT</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SƠ ĐỒ -->
+        <div id="sodo" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col items-center">
+                <h2 class="text-xl font-bold mb-2 text-center text-slate-700">Hình 18.2: Cấu trúc các bảng và quan hệ tham chiếu</h2>
+                <p class="text-sm text-slate-500 mb-8">Di chuột vào các bảng để xem chi tiết trường khóa.</p>
+
+                <!-- Interactive Diagram CSS Grid Based -->
+                <div class="relative w-full max-w-4xl flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    
+                    <!-- SVG Draw Arrows Background -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none hidden md:block" style="z-index: 1;">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+                            </marker>
+                        </defs>
+                        <!-- Arrow banthuam -> casi -->
+                        <line x1="33%" y1="50%" x2="22%" y2="50%" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="4" />
+                        <!-- Arrow banthuam -> bannhac -->
+                        <line x1="50%" y1="50%" x2="68%" y2="50%" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="4" />
+                        <!-- Arrow bannhac -> nhacsi -->
+                        <line x1="77%" y1="50%" x2="88%" y2="50%" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="4" />
+                    </svg>
+
+                    <!-- casi -->
+                    <div class="z-10 w-40 bg-white border-2 border-pink-200 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center overflow-hidden">
+                        <div class="bg-pastel-pink font-bold py-2 border-b border-pink-200">casi</div>
+                        <div class="py-1 px-2 border-b border-slate-100 pk-underline">idCasi</div>
+                        <div class="py-1 px-2">tenCasi</div>
+                    </div>
+
+                    <!-- banthuam -->
+                    <div class="z-10 w-40 bg-white border-2 border-purple-200 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center overflow-hidden">
+                        <div class="bg-pastel-purple font-bold py-2 border-b border-purple-200">banthuam</div>
+                        <div class="py-1 px-2 border-b border-slate-100 pk-underline">idBanthuam</div>
+                        <div class="py-1 px-2 border-b border-slate-100 fk-text" title="Tham chiếu đến idBannhac (bannhac)">idBannhac <i class="fa-solid fa-arrow-right text-xs"></i></div>
+                        <div class="py-1 px-2 fk-text" title="Tham chiếu đến idCasi (casi)"><i class="fa-solid fa-arrow-left text-xs"></i> idCasi</div>
+                    </div>
+
+                    <!-- bannhac -->
+                    <div class="z-10 w-40 bg-white border-2 border-green-200 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center overflow-hidden">
+                        <div class="bg-pastel-green font-bold py-2 border-b border-green-200">bannhac</div>
+                        <div class="py-1 px-2 border-b border-slate-100 pk-underline">idBannhac</div>
+                        <div class="py-1 px-2 border-b border-slate-100">tenBannhac</div>
+                        <div class="py-1 px-2 fk-text" title="Tham chiếu đến idNhacsi (nhacsi)">idNhacsi <i class="fa-solid fa-arrow-right text-xs"></i></div>
+                    </div>
+
+                    <!-- nhacsi -->
+                    <div class="z-10 w-40 bg-white border-2 border-blue-200 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center overflow-hidden">
+                        <div class="bg-pastel-blue font-bold py-2 border-b border-blue-200">nhacsi</div>
+                        <div class="py-1 px-2 border-b border-slate-100 pk-underline">idNhacsi</div>
+                        <div class="py-1 px-2">tenNhacsi</div>
+                    </div>
+
+                </div>
+
+                <div class="mt-8 bg-slate-100 rounded-lg p-4 w-full max-w-4xl text-sm text-slate-600 flex justify-center gap-6">
+                    <div><i class="fa-solid fa-arrow-right text-slate-400"></i> Tham chiếu khoá ngoài (Mũi tên chỉ từ Khoá ngoài đến Khoá chính)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: TƯƠNG TÁC / VẬN DỤNG -->
+        <div id="tuongtac" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Question 1 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-pastel-yellow text-yellow-700 px-3 py-1 rounded-bl-lg font-bold text-sm">Câu 1</div>
+                    <p class="font-semibold text-slate-700 mb-4 mt-2">Có thể có những nhạc sĩ, ca sĩ trùng tên nên người ta muốn quản lí thêm thông tin <span class="text-blue-600 font-bold">ngày sinh</span>. CSDL cần thay đổi như thế nào?</p>
+                    
+                    <button onclick="revealAnswer(1)" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-2 rounded-lg transition-colors border border-slate-300">
+                        <i class="fa-regular fa-eye mr-2"></i> Xem đáp án
+                    </button>
+                    
+                    <div id="ans1" class="hidden mt-4 bg-green-50 border border-green-200 rounded-lg p-4 animate-[fadeIn_0.3s]">
+                        <p class="text-sm text-slate-700"><strong>Trả lời:</strong> Bổ sung thêm trường <code class="bg-white px-1 border rounded text-pink-600">ngaysinh</code> vào cấu trúc của bảng <code class="font-bold">casi</code> và bảng <code class="font-bold">nhacsi</code>.</p>
+                        <div class="flex gap-2 mt-2 text-xs font-mono">
+                            <span class="bg-white px-2 py-1 rounded shadow-sm">casi(<u>idCasi</u>, tenCasi, <span class="text-green-600">ngaysinh</span>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-pastel-yellow text-yellow-700 px-3 py-1 rounded-bl-lg font-bold text-sm">Câu 2</div>
+                    <p class="font-semibold text-slate-700 mb-4 mt-2">Nếu muốn quản lí thêm thông tin <span class="text-blue-600 font-bold">nơi sinh</span> của nhạc sĩ, ca sĩ (tên tỉnh/thành phố), CSDL cần thay đổi như thế nào?</p>
+                    
+                    <button onclick="revealAnswer(2)" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-2 rounded-lg transition-colors border border-slate-300">
+                        <i class="fa-regular fa-eye mr-2"></i> Xem đáp án
+                    </button>
+                    
+                    <div id="ans2" class="hidden mt-4 bg-green-50 border border-green-200 rounded-lg p-4 animate-[fadeIn_0.3s]">
+                        <p class="text-sm text-slate-700"><strong>Trả lời:</strong> Bổ sung thêm trường <code class="bg-white px-1 border rounded text-pink-600">noisinh</code> vào cấu trúc của bảng <code class="font-bold">casi</code> và bảng <code class="font-bold">nhacsi</code>.</p>
+                        <div class="flex gap-2 mt-2 text-xs font-mono">
+                            <span class="bg-white px-2 py-1 rounded shadow-sm">nhacsi(<u>idNhacsi</u>, tenNhacsi, <span class="text-green-600">noisinh</span>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vận dụng thực tế -->
+                <div class="col-span-1 md:col-span-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-sm border border-blue-100 p-6 flex flex-col md:flex-row gap-6 items-center">
+                    <div class="bg-white w-20 h-20 rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                        <i class="fa-solid fa-city text-4xl text-blue-500"></i>
+                    </div>
+                    <div class="w-full">
+                        <h3 class="font-bold text-lg text-blue-900 mb-2">Vận dụng: Quản lí danh sách quận/huyện của tỉnh/TP</h3>
+                        <p class="text-sm text-slate-600 mb-3">Dựa vào kiến thức đã học, bạn sẽ thiết kế các bảng như thế nào để tránh lặp tên Tỉnh/Thành phố?</p>
+                        
+                        <div class="bg-white rounded-lg p-3 border border-blue-200 font-mono text-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <span class="font-bold text-slate-700">tinhthanh</span>(<span class="pk-underline">idTinh</span>, tenTinh)
+                            </div>
+                            <div>
+                                <span class="font-bold text-slate-700">quanhuyen</span>(<span class="pk-underline">idHuyen</span>, tenHuyen, <span class="text-blue-600">idTinh</span>)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: TRẮC NGHIỆM -->
+        <div id="tracnghiem" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-3xl mx-auto">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-700"><i class="fa-solid fa-pen-to-square text-pastel-pink mr-2"></i> Ôn tập kiến thức</h2>
+                    <p class="text-slate-500">Hoàn thành 5 câu hỏi dưới đây dựa trên nội dung Bài 18</p>
+                </div>
+
+                <div id="quiz-container" class="space-y-6">
+                    <!-- JS will render questions here -->
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
+                    <div id="quiz-result" class="font-bold text-lg hidden"></div>
+                    <button onclick="checkQuiz()" class="bg-pastel-blue hover:bg-blue-200 text-blue-800 px-6 py-2 rounded-full font-bold transition-colors">
+                        <i class="fa-solid fa-check-double mr-2"></i> Chấm điểm
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- TAB NAVIGATION ---
+        function openTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active style from all buttons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-pastel-blue', 'text-pastel-blue', 'active');
+                el.classList.add('bg-white', 'text-slate-500');
+            });
+            
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            // Add active style to clicked button
+            const btn = event.currentTarget || document.querySelector(`[onclick="openTab('${tabId}')"]`);
+            btn.classList.remove('bg-white', 'text-slate-500');
+            btn.classList.add('bg-pastel-blue', 'text-pastel-blue', 'active');
+        }
+
+        // --- INTERACTIVE TABLES ---
+        let isSplit = false;
+        function toggleTableProcess() {
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const btn = document.getElementById('btnProcess');
+
+            if(!isSplit) {
+                step1.classList.add('hidden', 'opacity-0');
+                setTimeout(() => {
+                    step2.classList.remove('hidden');
+                    // Slight delay for animation to trigger
+                    setTimeout(() => step2.classList.remove('opacity-0'), 50);
+                }, 300);
+                btn.innerHTML = '<i class="fa-solid fa-rotate-left mr-2"></i> Xem lại bảng ban đầu';
+                btn.classList.replace('bg-blue-500', 'bg-slate-500');
+                btn.classList.replace('hover:bg-blue-600', 'hover:bg-slate-600');
+                isSplit = true;
+            } else {
+                step2.classList.add('opacity-0');
+                setTimeout(() => {
+                    step2.classList.add('hidden');
+                    step1.classList.remove('hidden');
+                    setTimeout(() => step1.classList.remove('opacity-0'), 50);
+                }, 300);
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Phân tích & Tách bảng';
+                btn.classList.replace('bg-slate-500', 'bg-blue-500');
+                btn.classList.replace('hover:bg-slate-600', 'hover:bg-blue-600');
+                isSplit = false;
+            }
+        }
+
+        // --- REVEAL ANSWERS ---
+        function revealAnswer(num) {
+            const el = document.getElementById('ans' + num);
+            if(el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // --- QUIZ DATA & LOGIC ---
+        const quizData = [
+            {
+                q: "Mục đích chính của việc tổ chức lại (tách) bảng dữ liệu là gì?",
+                options: ["Tăng tốc độ máy tính.", "Hạn chế dung lượng lưu trữ và tránh khó khăn khi sửa chữa do lặp lại dữ liệu.", "Làm cho dữ liệu đẹp hơn.", "Tạo ra nhiều khóa ngoài nhất có thể."],
+                ans: 1
+            },
+            {
+                q: "Trường khóa chính thường có kiểu dữ liệu gì và tính chất ra sao?",
+                options: ["Kiểu VARCHAR, tự động tăng.", "Kiểu INT, độ dài tối đa 255.", "Kiểu INT, tự động tăng giá trị (AUTO_INCREMENT).", "Kiểu CHAR, không thay đổi."],
+                ans: 2
+            },
+            {
+                q: "Trong Bảng 18.5 (banthuam), trường idCasi đóng vai trò gì?",
+                options: ["Khóa chính", "Khóa ngoài tham chiếu đến idCasi trong bảng casi", "Khóa cấm trùng lặp giá trị", "Kiểu dữ liệu VARCHAR"],
+                ans: 1
+            },
+            {
+                q: "Cặp (tenBannhac, idNhacsi) trong bảng bannhac cần đặt khóa gì để không bị trùng lặp giá trị?",
+                options: ["Khóa chính (Primary Key)", "Khóa ngoài (Foreign Key)", "Khóa cấm trùng lặp giá trị (Unique)", "Tất cả đều sai"],
+                ans: 2
+            },
+            {
+                q: "Để lưu tên nhạc sĩ (tenNhacsi), kiểu dữ liệu nào sau đây được đề xuất trong bài?",
+                options: ["INT(255)", "AUTO_INCREMENT", "VARCHAR(255)", "UNIQUE"],
+                ans: 2
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            let html = '';
+            quizData.forEach((item, index) => {
+                html += `
+                <div class="quiz-item p-4 bg-slate-50 rounded-lg border border-slate-100" id="q-box-${index}">
+                    <p class="font-bold text-slate-700 mb-3"><span class="text-pastel-blue">Câu ${index + 1}:</span> ${item.q}</p>
+                    <div class="space-y-2">
+                        ${item.options.map((opt, i) => `
+                            <label class="flex items-center p-2 rounded cursor-pointer hover:bg-slate-200 transition-colors">
+                                <input type="radio" name="q${index}" value="${i}" class="mr-3 w-4 h-4 text-blue-600">
+                                <span class="text-slate-600 text-sm">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function checkQuiz() {
+            let score = 0;
+            quizData.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const box = document.getElementById(`q-box-${index}`);
+                
+                // Reset styles
+                box.classList.remove('bg-green-50', 'border-green-300', 'bg-red-50', 'border-red-300');
+                
+                if (selected) {
+                    if (parseInt(selected.value) === item.ans) {
+                        score++;
+                        box.classList.add('bg-green-50', 'border-green-300');
+                    } else {
+                        box.classList.add('bg-red-50', 'border-red-300');
+                    }
+                } else {
+                    box.classList.add('bg-red-50', 'border-red-300');
+                }
+            });
+
+            const resDiv = document.getElementById('quiz-result');
+            resDiv.classList.remove('hidden', 'text-green-600', 'text-red-600');
+            
+            if(score === quizData.length) {
+                resDiv.classList.add('text-green-600');
+                resDiv.innerHTML = `<i class="fa-solid fa-face-smile-beam"></i> Tuyệt vời! Bạn làm đúng ${score}/${quizData.length} câu.`;
+            } else {
+                resDiv.classList.add('text-red-600');
+                resDiv.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Bạn làm đúng ${score}/${quizData.length} câu. Hãy xem lại các câu sai màu đỏ nhé!`;
+            }
+        }
+
+        // Initialize quiz
+        renderQuiz();
+    </script>
+</body>
+</html>

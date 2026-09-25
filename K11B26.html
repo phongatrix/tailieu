@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 26: Công cụ tinh chỉnh màu sắc và công cụ chọn</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            blue: '#e0f2fe',
+                            purple: '#f3e8ff',
+                            pink: '#fce7f3',
+                            green: '#dcfce7',
+                            yellow: '#fef3c7',
+                            orange: '#ffedd5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background-color: #f8fafc; color: #334155; }
+        
+        /* Tiêu đề chính xác theo yêu cầu */
+        .title-gradient {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700; /* Bold */
+            font-size: 28px; /* Kích thước 28px */
+            background: linear-gradient(to right, #3b82f6, #a855f7); /* Xanh dương sang tím */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            text-transform: capitalize; /* Title Case */
+        }
+
+        /* Glassmorphism & Soft Shadows for Studygram vibe */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border-radius: 1.5rem;
+        }
+
+        .tab-btn.active {
+            background-color: #8b5cf6;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.39);
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            cursor: pointer;
+            margin-top: -8px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 999px;
+        }
+
+        /* Quiz animation */
+        .correct-ans { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important;}
+        .wrong-ans { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important;}
+        
+        .hide { display: none; }
+        
+        /* Map style */
+        .mindmap-line {
+            position: absolute;
+            z-index: -1;
+            background: #cbd5e1;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="max-w-6xl mx-auto mb-8 text-center glass-card p-6">
+        <div class="inline-block px-4 py-1 bg-pastel-blue text-blue-600 rounded-full text-sm font-semibold mb-3">
+            <i class="fa-solid fa-book-open mr-2"></i>Tin Học 11 - Bài 26
+        </div>
+        <h1 class="title-gradient">Công Cụ Tinh Chỉnh Màu Sắc Và Công Cụ Chọn</h1>
+        <p class="text-slate-500 mt-2 font-medium">Khám phá GIMP - Làm chủ ánh sáng và màu sắc ảnh số</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="max-w-6xl mx-auto mb-8 flex flex-wrap justify-center gap-3">
+        <button onclick="openTab('tongquan')" id="btn-tongquan" class="tab-btn active px-6 py-3 rounded-2xl bg-white text-slate-600 font-semibold transition-all duration-300 hover:bg-purple-50">
+            <i class="fa-solid fa-bullseye mr-2"></i>Tổng Quan & Khái Niệm
+        </button>
+        <button onclick="openTab('trucquan')" id="btn-trucquan" class="tab-btn px-6 py-3 rounded-2xl bg-white text-slate-600 font-semibold transition-all duration-300 hover:bg-purple-50">
+            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Sơ Đồ & Tương Tác
+        </button>
+        <button onclick="openTab('luuy')" id="btn-luuy" class="tab-btn px-6 py-3 rounded-2xl bg-white text-slate-600 font-semibold transition-all duration-300 hover:bg-purple-50">
+            <i class="fa-solid fa-triangle-exclamation mr-2"></i>Mối Quan Hệ & Lưu Ý
+        </button>
+        <button onclick="openTab('tracnghiem')" id="btn-tracnghiem" class="tab-btn px-6 py-3 rounded-2xl bg-white text-slate-600 font-semibold transition-all duration-300 hover:bg-purple-50">
+            <i class="fa-solid fa-pen-to-square mr-2"></i>Luyện Tập (Quiz)
+        </button>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-6xl mx-auto relative">
+
+        <!-- TAB 1: TỔNG QUAN & KHÁI NIỆM -->
+        <section id="tongquan" class="tab-content block animate-[fadeIn_0.5s_ease-in-out]">
+            
+            <!-- Mục tiêu -->
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center"><i class="fa-solid fa-flag-checkered text-rose-400 mr-2"></i> Mục Tiêu Bài Học</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="glass-card bg-pastel-blue p-6 hover:-translate-y-1 transition-transform">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center text-blue-500 text-xl mb-3 shadow-sm"><i class="fa-solid fa-palette"></i></div>
+                        <p class="font-semibold text-blue-800">Biết các tham số</p>
+                        <p class="text-sm text-blue-600 mt-1">Biểu diễn màu của ảnh số</p>
+                    </div>
+                    <div class="glass-card bg-pastel-pink p-6 hover:-translate-y-1 transition-transform">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center text-rose-500 text-xl mb-3 shadow-sm"><i class="fa-solid fa-crop-simple"></i></div>
+                        <p class="font-semibold text-rose-800">Biết công cụ chọn</p>
+                        <p class="text-sm text-rose-600 mt-1">Sử dụng các công cụ chọn đơn giản</p>
+                    </div>
+                    <div class="glass-card bg-pastel-green p-6 hover:-translate-y-1 transition-transform">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center text-green-500 text-xl mb-3 shadow-sm"><i class="fa-solid fa-sliders"></i></div>
+                        <p class="font-semibold text-green-800">Thực hiện chỉnh màu</p>
+                        <p class="text-sm text-green-600 mt-1">Các lệnh chỉnh màu đơn giản</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Câu hỏi tương tác / Tình huống -->
+            <div class="glass-card bg-gradient-to-r from-orange-50 to-amber-50 p-6 mb-8 border-l-4 border-amber-400">
+                <h3 class="font-bold text-amber-800 mb-2"><i class="fa-solid fa-comments text-amber-500 mr-2"></i>Tình huống mở đầu (Click để xem gợi ý)</h3>
+                <div class="space-y-3">
+                    <div class="bg-white p-4 rounded-xl cursor-pointer shadow-sm hover:shadow-md transition" onclick="toggleHint('hint1')">
+                        <p class="font-medium text-slate-700">📸 Có bao giờ em thắc mắc tại sao ảnh đi in nhận được trông rất xỉn màu, khác xa tấm hình em đã chọn trên điện thoại?</p>
+                        <p id="hint1" class="hide mt-3 text-sm text-amber-700 border-t pt-2 border-amber-100">💡 Đó là do sự khác biệt về hệ màu và thông số. Cần tinh chỉnh màu sắc, độ sáng trước khi in!</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl cursor-pointer shadow-sm hover:shadow-md transition" onclick="toggleHint('hint2')">
+                        <p class="font-medium text-slate-700">🌺 Nếu muốn làm màu các bông hoa thược dược đỏ hơn thì dùng công cụ gì?</p>
+                        <p id="hint2" class="hide mt-3 text-sm text-amber-700 border-t pt-2 border-amber-100">💡 Dùng công cụ Color Balance (tăng Red) hoặc Hue-Saturation (chọn dải Red và tăng Saturation).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kiến thức cốt lõi (Infographic style) -->
+            <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center"><i class="fa-solid fa-brain text-purple-400 mr-2"></i> Kiến Thức Cốt Lõi Cần Nhớ</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Cột 1: Tinh chỉnh màu -->
+                <div class="glass-card p-6 border-t-4 border-blue-400">
+                    <h3 class="font-bold text-blue-700 mb-4 text-lg border-b pb-2">1. Công Cụ Tinh Chỉnh Màu Sắc (Colors)</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3 bg-pastel-blue p-3 rounded-xl">
+                            <span class="text-xl mt-1">☀️</span>
+                            <div>
+                                <strong class="text-blue-900 block">Brightness-Contrast</strong>
+                                <span class="text-sm text-blue-700">Chỉnh toàn bộ. Tăng/giảm độ sáng (Brightness) và độ tương phản (Contrast).</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3 bg-pastel-pink p-3 rounded-xl">
+                            <span class="text-xl mt-1">⚖️</span>
+                            <div>
+                                <strong class="text-rose-900 block">Color Balance</strong>
+                                <span class="text-sm text-rose-700">Cân bằng màu theo dải: Shadows (tối), Midtones (trung bình), Highlights (sáng).</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3 bg-pastel-purple p-3 rounded-xl">
+                            <span class="text-xl mt-1">🌈</span>
+                            <div>
+                                <strong class="text-purple-900 block">Hue-Saturation</strong>
+                                <span class="text-sm text-purple-700">Chỉnh Tông màu (Hue), Độ sáng (Lightness), Độ bão hòa (Saturation) cho 6 màu cơ bản hoặc Master (tất cả).</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Cột 2: Công cụ chọn -->
+                <div class="glass-card p-6 border-t-4 border-green-400">
+                    <h3 class="font-bold text-green-700 mb-4 text-lg border-b pb-2">2. Công Cụ Chọn</h3>
+                    <p class="text-sm text-slate-600 italic mb-4">"Giới hạn vùng chỉnh sửa, chia nhỏ ảnh để thao tác."</p>
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="text-center bg-pastel-green p-2 rounded-lg">
+                            <div class="border-2 border-dashed border-green-500 w-8 h-8 mx-auto mb-1"></div>
+                            <span class="text-xs font-bold text-green-800">Rectangle<br>(Phím R)</span>
+                        </div>
+                        <div class="text-center bg-pastel-green p-2 rounded-lg">
+                            <div class="border-2 border-dashed border-green-500 w-8 h-8 rounded-full mx-auto mb-1"></div>
+                            <span class="text-xs font-bold text-green-800">Ellipse<br>(Phím E)</span>
+                        </div>
+                        <div class="text-center bg-pastel-green p-2 rounded-lg flex flex-col items-center">
+                            <i class="fa-solid fa-lasso text-green-500 text-2xl mb-1"></i>
+                            <span class="text-xs font-bold text-green-800">Free Select<br>(Tùy ý)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Phím tắt Infographic -->
+                    <div class="bg-slate-50 p-3 rounded-xl">
+                        <p class="text-xs font-bold text-slate-500 uppercase mb-2">Tương tác vùng chọn:</p>
+                        <div class="flex flex-wrap gap-2 text-sm">
+                            <span class="bg-white border px-2 py-1 rounded shadow-sm text-slate-700"><kbd class="font-bold">Shift</kbd> = Thêm vùng</span>
+                            <span class="bg-white border px-2 py-1 rounded shadow-sm text-slate-700"><kbd class="font-bold">Ctrl</kbd> = Trừ vùng</span>
+                            <span class="bg-white border px-2 py-1 rounded shadow-sm text-slate-700"><kbd class="font-bold">Alt+Ctrl</kbd> = Cắt & Di chuyển</span>
+                            <span class="bg-white border px-2 py-1 rounded shadow-sm text-slate-700"><kbd class="font-bold">Alt+Shift</kbd> = Sao chép & Di chuyển</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: TRỰC QUAN & TƯƠNG TÁC -->
+        <section id="trucquan" class="tab-content hide animate-[fadeIn_0.5s_ease-in-out]">
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Mô phỏng 1: Brightness & Contrast -->
+                <div class="glass-card p-6">
+                    <h3 class="font-bold text-slate-700 mb-2 flex items-center"><i class="fa-solid fa-image text-blue-500 mr-2"></i>Mô phỏng: Nhiệm vụ 1</h3>
+                    <p class="text-sm text-slate-500 mb-4">Kéo thanh trượt để chỉnh sáng bình minh (Gợi ý Sách: B=42, C=59)</p>
+                    
+                    <!-- Khung ảnh mô phỏng -->
+                    <div class="relative w-full h-48 rounded-xl overflow-hidden mb-4 bg-slate-900 border border-slate-200">
+                        <!-- Sử dụng ảnh placeholder phong cảnh -->
+                        <img id="sim-img-1" src="https://images.unsplash.com/photo-1495562569060-2eec283d3391?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Cảnh bình minh mờ" class="w-full h-full object-cover transition-all duration-100">
+                    </div>
+
+                    <div class="space-y-4 bg-pastel-blue p-4 rounded-xl">
+                        <div>
+                            <div class="flex justify-between text-sm font-semibold text-blue-800 mb-1">
+                                <label>Brightness (Độ sáng)</label>
+                                <span id="val-bright">0</span>
+                            </div>
+                            <input type="range" id="inp-bright" min="-100" max="100" value="0" oninput="updateFilter()">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm font-semibold text-blue-800 mb-1">
+                                <label>Contrast (Độ tương phản)</label>
+                                <span id="val-contrast">0</span>
+                            </div>
+                            <input type="range" id="inp-contrast" min="-100" max="100" value="0" oninput="updateFilter()">
+                        </div>
+                        <button onclick="resetFilter()" class="w-full bg-white text-blue-600 font-semibold py-2 rounded-lg border border-blue-200 hover:bg-blue-50 transition">Reset (Về gốc)</button>
+                    </div>
+                </div>
+
+                <!-- Mô phỏng 2: Vai trò vùng chọn (Quả táo) -->
+                <div class="glass-card p-6">
+                    <h3 class="font-bold text-slate-700 mb-2 flex items-center"><i class="fa-solid fa-apple-whole text-rose-500 mr-2"></i>Mô phỏng: Hoạt động 2 (Quả táo)</h3>
+                    <p class="text-sm text-slate-500 mb-4">Vai trò của vùng chọn khi tinh chỉnh ảnh.</p>
+                    
+                    <div class="flex justify-center gap-4 mb-4">
+                        <!-- Táo gốc -->
+                        <div class="text-center w-1/2">
+                            <div class="w-full h-40 bg-pastel-pink rounded-xl flex items-center justify-center overflow-hidden mb-2 relative">
+                                <i class="fa-solid fa-apple-whole text-7xl text-rose-600 absolute" id="apple-full"></i>
+                            </div>
+                            <span class="text-xs font-bold text-slate-500">Toàn bộ ảnh (Không chọn)</span>
+                        </div>
+                        <!-- Táo chia nửa -->
+                        <div class="text-center w-1/2">
+                            <div class="w-full h-40 bg-pastel-pink rounded-xl flex items-center justify-center overflow-hidden mb-2 relative">
+                                <i class="fa-solid fa-apple-whole text-7xl text-rose-600 absolute" style="clip-path: inset(0 50% 0 0);"></i>
+                                <i class="fa-solid fa-apple-whole text-7xl text-green-500 absolute" style="clip-path: inset(0 0 0 50%); filter: saturate(1.5) hue-rotate(-90deg);"></i>
+                                <!-- Khung chọn mô phỏng -->
+                                <div id="selection-box" class="absolute right-[10%] top-[10%] w-[40%] h-[80%] border-2 border-dashed border-blue-500 bg-blue-500/20 hide rounded"></div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-500">Chỉ chỉnh một nửa (Có vùng chọn)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pastel-purple p-4 rounded-xl text-center">
+                        <button onclick="toggleSelectionDemo()" id="btn-demo-sel" class="bg-purple-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-purple-700 font-semibold mb-2 transition">Tạo vùng chọn (Rectangle Select)</button>
+                        <p class="text-sm text-purple-800"><b>Quy luật:</b> Lệnh chỉnh sửa chỉ thực hiện bên trong vùng chọn. Nếu không có, nó áp dụng toàn bộ ảnh.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sơ đồ tư duy thu nhỏ -->
+            <div class="mt-8 bg-white rounded-3xl p-8 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] border border-slate-100 max-w-4xl mx-auto">
+                <h3 class="text-center font-bold text-slate-600 mb-8 text-lg">Sơ đồ Tóm Tắt (Mindmap)</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-0 md:gap-4 relative">
+                    
+                    <!-- Gốc -->
+                    <div class="bg-gradient-to-r from-[#6b7cff] to-[#a055f7] text-white font-bold px-8 py-3 rounded-full shadow-md z-10 text-sm tracking-wide">
+                        BÀI 26 GIMP
+                    </div>
+                    
+                    <!-- Đường nối -->
+                    <div class="hidden md:block w-12 h-[2px] bg-slate-300"></div>
+                    <div class="block md:hidden h-8 w-[2px] bg-slate-300"></div>
+
+                    <!-- Các nhánh -->
+                    <div class="flex flex-col gap-4">
+                        
+                        <!-- Nhánh 1 (Blue) -->
+                        <div class="bg-white border border-blue-200 rounded-xl p-4 shadow-sm flex items-start gap-4 min-w-[280px] hover:-translate-y-1 transition-transform">
+                            <div class="bg-blue-100 text-blue-600 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-palette text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-slate-700 mb-1">Tinh chỉnh màu (Colors)</p>
+                                <ul class="text-xs text-slate-400 space-y-1">
+                                    <li>- Brightness-Contrast</li>
+                                    <li>- Color Balance</li>
+                                    <li>- Hue-Saturation</li>
+                                    <li>- Levels, Curves...</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Nhánh 2 (Green) -->
+                        <div class="bg-white border border-green-200 rounded-xl p-4 shadow-sm flex items-start gap-4 min-w-[280px] hover:-translate-y-1 transition-transform">
+                            <div class="bg-green-100 text-green-500 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-crop-simple text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-slate-700 mb-1">Công cụ chọn (Selection)</p>
+                                <ul class="text-xs text-slate-400 space-y-1">
+                                    <li>- Rectangle (R)</li>
+                                    <li>- Ellipse (E)</li>
+                                    <li>- Free Select</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 3: MỐI QUAN HỆ & LƯU Ý -->
+        <section id="luuy" class="tab-content hide animate-[fadeIn_0.5s_ease-in-out]">
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                
+                <!-- Các khái niệm dễ nhầm lẫn -->
+                <div class="glass-card p-6 border-l-4 border-rose-400 bg-rose-50/50">
+                    <h3 class="font-bold text-rose-700 mb-4 flex items-center"><i class="fa-solid fa-lightbulb text-rose-500 mr-2"></i>Các Khái Niệm Dễ Nhầm Lẫn (Mô phỏng)</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Mô phỏng 1 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition">
+                            <p class="font-bold text-slate-700 border-b pb-2 mb-2">1. Độ sáng toàn ảnh vs Độ sáng một màu</p>
+                            <p class="text-sm mb-3 text-slate-600">
+                                <b>Brightness</b>: Chỉnh toàn bộ. <b>Lightness</b>: Chỉ đổi độ sáng mảng màu được chọn.
+                            </p>
+                            <div class="flex gap-2 mb-4 justify-center">
+                                <div id="box-red" class="w-16 h-16 bg-red-500 rounded-lg shadow-inner flex items-center justify-center text-white text-xs font-bold transition-all">Đỏ</div>
+                                <div id="box-green" class="w-16 h-16 bg-green-500 rounded-lg shadow-inner flex items-center justify-center text-white text-xs font-bold transition-all">Lục</div>
+                                <div id="box-blue" class="w-16 h-16 bg-blue-500 rounded-lg shadow-inner flex items-center justify-center text-white text-xs font-bold transition-all">Lam</div>
+                            </div>
+                            <div class="space-y-3 bg-slate-50 p-3 rounded-lg">
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                        <label>Brightness (Sáng toàn ảnh)</label>
+                                        <span id="val-sim1-b">0</span>
+                                    </div>
+                                    <input type="range" id="sim1-bright" min="-80" max="80" value="0" oninput="sim1Update()">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-rose-600 mb-1">
+                                        <label>Lightness (Chỉ chỉnh màu Đỏ)</label>
+                                        <span id="val-sim1-l">0</span>
+                                    </div>
+                                    <input type="range" id="sim1-light" min="-80" max="80" value="0" oninput="sim1Update()">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mô phỏng 2 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition">
+                            <p class="font-bold text-slate-700 border-b pb-2 mb-2">2. Các Dải Màu trong Color Balance</p>
+                            <p class="text-sm mb-3 text-slate-600">Thử kéo thanh trượt để tăng tông Đỏ cho các vùng sáng/tối khác nhau.</p>
+                            
+                            <div class="flex h-12 rounded-lg overflow-hidden mb-4 shadow-inner">
+                                <div class="flex-1 bg-gray-800 relative flex items-center justify-center text-xs text-white font-bold border-r border-gray-600">
+                                    <div id="sim2-s-overlay" class="absolute inset-0 bg-red-500 opacity-0 transition-opacity"></div>
+                                    <span class="z-10 drop-shadow-md">Shadows</span>
+                                </div>
+                                <div class="flex-1 bg-gray-400 relative flex items-center justify-center text-xs text-white font-bold border-r border-gray-300">
+                                    <div id="sim2-m-overlay" class="absolute inset-0 bg-red-500 opacity-0 transition-opacity"></div>
+                                    <span class="z-10 drop-shadow-md">Midtones</span>
+                                </div>
+                                <div class="flex-1 bg-gray-200 relative flex items-center justify-center text-xs text-gray-800 font-bold">
+                                    <div id="sim2-h-overlay" class="absolute inset-0 bg-red-500 opacity-0 transition-opacity"></div>
+                                    <span class="z-10 drop-shadow-md">Highlights</span>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-3 bg-slate-50 p-3 rounded-lg">
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                                        <label>Ám Đỏ vào Shadows (Vùng tối)</label><span id="val-sim2-s">0</span>
+                                    </div>
+                                    <input type="range" id="sim2-s" min="0" max="100" value="0" oninput="sim2Update()">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                                        <label>Ám Đỏ vào Midtones (Trung bình)</label><span id="val-sim2-m">0</span>
+                                    </div>
+                                    <input type="range" id="sim2-m" min="0" max="100" value="0" oninput="sim2Update()">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                                        <label>Ám Đỏ vào Highlights (Vùng sáng)</label><span id="val-sim2-h">0</span>
+                                    </div>
+                                    <input type="range" id="sim2-h" min="0" max="100" value="0" oninput="sim2Update()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mô phỏng 3 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition">
+                            <p class="font-bold text-slate-700 border-b pb-2 mb-2">3. Phím Shift và Ctrl trong Chọn</p>
+                            
+                            <div class="flex gap-2 justify-center mb-4">
+                                <button onclick="sim3Action('shift')" class="flex-1 bg-green-100 px-2 py-2 rounded-lg text-green-800 hover:bg-green-200 font-bold text-sm shadow-sm transition"><i class="fa-solid fa-plus mr-1"></i> Shift</button>
+                                <button onclick="sim3Action('ctrl')" class="flex-1 bg-red-100 px-2 py-2 rounded-lg text-red-800 hover:bg-red-200 font-bold text-sm shadow-sm transition"><i class="fa-solid fa-minus mr-1"></i> Ctrl</button>
+                                <button onclick="sim3Action('reset')" class="bg-gray-100 px-3 py-2 rounded-lg text-gray-800 hover:bg-gray-200 shadow-sm transition" title="Làm lại"><i class="fa-solid fa-rotate-right"></i></button>
+                            </div>
+                            
+                            <div class="relative w-full h-32 bg-slate-100 border border-slate-300 rounded-lg mx-auto overflow-hidden checkerboard-bg">
+                                <div id="sim3-base" class="absolute top-6 left-1/4 w-16 h-16 border-2 border-dashed border-blue-600 bg-blue-500/20 transition-all duration-300 z-20 flex items-center justify-center text-[10px] text-blue-800 font-bold">Gốc</div>
+                                <div id="sim3-add" class="absolute top-2 left-1/3 w-16 h-16 border-2 border-dashed border-green-600 bg-green-500/30 opacity-0 transition-all duration-300 z-10 flex items-center justify-center text-[10px] text-green-800 font-bold">+ Thêm</div>
+                                <!-- Vùng cắt dùng bg-slate-100 để giả lập hiệu ứng trừ vùng chọn -->
+                                <div id="sim3-sub" class="absolute bottom-4 left-[20%] w-16 h-16 bg-slate-100 border-2 border-dashed border-red-600 opacity-0 transition-all duration-300 z-30 flex items-center justify-center text-[10px] text-red-800 font-bold">- Cắt</div>
+                            </div>
+                            <p id="sim3-text" class="text-sm text-center mt-3 font-semibold text-slate-600 bg-slate-50 py-1 rounded">Vùng chọn ban đầu (Mặc định)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mối quan hệ -->
+                <div class="glass-card p-6 border-l-4 border-purple-400 bg-purple-50/50 flex flex-col">
+                    <h3 class="font-bold text-purple-700 mb-4 flex items-center"><i class="fa-solid fa-link text-purple-500 mr-2"></i>Mối Quan Hệ Giữa Khái Niệm</h3>
+                    
+                    <div class="flex-grow flex items-center justify-center">
+                        <div class="text-center w-full">
+                            <!-- Box 1 -->
+                            <div class="bg-pastel-green text-green-800 font-bold p-4 rounded-xl border border-green-200 shadow-sm mx-auto w-3/4">
+                                CÔNG CỤ CHỌN<br>
+                                <span class="text-xs font-normal">(Xác định một phần ảnh)</span>
+                            </div>
+                            
+                            <!-- Mũi tên -->
+                            <div class="py-2 text-purple-400 text-2xl animate-bounce">
+                                <i class="fa-solid fa-arrow-down"></i>
+                            </div>
+
+                            <!-- Box 2 -->
+                            <div class="bg-pastel-blue text-blue-800 font-bold p-4 rounded-xl border border-blue-200 shadow-sm mx-auto w-3/4">
+                                CÔNG CỤ TINH CHỈNH MÀU<br>
+                                <span class="text-xs font-normal">(Áp dụng thay đổi)</span>
+                            </div>
+                            
+                            <p class="text-sm text-purple-800 mt-6 bg-white p-3 rounded-lg shadow-sm">
+                                <b>Kết luận:</b> Vùng chọn có vai trò cực kỳ quan trọng. Nó <b>giới hạn phạm vi tác dụng</b> của các công cụ tinh chỉnh màu, cho phép chỉnh sửa cục bộ (ví dụ: chỉ chỉnh màu bông hoa mà không ảnh hưởng nền).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 4: TRẮC NGHIỆM -->
+        <section id="tracnghiem" class="tab-content hide animate-[fadeIn_0.5s_ease-in-out]">
+            <div class="glass-card p-6 max-w-3xl mx-auto">
+                <h2 class="text-xl font-bold text-slate-700 mb-2 text-center"><i class="fa-solid fa-gamepad text-purple-500 mr-2"></i>Quiz Ôn Tập (5 Câu)</h2>
+                <p class="text-sm text-slate-500 text-center mb-6">Chỉ sử dụng kiến thức trong tài liệu nguồn.</p>
+                
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Javascript sẽ render câu hỏi tại đây -->
+                </div>
+
+                <div class="mt-6 text-center">
+                    <p id="quiz-result" class="font-bold text-lg hidden mb-4"></p>
+                    <button onclick="checkQuiz()" id="btn-submit-quiz" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">Nộp Bài & Kiểm Tra</button>
+                    <button onclick="resetQuiz()" id="btn-retry-quiz" class="hidden bg-slate-200 text-slate-700 font-bold py-3 px-8 rounded-full shadow hover:bg-slate-300 transition-all ml-2">Làm Lại</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Kịch bản JS (Tương tác) -->
+    <script>
+        // --- 1. TAB SYSTEM ---
+        function openTab(tabId) {
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hide'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            // Show selected
+            document.getElementById(tabId).classList.remove('hide');
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // --- 2. HINTS (TÌNH HUỐNG) ---
+        function toggleHint(id) {
+            const el = document.getElementById(id);
+            if(el.classList.contains('hide')) {
+                el.classList.remove('hide');
+                el.classList.add('animate-[fadeIn_0.3s_ease-in]');
+            } else {
+                el.classList.add('hide');
+            }
+        }
+
+        // --- 3. SIMULATOR: BRIGHTNESS & CONTRAST ---
+        const img = document.getElementById('sim-img-1');
+        const inpBright = document.getElementById('inp-bright');
+        const inpContrast = document.getElementById('inp-contrast');
+        const valBright = document.getElementById('val-bright');
+        const valContrast = document.getElementById('val-contrast');
+
+        function updateFilter() {
+            let b = parseInt(inpBright.value);
+            let c = parseInt(inpContrast.value);
+            valBright.innerText = b;
+            valContrast.innerText = c;
+            
+            // Chuyển đổi giá trị -100->100 sang CSS filter 0->2 (100% = 1)
+            let bCss = 1 + (b / 100); 
+            let cCss = 1 + (c / 100);
+            
+            img.style.filter = `brightness(${bCss}) contrast(${cCss})`;
+        }
+
+        function resetFilter() {
+            inpBright.value = 0;
+            inpContrast.value = 0;
+            updateFilter();
+        }
+
+        // --- 4. SIMULATOR: QUẢ TÁO (VÙNG CHỌN) ---
+        function toggleSelectionDemo() {
+            const box = document.getElementById('selection-box');
+            if(box.classList.contains('hide')) {
+                box.classList.remove('hide');
+                document.getElementById('btn-demo-sel').innerText = "Hủy vùng chọn";
+                document.getElementById('btn-demo-sel').classList.replace('bg-purple-600', 'bg-slate-500');
+            } else {
+                box.classList.add('hide');
+                document.getElementById('btn-demo-sel').innerText = "Tạo vùng chọn (Rectangle Select)";
+                document.getElementById('btn-demo-sel').classList.replace('bg-slate-500', 'bg-purple-600');
+            }
+        }
+
+        // --- 5. QUIZ SYSTEM ---
+        const questions = [
+            {
+                q: "Phím tắt để chọn công cụ Rectangle Select Tool (Hình chữ nhật) là gì?",
+                options: ["A. R", "B. E", "C. C", "D. M"],
+                ans: 0
+            },
+            {
+                q: "Công cụ nào được sử dụng để điều chỉnh tông màu, độ bão hòa và độ sáng cho từng mảng màu?",
+                options: ["A. Brightness-Contrast", "B. Color Balance", "C. Hue-Saturation", "D. Levels"],
+                ans: 2
+            },
+            {
+                q: "Trong công cụ Color Balance, dải Midtones dùng để chỉnh gì?",
+                options: ["A. Các điểm ảnh tối", "B. Các điểm ảnh trung bình", "C. Các điểm ảnh sáng", "D. Tông màu nổi trội"],
+                ans: 1
+            },
+            {
+                q: "Để tạo thêm vùng chọn mới khi đang có một vùng chọn, ta nhấn giữ phím nào?",
+                options: ["A. Ctrl", "B. Alt", "C. Shift", "D. Tab"],
+                ans: 2
+            },
+            {
+                q: "Để cắt và di chuyển vùng chọn tới vị trí mới, em dùng tổ hợp phím nào?",
+                options: ["A. Alt + Ctrl + kéo thả", "B. Alt + Shift + kéo thả", "C. Ctrl + Shift + kéo thả", "D. Nhấn đúp chuột"],
+                ans: 0
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        function renderQuiz() {
+            quizContainer.innerHTML = '';
+            questions.forEach((item, index) => {
+                let optionsHtml = '';
+                item.options.forEach((opt, oIndex) => {
+                    optionsHtml += `
+                        <label class="block p-3 border rounded-xl cursor-pointer hover:bg-slate-50 transition quiz-opt-label group" data-q="${index}" data-o="${oIndex}">
+                            <input type="radio" name="q${index}" value="${oIndex}" class="mr-2 accent-purple-500">
+                            <span class="text-slate-700 font-medium group-hover:text-purple-700">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                const html = `
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100" id="q-block-${index}">
+                        <p class="font-bold text-slate-800 mb-3"><span class="text-purple-500 mr-1">Câu ${index + 1}:</span> ${item.q}</p>
+                        <div class="space-y-2">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                `;
+                quizContainer.innerHTML += html;
+            });
+        }
+
+        function checkQuiz() {
+            let score = 0;
+            let answeredAll = true;
+
+            questions.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const block = document.getElementById(`q-block-${index}`);
+                const labels = block.querySelectorAll('.quiz-opt-label');
+                
+                // Reset styling
+                labels.forEach(l => {
+                    l.classList.remove('correct-ans', 'wrong-ans');
+                });
+
+                if (selected) {
+                    const selectedVal = parseInt(selected.value);
+                    if (selectedVal === item.ans) {
+                        score++;
+                        selected.closest('label').classList.add('correct-ans');
+                    } else {
+                        selected.closest('label').classList.add('wrong-ans');
+                        // Highlight correct answer
+                        labels[item.ans].classList.add('correct-ans');
+                    }
+                } else {
+                    answeredAll = false;
+                }
+            });
+
+            if (!answeredAll) {
+                alert("Vui lòng trả lời tất cả các câu hỏi!");
+                return;
+            }
+
+            const resP = document.getElementById('quiz-result');
+            resP.classList.remove('hidden');
+            resP.innerHTML = `Bạn trả lời đúng <span class="${score >= 3 ? 'text-green-500' : 'text-rose-500'}">${score}/${questions.length}</span> câu!`;
+            
+            document.getElementById('btn-submit-quiz').classList.add('hidden');
+            document.getElementById('btn-retry-quiz').classList.remove('hidden');
+            
+            // Disable inputs
+            document.querySelectorAll('#quiz-container input').forEach(inp => inp.disabled = true);
+        }
+
+        function resetQuiz() {
+            renderQuiz();
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('btn-submit-quiz').classList.remove('hidden');
+            document.getElementById('btn-retry-quiz').classList.add('hidden');
+        }
+
+        // --- 6. SIMULATOR: CÁC KHÁI NIỆM DỄ NHẦM LẪN ---
+        function sim1Update() {
+            let b = parseInt(document.getElementById('sim1-bright').value);
+            let l = parseInt(document.getElementById('sim1-light').value);
+            document.getElementById('val-sim1-b').innerText = b;
+            document.getElementById('val-sim1-l').innerText = l;
+
+            let bCss = 1 + (b / 100);
+            let lCss = 1 + (l / 100);
+
+            // Brightness áp dụng toàn bộ
+            document.getElementById('box-green').style.filter = `brightness(${bCss})`;
+            document.getElementById('box-blue').style.filter = `brightness(${bCss})`;
+            
+            // Màu đỏ chịu ảnh hưởng của cả sáng toàn ảnh + sáng riêng biệt
+            document.getElementById('box-red').style.filter = `brightness(${bCss * lCss})`;
+        }
+
+        function sim2Update() {
+            let s = parseInt(document.getElementById('sim2-s').value);
+            let m = parseInt(document.getElementById('sim2-m').value);
+            let h = parseInt(document.getElementById('sim2-h').value);
+
+            document.getElementById('val-sim2-s').innerText = s;
+            document.getElementById('val-sim2-m').innerText = m;
+            document.getElementById('val-sim2-h').innerText = h;
+
+            // Thay đổi độ mờ (opacity) của lớp màng đỏ nằm bên trên các dải màu
+            document.getElementById('sim2-s-overlay').style.opacity = s / 100;
+            document.getElementById('sim2-m-overlay').style.opacity = m / 100;
+            document.getElementById('sim2-h-overlay').style.opacity = h / 100;
+        }
+
+        function sim3Action(type) {
+            const addEl = document.getElementById('sim3-add');
+            const subEl = document.getElementById('sim3-sub');
+            const text = document.getElementById('sim3-text');
+
+            if(type === 'shift') {
+                addEl.style.opacity = '1';
+                subEl.style.opacity = '0';
+                text.innerText = "Giữ Shift (+): Vùng chọn được MỞ RỘNG";
+                text.className = "text-sm text-center mt-3 font-semibold text-green-700 bg-green-50 py-1 rounded transition-all";
+            } else if(type === 'ctrl') {
+                addEl.style.opacity = '0';
+                subEl.style.opacity = '1';
+                text.innerText = "Giữ Ctrl (-): Vùng chọn BỊ CẮT BỚT";
+                text.className = "text-sm text-center mt-3 font-semibold text-red-700 bg-red-50 py-1 rounded transition-all";
+            } else {
+                addEl.style.opacity = '0';
+                subEl.style.opacity = '0';
+                text.innerText = "Vùng chọn ban đầu (Mặc định)";
+                text.className = "text-sm text-center mt-3 font-semibold text-slate-600 bg-slate-50 py-1 rounded transition-all";
+            }
+        }
+
+        // Init
+        renderQuiz();
+
+    </script>
+</body>
+</html>

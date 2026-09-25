@@ -1,0 +1,48 @@
+Hãy tạo ảnh infographics sử dụng hình làm tham chiếu với yêu cầu sau:
+- Giữ nguyên phong cách của hình tham chiếu (màu sắc, phong chữ, cách bố trí...).
+- Nội dung thể hiện hoàn toàn bằng tiếng Việt, sử dụng đúng ngữ pháp.
+- Dòng đầu tiên trong hình ở giữa, nội dung "Tin Học 11".
+- Sử dụng nội dung sau làm dữ liệu cho hình (tiêu đề là dòng đầu tiên, định dạng tiêu đề thành in hoa):
+
+
+
+Hãy tạo ảnh infographics cho toàn bộ nguồn dữ liệu, sử dụng hình upload làm tham chiếu:
+- Giữ nguyên phong cách của hình tham chiếu (màu sắc, phong chữ, cách bố trí...).
+- Mỗi nguồn là 1 hình riêng biệt.
+- Nội dung thể hiện hoàn toàn bằng tiếng Việt, sử dụng đúng ngữ pháp.
+- Dòng đầu tiên trong hình ở giữa, nội dung "Tin Học 11".
+- Sử dụng nguồn làm dữ liệu cho hình (tiêu đề là dòng đầu tiên - Định dạng nội dung thành in hoa).
+
+
+Hãy tạo ảnh infographics sử dụng hình làm tham chiếu với yêu cầu sau:
+- Giữ nguyên phong cách của hình tham chiếu (màu sắc, phong chữ, cách bố trí...).
+- Nội dung thể hiện hoàn toàn bằng tiếng Việt, sử dụng đúng ngữ pháp.
+- Dòng đầu tiên trong hình ở giữa, nội dung "Tin Học 12".
+- Sử dụng nội dung sau làm dữ liệu cho hình (tiêu đề là dòng đầu tiên, định dạng tiêu đề thành in hoa):
+
+
+
+
+hãy tóm tắt ngắn gọn tài liệu trên, dòng đầu tiên là tên bài học
+
+Hãy tóm tắt chi tiết theo đề mục cho từng tài liệu trong nguồn trên, dòng đầu tiên là tên bài học.
+Sau đó hãy tách từng bài thành nguồn riêng và đặt tên cho nguồn là tên bài, thực hiện tất cả các bài.
+
+
+
+sửa tiêu đề thành: 
+BÀI 10: Lưu trữ dữ liệu và khai thác thông tin
+bỏ phần cuối ảnh có logo và chữ Gemini Notebook
+
+
+
+
+
+hãy tóm tắt thật chi tiết tài liệu trên, theo đề mục từng phần
+
+
+
+
+sửa tiêu đề thành: 
+Bài 10: Tạo liên kết
+bỏ phần cuối ảnh có logo và chữ Gemini Notebook
