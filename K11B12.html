@@ -3,462 +3,900 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ quản trị CSDL và Hệ CSDL - Tin học 11</title>
+    <title>Bài 12: Hệ QTCSDL và Hệ CSDL - Tin học 11</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Quicksand', sans-serif; background-color: #f7f9fc; }
-        .tab-content { display: none; }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fcfcfc;
+            color: #4a4a4a;
+        }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
         .tab-content.active { display: block; }
-        .tab-btn.active { background-color: #818cf8; color: white; border-color: #818cf8; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Pastel Colors */
+        .bg-pastel-pink { background-color: #ffe5ec; }
+        .bg-pastel-blue { background-color: #e5f0ff; }
+        .bg-pastel-green { background-color: #e5ffe8; }
+        .bg-pastel-yellow { background-color: #fff9e5; }
+        .bg-pastel-purple { background-color: #f0e5ff; }
+        .bg-pastel-orange { background-color: #ffecd9; }
+        
+        .text-pastel-pink { color: #ff8fab; }
+        .text-pastel-blue { color: #8eb3ff; }
+        .text-pastel-green { color: #73d686; }
+        .text-pastel-yellow { color: #f2c75c; }
+        .text-pastel-purple { color: #b78eff; }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 10px 32px 0 rgba(31, 38, 135, 0.06);
+            border-radius: 24px;
+        }
+
+        /* 3D Flip Card */
+        .flip-card { perspective: 1000px; min-height: 240px; height: auto; }
+        .flip-card-inner {
+            position: relative; width: 100%; height: 100%; min-height: 240px; text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.25rem;
+            box-shadow: 0 4px 15px 0 rgba(31, 38, 135, 0.05); border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+        .flip-card-back { transform: rotateY(180deg); background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); }
+        
+        .hover-spin:hover i { transform: rotate(360deg) scale(1.2); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .hover-spin i { transition: transform 0.5s ease-in-out; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        .animate-pulse-ring { animation: pulse-ring 2s infinite; }
+
+        /* Animation for Data Flow Flow */
+        .data-packet {
+            width: 14px; height: 14px; border-radius: 50%;
+            position: absolute; z-index: 50; opacity: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        @keyframes flowRight {
+            0% { left: 10%; opacity: 0; transform: scale(0.5); }
+            20% { opacity: 1; transform: scale(1.2); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { left: 90%; opacity: 0; transform: scale(0.5); }
+        }
+        @keyframes flowLeft {
+            0% { right: 10%; opacity: 0; transform: scale(0.5); }
+            20% { opacity: 1; transform: scale(1.2); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { right: 90%; opacity: 0; transform: scale(0.5); }
+        }
+        .anim-flow-right { animation: flowRight 1.5s ease-in-out forwards; }
+        .anim-flow-left { animation: flowLeft 1.5s ease-in-out forwards; }
+
+        /* Network Topology SVG Animation */
+        .dash-line { stroke-dasharray: 6; animation: dash 1s linear infinite; }
+        .dash-line.error { stroke: #ef4444; stroke-dasharray: none; animation: none; opacity: 0.3; }
+        @keyframes dash { to { stroke-dashoffset: -12; } }
+
+        .confetti { position: absolute; width: 10px; height: 10px; z-index: 1000; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b3b3b3; }
     </style>
 </head>
-<body class="text-slate-700 min-h-screen flex flex-col">
+<body class="bg-[url('https://www.transparenttextures.com/patterns/notebook.png')] min-h-screen pb-12">
 
-    <!-- Header -->
-    <header class="bg-indigo-100 border-b border-indigo-200 py-6 px-4 shadow-sm">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <span class="bg-indigo-200 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Tin Học 11 - Kết Nối Tri Thức</span>
-                <h1 class="text-3xl font-bold text-indigo-900 mt-2 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-indigo-500"></i> Bài 12: Hệ Quản Trị CSDL và Hệ CSDL
-                </h1>
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-8 pt-4">
+            <div class="inline-block bg-white px-6 py-2 rounded-full shadow-sm mb-3 border border-gray-100 text-sm font-bold text-gray-500 uppercase tracking-wider">
+                Tin học 11
             </div>
-        </div>
-    </header>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-server text-pastel-blue mr-2 animate-float"></i> Hệ QTCSDL & Hệ CSDL
+            </h1>
+        </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto gap-2 py-3 no-scrollbar">
-            <button onclick="switchTab(event, 'tab-overview')" class="tab-btn active px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-compass"></i> Mục tiêu & Khái quát
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8 bg-white/80 backdrop-blur p-2 rounded-3xl shadow-sm border border-gray-100 sticky top-4 z-50">
+            <button onclick="openTab('heqtcsdl')" class="tab-btn active px-5 py-2.5 rounded-2xl font-semibold transition-all bg-pastel-blue text-blue-800 shadow-sm" id="btn-heqtcsdl">
+                <i class="fas fa-cogs mr-1"></i> 1. Hệ QTCSDL
             </button>
-            <button onclick="switchTab(event, 'tab-qtcsdl')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-server"></i> 1. Khái niệm QTCSDL
+            <button onclick="openTab('hecsdl')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-hecsdl">
+                <i class="fas fa-cubes mr-1"></i> 2. Hệ CSDL
             </button>
-            <button onclick="switchTab(event, 'tab-csdl')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-network-wired"></i> 2. Hệ Cơ Sở Dữ Liệu
+            <button onclick="openTab('pholoai')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-pholoai">
+                <i class="fas fa-network-wired mr-1"></i> 3. Tập trung & Phân tán
             </button>
-            <button onclick="switchTab(event, 'tab-distribute')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-globe"></i> 3. CSDL Tập Trung & Phân Tán
-            </button>
-            <button onclick="switchTab(event, 'tab-interactive')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-gamepad"></i> Tương Tác & Mô Phỏng
-            </button>
-            <button onclick="switchTab(event, 'tab-quiz')" class="tab-btn px-4 py-2 rounded-xl font-semibold border border-slate-200 text-sm transition flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-clipboard-question"></i> Trắc Nghiệm 5 Câu
+            <button onclick="openTab('tracnghiem')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-tracnghiem">
+                <i class="fas fa-pen-fancy mr-1"></i> Luyện tập
             </button>
         </div>
-    </nav>
 
-    <!-- Main Content Container -->
-    <main class="max-w-6xl mx-auto p-4 md:p-6 flex-grow w-full">
-
-        <!-- TAB 1: Mục tiêu & Khái quát -->
-        <div id="tab-overview" class="tab-content active space-y-6">
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
-                    <h2 class="text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-flag-checkered text-pink-500"></i> Sau bài học này em sẽ:
-                    </h2>
-                    <ul class="space-y-3">
-                        <li class="flex items-start gap-3 bg-indigo-50/50 p-3 rounded-xl">
-                            <i class="fa-solid fa-check text-indigo-600 mt-1"></i>
-                            <span>Hiểu được khái niệm hệ quản trị CSDL (QTCSDL).</span>
-                        </li>
-                        <li class="flex items-start gap-3 bg-indigo-50/50 p-3 rounded-xl">
-                            <i class="fa-solid fa-check text-indigo-600 mt-1"></i>
-                            <span>Hiểu được khái niệm hệ cơ sở dữ liệu (Hệ CSDL).</span>
-                        </li>
-                        <li class="flex items-start gap-3 bg-indigo-50/50 p-3 rounded-xl">
-                            <i class="fa-solid fa-check text-indigo-600 mt-1"></i>
-                            <span>Phân biệt được CSDL tập trung và CSDL phân tán.</span>
-                        </li>
-                    </ul>
+        <!-- ================= TAB 1: HỆ QTCSDL ================= -->
+        <div id="heqtcsdl" class="tab-content active">
+            
+            <!-- Khái niệm -->
+            <div class="glass-card p-6 md:p-8 mb-8 flex flex-col md:flex-row items-center gap-6 bg-gradient-to-br from-blue-50 to-white">
+                <div class="w-32 h-32 shrink-0 bg-white rounded-full shadow-md flex items-center justify-center border-4 border-blue-100 relative">
+                    <i class="fas fa-database text-5xl text-blue-400 absolute"></i>
+                    <i class="fas fa-tools text-2xl text-pink-500 absolute bottom-4 right-4 bg-white rounded-full p-1 shadow-sm"></i>
                 </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
-                    <h2 class="text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-lightbulb text-amber-500"></i> Đặt vấn đề thực tế
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed bg-amber-50/50 p-4 rounded-xl border border-amber-100">
-                        Một CSDL lưu trữ dữ liệu trên hệ thống máy tính dưới dạng các tệp có cấu trúc được thiết kế để nhiều người dùng có thể cùng khai thác dữ liệu trong CSDL đó. Tuy nhiên không phải tất cả người dùng đều biết về cấu trúc các tệp lưu dữ liệu và tự viết chương trình khai thác dữ liệu. 
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Hệ Quản trị Cơ sở dữ liệu (DBMS) là gì?</h3>
+                    <p class="text-[15px] text-gray-600 font-medium leading-relaxed mb-4">
+                        Hệ QTCSDL (Database Management System) là <strong class="text-blue-600 bg-blue-100 px-1 rounded">bộ phần mềm chuyên dụng</strong> được xây dựng để hỗ trợ người dùng làm việc, quản lý và khai thác CSDL. Nó đóng vai trò như một <em>"Người thủ thư"</em> quản lý toàn bộ sách (dữ liệu) trong thư viện, giúp bạn tìm kiếm, thêm mới hoặc bảo vệ sách an toàn.
                     </p>
-                    <div class="mt-4 text-indigo-600 font-semibold text-sm">
-                        <i class="fa-solid fa-arrow-right"></i> Giải pháp: Xây dựng các phần mềm chuyên dụng gọi là <b>Hệ quản trị cơ sở dữ liệu (QTCSDL)</b>.
+                    <div class="flex flex-wrap gap-2 text-xs font-bold text-slate-500">
+                        <span class="bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm flex items-center"><i class="fas fa-cube text-orange-500 mr-1.5 text-sm"></i> MySQL</span>
+                        <span class="bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm flex items-center"><i class="fas fa-cube text-red-500 mr-1.5 text-sm"></i> Oracle</span>
+                        <span class="bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm flex items-center"><i class="fas fa-cube text-blue-500 mr-1.5 text-sm"></i> SQL Server</span>
+                        <span class="bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm flex items-center"><i class="fas fa-cube text-blue-400 mr-1.5 text-sm"></i> PostgreSQL</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Knowledge Map Infographic -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
-                <h3 class="text-lg font-bold text-indigo-900 mb-4 text-center"><i class="fa-solid fa-sitemap text-indigo-500"></i> Sơ đồ tư duy cốt lõi bài học</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                    <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                        <div class="text-indigo-700 font-bold mb-1">Phần 1</div>
-                        <div class="text-sm font-semibold">Hệ Quản Trị CSDL (QTCSDL)</div>
-                        <div class="text-xs text-slate-500 mt-2">4 Nhóm chức năng chính</div>
+            <!-- 4 Nhóm chức năng -->
+            <h3 class="text-2xl font-bold text-center mb-8 text-gray-700"><i class="fas fa-th-large text-pastel-pink mr-2"></i> 4 Nhóm chức năng cơ bản của Hệ QTCSDL</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                <!-- a) Định nghĩa -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-blue border-b-4 border-blue-200">
+                            <i class="fas fa-pencil-ruler text-4xl text-blue-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800">Định nghĩa dữ liệu</h4>
+                            <div class="flex flex-col items-center mt-2">
+                                <span class="text-xs text-blue-600 font-bold bg-white/50 px-2 rounded uppercase mb-1">DDL</span>
+                                <span class="text-[10px] text-blue-500 font-medium">(Data Definition Language)</span>
+                            </div>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-blue-400 bg-gradient-to-br from-white to-blue-50">
+                            <h5 class="font-bold text-blue-600 mb-2 border-b border-blue-100 pb-1">Định nghĩa dữ liệu</h5>
+                            <ul class="text-[13px] text-gray-600 font-medium leading-relaxed text-left space-y-1 w-full">
+                                <li>• Khai báo CSDL với tên xác định.</li>
+                                <li>• Tạo lập, sửa đổi kiến trúc (tạo bảng, cột).</li>
+                                <li>• Cài đặt các ràng buộc toàn vẹn dữ liệu.</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="bg-pink-50 p-4 rounded-xl border border-pink-100">
-                        <div class="text-pink-700 font-bold mb-1">Phần 2</div>
-                        <div class="text-sm font-semibold">Hệ Cơ Sở Dữ Liệu</div>
-                        <div class="text-xs text-slate-500 mt-2">Mô hình khách - chủ (Client - Server)</div>
+                </div>
+
+                <!-- b) Cập nhật & Truy xuất -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-green border-b-4 border-green-200">
+                            <i class="fas fa-search-plus text-4xl text-green-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800">Cập nhật & Truy xuất</h4>
+                            <div class="flex flex-col items-center mt-2">
+                                <span class="text-xs text-green-600 font-bold bg-white/50 px-2 rounded uppercase mb-1">DML / DQL</span>
+                                <span class="text-[10px] text-green-500 font-medium text-center">(Data Manipulation Language / Data Query Language)</span>
+                            </div>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-green-400 bg-gradient-to-br from-white to-green-50">
+                            <h5 class="font-bold text-green-600 mb-2 border-b border-green-100 pb-1">Cập nhật & Truy xuất</h5>
+                            <ul class="text-[13px] text-gray-600 font-medium leading-relaxed text-left space-y-1 w-full">
+                                <li>• <strong>Cập nhật:</strong> Thêm mới, xoá, sửa dữ liệu khi có thay đổi.</li>
+                                <li>• <strong>Truy xuất:</strong> Tìm kiếm, lọc và hiển thị thông tin theo yêu cầu.</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
-                        <div class="text-emerald-700 font-bold mb-1">Phần 3</div>
-                        <div class="text-sm font-semibold">CSDL Tập Trung & Phân Tán</div>
-                        <div class="text-xs text-slate-500 mt-2">So sánh ưu điểm và phạm vi</div>
+                </div>
+
+                <!-- c) Bảo mật & An toàn -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-pink border-b-4 border-pink-200">
+                            <i class="fas fa-shield-alt text-4xl text-pink-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800">Bảo mật & An toàn</h4>
+                            <div class="flex flex-col items-center mt-2">
+                                <span class="text-xs text-pink-600 font-bold bg-white/50 px-2 rounded uppercase mb-1">DCL / TCL</span>
+                                <span class="text-[10px] text-pink-500 font-medium text-center">(Data Control Language / Transaction Control Language)</span>
+                            </div>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-pink-400 bg-gradient-to-br from-white to-pink-50">
+                            <h5 class="font-bold text-pink-600 mb-2 border-b border-pink-100 pb-1">Bảo mật & An toàn</h5>
+                            <ul class="text-[13px] text-gray-600 font-medium leading-relaxed text-left space-y-1 w-full">
+                                <li>• Kiểm soát quyền truy cập.</li>
+                                <li>• Kiểm soát giao dịch tránh tranh chấp.</li>
+                                <li>• Sao lưu dự phòng (backup) và khôi phục khi gặp sự cố.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- d) Giao diện API -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-yellow border-b-4 border-yellow-200">
+                            <i class="fas fa-plug text-4xl text-yellow-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800">Chức năng giao diện lập trình ứng dụng</h4>
+                            <span class="text-xs text-yellow-600 font-bold bg-white/50 px-2 rounded mt-2 uppercase">API / Driver</span>
+                        </div>
+                        <div class="flip-card-back p-4 border-b-4 border-yellow-400 bg-gradient-to-br from-white to-yellow-50">
+                            <h5 class="font-bold text-yellow-600 mb-2 border-b border-yellow-100 pb-1 text-[14px]">Chức năng giao diện lập trình ứng dụng</h5>
+                            <ul class="text-[13px] text-gray-600 font-medium leading-relaxed text-left space-y-1 w-full">
+                                <li>• Cung cấp các phương thức và công cụ cho nhà phát triển để gửi câu lệnh truy vấn từ ứng dụng tới CSDL.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- TAB 1: Khái niệm Hệ QTCSDL -->
-        <div id="tab-qtcsdl" class="tab-content space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
-                <h2 class="text-2xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-server text-indigo-500"></i> 1. Khái niệm Hệ Quản Trị CSDL
-                </h2>
-                <div class="bg-indigo-50/70 p-4 rounded-xl text-slate-700 font-medium mb-6 border-l-4 border-indigo-500">
-                    Hệ QTCSDL là phần mềm cung cấp phương thức để lưu trữ, cập nhật và truy xuất dữ liệu của CSDL, bảo mật và an toàn dữ liệu. Đồng thời cung cấp giao diện lập trình ứng dụng cho nhà phát triển và người dùng.
-                </div>
-
-                <h3 class="text-lg font-bold text-indigo-900 mb-4"><i class="fa-solid fa-cubes text-pink-500"></i> 4 Nhóm chức năng chính của Hệ QTCSDL:</h3>
+            <!-- Simulator: DBMS in action -->
+            <div class="glass-card p-6 border-t-4 border-indigo-500">
+                <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-laptop-code text-indigo-500"></i> Mô phỏng: Sức mạnh của Hệ QTCSDL
+                </h4>
+                <p class="text-[14px] text-gray-600 mb-4">Người dùng không cần thao tác trực tiếp với các tệp tin lưu trữ vật lý. Hệ QTCSDL cung cấp <strong>ngôn ngữ truy vấn (SQL)</strong> để thực hiện yêu cầu dễ dàng.</p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white border border-slate-100 shadow-sm p-5 rounded-xl hover:border-indigo-200 transition">
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">a</span>
-                            <h4 class="font-bold text-indigo-900">Nhóm định nghĩa dữ liệu</h4>
+                <div class="bg-slate-900 rounded-xl p-4 shadow-inner text-white font-mono text-sm relative">
+                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-700">
+                        <span class="text-slate-400 text-xs">DBMS Console (SQL Executor)</span>
+                        <div class="flex gap-1">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
                         </div>
-                        <p class="text-sm text-slate-600">Khai báo CSDL, tạo lập, sửa đổi cấu trúc bên trong CSDL, cài đặt các ràng buộc toàn vẹn dữ liệu.</p>
+                    </div>
+                    
+                    <!-- Bảng dữ liệu mẫu -->
+                    <div class="mb-4">
+                        <span class="text-slate-400 text-xs block mb-2"><i class="fas fa-table mr-1"></i> Bảng dữ liệu (Table: HocSinh)</span>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs mb-2">
+                                <thead class="bg-slate-800 text-slate-300 border-b border-slate-600">
+                                    <tr>
+                                        <th class="p-2">Mã HS</th>
+                                        <th class="p-2">Họ Tên</th>
+                                        <th class="p-2">Ngày sinh</th>
+                                        <th class="p-2">Giới tính</th>
+                                        <th class="p-2">Điểm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-700"><td class="p-2">HS01</td><td class="p-2">Nguyễn Văn A</td><td class="p-2">12/05/2007</td><td class="p-2">Nam</td><td class="p-2 text-green-400">9.0</td></tr>
+                                    <tr class="border-b border-slate-700"><td class="p-2">HS02</td><td class="p-2">Trần Thị B</td><td class="p-2">23/08/2007</td><td class="p-2">Nữ</td><td class="p-2 text-red-400">6.5</td></tr>
+                                    <tr class="border-b border-slate-700"><td class="p-2">HS03</td><td class="p-2">Lê Văn C</td><td class="p-2">01/02/2007</td><td class="p-2">Nam</td><td class="p-2 text-green-400">8.5</td></tr>
+                                    <tr class="border-b border-slate-700"><td class="p-2">HS04</td><td class="p-2">Phạm Thị D</td><td class="p-2">15/11/2007</td><td class="p-2">Nữ</td><td class="p-2 text-yellow-400">7.8</td></tr>
+                                    <tr class="border-b border-slate-700"><td class="p-2">HS05</td><td class="p-2">Hoàng Văn E</td><td class="p-2">09/09/2007</td><td class="p-2">Nam</td><td class="p-2 text-red-400">5.5</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div class="bg-white border border-slate-100 shadow-sm p-5 rounded-xl hover:border-indigo-200 transition">
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">b</span>
-                            <h4 class="font-bold text-indigo-900">Nhóm cập nhật và truy xuất dữ liệu</h4>
+                    <div class="mb-3">
+                        <label class="block text-slate-400 mb-1 text-xs">Nhập lệnh Truy xuất (DML):</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="sql-input" value="SELECT * FROM HocSinh WHERE Diem > 8;" class="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-green-400 focus:outline-none focus:border-indigo-500" readonly>
+                            <button onclick="executeSQL()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded text-white font-bold text-xs transition">Thực thi <i class="fas fa-play ml-1"></i></button>
                         </div>
-                        <p class="text-sm text-slate-600">Thêm, xoá, sửa dữ liệu (cập nhật) và truy xuất dữ liệu theo những tiêu chí khác nhau.</p>
                     </div>
 
-                    <div class="bg-white border border-slate-100 shadow-sm p-5 rounded-xl hover:border-indigo-200 transition">
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold">c</span>
-                            <h4 class="font-bold text-indigo-900">Nhóm bảo mật và an toàn CSDL</h4>
+                    <div id="sql-result" class="hidden bg-slate-800 rounded border border-slate-700 overflow-hidden transition-all duration-500">
+                        <div class="bg-slate-700 px-3 py-1 text-xs text-slate-300 font-bold flex justify-between">
+                            <span>Kết quả truy vấn:</span>
+                            <span class="text-emerald-400"><i class="fas fa-check"></i> Thành công</span>
                         </div>
-                        <p class="text-sm text-slate-600">Kiểm soát quyền truy cập, kiểm soát giao dịch tránh tranh chấp, thực hiện sao lưu dự phòng (backup).</p>
-                    </div>
-
-                    <div class="bg-white border border-slate-100 shadow-sm p-5 rounded-xl hover:border-indigo-200 transition">
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">d</span>
-                            <h4 class="font-bold text-indigo-900">Nhóm giao diện lập trình ứng dụng</h4>
-                        </div>
-                        <p class="text-sm text-slate-600">Cung cấp công cụ cho nhà phát triển gửi truy vấn từ ứng dụng đến CSDL.</p>
-                    </div>
-                </div>
-
-                <div class="mt-6 bg-slate-50 p-5 rounded-xl border border-slate-200">
-                    <span class="font-bold text-indigo-900 block mb-4"><i class="fa-solid fa-star text-amber-400"></i> Các hệ QTCSDL phổ biến và thương hiệu đại diện:</span>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-center">
-                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
-                            <i class="devicon-oracle-original colored text-3xl"></i>
-                            <span class="text-xs font-semibold text-slate-700">Oracle</span>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
-                            <i class="devicon-mysql-original colored text-3xl"></i>
-                            <span class="text-xs font-semibold text-slate-700">MySQL</span>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
-                            <i class="devicon-microsoftsqlserver-plain colored text-3xl"></i>
-                            <span class="text-xs font-semibold text-slate-700">SQL Server</span>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
-                            <i class="devicon-postgresql-plain colored text-3xl"></i>
-                            <span class="text-xs font-semibold text-slate-700">PostgreSQL</span>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
-                            <i class="devicon-sqlite-plain colored text-3xl"></i>
-                            <span class="text-xs font-semibold text-slate-700">SQLite</span>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-2">
-                            <i class="fa-solid fa-file-excel text-emerald-600 text-3xl"></i>
-                            <span class="text-xs font-semibold text-slate-700">MS Access</span>
-                        </div>
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-800 text-slate-400 border-b border-slate-600">
+                                <tr>
+                                    <th class="p-2">Mã HS</th>
+                                    <th class="p-2">Họ Tên</th>
+                                    <th class="p-2">Ngày sinh</th>
+                                    <th class="p-2">Giới tính</th>
+                                    <th class="p-2">Điểm</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-700 hover:bg-slate-700"><td class="p-2">HS01</td><td class="p-2">Nguyễn Văn A</td><td class="p-2">12/05/2007</td><td class="p-2">Nam</td><td class="p-2 text-emerald-400 font-bold">9.0</td></tr>
+                                <tr class="hover:bg-slate-700"><td class="p-2">HS03</td><td class="p-2">Lê Văn C</td><td class="p-2">01/02/2007</td><td class="p-2">Nam</td><td class="p-2 text-emerald-400 font-bold">8.5</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 2: Hệ Cơ Sở Dữ Liệu -->
-        <div id="tab-csdl" class="tab-content space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
-                <h2 class="text-2xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-network-wired text-indigo-500"></i> 2. Hệ Cơ Sở Dữ Liệu (Hệ CSDL)
-                </h2>
-                <p class="text-slate-600 mb-4">
-                    Một hệ thống gồm ba thành phần: <b>CSDL</b>, <b>Hệ QTCSDL</b> và các <b>phần mềm ứng dụng CSDL</b> được gọi là một <b>hệ CSDL</b>.
+        <!-- ================= TAB 2: HỆ CSDL ================= -->
+        <div id="hecsdl" class="tab-content">
+            
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Cấu trúc của một Hệ Cơ sở dữ liệu</h3>
+                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">
+                    Đừng nhầm lẫn giữa CSDL và Hệ CSDL! Một <strong>Hệ CSDL</strong> là một hệ thống hoàn chỉnh bao gồm 3 thành phần liên kết chặt chẽ với nhau.
                 </p>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
-                    <div class="bg-indigo-50/70 p-5 rounded-xl border border-indigo-100 text-center">
-                        <div class="text-3xl text-indigo-600 mb-2"><i class="fa-solid fa-database"></i></div>
-                        <h4 class="font-bold text-indigo-900 mb-1">Cơ Sở Dữ Liệu</h4>
-                        <p class="text-xs text-slate-600">Nơi lưu trữ dữ liệu tập trung, có cấu trúc.</p>
+            <div class="glass-card p-6 md:p-10 mb-8 border-t-4 border-purple-500">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6 relative" id="db-system-container">
+                    
+                    <!-- Phần mềm ứng dụng (Client) -->
+                    <div class="w-full md:w-1/3 bg-white border-2 border-pink-200 rounded-2xl p-5 shadow-sm text-center relative z-10 hover:shadow-md transition">
+                        <div class="w-16 h-16 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 text-lg mb-1">Phần mềm ứng dụng</h4>
+                        <span class="inline-block bg-pink-50 text-pink-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">Thành phần Khách (Client)</span>
+                        <p class="text-xs text-gray-600 font-medium">Giao diện tương tác với người dùng. Gửi yêu cầu (Query) dựa trên thao tác người dùng (ví dụ: Phần mềm tra cứu điểm).</p>
+                        
+                        <button onclick="simulateQueryFlow()" id="btn-flow" class="mt-4 bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2 px-4 rounded-full transition w-full shadow active:scale-95">
+                            Mô phỏng Yêu cầu <i class="fas fa-paper-plane ml-1"></i>
+                        </button>
                     </div>
-                    <div class="bg-pink-50/70 p-5 rounded-xl border border-pink-100 text-center">
-                        <div class="text-3xl text-pink-600 mb-2"><i class="fa-solid fa-cogs"></i></div>
-                        <h4 class="font-bold text-indigo-900 mb-1">Hệ QTCSDL</h4>
-                        <p class="text-xs text-slate-600">Phần mềm quản lý, xử lý và bảo mật CSDL (phần "chủ").</p>
+
+                    <!-- Flow Arrows 1 -->
+                    <div class="hidden md:flex flex-col items-center justify-center w-12 relative z-0">
+                        <div class="w-full h-0.5 bg-gray-200 relative">
+                            <div id="packet-1" class="data-packet bg-pink-500 text-white text-[8px]" style="top: -6px; left: 10%;"><i class="fas fa-search"></i></div>
+                        </div>
+                        <div class="w-full h-0.5 bg-gray-200 mt-4 relative">
+                            <div id="packet-4" class="data-packet bg-emerald-500 text-white text-[8px]" style="top: -6px; right: 10%;"><i class="fas fa-check"></i></div>
+                        </div>
                     </div>
-                    <div class="bg-emerald-50/70 p-5 rounded-xl border border-emerald-100 text-center">
-                        <div class="text-3xl text-emerald-600 mb-2"><i class="fa-solid fa-window-maximize"></i></div>
-                        <h4 class="font-bold text-indigo-900 mb-1">Phần mềm ứng dụng CSDL</h4>
-                        <p class="text-xs text-slate-600">Giao diện tương tác với người dùng (phần "khách").</p>
+                    <!-- Mobile Arrows -->
+                    <div class="md:hidden flex justify-center w-full my-2 text-gray-300"><i class="fas fa-arrows-alt-v text-2xl"></i></div>
+
+                    <!-- Hệ QTCSDL (Server Logic) -->
+                    <div class="w-full md:w-1/3 bg-white border-2 border-blue-200 rounded-2xl p-5 shadow-sm text-center relative z-10 hover:shadow-md transition">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3 animate-pulse-ring">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 text-lg mb-1">Hệ Quản trị CSDL</h4>
+                        <span class="inline-block bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">Thành phần Chủ (Server)</span>
+                        <p class="text-xs text-gray-600 font-medium">Bộ脑 trung tâm. Tiếp nhận yêu cầu, kiểm tra quyền, tối ưu hóa câu lệnh và thực thi việc lấy/ghi dữ liệu.</p>
+                        
+                        <div id="server-status" class="mt-4 text-[10px] font-bold text-gray-400 bg-gray-50 py-1 rounded border border-gray-100">
+                            Trạng thái: Đang rảnh...
+                        </div>
                     </div>
+
+                    <!-- Flow Arrows 2 -->
+                    <div class="hidden md:flex flex-col items-center justify-center w-12 relative z-0">
+                        <div class="w-full h-0.5 bg-gray-200 relative">
+                            <div id="packet-2" class="data-packet bg-blue-500 text-white text-[8px]" style="top: -6px; left: 10%;"><i class="fas fa-arrow-right"></i></div>
+                        </div>
+                        <div class="w-full h-0.5 bg-gray-200 mt-4 relative">
+                            <div id="packet-3" class="data-packet bg-emerald-500 text-white text-[8px]" style="top: -6px; right: 10%;"><i class="fas fa-file-alt"></i></div>
+                        </div>
+                    </div>
+                    <!-- Mobile Arrows -->
+                    <div class="md:hidden flex justify-center w-full my-2 text-gray-300"><i class="fas fa-arrows-alt-v text-2xl"></i></div>
+
+                    <!-- CSDL (Storage) -->
+                    <div class="w-full md:w-1/3 bg-white border-2 border-emerald-200 rounded-2xl p-5 shadow-sm text-center relative z-10 hover:shadow-md transition">
+                        <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 text-lg mb-1">Cơ sở dữ liệu</h4>
+                        <span class="inline-block bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">Lưu trữ Vật lý</span>
+                        <p class="text-xs text-gray-600 font-medium">Tập hợp các dữ liệu có liên quan được tổ chức và lưu trữ thực tế trên các ổ đĩa của máy chủ.</p>
+                    </div>
+
                 </div>
-
-                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-sm text-amber-900">
-                    <b>Phân biệt:</b> Hệ QTCSDL là phần mềm quản trị, còn Hệ CSDL là hệ thống lớn bao gồm cả CSDL, hệ QTCSDL và các ứng dụng kết nối.
+                
+                <div class="mt-8 bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-600 text-center font-medium shadow-inner">
+                    <strong class="text-indigo-600">Mô hình Khách - Chủ (Client - Server):</strong> Phân chia công việc rõ ràng. Trạm khách chuyên xử lý giao diện, trạm chủ (máy chủ mạnh mẽ) chuyên xử lý dữ liệu nặng, giúp phục vụ được hàng ngàn người dùng cùng lúc.
                 </div>
             </div>
         </div>
 
-        <!-- TAB 3: CSDL Tập Trung và Phân Tán -->
-        <div id="tab-distribute" class="tab-content space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
-                <h2 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-globe text-indigo-500"></i> 3. Hệ CSDL Tập Trung và Phân Tán
-                </h2>
+        <!-- ================= TAB 3: TẬP TRUNG & PHÂN TÁN ================= -->
+        <div id="pholoai" class="tab-content">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Hệ CSDL Tập trung vs Hệ CSDL Phân tán</h3>
+                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">
+                    Khi hệ thống lớn lên, nơi lưu trữ dữ liệu cần được tổ chức sao cho an toàn và hiệu quả nhất.
+                </p>
+            </div>
 
-                <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Tập trung -->
-                    <div class="bg-indigo-50/50 p-5 rounded-xl border border-indigo-100">
-                        <h3 class="font-bold text-indigo-900 text-lg mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-building text-indigo-600"></i> Hệ CSDL Tập Trung
-                        </h3>
-                        <p class="text-sm text-slate-600 mb-3">
-                            CSDL được lưu trữ tập trung trên một máy tính (hoặc máy chủ duy nhất).
-                        </p>
-                        <div class="text-xs bg-white p-3 rounded-lg border border-indigo-100">
-                            <b>Ví dụ:</b> CSDL dùng cho một người dùng trên một máy tính (Microsoft Access cá nhân), hoặc hệ thống quản lý nhỏ gọn.
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                
+                <!-- Tập trung -->
+                <div class="glass-card p-6 border-t-4 border-orange-400 flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-orange-100 opacity-50 text-9xl z-0"><i class="fas fa-server"></i></div>
+                    
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 relative z-10 flex items-center gap-2">
+                        <i class="fas fa-dot-circle text-orange-500"></i> CSDL Tập trung
+                    </h4>
+                    
+                    <!-- Diagram -->
+                    <div id="container-centralized" class="bg-white rounded-xl border border-gray-100 h-48 mb-4 relative flex items-center justify-center z-10 shadow-inner p-4">
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none" id="svg-centralized">
+                            <path class="dash-line opacity-50" stroke="#f97316" stroke-width="2" fill="none" d="" id="path-c1"></path>
+                            <path class="dash-line opacity-50" stroke="#f97316" stroke-width="2" fill="none" d="" id="path-c2"></path>
+                            <path class="dash-line opacity-50" stroke="#f97316" stroke-width="2" fill="none" d="" id="path-c3"></path>
+                            <path class="dash-line opacity-50" stroke="#f97316" stroke-width="2" fill="none" d="" id="path-c4"></path>
+                        </svg>
+                        
+                        <!-- Center Node -->
+                        <div id="node-center" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center text-white shadow-lg z-20 cursor-pointer transition hover:scale-105" title="Bấm để mô phỏng sự cố Máy chủ" onclick="simulateCrash('centralized')">
+                            <i class="fas fa-database text-2xl"></i>
                         </div>
+                        
+                        <!-- Clients -->
+                        <div id="client-c-1" class="absolute top-4 left-4 w-8 h-8 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center shadow z-20 client-c"><i class="fas fa-laptop"></i></div>
+                        <div id="client-c-2" class="absolute bottom-4 left-4 w-8 h-8 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center shadow z-20 client-c"><i class="fas fa-mobile-alt"></i></div>
+                        <div id="client-c-3" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center shadow z-20 client-c"><i class="fas fa-desktop"></i></div>
+                        <div id="client-c-4" class="absolute bottom-4 right-4 w-8 h-8 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center shadow z-20 client-c"><i class="fas fa-laptop"></i></div>
                     </div>
 
-                    <!-- Phân tán -->
-                    <div class="bg-pink-50/50 p-5 rounded-xl border border-pink-100">
-                        <h3 class="font-bold text-indigo-900 text-lg mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-network-wired text-pink-600"></i> Hệ CSDL Phân Tán
-                        </h3>
-                        <p class="text-sm text-slate-600 mb-3">
-                            Dữ liệu được lưu trữ ở nhiều máy tính khác nhau trên mạng máy tính (ví dụ: các chi nhánh Hà Nội, Đà Nẵng, Cần Thơ, TP. Hồ Chí Minh).
-                        </p>
-                        <div class="text-xs bg-white p-3 rounded-lg border border-pink-100">
-                            <b>Ưu điểm vượt trội:</b> Dễ dàng mở rộng, tính sẵn sàng và độ tin cậy cao, tối ưu hóa tốc độ truy xuất cho các tổ chức lớn (Facebook, Google, Amazon...).
-                        </div>
+                    <p class="text-[14px] text-gray-600 font-medium mb-4 relative z-10 flex-1">
+                        Toàn bộ dữ liệu được lưu trữ tập trung trên <strong>một máy tính duy nhất</strong> (hoặc một cụm máy chủ tại một nơi). 
+                    </p>
+                    <div class="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200 relative z-10">
+                        <strong class="text-red-500">Nhược điểm:</strong> Rủi ro "Điểm chết độc nhất" (Single point of failure). Hãy thử click vào cụm Máy chủ (màu cam) ở hình trên.
                     </div>
                 </div>
 
-                <div class="mt-6 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600">
-                    <b>Lưu ý quan trọng:</b> Cần phân biệt <i>Hệ CSDL phân tán</i> với <i>Hệ CSDL tập trung nhưng xử lý phân tán</i> (mô hình máy chủ tệp).
+                <!-- Phân tán -->
+                <div class="glass-card p-6 border-t-4 border-indigo-400 flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-indigo-100 opacity-50 text-9xl z-0"><i class="fas fa-globe"></i></div>
+                    
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 relative z-10 flex items-center gap-2">
+                        <i class="fas fa-network-wired text-indigo-500"></i> CSDL Phân tán
+                    </h4>
+                    
+                    <!-- Diagram -->
+                    <div id="container-distributed" class="bg-white rounded-xl border border-gray-100 h-48 mb-4 relative flex items-center justify-center z-10 shadow-inner p-4">
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none" id="svg-distributed">
+                            <!-- Inter-node links -->
+                            <path class="dash-line opacity-30" stroke="#6366f1" stroke-width="2" fill="none" d="" id="link-n1-n2"></path>
+                            <path class="dash-line opacity-30" stroke="#6366f1" stroke-width="2" fill="none" d="" id="link-n1-n3"></path>
+                            <path class="dash-line opacity-30" stroke="#6366f1" stroke-width="2" fill="none" d="" id="link-n2-n3"></path>
+                            
+                            <!-- Client to Nodes -->
+                            <path class="dash-line opacity-60" stroke="#3b82f6" stroke-width="1.5" fill="none" d="" id="link-c1-d"></path>
+                            <path class="dash-line opacity-60" stroke="#3b82f6" stroke-width="1.5" fill="none" d="" id="link-c2-d"></path>
+                            <path class="dash-line opacity-60" stroke="#3b82f6" stroke-width="1.5" fill="none" d="" id="link-c3-d"></path>
+                            <path class="dash-line opacity-0" stroke="#10b981" stroke-width="2" fill="none" d="" id="link-c1-d-backup"></path> <!-- Backup route C1 -->
+                            <path class="dash-line opacity-0" stroke="#10b981" stroke-width="2" fill="none" d="" id="link-c2-d-backup"></path> <!-- Backup route C2 -->
+                            <path class="dash-line opacity-0" stroke="#10b981" stroke-width="2" fill="none" d="" id="link-c3-d-backup"></path> <!-- Backup route C3 -->
+                        </svg>
+                        
+                        <!-- Nodes -->
+                        <div id="node-d1" class="absolute w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md z-20 cursor-pointer transition hover:scale-105 top-8 left-1/4 -translate-x-1/2" title="Bấm để mô phỏng sập Trạm 1" onclick="simulateCrash('distributed', 1)">
+                            <i class="fas fa-database text-lg"></i>
+                        </div>
+                        <div id="node-d2" class="absolute w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md z-20 top-8 right-1/4 translate-x-1/2 cursor-pointer transition hover:scale-105" title="Bấm để mô phỏng sập Trạm 2" onclick="simulateCrash('distributed', 2)">
+                            <i class="fas fa-database text-lg"></i>
+                        </div>
+                        <div id="node-d3" class="absolute w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md z-20 bottom-6 left-1/2 -translate-x-1/2 cursor-pointer transition hover:scale-105" title="Bấm để mô phỏng sập Trạm 3" onclick="simulateCrash('distributed', 3)">
+                            <i class="fas fa-database text-lg"></i>
+                        </div>
+
+                        <!-- Clients -->
+                        <div id="client-d-1" class="absolute top-4 left-4 w-8 h-8 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center shadow border border-blue-100 z-20"><i class="fas fa-laptop"></i></div>
+                        <div id="client-d-2" class="absolute top-4 right-4 w-8 h-8 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center shadow border border-blue-100 z-20"><i class="fas fa-building"></i></div>
+                        <div id="client-d-3" class="absolute bottom-4 left-4 w-8 h-8 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center shadow border border-blue-100 z-20"><i class="fas fa-mobile-alt"></i></div>
+                    </div>
+
+                    <p class="text-[14px] text-gray-600 font-medium mb-4 relative z-10 flex-1">
+                        Dữ liệu được phân tán trên <strong>nhiều trạm khác nhau</strong> của một mạng máy tính. Ứng dụng có thể truy cập dữ liệu cục bộ hoặc truy cập chéo (ứng dụng phân tán).
+                    </p>
+                    <div class="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200 relative z-10">
+                        <strong class="text-green-600">Ưu điểm:</strong> Nâng cao tính sẵn sàng. Nếu một trạm lỗi (thử click vào các Trạm), hệ thống tự định tuyến sang trạm khác, không làm tê liệt toàn bộ.
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Nút Reset mô phỏng -->
+            <div class="text-center">
+                 <button onclick="resetCrashSim()" class="text-sm bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 py-2 px-4 rounded-full shadow-sm transition"><i class="fas fa-sync-alt mr-1"></i> Khôi phục Hệ thống mạng</button>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: TRẮC NGHIỆM ================= -->
+        <div id="tracnghiem" class="tab-content">
+            <h3 class="text-2xl font-bold text-center mb-6 text-gray-700">Trắc Nghiệm Ôn Tập (5 câu)</h3>
+            <div class="glass-card p-6 md:p-8 space-y-6" id="quiz-container">
+                
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">1. Hệ Quản trị Cơ sở dữ liệu (DBMS) là gì?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Là dữ liệu được lưu trên ổ cứng.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Là phần mềm chuyên dụng để quản lý, khai thác CSDL.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Là ngôn ngữ lập trình web.</span></label>
+                    </div>
+                </div>
+                
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">2. Tính năng "Thêm mới sinh viên vào danh sách" thuộc nhóm chức năng nào của Hệ QTCSDL?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Nhóm chức năng cập nhật và truy xuất dữ liệu.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Nhóm chức năng định nghĩa dữ liệu.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Nhóm chức năng bảo mật, an toàn.</span></label>
+                    </div>
+                </div>
+                
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">3. Một Hệ Cơ sở dữ liệu (Hệ CSDL) hoàn chỉnh bao gồm các thành phần nào?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Chỉ CSDL và Hệ Quản trị CSDL.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. CSDL, Hệ Quản trị CSDL và Phần cứng máy tính.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. CSDL, Hệ QTCSDL và các Phần mềm ứng dụng CSDL.</span></label>
+                    </div>
+                </div>
+                
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">4. Ưu điểm nổi bật nhất của Hệ CSDL Phân tán so với Tập trung là gì?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Chi phí xây dựng rẻ hơn rất nhiều.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Nâng cao tính sẵn sàng, hệ thống vẫn hoạt động khi có một trạm sự cố.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Quản trị hệ thống dễ dàng hơn.</span></label>
+                    </div>
+                </div>
+
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">5. Trong kiến trúc Khách - Chủ (Client - Server), phần mềm ứng dụng CSDL (như App tra cứu điểm) thường đóng vai trò gì?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Thành phần Chủ (Server) xử lý lưu trữ.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Thành phần Khách (Client) cung cấp giao diện tương tác.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Đóng cả 2 vai trò Khách và Chủ.</span></label>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button onclick="checkAnswers()" class="bg-pastel-blue hover:bg-blue-200 text-blue-800 font-bold py-3 px-8 rounded-full shadow-sm transition-transform hover:scale-105 inline-flex items-center text-base">
+                        <i class="fas fa-paper-plane mr-2"></i> Nộp Bài & Xem Điểm
+                    </button>
+                    <div id="quiz-result" class="mt-4 text-lg font-bold hidden py-3 px-6 rounded-xl inline-block shadow-sm"></div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 4: Tương tác & Mô phỏng -->
-        <div id="tab-interactive" class="tab-content space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
-                <h2 class="text-2xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-gamepad text-indigo-500"></i> Mô Phỏng Tương Tác: Khám phá hoạt động Hệ CSDL
-                </h2>
-                <p class="text-slate-600 text-sm mb-6">Chọn các thành phần bên dưới để xem mô tả chi tiết hoạt động giao tiếp trong Hệ CSDL.</p>
+    </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <button onclick="showSim('user')" class="p-4 rounded-xl border-2 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-left transition font-semibold text-indigo-900 flex items-center gap-3">
-                        <i class="fa-solid fa-user text-2xl text-indigo-600"></i>
-                        <div>
-                            <div class="text-sm">1. Người Dùng</div>
-                            <div class="text-xs font-normal text-slate-500">Gửi yêu cầu tra cứu</div>
-                        </div>
-                    </button>
-
-                    <button onclick="showSim('client')" class="p-4 rounded-xl border-2 border-pink-200 bg-pink-50 hover:bg-pink-100 text-left transition font-semibold text-indigo-900 flex items-center gap-3">
-                        <i class="fa-solid fa-window-restore text-2xl text-pink-600"></i>
-                        <div>
-                            <div class="text-sm">2. Phần mềm ứng dụng (Khách)</div>
-                            <div class="text-xs font-normal text-slate-500">Nhận giao diện, kết nối chủ</div>
-                        </div>
-                    </button>
-
-                    <button onclick="showSim('server')" class="p-4 rounded-xl border-2 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-left transition font-semibold text-indigo-900 flex items-center gap-3">
-                        <i class="fa-solid fa-server text-2xl text-emerald-600"></i>
-                        <div>
-                            <div class="text-sm">3. Hệ QTCSDL & CSDL (Chủ)</div>
-                            <div class="text-xs font-normal text-slate-500">Xử lý dữ liệu và trả về kết quả</div>
-                        </div>
-                    </button>
-                </div>
-
-                <div id="sim-result-box" class="bg-indigo-900 text-white p-6 rounded-2xl shadow-inner min-h-[120px] flex items-center justify-center text-center font-medium">
-                    👉 Hãy click vào một thành phần ở trên để xem mô phỏng hoạt động chi tiết!
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 5: Trắc nghiệm -->
-        <div id="tab-quiz" class="tab-content space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-50">
-                <h2 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-clipboard-question text-indigo-500"></i> Bộ câu hỏi trắc nghiệm ôn tập (5 câu)
-                </h2>
-
-                <div id="quiz-container" class="space-y-6">
-                    <!-- Question 1 -->
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="1">
-                        <p class="font-bold text-slate-800 mb-3">Câu 1: Hệ quản trị cơ sở dữ liệu (QTCSDL) là gì?</p>
-                        <div class="space-y-2 text-sm">
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q1" value="A" class="mr-2"> A. Là thiết bị phần cứng dùng để lưu trữ dữ liệu máy tính.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q1" value="B" class="mr-2"> B. Là phần mềm cung cấp phương thức lưu trữ, cập nhật, truy xuất, bảo mật và an toàn dữ liệu.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q1" value="C" class="mr-2"> C. Là một bảng tính điện tử đơn giản trên máy tính cá nhân.
-                            </label>
-                        </div>
-                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: B</div>
-                    </div>
-
-                    <!-- Question 2 -->
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="2">
-                        <p class="font-bold text-slate-800 mb-3">Câu 2: Một hệ CSDL đầy đủ bao gồm những thành phần nào?</p>
-                        <div class="space-y-2 text-sm">
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q2" value="A" class="mr-2"> A. CSDL và máy chủ mạng.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q2" value="B" class="mr-2"> B. CSDL, hệ QTCSDL và các phần mềm ứng dụng CSDL.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q2" value="C" class="mr-2"> C. Hệ QTCSDL và hệ điều hành Windows.
-                            </label>
-                        </div>
-                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: B</div>
-                    </div>
-
-                    <!-- Question 3 -->
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="3">
-                        <p class="font-bold text-slate-800 mb-3">Câu 3: Chức năng tạo lập cấu trúc CSDL thuộc nhóm chức năng nào của hệ QTCSDL?</p>
-                        <div class="space-y-2 text-sm">
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q3" value="A" class="mr-2"> A. Nhóm định nghĩa dữ liệu.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q3" value="B" class="mr-2"> B. Nhóm cập nhật và truy xuất dữ liệu.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q3" value="C" class="mr-2"> C. Nhóm bảo mật và an toàn CSDL.
-                            </label>
-                        </div>
-                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: A</div>
-                    </div>
-
-                    <!-- Question 4 -->
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="4">
-                        <p class="font-bold text-slate-800 mb-3">Câu 4: Ưu điểm nổi bật của hệ CSDL phân tán so với tập trung là gì?</p>
-                        <div class="space-y-2 text-sm">
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q4" value="A" class="mr-2"> A. Chi phí lắp đặt và duy trì luôn rẻ hơn.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q4" value="B" class="mr-2"> B. Không bao giờ xảy ra lỗi mạng.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q4" value="C" class="mr-2"> C. Dễ dàng mở rộng, tính sẵn sàng và độ tin cậy cao, tối ưu hóa tốc độ truy xuất trên diện rộng.
-                            </label>
-                        </div>
-                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: C</div>
-                    </div>
-
-                    <!-- Question 5 -->
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200" data-q="5">
-                        <p class="font-bold text-slate-800 mb-3">Câu 5: Trong mô hình khách - chủ, phần mềm "khách" có nhiệm vụ chính là gì?</p>
-                        <div class="space-y-2 text-sm">
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q5" value="A" class="mr-2"> A. Tổ chức giao diện tương tác với người dùng, gửi yêu cầu đến phần "chủ".
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q5" value="B" class="mr-2"> B. Trực tiếp lưu trữ toàn bộ đĩa cứng chứa tệp CSDL.
-                            </label>
-                            <label class="block p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-indigo-50 transition">
-                                <input type="radio" name="q5" value="C" class="mr-2"> C. Quản lý toàn bộ bảo mật cấp cao của hệ thống máy chủ.
-                            </label>
-                        </div>
-                        <div class="mt-2 text-xs font-semibold text-emerald-600 hidden ans-feedback">Đáp án đúng: A</div>
-                    </div>
-                </div>
-
-                <div class="mt-6 text-center">
-                    <button onclick="checkQuiz()" class="bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition">
-                        <i class="fa-solid fa-square-check mr-2"></i> Kiểm Tra Kết Quả
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 text-center py-4 text-xs text-slate-500 mt-10">
-        Được biên soạn theo SGK Tin Học 11 - Bộ sách Kết nối tri thức với cuộc sống.
-    </footer>
-
-    <!-- Script tương tác -->
+    <!-- Scripts -->
     <script>
-        function switchTab(evt, tabId) {
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(c => c.classList.remove('active'));
+        function getCenterCoords(elementId, containerId) {
+            const el = document.getElementById(elementId);
+            const container = document.getElementById(containerId);
+            if(!el || !container) return null;
 
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(b => b.classList.remove('active'));
+            const elRect = el.getBoundingClientRect();
+            const conRect = container.getBoundingClientRect();
 
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
+            return {
+                x: elRect.left - conRect.left + (elRect.width / 2),
+                y: elRect.top - conRect.top + (elRect.height / 2)
+            };
         }
 
-        function showSim(type) {
-            const box = document.getElementById('sim-result-box');
-            if(type === 'user') {
-                box.innerHTML = "👤 <b>Người dùng:</b> Nhập số báo danh hoặc thông tin cần tra cứu (ví dụ: điểm thi vào lớp 10) thông qua giao diện thiết bị.";
-            } else if(type === 'client') {
-                box.innerHTML = "💻 <b>Phần mềm ứng dụng (Khách):</b> Tiếp nhận thông tin từ người dùng, đóng gói yêu cầu và gửi thông qua mạng kết nối đến hệ QTCSDL (phần chủ).";
-            } else if(type === 'server') {
-                box.innerHTML = "🖧 <b>Hệ QTCSDL & CSDL (Chủ):</b> Nhận yêu cầu từ phần 'khách', tìm kiếm, xử lý dữ liệu trong CSDL và gửi trả kết quả hiển thị cho người dùng.";
+        function updateSvgLine(lineId, p1, p2) {
+            if(!p1 || !p2) return;
+            const line = document.getElementById(lineId);
+            if(line) {
+                line.setAttribute('d', `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`);
             }
         }
 
-        function checkQuiz() {
-            const answers = { q1: 'B', q2: 'B', q3: 'A', q4: 'C', q5: 'A' };
-            let score = 0;
-            for(let q in answers) {
-                const selected = document.querySelector(`input[name="${q}"]:checked`);
-                const qBlock = document.querySelector(`[data-q="${q.replace('q','')}"]`);
-                const feedback = qBlock.querySelector('.ans-feedback');
-                feedback.classList.remove('hidden');
-                if(selected && selected.value === answers[q]) {
-                    score++;
-                    qBlock.classList.add('bg-emerald-50/50');
-                    qBlock.classList.remove('bg-slate-50');
-                } else {
-                    qBlock.classList.add('bg-pink-50/50');
-                    qBlock.classList.remove('bg-slate-50');
+        function drawNetworkTopology() {
+            // Tính và vẽ đường cho CSDL Tập trung
+            const cCenter = getCenterCoords('node-center', 'container-centralized');
+            updateSvgLine('path-c1', getCenterCoords('client-c-1', 'container-centralized'), cCenter);
+            updateSvgLine('path-c2', getCenterCoords('client-c-2', 'container-centralized'), cCenter);
+            updateSvgLine('path-c3', getCenterCoords('client-c-3', 'container-centralized'), cCenter);
+            updateSvgLine('path-c4', getCenterCoords('client-c-4', 'container-centralized'), cCenter);
+
+            // Tính và vẽ đường cho CSDL Phân tán
+            const dN1 = getCenterCoords('node-d1', 'container-distributed');
+            const dN2 = getCenterCoords('node-d2', 'container-distributed');
+            const dN3 = getCenterCoords('node-d3', 'container-distributed');
+            
+            updateSvgLine('link-n1-n2', dN1, dN2);
+            updateSvgLine('link-n1-n3', dN1, dN3);
+            updateSvgLine('link-n2-n3', dN2, dN3);
+
+            updateSvgLine('link-c1-d', getCenterCoords('client-d-1', 'container-distributed'), dN1);
+            updateSvgLine('link-c2-d', getCenterCoords('client-d-2', 'container-distributed'), dN2);
+            updateSvgLine('link-c3-d', getCenterCoords('client-d-3', 'container-distributed'), dN3);
+            
+            updateSvgLine('link-c1-d-backup', getCenterCoords('client-d-1', 'container-distributed'), dN3);
+            updateSvgLine('link-c2-d-backup', getCenterCoords('client-d-2', 'container-distributed'), dN1);
+            updateSvgLine('link-c3-d-backup', getCenterCoords('client-d-3', 'container-distributed'), dN2);
+        }
+
+        // Tự động tính toán lại đường nối khi đổi kích thước màn hình
+        window.addEventListener('resize', () => {
+            if (document.getElementById('pholoai').classList.contains('active')) {
+                drawNetworkTopology();
+            }
+        });
+
+        // --- 1. Tab Switching Logic ---
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-pastel-blue', 'text-blue-800', 'shadow-sm');
+                el.classList.add('text-gray-500', 'hover:bg-gray-50');
+            });
+            document.getElementById(tabName).classList.add('active');
+            const btn = document.getElementById('btn-' + tabName);
+            btn.classList.remove('text-gray-500', 'hover:bg-gray-50');
+            btn.classList.add('bg-pastel-blue', 'text-blue-800', 'shadow-sm');
+
+            // Kích hoạt vẽ đường nét đứt khi mở tab 3 (đợi DOM render xong)
+            if(tabName === 'pholoai') {
+                setTimeout(drawNetworkTopology, 50);
+                setTimeout(drawNetworkTopology, 400); // Cập nhật lại đường vẽ sau khi animation 0.4s hoàn tất để đảm bảo toạ độ chính xác 100%
+            }
+        }
+
+        // --- 2. Simulation: SQL Executor (Tab 1) ---
+        function executeSQL() {
+            const btn = document.querySelector('#heqtcsdl button');
+            const resultBox = document.getElementById('sql-result');
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.classList.replace('bg-indigo-600', 'bg-indigo-400');
+            
+            // Ẩn kết quả cũ nếu đang hiện
+            resultBox.classList.add('hidden');
+            resultBox.classList.remove('opacity-100');
+
+            setTimeout(() => {
+                // Khôi phục nút
+                btn.innerHTML = 'Thực thi <i class="fas fa-play ml-1"></i>';
+                btn.classList.replace('bg-indigo-400', 'bg-indigo-600');
+                
+                // Hiển thị kết quả
+                resultBox.classList.remove('hidden');
+                // Nháy nhỏ để tạo hiệu ứng render
+                void resultBox.offsetWidth; 
+                resultBox.classList.add('opacity-100');
+            }, 800);
+        }
+
+        // --- 3. Simulation: 3-Tier Architecture Flow (Tab 2) ---
+        let isQuerying = false;
+        function simulateQueryFlow() {
+            if(isQuerying) return;
+            isQuerying = true;
+
+            const btn = document.getElementById('btn-flow');
+            const status = document.getElementById('server-status');
+            const p1 = document.getElementById('packet-1');
+            const p2 = document.getElementById('packet-2');
+            const p3 = document.getElementById('packet-3');
+            const p4 = document.getElementById('packet-4');
+
+            btn.disabled = true;
+            btn.innerHTML = 'Đang truy vấn... <i class="fas fa-spinner fa-spin ml-1"></i>';
+            btn.classList.replace('bg-pink-500', 'bg-gray-400');
+
+            // Reset animation classes
+            [p1, p2, p3, p4].forEach(p => p.className = 'data-packet text-white text-[8px]');
+            void p1.offsetWidth; // Trigger reflow
+
+            // Bước 1: App -> DBMS
+            p1.classList.add('bg-pink-500', 'anim-flow-right');
+            setTimeout(() => {
+                status.innerText = "Trạng thái: Đang xử lý Query...";
+                status.classList.add('text-blue-600', 'bg-blue-50', 'border-blue-200');
+                
+                // Bước 2: DBMS -> DB
+                p2.classList.add('bg-blue-500', 'anim-flow-right');
+                
+                setTimeout(() => {
+                    status.innerText = "Trạng thái: Trích xuất dữ liệu...";
+                    
+                    // Bước 3: DB -> DBMS (Trả kết quả)
+                    p3.classList.add('bg-emerald-500', 'anim-flow-left');
+                    
+                    setTimeout(() => {
+                        status.innerText = "Trạng thái: Trả kết quả cho App...";
+                        
+                        // Bước 4: DBMS -> App
+                        p4.classList.add('bg-emerald-500', 'anim-flow-left');
+                        
+                        setTimeout(() => {
+                            // Reset
+                            status.innerText = "Trạng thái: Đang rảnh...";
+                            status.classList.remove('text-blue-600', 'bg-blue-50', 'border-blue-200');
+                            btn.disabled = false;
+                            btn.innerHTML = 'Mô phỏng lại <i class="fas fa-redo ml-1"></i>';
+                            btn.classList.replace('bg-gray-400', 'bg-pink-500');
+                            isQuerying = false;
+                        }, 1500);
+
+                    }, 1500);
+
+                }, 1500);
+
+            }, 500); // Đợi p1 bắt đầu chạy một chút
+        }
+
+        // --- 4. Simulation: Network Topology Crash (Tab 3) ---
+        let isCrashedCentralized = false;
+        let crashedDistributedNode = null;
+        
+        function simulateCrash(type, nodeId = 1) {
+            if(type === 'centralized') {
+                if(isCrashedCentralized) return;
+                isCrashedCentralized = true;
+                
+                const node = document.getElementById('node-center');
+                const paths = [document.getElementById('path-c1'), document.getElementById('path-c2'), document.getElementById('path-c3'), document.getElementById('path-c4')];
+                const clients = document.querySelectorAll('.client-c');
+
+                // Đổi màu Máy chủ thành Đỏ
+                node.classList.replace('from-orange-400', 'from-red-600');
+                node.classList.replace('to-red-500', 'to-red-700');
+                node.innerHTML = '<i class="fas fa-times-circle text-2xl animate-ping"></i>';
+
+                // Ngắt kết nối các đường line
+                paths.forEach(p => p.classList.add('error'));
+
+                // Clients hiển thị lỗi
+                clients.forEach(c => {
+                    c.classList.replace('text-gray-500', 'text-red-500');
+                    c.classList.replace('bg-gray-100', 'bg-red-100');
+                    c.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                });
+            } 
+            else if (type === 'distributed') {
+                if(crashedDistributedNode === nodeId) return; // Trạm này đã sập rồi
+                
+                // Nếu có trạm khác đang sập, reset lại mạng phân tán trước
+                if(crashedDistributedNode !== null) {
+                    resetDistributedSim();
+                }
+
+                crashedDistributedNode = nodeId;
+                
+                const node = document.getElementById(`node-d${nodeId}`);
+                let brokenLinks = [];
+                let backupLink = null;
+
+                if (nodeId === 1) {
+                    brokenLinks = ['link-c1-d', 'link-n1-n2', 'link-n1-n3'];
+                    backupLink = document.getElementById('link-c1-d-backup');
+                } else if (nodeId === 2) {
+                    brokenLinks = ['link-c2-d', 'link-n1-n2', 'link-n2-n3'];
+                    backupLink = document.getElementById('link-c2-d-backup');
+                } else if (nodeId === 3) {
+                    brokenLinks = ['link-c3-d', 'link-n1-n3', 'link-n2-n3'];
+                    backupLink = document.getElementById('link-c3-d-backup');
+                }
+
+                // Trạm bị Sập đổi màu đỏ
+                node.classList.replace('bg-indigo-500', 'bg-red-600');
+                node.innerHTML = '<i class="fas fa-times-circle text-lg animate-ping"></i>';
+
+                // Ngắt các đường nối tới Trạm sập
+                brokenLinks.forEach(id => {
+                    const link = document.getElementById(id);
+                    if(link) link.classList.add('error');
+                });
+
+                // Định tuyến lại (Client nối tạm sang trạm khác)
+                setTimeout(() => {
+                    if (backupLink) {
+                        backupLink.classList.remove('opacity-0');
+                        backupLink.classList.add('opacity-60', 'dash-line');
+                        backupLink.setAttribute('stroke', '#10b981'); // Màu xanh báo hiệu định tuyến thành công
+                    }
+                }, 500);
+            }
+        }
+
+        function resetDistributedSim() {
+            crashedDistributedNode = null;
+            // Khôi phục tất cả các trạm
+            for(let i=1; i<=3; i++) {
+                const node = document.getElementById(`node-d${i}`);
+                if (node && node.classList.contains('bg-red-600')) {
+                    node.classList.replace('bg-red-600', 'bg-indigo-500');
+                    node.innerHTML = '<i class="fas fa-database text-lg"></i>';
                 }
             }
-            alert(`Bạn đã hoàn thành bài trắc nghiệm! Số câu đúng: ${score}/5`);
+            // Khôi phục tất cả các đường nối
+            document.querySelectorAll('#svg-distributed path').forEach(p => {
+                p.classList.remove('error');
+                if (p.id.includes('-backup')) {
+                    p.classList.add('opacity-0');
+                    p.classList.remove('opacity-60', 'dash-line');
+                }
+            });
+        }
+
+        function resetCrashSim() {
+            isCrashedCentralized = false;
+            
+            // Reset Centralized
+            const nodeC = document.getElementById('node-center');
+            nodeC.classList.replace('from-red-600', 'from-orange-400');
+            nodeC.classList.replace('to-red-700', 'to-red-500');
+            nodeC.innerHTML = '<i class="fas fa-database text-2xl"></i>';
+            document.querySelectorAll('#svg-centralized path').forEach(p => p.classList.remove('error'));
+            document.querySelectorAll('.client-c').forEach((c, idx) => {
+                c.classList.replace('text-red-500', 'text-gray-500');
+                c.classList.replace('bg-red-100', 'bg-gray-100');
+                const icons = ['fa-laptop', 'fa-mobile-alt', 'fa-desktop', 'fa-laptop'];
+                c.innerHTML = `<i class="fas ${icons[idx]}"></i>`;
+            });
+
+            // Reset Distributed
+            resetDistributedSim();
+        }
+
+        // --- 5. Quiz Logic ---
+        const answers = { q1: 'B', q2: 'A', q3: 'C', q4: 'B', q5: 'B' };
+        function checkAnswers() {
+            let score = 0; let total = 5;
+            for(let i=1; i<=total; i++) {
+                let qName = 'q' + i;
+                let selected = document.querySelector(`input[name="${qName}"]:checked`);
+                let options = document.querySelectorAll(`input[name="${qName}"]`);
+                
+                options.forEach(opt => {
+                    opt.parentElement.classList.remove('bg-pastel-green', 'bg-pastel-pink', 'border-green-300', 'border-pink-300');
+                    opt.parentElement.classList.add('border-transparent');
+                });
+
+                if (selected) {
+                    if (selected.value === answers[qName]) {
+                        score++;
+                        selected.parentElement.classList.replace('border-transparent', 'border-green-300');
+                        selected.parentElement.classList.add('bg-pastel-green');
+                    } else {
+                        selected.parentElement.classList.replace('border-transparent', 'border-pink-300');
+                        selected.parentElement.classList.add('bg-pastel-pink');
+                        document.querySelector(`input[name="${qName}"][value="${answers[qName]}"]`).parentElement.classList.add('bg-pastel-green');
+                    }
+                }
+            }
+
+            const resultEl = document.getElementById('quiz-result');
+            resultEl.classList.remove('hidden');
+            if(score === 5) {
+                resultEl.innerHTML = `🎉 Xuất sắc! ${score}/${total} điểm.`;
+                resultEl.className = "mt-4 text-lg font-bold block text-green-700 bg-pastel-green border border-green-200 py-3 px-6 rounded-xl inline-block shadow-sm";
+                fireConfetti();
+            } else {
+                resultEl.innerHTML = `📚 Khá lắm! Đạt ${score}/${total} điểm. Ôn tập thêm nhé.`;
+                resultEl.className = "mt-4 text-lg font-bold block text-yellow-700 bg-pastel-yellow border border-yellow-200 py-3 px-6 rounded-xl inline-block shadow-sm";
+            }
+        }
+
+        function fireConfetti() {
+            const colors = ['#ff8fab', '#8eb3ff', '#73d686', '#f2c75c', '#b78eff'];
+            for(let i=0; i<50; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                confetti.style.top = '-10px';
+                document.body.appendChild(confetti);
+                setTimeout(() => { confetti.remove(); }, 3000);
+            }
         }
     </script>
 </body>

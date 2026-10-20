@@ -3,654 +3,898 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 11: Cơ sở dữ liệu - Interactive Study</title>
-    <!-- Tailwind CSS -->
+    <title>Bài 11: Cơ sở dữ liệu - Tin học 11</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Google Fonts: Quicksand for Studygram vibe -->
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Quicksand', 'sans-serif'],
-                    },
-                    colors: {
-                        pastel: {
-                            blue: '#E0F2FE',
-                            pink: '#FCE7F3',
-                            green: '#DCFCE7',
-                            purple: '#F3E8FF',
-                            yellow: '#FEF9C3',
-                            orange: '#FFEDD5',
-                            darkblue: '#0284C7',
-                            darkpink: '#DB2777',
-                            darkgreen: '#16A34A',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #F8FAFC; }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fcfcfc;
+            color: #4a4a4a;
+        }
+        .font-mono { font-family: 'Fira Code', monospace; }
         .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        }
+        /* Pastel Colors */
+        .bg-pastel-pink { background-color: #ffe5ec; }
+        .bg-pastel-blue { background-color: #e5f0ff; }
+        .bg-pastel-green { background-color: #e5ffe8; }
+        .bg-pastel-yellow { background-color: #fff9e5; }
+        .bg-pastel-purple { background-color: #f0e5ff; }
+        .bg-pastel-orange { background-color: #ffecd9; }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .text-pastel-pink { color: #ff8fab; }
+        .text-pastel-blue { color: #8eb3ff; }
+        .text-pastel-green { color: #73d686; }
+        .text-pastel-yellow { color: #f2c75c; }
+        .text-pastel-purple { color: #b78eff; }
+        .text-pastel-orange { color: #ffaa5c; }
 
-        .diagram-arrow {
-            position: relative;
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 10px 32px 0 rgba(31, 38, 135, 0.06);
+            border-radius: 24px;
         }
-        .diagram-arrow::after {
-            content: '↓';
-            position: absolute;
-            font-size: 24px;
-            color: #64748b;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
+
+        /* 3D Flip Card */
+        .flip-card { perspective: 1000px; min-height: 220px; height: auto; }
+        .flip-card-inner {
+            position: relative; width: 100%; height: 100%; min-height: 220px; text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.25rem;
+            box-shadow: 0 4px 15px 0 rgba(31, 38, 135, 0.05); border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+        .flip-card-back { transform: rotateY(180deg); background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); }
+        
+        .hover-spin:hover i { transform: rotate(360deg) scale(1.2); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .hover-spin i { transition: transform 0.5s ease-in-out; }
+
+        @keyframes subtlePulse {
+            0% { box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1); }
+            50% { box-shadow: 0 4px 30px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
+            100% { box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1); transform: translateY(0); }
+        }
+        .animate-banner { animation: subtlePulse 3s infinite ease-in-out; }
+
+        /* Animations for simulations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .animate-error { animation: errorShake 0.5s cubic-bezier(.36,.07,.19,.97) both; border-color: #ef4444 !important; background-color: #fef2f2 !important;}
+
+        .confetti { position: absolute; width: 10px; height: 10px; z-index: 1000; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b3b3b3; }
+
+        /* Table Highlight Animation */
+        .highlight-cell {
+            animation: highlightAnim 2s ease-out forwards;
+        }
+        @keyframes highlightAnim {
+            0% { background-color: #fef08a; transform: scale(1.05); }
+            100% { background-color: transparent; transform: scale(1); }
+        }
+
+        /* SVG Link Line Animation */
+        .dash-line {
+            stroke-dasharray: 6;
+            animation: dash 1s linear infinite;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -12;
+            }
         }
     </style>
 </head>
-<body class="text-slate-700 min-h-screen flex flex-col">
+<body class="bg-[url('https://www.transparenttextures.com/patterns/notebook.png')] min-h-screen pb-12">
 
-    <!-- Header & Navigation -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="bg-pastel-blue p-3 rounded-2xl text-pastel-darkblue">
-                    <i class="ph ph-database text-3xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Bài 11: Cơ Sở Dữ Liệu</h1>
-                    <p class="text-sm text-slate-500 font-medium">Hồ sơ học tập tương tác</p>
-                </div>
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-8 pt-4">
+            <div class="inline-block bg-white px-6 py-2 rounded-full shadow-sm mb-3 border border-gray-100 text-sm font-bold text-gray-500 uppercase tracking-wider">
+                Tin học 11
             </div>
-            
-            <nav class="flex flex-wrap justify-center gap-2">
-                <button onclick="openTab('tongquan')" id="btn-tongquan" class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all bg-blue-100 text-blue-700">Tổng quan</button>
-                <button onclick="openTab('vandegiaiphap')" id="btn-vandegiaiphap" class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-slate-100 text-slate-500">Vấn đề & Giải pháp</button>
-                <button onclick="openTab('thuoctinh')" id="btn-thuoctinh" class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-slate-100 text-slate-500">6 Thuộc tính</button>
-                <button onclick="openTab('phantich')" id="btn-phantich" class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-slate-100 text-slate-500">Phân tích sâu</button>
-                <button onclick="openTab('quiz')" id="btn-quiz" class="tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-slate-100 text-slate-500">Luyện tập</button>
-            </nav>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-database text-pastel-blue mr-2"></i> Cơ sở dữ liệu
+            </h1>
+            <p class="text-[15px] text-gray-600 font-medium leading-relaxed">Nghệ thuật tổ chức và lưu trữ thông tin khoa học ✨</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8 bg-white/80 backdrop-blur p-2 rounded-3xl shadow-sm border border-gray-100 sticky top-4 z-50">
+            <button onclick="openTab('yeucau')" class="tab-btn active px-5 py-2.5 rounded-2xl font-semibold transition-all bg-pastel-blue text-blue-800 shadow-sm" id="btn-yeucau">
+                <i class="fas fa-exclamation-triangle mr-1"></i> Yêu cầu lưu trữ
+            </button>
+            <button onclick="openTab('thuoctinh')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-thuoctinh">
+                <i class="fas fa-cubes mr-1"></i> Khái niệm & Thuộc tính
+            </button>
+            <button onclick="openTab('vandung')" class="tab-btn px-5 py-2.5 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all" id="btn-vandung">
+                <i class="fas fa-pencil-ruler mr-1"></i> Luyện tập & Vận dụng
+            </button>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
-
-        <!-- TAB 1: TỔNG QUAN -->
-        <section id="tongquan" class="tab-content active">
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Mục tiêu -->
-                <div class="glass-card rounded-3xl p-8 bg-gradient-to-br from-pastel-pink to-white border-t-4 border-pink-300">
-                    <div class="flex items-center gap-3 mb-6">
-                        <i class="ph-fill ph-target text-3xl text-pink-500"></i>
-                        <h2 class="text-xl font-bold text-slate-800">Mục tiêu bài học</h2>
-                    </div>
-                    <div class="bg-white/60 p-6 rounded-2xl flex items-start gap-4 shadow-sm">
-                        <i class="ph-duotone ph-check-circle text-2xl text-green-500 mt-1"></i>
-                        <p class="text-lg font-semibold text-slate-700 leading-relaxed">
-                            Hiểu được khái niệm và các thuộc tính cơ bản của cơ sở dữ liệu.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Khái niệm -->
-                <div class="glass-card rounded-3xl p-8 bg-gradient-to-br from-pastel-blue to-white border-t-4 border-blue-300">
-                    <div class="flex items-center gap-3 mb-6">
-                        <i class="ph-fill ph-book-open-text text-3xl text-blue-500"></i>
-                        <h2 class="text-xl font-bold text-slate-800">Khái niệm CSDL</h2>
-                    </div>
-                    <div class="bg-white/60 p-6 rounded-2xl border-l-4 border-blue-500 shadow-sm relative overflow-hidden">
-                        <i class="ph-duotone ph-database text-8xl absolute -right-4 -bottom-4 text-blue-100 opacity-50"></i>
-                        <p class="text-lg text-slate-700 relative z-10">
-                            Cơ sở dữ liệu (CSDL) là một <b class="text-blue-700">tập hợp dữ liệu có liên quan</b> với nhau, 
-                            được lưu trữ một cách <b class="text-blue-700">có tổ chức trên hệ thống máy tính</b>.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kiến thức cốt lõi (Box tóm tắt) -->
-            <div class="mt-8 glass-card rounded-3xl p-8 bg-pastel-yellow/30 border-dashed border-2 border-yellow-300">
-                <div class="text-center mb-8">
-                    <h2 class="text-2xl font-bold text-yellow-700 inline-block px-6 py-2 bg-yellow-100 rounded-full">
-                        <i class="ph-fill ph-star mr-2"></i> Kiến thức cốt lõi
-                    </h2>
-                </div>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="flex flex-col justify-center items-center text-center p-6 bg-white rounded-2xl shadow-sm">
-                        <img src="https://cdn-icons-png.flaticon.com/512/8112/8112521.png" alt="Server Database" class="w-24 h-24 mb-4">
-                        <p class="font-medium text-slate-600">Tổ chức lưu trữ độc lập với phần mềm.</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white p-4 rounded-xl shadow-sm text-center border-b-4 border-green-300"><i class="ph ph-share-network text-2xl text-green-500 block mb-2"></i>Dễ chia sẻ</div>
-                        <div class="bg-white p-4 rounded-xl shadow-sm text-center border-b-4 border-blue-300"><i class="ph ph-wrench text-2xl text-blue-500 block mb-2"></i>Dễ bảo trì</div>
-                        <div class="bg-white p-4 rounded-xl shadow-sm text-center border-b-4 border-red-300"><i class="ph ph-copy-simple text-2xl text-red-500 block mb-2"></i>Hạn chế dư thừa</div>
-                        <div class="bg-white p-4 rounded-xl shadow-sm text-center border-b-4 border-purple-300"><i class="ph ph-scales text-2xl text-purple-500 block mb-2"></i>Tính nhất quán</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 2: VẤN ĐỀ & GIẢI PHÁP -->
-        <section id="vandegiaiphap" class="tab-content">
-            <!-- Mô phỏng 1: Dư thừa & Không nhất quán -->
-            <div class="glass-card rounded-3xl p-8 mb-8 border border-red-100">
-                <h2 class="text-2xl font-bold text-red-600 mb-2"><i class="ph-fill ph-warning-circle"></i> Vấn đề 1: Dư thừa & Không nhất quán</h2>
-                <p class="text-slate-600 mb-6">Trích xuất bảng điểm của học sinh Nguyễn Kì Duyên. Khi lưu trữ phân tán, dữ liệu dễ bị sai lệch.</p>
-                
-                <div class="flex flex-col md:flex-row gap-6 items-center justify-center">
-                    <!-- Bảng môn Toán -->
-                    <div class="bg-white p-4 rounded-2xl shadow-md w-full md:w-1/2 border-t-4 border-slate-700">
-                        <h3 class="text-center font-bold mb-3 text-sm">Bảng điểm môn Toán</h3>
-                        <table class="w-full text-sm text-center border-collapse">
-                            <tr class="bg-slate-100"><th class="border p-2">Họ Tên</th><th class="border p-2 bg-yellow-100">ĐĐG Cuối kì</th></tr>
-                            <tr><td class="border p-2">Nguyễn Kì Duyên</td><td class="border p-2 font-bold text-lg text-blue-600">9</td></tr>
-                        </table>
-                    </div>
-                    
-                    <div class="text-red-500 flex flex-col items-center">
-                        <i class="ph ph-arrows-left-right text-3xl"></i>
-                        <span class="text-xs font-bold bg-red-100 px-2 rounded">Xung đột!</span>
-                    </div>
-
-                    <!-- Bảng lớp học -->
-                    <div class="bg-white p-4 rounded-2xl shadow-md w-full md:w-1/2 border-t-4 border-slate-700">
-                        <h3 class="text-center font-bold mb-3 text-sm">Bảng điểm lớp học</h3>
-                        <table class="w-full text-sm text-center border-collapse">
-                            <tr class="bg-slate-100"><th class="border p-2">Họ Tên</th><th class="border p-2 bg-yellow-100">Toán</th><th class="border p-2">Tin học</th></tr>
-                            <tr><td class="border p-2">Nguyễn Kì Duyên</td><td class="border p-2 font-bold text-lg text-red-600">8 (Ghi nhầm)</td><td class="border p-2">10</td></tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mô phỏng 2: Sự phụ thuộc phần mềm (Sơ đồ Hình 11.3) -->
-            <div class="glass-card rounded-3xl p-8 mb-8 border border-blue-100 bg-pastel-blue/20">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-blue-700"><i class="ph-fill ph-code"></i> Vấn đề 2: Sự phụ thuộc phần mềm</h2>
-                        <p class="text-slate-600">Tái hiện Hình 11.3 - Quan hệ giữa mô đun phần mềm và tệp dữ liệu thông thường.</p>
-                    </div>
-                </div>
-
-                <!-- Sơ đồ Hình 11.3 (Interactive) -->
-                <div class="bg-white p-8 rounded-2xl shadow-inner relative mb-8">
-                    <div class="flex justify-around mb-12">
-                        <div class="bg-blue-100 border border-blue-300 p-3 rounded-lg text-center font-bold text-sm w-32 relative diagram-arrow z-10">Mô đun<br>Danh sách lớp</div>
-                        <div class="bg-blue-100 border border-blue-300 p-3 rounded-lg text-center font-bold text-sm w-32 relative diagram-arrow z-10">Mô đun<br>Điểm môn học</div>
-                        <div class="bg-blue-100 border border-blue-300 p-3 rounded-lg text-center font-bold text-sm w-32 relative diagram-arrow z-10">Mô đun<br>Lập bảng điểm</div>
-                    </div>
-                    
-                    <!-- SVG lines linking them to files -->
-                    <svg class="absolute top-0 left-0 w-full h-full pointer-events-none" style="z-index: 1;">
-                        <path d="M 16% 80 L 16% 160" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
-                        <path d="M 50% 80 L 40% 160" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
-                        <path d="M 50% 80 L 60% 160" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
-                        <path d="M 83% 80 L 65% 160" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
-                        <defs>
-                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
-                            </marker>
-                        </defs>
-                    </svg>
-
-                    <div class="flex justify-around mt-12">
-                        <div class="bg-slate-200 border-2 border-slate-400 p-3 rounded-lg text-center font-semibold text-sm w-32 z-10 flex flex-col items-center">
-                            <i class="ph-fill ph-file-text text-2xl text-slate-500 mb-1"></i>Tệp Danh sách<br>lớp học
-                        </div>
-                        <div id="sim-file-diem" class="bg-slate-200 border-2 border-slate-400 p-3 rounded-lg text-center font-semibold text-sm w-32 z-10 flex flex-col items-center transition-all">
-                            <i class="ph-fill ph-file-text text-2xl text-slate-500 mb-1"></i>Tệp Bảng điểm<br>môn học
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tương tác trực quan -->
-                <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col md:flex-row gap-6 items-center">
-                    <div class="flex-1">
-                        <h4 class="font-bold mb-2">📝 Nội dung Tệp văn bản (Lưu thủ công)</h4>
-                        <div class="bg-slate-900 text-green-400 font-mono p-4 rounded-xl text-sm" id="sim-data-content">
-                            11A, 1, Dương Hồng Anh, 8, 7<br>
-                            11A, 2, Lương Việt Anh, 5, 6
-                        </div>
-                        <button onclick="simulateFormatChange()" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
-                            <i class="ph-bold ph-swap"></i> Yêu cầu: Đổi dấu phẩy thành dấu chấm phẩy
-                        </button>
-                    </div>
-                    
-                    <div class="flex-1 border-l-2 border-dashed border-slate-200 pl-6">
-                        <h4 class="font-bold mb-2 text-slate-700">💻 Mô đun: Đọc điểm môn học</h4>
-                        <div id="sim-code-status" class="bg-green-50 text-green-700 border border-green-200 p-4 rounded-xl flex items-start gap-3">
-                            <i class="ph-fill ph-check-circle text-2xl"></i>
-                            <div>
-                                <b>Trạng thái: Hoạt động tốt</b>
-                                <p class="text-sm mt-1">Chương trình dùng lệnh tách chuỗi theo dấu phẩy (,). Đọc dữ liệu thành công.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-6 bg-yellow-50 p-4 rounded-xl border-l-4 border-yellow-500 text-sm text-yellow-800">
-                    <b class="text-base">Giải pháp CSDL:</b> Việc đảm bảo <b class="text-blue-600">tính độc lập dữ liệu</b> giúp phần mềm không cần "nhìn thấy" chi tiết cách lưu trữ, từ đó thay đổi cấu trúc dữ liệu không làm hỏng code phần mềm.
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 3: 6 THUỘC TÍNH CSDL -->
-        <section id="thuoctinh" class="tab-content">
+        <!-- ================= TAB 1: YÊU CẦU LƯU TRỮ ================= -->
+        <div id="yeucau" class="tab-content active">
+            
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-slate-800">6 Thuộc Tính Cơ Bản Của CSDL</h2>
-                <p class="text-slate-500 mt-2">Click vào các hộp có biểu tượng 🖱️ để xem mô phỏng tương tác.</p>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2 flex justify-center items-center gap-2">
+                    <i class="fas fa-folder-open text-pastel-yellow"></i> 1. Yêu cầu tổ chức lưu trữ dữ liệu khoa học
+                </h3>
+                <p class="text-[15px] text-gray-600 font-medium leading-relaxed">
+                    Trước khi có Hệ quản trị CSDL, dữ liệu thường được lưu trong các tệp rời rạc, dẫn đến nhiều bất cập.
+                </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- 1. Tính cấu trúc -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-full bg-pastel-blue flex items-center justify-center text-blue-600 mb-4">
-                        <i class="ph-fill ph-table text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-lg mb-2">1. Tính cấu trúc</h3>
-                    <p class="text-sm text-slate-600">Dữ liệu được lưu trữ dưới dạng bảng gồm các <b>hàng</b> và các <b>cột</b>.</p>
-                </div>
-
-                <!-- 2. Tính không dư thừa -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-full bg-pastel-pink flex items-center justify-center text-pink-600 mb-4">
-                        <i class="ph-fill ph-copy-slash text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-lg mb-2">2. Tính không dư thừa</h3>
-                    <p class="text-sm text-slate-600">Hạn chế lưu trữ dữ liệu trùng lặp hoặc dữ liệu dễ dàng suy ra/tính toán được từ dữ liệu đã có.</p>
-                </div>
-
-                <!-- 3. Tính độc lập dữ liệu -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-full bg-pastel-yellow flex items-center justify-center text-yellow-600 mb-4">
-                        <i class="ph-fill ph-puzzle-piece text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-lg mb-2">3. Tính độc lập dữ liệu</h3>
-                    <p class="text-sm text-slate-600">Phần mềm ứng dụng không cần thay đổi khi cấu trúc tổ chức hoặc lưu trữ dữ liệu thay đổi.</p>
-                </div>
-
-                <!-- 4. Tính toàn vẹn (INTERACTIVE) -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-pastel-green hover:shadow-lg transition-all cursor-pointer relative overflow-hidden group">
-                    <div class="absolute top-2 right-2 text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full animate-pulse">🖱️ Thử nghiệm</div>
-                    <div class="w-12 h-12 rounded-full bg-pastel-green flex items-center justify-center text-green-600 mb-4">
-                        <i class="ph-fill ph-shield-check text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-lg mb-2">4. Tính toàn vẹn</h3>
-                    <p class="text-sm text-slate-600 mb-4">Các giá trị dữ liệu phải thoả mãn những ràng buộc thực tế.</p>
-                    
-                    <!-- Form mô phỏng -->
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 mt-auto">
-                        <label class="text-xs font-bold text-slate-500 mb-1 block">Nhập điểm đánh giá (0-10):</label>
-                        <div class="flex gap-2">
-                            <input type="number" id="input-diem" class="w-full border rounded-lg px-2 text-sm focus:outline-green-500" placeholder="VD: 12">
-                            <button onclick="checkToanVen()" class="bg-green-500 text-white px-3 py-1 rounded-lg text-sm font-bold">Lưu</button>
-                        </div>
-                        <p id="msg-toanven" class="text-xs mt-2 font-semibold h-4"></p>
-                    </div>
-                </div>
-
-                <!-- 5. Tính nhất quán (INTERACTIVE) -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-pastel-purple hover:shadow-lg transition-all cursor-pointer relative overflow-hidden">
-                     <div class="absolute top-2 right-2 text-xs font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded-full animate-pulse">🖱️ Thử nghiệm</div>
-                    <div class="w-12 h-12 rounded-full bg-pastel-purple flex items-center justify-center text-purple-600 mb-4">
-                        <i class="ph-fill ph-scales text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-lg mb-2">5. Tính nhất quán</h3>
-                    <p class="text-sm text-slate-600 mb-4">Đảm bảo sau cập nhật không sinh ra mâu thuẫn dữ liệu.</p>
-                    
-                    <!-- Form mô phỏng chuyển tiền -->
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                        <div class="flex justify-between text-xs font-bold mb-2">
-                            <span>TK Gửi: <span id="tk-gui">100</span>$</span>
-                            <span>TK Nhận: <span id="tk-nhan">50</span>$</span>
-                        </div>
-                        <div class="w-full bg-slate-200 h-2 rounded-full mb-3 overflow-hidden relative">
-                            <div id="transfer-bar" class="bg-purple-500 h-full w-0 rounded-full transition-all duration-1000"></div>
-                        </div>
-                        <button onclick="simulateTransfer()" class="w-full bg-purple-500 text-white py-1 rounded-lg text-sm font-bold active:bg-purple-600">Chuyển 20$</button>
-                        <p id="msg-nhatquan" class="text-xs mt-2 text-center text-slate-500 h-4">Tổng tiền hệ thống luôn = 150$</p>
-                    </div>
-                </div>
-
-                <!-- 6. Tính bảo mật -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 mb-4">
-                        <i class="ph-fill ph-lock-key text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-lg mb-2">6. Tính bảo mật & an toàn</h3>
-                    <p class="text-sm text-slate-600">Ngăn truy xuất trái phép, phân quyền người dùng (VD: học sinh không thể sửa điểm, chỉ giáo viên mới được phép).</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 4: PHÂN TÍCH SÂU -->
-        <section id="phantich" class="tab-content">
-            <div class="grid md:grid-cols-2 gap-8">
+            <!-- a) Dư thừa dữ liệu Simulator -->
+            <div class="glass-card p-6 md:p-8 mb-10 border-t-4 border-pastel-pink">
+                <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-clone text-pink-500"></i> a) Hạn chế dư thừa và không nhất quán
+                </h4>
                 
-                <!-- Dễ nhầm lẫn -->
-                <div class="glass-card rounded-3xl p-8 border-l-4 border-orange-400">
-                    <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                        <i class="ph-fill ph-warning text-orange-500"></i> Dễ nhầm lẫn
-                    </h2>
-                    
-                    <div class="space-y-4">
-                        <div class="bg-white p-4 rounded-2xl shadow-sm">
-                            <h3 class="font-bold text-blue-700 mb-1 border-b pb-1">Tính Toàn Vẹn</h3>
-                            <p class="text-sm text-slate-600">Kiểm tra <b>một giá trị đơn lẻ</b> xem có hợp lệ thực tế không.<br>
-                            <i>Ví dụ: Điểm phải từ 0 đến 10. Số ngày trong tháng không quá 31.</i></p>
+                <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <p class="text-[15px] text-gray-600 font-medium leading-relaxed mb-4">
+                            Lưu trữ thủ công hoặc qua nhiều tệp riêng lẻ thường khiến thông tin bị lặp lại. 
+                            <strong class="text-pink-600">Dư thừa</strong> dễ dẫn đến <strong class="text-red-500">không nhất quán</strong> (cập nhật nơi này nhưng quên nơi khác).
+                        </p>
+                        
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 relative z-20">
+                            <h5 class="font-bold text-sm text-gray-700 mb-2">Thực hành: Lỗi cập nhật thủ công</h5>
+                            <p class="text-xs text-gray-500 mb-3">Nhấn nút bên dưới để sửa điểm môn Toán của "Nguyễn Văn A" từ 9 thành 8 trong Bảng điểm môn học. Hãy xem điều gì xảy ra ở Bảng điểm lớp!</p>
+                            <button onclick="simulateInconsistency()" id="btn-update-score" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all shadow-md active:scale-95 flex items-center gap-2">
+                                <i class="fas fa-edit"></i> Sửa điểm môn Toán (9 -> 8)
+                            </button>
+                            <button onclick="resolveInconsistency()" id="btn-resolve-score" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all shadow-md active:scale-95 hidden items-center gap-2 mt-2 relative">
+                                <i class="fas fa-magic"></i> Sử dụng CSDL để khắc phục
+                            </button>
                         </div>
-                        <div class="flex justify-center text-slate-400"><i class="ph-bold ph-arrows-down-up text-xl"></i></div>
-                        <div class="bg-white p-4 rounded-2xl shadow-sm">
-                            <h3 class="font-bold text-purple-700 mb-1 border-b pb-1">Tính Nhất Quán</h3>
-                            <p class="text-sm text-slate-600">Đảm bảo logic <b>giữa nhiều dữ liệu/bảng</b> sau một quá trình cập nhật.<br>
-                            <i>Ví dụ: Trừ tiền TK A thì phải cộng vào TK B. Mua vé máy bay thì số ghế trống phải giảm.</i></p>
+                        
+                        <div id="inconsistency-alert" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded-r text-sm mt-4 relative z-20">
+                            <strong><i class="fas fa-exclamation-circle mr-1"></i> Lỗi không nhất quán:</strong> Điểm của Nguyễn Văn A đang lệch nhau giữa 2 bảng! Bảng điểm môn ghi 8, Bảng điểm lớp vẫn ghi 9.
+                        </div>
+
+                        <div id="consistency-success" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-3 rounded-r text-sm mt-4 relative z-20">
+                            <strong><i class="fas fa-check-circle mr-1"></i> CSDL Nhất quán:</strong> Bảng Lớp đã loại bỏ dư thừa. Điểm số chỉ lưu 1 nơi duy nhất ở Bảng Môn Toán.
                         </div>
                     </div>
-                </div>
 
-                <!-- Tương tác: Cùng suy nghĩ -->
-                <div class="glass-card rounded-3xl p-8 bg-gradient-to-br from-indigo-50 to-white">
-                    <h2 class="text-2xl font-bold text-indigo-800 mb-6 flex items-center gap-2">
-                        <i class="ph-fill ph-lightbulb text-yellow-500"></i> Trả lời câu hỏi SGK
-                    </h2>
+                    <!-- Bảng mô phỏng -->
+                    <div class="space-y-6 relative" id="tables-container">
+                        <!-- SVG Connection Line (Hidden initially) -->
+                        <svg id="link-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10 hidden" style="min-height: 250px;">
+                            <path id="link-path" d="" fill="none" stroke="#22c55e" stroke-width="3" class="dash-line opacity-70" />
+                            <circle id="link-dot1" cx="0" cy="0" r="4" fill="#22c55e" />
+                            <circle id="link-dot2" cx="0" cy="0" r="4" fill="#22c55e" />
+                        </svg>
 
-                    <div class="space-y-6">
-                        <!-- Q1 -->
-                        <div>
-                            <p class="font-semibold text-slate-700 mb-2">1. Khi lưu trữ máy tính, có cần cột Điểm trung bình không?</p>
-                            <div class="group relative cursor-pointer">
-                                <div class="bg-indigo-100 p-3 rounded-xl text-center font-bold text-indigo-700 hover:bg-indigo-200 transition-colors">
-                                    Click xem đáp án
-                                </div>
-                                <div class="hidden group-hover:block absolute top-0 left-0 w-full h-full bg-white p-3 rounded-xl border-2 border-indigo-200 text-sm shadow-lg z-10">
-                                    <b>Không cần thiết.</b> Vì điểm trung bình có thể tính toán được từ các cột điểm thành phần. Việc không lưu giúp đảm bảo <b>tính không dư thừa</b>.
+                        <!-- Bảng 1 -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative z-20 transition-all" id="table1-card">
+                            <div class="bg-blue-50 px-4 py-2 border-b border-blue-100 font-bold text-blue-800 text-sm flex justify-between items-center">
+                                <span><i class="fas fa-table mr-1"></i> Bảng điểm môn Toán</span>
+                                <span class="text-[10px] bg-pink-100 text-pink-700 px-2 py-0.5 rounded uppercase font-bold" id="badge-table1">Tệp riêng lẻ</span>
+                            </div>
+                            <table class="w-full text-sm text-left text-gray-600">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="px-4 py-2 transition-colors" id="th-id-t1">Mã HS</th>
+                                        <th class="px-4 py-2">Họ tên</th>
+                                        <th class="px-4 py-2">Điểm Toán</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b">
+                                        <td class="px-4 py-2 font-mono transition-colors" id="td-id-t1"><span id="target-id-1" class="relative inline-block">HS01</span></td>
+                                        <td class="px-4 py-2">Nguyễn Văn A</td>
+                                        <td class="px-4 py-2 font-bold text-lg transition-colors" id="score-table1">9.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-mono">HS02</td>
+                                        <td class="px-4 py-2">Trần Thị B</td>
+                                        <td class="px-4 py-2">7.5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Bảng 2 -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative z-20 transition-all" id="table2-card">
+                            <div class="bg-green-50 px-4 py-2 border-b border-green-100 font-bold text-green-800 text-sm flex justify-between items-center">
+                                <span><i class="fas fa-table mr-1"></i> Bảng điểm tổng hợp Lớp</span>
+                                <span class="text-[10px] bg-pink-100 text-pink-700 px-2 py-0.5 rounded uppercase font-bold" id="badge-table2">Tệp riêng lẻ</span>
+                            </div>
+                            <table class="w-full text-sm text-left text-gray-600 transition-all" id="table2-content">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b" id="thead-table2">
+                                    <tr>
+                                        <th class="px-4 py-2">Mã HS</th>
+                                        <th class="px-4 py-2 transition-colors text-red-500" id="header-name-table2">Họ tên (Dư thừa)</th>
+                                        <th class="px-4 py-2 transition-colors text-red-500" id="header-score-table2">Điểm Toán (Dư thừa)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-table2">
+                                    <tr class="border-b">
+                                        <td class="px-4 py-2 font-mono"><span id="target-id-2" class="relative inline-block">HS01</span></td>
+                                        <td class="px-4 py-2 transition-colors opacity-100" id="name-table2">Nguyễn Văn A</td>
+                                        <td class="px-4 py-2 font-bold text-lg transition-colors opacity-100" id="score-table2">9.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-mono">HS02</td>
+                                        <td class="px-4 py-2 transition-colors opacity-100">Trần Thị B</td>
+                                        <td class="px-4 py-2 opacity-100">7.5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <!-- DB Explanation overlay (appears initially when resolved, then fades) -->
+                            <div id="db-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-[2px] hidden flex-col items-center justify-center z-30 transition-opacity duration-1000">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-link text-4xl text-green-500 mb-2"></i>
+                                    <p class="font-bold text-gray-800 text-sm mb-1">Cơ sở dữ liệu Quan hệ</p>
+                                    <p class="text-xs text-gray-600">Loại bỏ cột Dư thừa. Bảng Lớp sẽ liên kết (JOIN) tới Bảng Môn thông qua <strong class="text-blue-600">Mã HS</strong>.</p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Q2 -->
-                        <div>
-                            <p class="font-semibold text-slate-700 mb-2">2. Đề xuất dữ liệu quản lí Thư viện?</p>
-                            <div class="bg-white p-4 rounded-xl border border-slate-200 text-sm">
-                                <ul class="list-disc pl-5 space-y-1 text-slate-600">
-                                    <li><b>Bảng Sách:</b> Mã sách, Tên sách, Tác giả, Thể loại, Số lượng.</li>
-                                    <li><b>Bảng Bạn đọc:</b> Mã thẻ, Tên, Lớp, Ngày sinh.</li>
-                                    <li><b>Bảng Mượn/Trả:</b> Mã thẻ, Mã sách, Ngày mượn, Ngày hẹn trả.</li>
-                                </ul>
+            <!-- b) Phụ thuộc PM & DL Simulator -->
+            <div class="glass-card p-6 md:p-8 border-t-4 border-pastel-blue">
+                <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-project-diagram text-blue-500"></i> b) Sự phụ thuộc Phần mềm và Dữ liệu
+                </h4>
+                
+                <p class="text-[15px] text-gray-600 font-medium leading-relaxed mb-6">
+                    Nếu lưu dữ liệu bằng tệp văn bản (Text), phần mềm phải được lập trình cứng theo cấu trúc tệp đó. Chỉ cần thay đổi nhỏ ở dữ liệu (vd: đổi dấu phẩy thành chấm phẩy), phần mềm sẽ bị lỗi. <strong class="text-blue-600">CSDL giúp dữ liệu độc lập với phần mềm.</strong>
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Khu vực Dữ liệu (File) -->
+                    <div class="bg-slate-800 rounded-xl p-4 shadow-inner border border-slate-700 font-mono text-sm flex flex-col relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 bg-slate-700 text-slate-300 text-[10px] px-2 py-1 rounded-bl-lg font-bold">data.txt</div>
+                        <div class="text-slate-400 mb-2">// Cấu trúc tệp dữ liệu hiện tại:</div>
+                        <div id="file-content" class="text-green-400 flex-1 whitespace-pre-wrap transition-all">HS01,Nguyễn Văn A,9.0
+HS02,Trần Thị B,7.5</div>
+                        <div class="mt-4 pt-3 border-t border-slate-600">
+                            <p class="text-xs text-slate-400 mb-2">Thử thách: Đổi cấu trúc lưu trữ</p>
+                            <button onclick="changeFileFormat()" id="btn-change-format" class="w-full bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-2 px-3 rounded transition-colors flex items-center justify-center gap-1">
+                                <i class="fas fa-exchange-alt"></i> Đổi dấu ngăn cách ( , ) thành ( ; )
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Khu vực Phần mềm (Code) -->
+                    <div id="software-box" class="bg-white rounded-xl p-4 shadow-sm border-2 border-gray-200 flex flex-col transition-all duration-300">
+                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
+                            <h5 class="font-bold text-gray-700 text-sm flex items-center gap-1"><i class="fas fa-cogs text-gray-400"></i> Phần mềm Quản lý</h5>
+                            <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold">Python App</span>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-2 rounded text-xs font-mono text-gray-600 mb-3 border border-gray-200">
+                            <span class="text-purple-600">def</span> read_data(file):<br>
+                            &nbsp;&nbsp;lines = open(file).readlines()<br>
+                            &nbsp;&nbsp;<span class="text-purple-600">for</span> line <span class="text-purple-600">in</span> lines:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;id, name, score = line.split(<span class="text-orange-500" id="code-separator">','</span>) <span class="text-gray-400"># Khai báo cứng dấu phẩy</span>
+                        </div>
+                        
+                        <div class="flex-1 flex flex-col justify-end">
+                            <button onclick="runSoftware()" id="btn-run-software" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 mb-3">
+                                <i class="fas fa-play"></i> Chạy phần mềm đọc dữ liệu
+                            </button>
+                            
+                            <!-- Terminal Output -->
+                            <div class="bg-black rounded-lg p-2 h-20 text-xs font-mono overflow-y-auto" id="software-terminal">
+                                <span class="text-gray-500">> Sẵn sàng...</span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div id="independence-solution" class="mt-6 bg-pastel-blue p-4 rounded-xl border border-blue-200 hidden flex items-start gap-3 animation: fadeIn 0.5s">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 text-white flex justify-center items-center shrink-0">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-blue-800 mb-1">Giải pháp: Tính độc lập dữ liệu</h5>
+                        <p class="text-sm text-blue-900 leading-relaxed">Khi dùng Hệ quản trị CSDL, phần mềm không cần biết dữ liệu lưu dưới dạng dấu phẩy hay dấu chấm phẩy ở ổ cứng. Phần mềm chỉ cần dùng câu lệnh chuẩn (như SQL: <code>SELECT * FROM HocSinh</code>). CSDL tự lo việc đọc ghi tệp vật lý!</p>
+                    </div>
+                </div>
+
             </div>
-        </section>
+        </div>
 
-        <!-- TAB 5: Luyện tập -->
-        <section id="quiz" class="tab-content max-w-3xl mx-auto">
-            <div class="bg-white rounded-3xl p-8 shadow-md border-t-8 border-pastel-darkblue">
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-slate-800">Trắc nghiệm ôn tập</h2>
-                    <p class="text-slate-500">Kiểm tra kiến thức cốt lõi Bài 11</p>
+        <!-- ================= TAB 2: KHÁI NIỆM & THUỘC TÍNH ================= -->
+        <div id="thuoctinh" class="tab-content">
+            
+            <!-- Khái niệm -->
+            <div class="glass-card p-6 md:p-8 mb-8 text-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 animate-banner border-2 border-white">
+                <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 mx-auto mb-4 shadow-sm">
+                    <i class="fas fa-database text-3xl animate-float"></i>
                 </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">Cơ sở dữ liệu (Database) là gì?</h3>
+                <p class="text-base text-gray-600 font-medium leading-relaxed max-w-3xl mx-auto">
+                    Là một <strong class="text-indigo-600">tập hợp các dữ liệu có liên quan</strong> với nhau, 
+                    được lưu trữ <strong class="text-indigo-600">một cách có tổ chức</strong> trên hệ thống máy tính, 
+                    nhằm phục vụ cho việc quản lý, tìm kiếm và khai thác thông tin nhanh chóng, tiện lợi.
+                </p>
+                <div class="mt-4 flex justify-center gap-2">
+                    <span class="bg-white px-3 py-1 rounded-full border border-gray-100 text-xs font-bold text-gray-500 shadow-sm"><i class="fas fa-hospital text-red-400 mr-1"></i> CSDL Bệnh nhân</span>
+                    <span class="bg-white px-3 py-1 rounded-full border border-gray-100 text-xs font-bold text-gray-500 shadow-sm"><i class="fas fa-university text-yellow-500 mr-1"></i> CSDL Ngân hàng</span>
+                    <span class="bg-white px-3 py-1 rounded-full border border-gray-100 text-xs font-bold text-gray-500 shadow-sm"><i class="fas fa-school text-blue-400 mr-1"></i> CSDL Học sinh</span>
+                </div>
+            </div>
 
-                <div id="quiz-container" class="space-y-6">
-                    <!-- Quiz rendering here by JS -->
-                </div>
-
-                <div class="mt-8 text-center hidden" id="quiz-result">
-                    <h3 class="text-2xl font-bold mb-2" id="score-text"></h3>
-                    <button onclick="resetQuiz()" class="bg-blue-100 text-blue-700 px-6 py-2 rounded-full font-bold hover:bg-blue-200">Làm lại</button>
-                </div>
+            <h3 class="text-2xl font-bold text-center mb-2 text-gray-700"><i class="fas fa-star text-pastel-yellow mr-2"></i> 6 Thuộc tính cơ bản của CSDL</h3>
+            <p class="text-center text-[15px] text-gray-600 font-medium leading-relaxed mb-6">Lướt chuột qua từng thẻ để khám phá các đặc tính quan trọng tạo nên một CSDL tốt.</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                 
-                <button id="btn-submit-quiz" onclick="checkAnswers()" class="w-full mt-6 bg-pastel-darkblue text-white py-3 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors">
-                    Nộp bài
-                </button>
+                <!-- 1. Cấu trúc -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-blue border-b-4 border-blue-200">
+                            <i class="fas fa-table text-4xl text-blue-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800 text-lg">Tính cấu trúc</h4>
+                        </div>
+                        <div class="flip-card-back p-5 border-b-4 border-blue-400 bg-gradient-to-br from-white to-blue-50">
+                            <i class="fas fa-border-all text-blue-400 mb-2 text-2xl"></i>
+                            <h5 class="font-bold text-blue-600 mb-2">Tính cấu trúc</h5>
+                            <p class="text-[14px] text-gray-600 font-medium leading-relaxed">Dữ liệu được lưu trữ theo một khuôn dạng xác định. Phổ biến nhất là mô hình quan hệ (dạng bảng gồm các hàng và cột).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Không dư thừa -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-green border-b-4 border-green-200">
+                            <i class="fas fa-compress-arrows-alt text-4xl text-green-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800 text-lg">Tính không dư thừa</h4>
+                        </div>
+                        <div class="flip-card-back p-5 border-b-4 border-green-400 bg-gradient-to-br from-white to-green-50">
+                            <i class="fas fa-eraser text-green-400 mb-2 text-2xl"></i>
+                            <h5 class="font-bold text-green-600 mb-2">Tính không dư thừa</h5>
+                            <p class="text-[14px] text-gray-600 font-medium leading-relaxed">Hạn chế tối đa lưu trùng lặp. Những dữ liệu có thể suy ra từ dữ liệu khác (vd: Điểm Trung Bình) thường không được lưu trữ.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Độc lập -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-purple border-b-4 border-purple-200">
+                            <i class="fas fa-layer-group text-4xl text-purple-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800 text-lg">Tính độc lập dữ liệu</h4>
+                        </div>
+                        <div class="flip-card-back p-5 border-b-4 border-purple-400 bg-gradient-to-br from-white to-purple-50">
+                            <i class="fas fa-unlink text-purple-400 mb-2 text-2xl"></i>
+                            <h5 class="font-bold text-purple-600 mb-2">Độc lập dữ liệu</h5>
+                            <p class="text-[14px] text-gray-600 font-medium leading-relaxed">Phần mềm ứng dụng không cần thay đổi code khi cấu trúc lưu trữ vật lý của dữ liệu bên dưới thay đổi.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Toàn vẹn -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-yellow border-b-4 border-yellow-200">
+                            <i class="fas fa-clipboard-check text-4xl text-yellow-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800 text-lg">Tính toàn vẹn</h4>
+                        </div>
+                        <div class="flip-card-back p-5 border-b-4 border-yellow-400 bg-gradient-to-br from-white to-yellow-50">
+                            <i class="fas fa-check-double text-yellow-500 mb-2 text-2xl"></i>
+                            <h5 class="font-bold text-yellow-600 mb-2">Tính toàn vẹn</h5>
+                            <p class="text-[14px] text-gray-600 font-medium leading-relaxed">Dữ liệu phải thoả mãn các quy định, ràng buộc thực tế. Ví dụ: Điểm số phải nằm trong khoảng từ 0 đến 10.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Nhất quán -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-pink border-b-4 border-pink-200">
+                            <i class="fas fa-balance-scale text-4xl text-pink-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800 text-lg">Tính nhất quán</h4>
+                        </div>
+                        <div class="flip-card-back p-5 border-b-4 border-pink-400 bg-gradient-to-br from-white to-pink-50">
+                            <i class="fas fa-sync text-pink-400 mb-2 text-2xl"></i>
+                            <h5 class="font-bold text-pink-600 mb-2">Tính nhất quán</h5>
+                            <p class="text-[14px] text-gray-600 font-medium leading-relaxed">Đảm bảo dữ liệu đúng đắn sau cập nhật. VD: Chuyển tiền thì tài khoản A trừ bao nhiêu, tài khoản B phải cộng bấy nhiêu.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Bảo mật -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front bg-pastel-orange border-b-4 border-orange-200">
+                            <i class="fas fa-shield-alt text-4xl text-orange-500 mb-3 drop-shadow-sm"></i>
+                            <h4 class="font-bold text-gray-800 text-lg">Bảo mật & An toàn</h4>
+                        </div>
+                        <div class="flip-card-back p-5 border-b-4 border-orange-400 bg-gradient-to-br from-white to-orange-50">
+                            <i class="fas fa-user-shield text-orange-400 mb-2 text-2xl"></i>
+                            <h5 class="font-bold text-orange-600 mb-2">Bảo mật & An toàn</h5>
+                            <p class="text-[14px] text-gray-600 font-medium leading-relaxed">Phân quyền truy cập, chống sao chép trái phép. Có cơ chế sao lưu (backup) để khôi phục khi gặp sự cố.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </section>
+        </div>
 
-    </main>
+        <!-- ================= TAB 3: LUYỆN TẬP & VẬN DỤNG ================= -->
+        <div id="vandung" class="tab-content">
+            
+            <!-- Vận dụng: Thiết kế thư viện -->
+            <div class="glass-card p-6 md:p-8 mb-8 border-t-4 border-indigo-400">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fas fa-book-reader text-indigo-500"></i> Bài tập Vận dụng: Quản lý Thư viện
+                        </h3>
+                        <p class="text-[15px] text-gray-600 font-medium leading-relaxed mt-2">
+                            Để quản lý thư viện trường học bằng CSDL theo nguyên tắc "có cấu trúc" và "không dư thừa", em cần tổ chức thành các bảng nào? Nhấp để xem gợi ý.
+                        </p>
+                    </div>
+                </div>
 
-    <!-- JavaScript cho Tương tác & Giao diện -->
+                <div class="grid md:grid-cols-3 gap-4">
+                    <!-- Bảng Sách -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="bg-indigo-50 p-3 border-b border-indigo-100 flex items-center gap-2 cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                            <i class="fas fa-book text-indigo-500 group-hover:scale-110 transition"></i>
+                            <h5 class="font-bold text-indigo-900">Dữ liệu SÁCH</h5>
+                            <i class="fas fa-chevron-down ml-auto text-indigo-300 text-xs"></i>
+                        </div>
+                        <div class="p-3 bg-white hidden">
+                            <ul class="text-sm text-gray-600 space-y-2 font-mono">
+                                <li><span class="text-red-500 font-bold">Mã_sách</span> (Khóa)</li>
+                                <li>Tên_sách</li>
+                                <li>Tác_giả</li>
+                                <li>Nhà_xuất_bản</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Bảng Độc giả -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="bg-green-50 p-3 border-b border-green-100 flex items-center gap-2 cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                            <i class="fas fa-user-graduate text-green-500 group-hover:scale-110 transition"></i>
+                            <h5 class="font-bold text-green-900">Dữ liệu ĐỘC GIẢ</h5>
+                            <i class="fas fa-chevron-down ml-auto text-green-300 text-xs"></i>
+                        </div>
+                        <div class="p-3 bg-white hidden">
+                            <ul class="text-sm text-gray-600 space-y-2 font-mono">
+                                <li><span class="text-red-500 font-bold">Mã_thẻ</span> (Khóa)</li>
+                                <li>Họ_tên</li>
+                                <li>Lớp</li>
+                                <li>Ngày_sinh</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Bảng Mượn trả -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="bg-orange-50 p-3 border-b border-orange-100 flex items-center gap-2 cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                            <i class="fas fa-exchange-alt text-orange-500 group-hover:scale-110 transition"></i>
+                            <h5 class="font-bold text-orange-900">Dữ liệu MƯỢN/TRẢ</h5>
+                            <i class="fas fa-chevron-down ml-auto text-orange-300 text-xs"></i>
+                        </div>
+                        <div class="p-3 bg-white hidden">
+                            <p class="text-xs text-gray-500 mb-2 italic">Chỉ lưu Mã để liên kết, tránh dư thừa Tên sách/Tên người</p>
+                            <ul class="text-sm text-gray-600 space-y-2 font-mono">
+                                <li><span class="text-blue-500 font-bold">Mã_lượt_mượn</span></li>
+                                <li><span class="text-indigo-500 font-bold">Mã_sách</span> (Liên kết)</li>
+                                <li><span class="text-green-500 font-bold">Mã_thẻ</span> (Liên kết)</li>
+                                <li>Ngày_mượn</li>
+                                <li>Ngày_trả</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz -->
+            <h3 class="text-2xl font-bold text-center mb-6 text-gray-700">Trắc Nghiệm Ôn Tập (5 câu)</h3>
+            <div class="glass-card p-6 md:p-8 space-y-6" id="quiz-container">
+                <!-- Q1 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">1. Tại sao KHÔNG cần thiết phải tạo cột lưu "Điểm trung bình" trong Bảng điểm môn học?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Vì nó vi phạm tính cấu trúc của CSDL.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Vì giá trị này có thể tính toán được từ các điểm thành phần, nhằm đảm bảo tính KHÔNG dư thừa.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q1" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Vì máy tính không thể tự động tính toán được.</span></label>
+                    </div>
+                </div>
+                <!-- Q2 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">2. Khi thông tin được cập nhật ở một bảng nhưng quên cập nhật ở bảng khác có chứa thông tin trùng lặp, điều này dẫn đến vấn đề gì?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Sự không nhất quán dữ liệu.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Sự phụ thuộc phần mềm.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q2" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Dữ liệu bị mất mát hoàn toàn.</span></label>
+                    </div>
+                </div>
+                <!-- Q3 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">3. Lợi ích lớn nhất của việc "Dữ liệu độc lập với phần mềm" là gì?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Dễ dàng chia sẻ, phát triển ứng dụng và nâng cấp CSDL riêng biệt mà không làm hỏng phần mềm cũ.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Tăng tính bảo mật, không ai có thể xem được dữ liệu.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q3" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Tiết kiệm bộ nhớ máy tính.</span></label>
+                    </div>
+                </div>
+                <!-- Q4 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">4. Quy định "Điểm đánh giá học tập phải là số thực từ 0 đến 10" thể hiện thuộc tính nào của CSDL?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Tính nhất quán</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Tính toàn vẹn</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q4" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Tính độc lập</span></label>
+                    </div>
+                </div>
+                <!-- Q5 -->
+                <div class="quiz-item bg-white p-4 rounded-xl shadow-sm border border-gray-50">
+                    <p class="font-bold text-gray-800 mb-3 text-base">5. Theo định nghĩa, Cơ sở dữ liệu là:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="A" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">A. Tập hợp các tệp văn bản lộn xộn trên ổ cứng.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="B" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">B. Tập hợp các dữ liệu có liên quan, được lưu trữ có tổ chức trên máy tính.</span></label>
+                        <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-pastel-blue transition border border-transparent"><input type="radio" name="q5" value="C" class="form-radio text-blue-500"><span class="text-[15px] text-gray-600 font-medium leading-relaxed">C. Một phần mềm dùng để soạn thảo văn bản.</span></label>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button onclick="checkAnswers()" class="bg-pastel-blue hover:bg-blue-200 text-blue-800 font-bold py-3 px-8 rounded-full shadow-sm transition-transform hover:scale-105 inline-flex items-center text-base">
+                        <i class="fas fa-paper-plane mr-2"></i> Nộp Bài & Xem Điểm
+                    </button>
+                    <div id="quiz-result" class="mt-4 text-lg font-bold hidden py-3 px-6 rounded-xl inline-block shadow-sm"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
     <script>
-        // --- 1. Tab Navigation ---
-        function openTab(tabId) {
+        // Tab switching logic
+        function openTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-blue-100', 'text-blue-700');
-                el.classList.add('hover:bg-slate-100', 'text-slate-500');
+                el.classList.remove('bg-pastel-blue', 'text-blue-800', 'shadow-sm');
+                el.classList.add('text-gray-500', 'hover:bg-gray-50');
             });
-            
-            document.getElementById(tabId).classList.add('active');
-            
-            let activeBtn = document.getElementById('btn-' + tabId);
-            activeBtn.classList.remove('hover:bg-slate-100', 'text-slate-500');
-            activeBtn.classList.add('bg-blue-100', 'text-blue-700');
+            document.getElementById(tabName).classList.add('active');
+            const btn = document.getElementById('btn-' + tabName);
+            btn.classList.remove('text-gray-500', 'hover:bg-gray-50');
+            btn.classList.add('bg-pastel-blue', 'text-blue-800', 'shadow-sm');
         }
 
-        // --- 2. Interactive: Sự phụ thuộc phần mềm ---
-        let isCommaFormat = true;
-        function simulateFormatChange() {
-            isCommaFormat = !isCommaFormat;
-            const dataEl = document.getElementById('sim-data-content');
-            const statusEl = document.getElementById('sim-code-status');
-            const fileIcon = document.getElementById('sim-file-diem');
+        // ================= SIMULATOR 1: DƯ THỪA & KHÔNG NHẤT QUÁN =================
+        let isScoreUpdated = false;
+        let isDbResolved = false;
+        
+        function simulateInconsistency() {
+            const btnUpdate = document.getElementById('btn-update-score');
+            const btnResolve = document.getElementById('btn-resolve-score');
+            const s1 = document.getElementById('score-table1');
+            const s2 = document.getElementById('score-table2');
+            const alertBox = document.getElementById('inconsistency-alert');
 
-            if (isCommaFormat) {
-                dataEl.innerHTML = "11A, 1, Dương Hồng Anh, 8, 7<br>11A, 2, Lương Việt Anh, 5, 6";
-                statusEl.className = "bg-green-50 text-green-700 border border-green-200 p-4 rounded-xl flex items-start gap-3";
-                statusEl.innerHTML = `<i class="ph-fill ph-check-circle text-2xl"></i><div><b>Trạng thái: Hoạt động tốt</b><p class="text-sm mt-1">Chương trình dùng lệnh tách chuỗi theo dấu phẩy (,). Đọc dữ liệu thành công.</p></div>`;
-                fileIcon.classList.remove('border-red-400', 'bg-red-100');
-            } else {
-                // Đổi sang dấu chấm phẩy
-                dataEl.innerHTML = "11A; 1; Dương Hồng Anh; 8; 7<br>11A; 2; Lương Việt Anh; 5; 6";
-                statusEl.className = "bg-red-50 text-red-700 border border-red-200 p-4 rounded-xl flex items-start gap-3";
-                statusEl.innerHTML = `<i class="ph-fill ph-x-circle text-2xl"></i><div><b>Trạng thái: LỖI CODE!</b><p class="text-sm mt-1">Lệnh tách chuỗi không tìm thấy dấu phẩy (,). Bạn phải đi sửa lại code phần mềm!</p></div>`;
-                fileIcon.classList.add('border-red-400', 'bg-red-100');
-            }
-        }
-
-        // --- 3. Interactive: Tính toàn vẹn ---
-        function checkToanVen() {
-            const input = document.getElementById('input-diem').value;
-            const msg = document.getElementById('msg-toanven');
-            
-            if(input === "") {
-                msg.innerHTML = ""; return;
-            }
-            
-            const num = parseFloat(input);
-            if (num < 0 || num > 10) {
-                msg.className = "text-xs mt-2 font-semibold h-4 text-red-500";
-                msg.innerHTML = "❌ Lỗi: Vi phạm tính toàn vẹn (Điểm phải từ 0 đến 10)";
-            } else {
-                msg.className = "text-xs mt-2 font-semibold h-4 text-green-600";
-                msg.innerHTML = "✅ Dữ liệu hợp lệ! Đã lưu vào CSDL.";
-            }
-        }
-
-        // --- 4. Interactive: Tính nhất quán ---
-        let tkGui = 100;
-        let tkNhan = 50;
-        let isTransferring = false;
-
-        function simulateTransfer() {
-            if(isTransferring || tkGui < 20) return;
-            isTransferring = true;
-            
-            const bar = document.getElementById('transfer-bar');
-            const txtGui = document.getElementById('tk-gui');
-            const txtNhan = document.getElementById('tk-nhan');
-            const msg = document.getElementById('msg-nhatquan');
-
-            msg.innerHTML = "<span class='text-purple-600'>Đang xử lý giao dịch...</span>";
-            bar.style.width = "100%";
-
-            setTimeout(() => {
-                tkGui -= 20;
-                tkNhan += 20;
-                txtGui.innerText = tkGui;
-                txtNhan.innerText = tkNhan;
+            if(isDbResolved) {
+                // If DB is already resolved, show that it updates perfectly
+                s1.innerText = "8.0";
+                s1.classList.add('text-pink-600');
                 
-                bar.style.width = "0%";
-                msg.innerHTML = `✅ Giao dịch thành công. Tổng quỹ: ${tkGui + tkNhan}$ (Không đổi -> Nhất quán)`;
-                isTransferring = false;
+                // Highlight table 1 score
+                s1.parentElement.classList.add('highlight-cell');
+                setTimeout(() => s1.parentElement.classList.remove('highlight-cell'), 2000);
 
-                // Reset after 3 secs for loop demo
-                if(tkGui === 0) {
-                    setTimeout(() => {
-                        tkGui = 100; tkNhan = 50;
-                        txtGui.innerText = tkGui; txtNhan.innerText = tkNhan;
-                        msg.innerHTML = "Tổng tiền hệ thống luôn = 150$";
-                    }, 2000);
-                }
-            }, 1000);
-        }
-
-        // --- 5. Trắc nghiệm System ---
-        const questions = [
-            {
-                q: "1. Cơ sở dữ liệu (CSDL) là gì?",
-                options: [
-                    "A. Là một thư mục chứa nhiều tệp văn bản trên máy tính.",
-                    "B. Là tập hợp dữ liệu có liên quan, được lưu trữ có tổ chức trên máy tính.",
-                    "C. Là một phần mềm quản lí thông tin học sinh.",
-                    "D. Là phần cứng dùng để lưu trữ thông tin."
-                ],
-                ans: 1
-            },
-            {
-                q: "2. Việc lưu điểm trung bình trong bảng điểm trong khi có thể tự tính từ các điểm thành phần là vi phạm thuộc tính nào của CSDL?",
-                options: [
-                    "A. Tính cấu trúc",
-                    "B. Tính độc lập dữ liệu",
-                    "C. Tính không dư thừa",
-                    "D. Tính bảo mật"
-                ],
-                ans: 2
-            },
-            {
-                q: "3. Khi thay đổi cấu trúc tệp dữ liệu mà không cần phải viết lại code phần mềm ứng dụng, điều đó thể hiện tính chất gì?",
-                options: [
-                    "A. Tính nhất quán",
-                    "B. Tính toàn vẹn",
-                    "C. Tính độc lập dữ liệu",
-                    "D. Tính cấu trúc"
-                ],
-                ans: 2
-            },
-            {
-                q: "4. Hệ thống ngân hàng trừ tiền tài khoản A nhưng chưa kịp cộng vào tài khoản B do lỗi mạng. Lỗi này vi phạm tính chất nào?",
-                options: [
-                    "A. Tính nhất quán",
-                    "B. Tính toàn vẹn",
-                    "C. Tính bảo mật",
-                    "D. Tính độc lập"
-                ],
-                ans: 0
-            },
-            {
-                q: "5. Ràng buộc 'Điểm đánh giá học tập phải là số từ 0 đến 10' là minh họa cho thuộc tính nào?",
-                options: [
-                    "A. Tính không dư thừa",
-                    "B. Tính cấu trúc",
-                    "C. Tính toàn vẹn",
-                    "D. Tính nhất quán"
-                ],
-                ans: 2
-            }
-        ];
-
-        function renderQuiz() {
-            const container = document.getElementById('quiz-container');
-            container.innerHTML = '';
-            
-            questions.forEach((q, index) => {
-                let optionsHtml = '';
-                q.options.forEach((opt, optIndex) => {
-                    optionsHtml += `
-                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-slate-50 transition-colors quiz-opt-${index}" id="lbl-${index}-${optIndex}">
-                            <input type="radio" name="q${index}" value="${optIndex}" class="w-4 h-4 text-blue-600">
-                            <span class="text-sm">${opt}</span>
-                        </label>
-                    `;
-                });
-
-                container.innerHTML += `
-                    <div class="quiz-item p-6 border-2 border-slate-100 rounded-2xl">
-                        <h4 class="font-bold mb-4 text-slate-700">${q.q}</h4>
-                        <div class="space-y-2">
-                            ${optionsHtml}
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function checkAnswers() {
-            let score = 0;
-            let allAnswered = true;
-
-            questions.forEach((q, index) => {
-                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                // Emphasize the link working
+                const svg = document.getElementById('link-svg');
+                svg.classList.remove('opacity-30');
+                svg.classList.add('opacity-100');
+                svg.querySelector('#link-path').setAttribute('stroke-width', '4');
+                setTimeout(() => {
+                    svg.classList.remove('opacity-100');
+                    svg.classList.add('opacity-30');
+                    svg.querySelector('#link-path').setAttribute('stroke-width', '2');
+                }, 1500);
                 
-                // Reset styling
-                document.querySelectorAll(`.quiz-opt-${index}`).forEach(el => {
-                    el.classList.remove('bg-red-50', 'border-red-300', 'bg-green-50', 'border-green-400');
-                });
-
-                if (!selected) {
-                    allAnswered = false;
-                    return;
-                }
-
-                const val = parseInt(selected.value);
-                if (val === q.ans) {
-                    score++;
-                    document.getElementById(`lbl-${index}-${val}`).classList.add('bg-green-50', 'border-green-400');
-                } else {
-                    document.getElementById(`lbl-${index}-${val}`).classList.add('bg-red-50', 'border-red-300');
-                    document.getElementById(`lbl-${index}-${q.ans}`).classList.add('bg-green-50', 'border-green-400');
-                }
-            });
-
-            if(!allAnswered) {
-                alert("Vui lòng trả lời tất cả các câu hỏi!");
                 return;
             }
 
-            document.getElementById('btn-submit-quiz').style.display = 'none';
-            document.getElementById('quiz-result').classList.remove('hidden');
-            document.getElementById('score-text').innerHTML = `Điểm của bạn: <span class="text-blue-600">${score}/5</span>`;
+            // Simulate updating ONLY table 1
+            s1.innerText = "8.0";
+            s1.classList.add('text-pink-600');
+            s1.classList.remove('text-gray-800');
+            
+            // Add animation class to highlight
+            s1.parentElement.classList.add('highlight-cell');
+            setTimeout(() => s1.parentElement.classList.remove('highlight-cell'), 2000);
+
+            // Show error because table 2 didn't update
+            alertBox.classList.remove('hidden');
+            s2.classList.add('text-red-500', 'animate-pulse');
+            
+            btnUpdate.disabled = true;
+            btnUpdate.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            setTimeout(() => {
+                btnResolve.classList.remove('hidden');
+                btnResolve.classList.add('flex');
+            }, 1000);
+            
+            isScoreUpdated = true;
         }
 
-        function resetQuiz() {
-            renderQuiz();
-            document.getElementById('btn-submit-quiz').style.display = 'block';
-            document.getElementById('quiz-result').classList.add('hidden');
+        function drawSvgLink() {
+            const el1 = document.getElementById('target-id-1');
+            const el2 = document.getElementById('target-id-2');
+            const container = document.getElementById('tables-container');
+            const svg = document.getElementById('link-svg');
+            const path = document.getElementById('link-path');
+            const dot1 = document.getElementById('link-dot1');
+            const dot2 = document.getElementById('link-dot2');
+
+            if(!el1 || !el2 || !container) return;
+
+            const cRect = container.getBoundingClientRect();
+            const r1 = el1.getBoundingClientRect();
+            const r2 = el2.getBoundingClientRect();
+
+            // Calculate positions relative to container
+            const x1 = r1.left - cRect.left + (r1.width / 2);
+            const y1 = r1.top - cRect.top + r1.height + 2; // Bottom of HS01 in T1
+            const x2 = r2.left - cRect.left + (r2.width / 2);
+            const y2 = r2.top - cRect.top - 2; // Top of HS01 in T2
+
+            // Bezier curve path
+            const d = `M ${x1} ${y1} C ${x1} ${y1 + 30}, ${x2} ${y2 - 30}, ${x2} ${y2}`;
+            
+            path.setAttribute('d', d);
+            dot1.setAttribute('cx', x1);
+            dot1.setAttribute('cy', y1);
+            dot2.setAttribute('cx', x2);
+            dot2.setAttribute('cy', y2);
         }
 
-        // Khởi tạo
-        renderQuiz();
+        function resolveInconsistency() {
+            isDbResolved = true;
+            const overlay = document.getElementById('db-overlay');
+            const alertBox = document.getElementById('inconsistency-alert');
+            const successBox = document.getElementById('consistency-success');
+            const s2 = document.getElementById('score-table2');
+            const btnResolve = document.getElementById('btn-resolve-score');
+            const btnUpdate = document.getElementById('btn-update-score');
+
+            // Hide error
+            alertBox.classList.add('hidden');
+            
+            // Show DB magic (overlay on redundant table temporarily)
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            
+            // After 2 seconds, remove overlay and restructure table 2
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    overlay.style.opacity = '1';
+                    
+                    // Restructure Table 2 (Remove Redundant Columns)
+                    const thead = document.getElementById('thead-table2');
+                    thead.innerHTML = `<tr>
+                                        <th class="px-4 py-2 transition-colors text-blue-600 bg-blue-50" id="th-id-t2">Mã HS (Khóa ngoại)</th>
+                                        <th class="px-4 py-2 text-gray-400 italic font-normal line-through">Họ tên (Đã loại bỏ)</th>
+                                        <th class="px-4 py-2 text-gray-400 italic font-normal line-through">Điểm Toán (Đã loại bỏ)</th>
+                                    </tr>`;
+                    
+                    const tbody = document.getElementById('tbody-table2');
+                    tbody.innerHTML = `<tr class="border-b bg-green-50/30">
+                                        <td class="px-4 py-2 font-mono font-bold text-blue-600"><span id="target-id-2" class="relative inline-block">HS01</span></td>
+                                        <td class="px-4 py-2 text-gray-300 italic">-- Lấy từ Bảng Môn --</td>
+                                        <td class="px-4 py-2 text-gray-300 italic">-- Lấy từ Bảng Môn --</td>
+                                    </tr>
+                                    <tr class="bg-green-50/30">
+                                        <td class="px-4 py-2 font-mono font-bold text-blue-600">HS02</td>
+                                        <td class="px-4 py-2 text-gray-300 italic">-- Lấy từ Bảng Môn --</td>
+                                        <td class="px-4 py-2 text-gray-300 italic">-- Lấy từ Bảng Môn --</td>
+                                    </tr>`;
+                    
+                    // Highlight primary key in Table 1
+                    document.getElementById('th-id-t1').classList.add('text-blue-600', 'bg-blue-50');
+                    document.getElementById('td-id-t1').classList.add('text-blue-600', 'font-bold');
+
+                    // Change badges
+                    document.getElementById('badge-table1').innerText = "Bảng dữ liệu";
+                    document.getElementById('badge-table1').className = "text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded uppercase font-bold";
+                    document.getElementById('badge-table2').innerText = "Bảng dữ liệu";
+                    document.getElementById('badge-table2').className = "text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded uppercase font-bold";
+
+                    // Draw relationship line
+                    const svg = document.getElementById('link-svg');
+                    svg.classList.remove('hidden');
+                    // Add slight opacity to make it look background-ish
+                    svg.classList.add('opacity-30', 'transition-opacity', 'duration-300');
+                    drawSvgLink();
+
+                    // Re-enable update button for demonstration
+                    btnUpdate.disabled = false;
+                    btnUpdate.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btnUpdate.innerHTML = '<i class="fas fa-edit"></i> Sửa lại Điểm Toán (8 -> 9.5)';
+                    btnUpdate.onclick = () => {
+                        const s1 = document.getElementById('score-table1');
+                        s1.innerText = "9.5";
+                        s1.classList.add('text-purple-600');
+                        s1.parentElement.classList.add('highlight-cell');
+                        setTimeout(() => s1.parentElement.classList.remove('highlight-cell'), 2000);
+                        
+                        // Pulse line to show data flow
+                        svg.classList.remove('opacity-30');
+                        svg.classList.add('opacity-100');
+                        svg.querySelector('#link-path').setAttribute('stroke-width', '5');
+                        setTimeout(() => {
+                            svg.classList.remove('opacity-100');
+                            svg.classList.add('opacity-30');
+                            svg.querySelector('#link-path').setAttribute('stroke-width', '3');
+                        }, 1000);
+                    };
+
+                    successBox.classList.remove('hidden');
+
+                }, 500);
+            }, 2500);
+            
+            btnResolve.innerHTML = "<i class='fas fa-check'></i> Hệ thống đã cập nhật Cấu trúc";
+            btnResolve.disabled = true;
+            btnResolve.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Redraw SVG line if window resizes
+        window.addEventListener('resize', () => {
+            if(isDbResolved) {
+                drawSvgLink();
+            }
+        });
+
+        // ================= SIMULATOR 2: ĐỘC LẬP DỮ LIỆU =================
+        let fileFormat = 'comma'; // comma or semicolon
+        
+        function changeFileFormat() {
+            const content = document.getElementById('file-content');
+            const btn = document.getElementById('btn-change-format');
+            
+            if(fileFormat === 'comma') {
+                content.innerText = `HS01;Nguyễn Văn A;9.0\nHS02;Trần Thị B;7.5`;
+                fileFormat = 'semicolon';
+                btn.innerHTML = '<i class="fas fa-undo"></i> Khôi phục định dạng cũ ( , )';
+                btn.classList.replace('bg-slate-600', 'bg-amber-600');
+                btn.classList.replace('hover:bg-slate-500', 'hover:bg-amber-500');
+            } else {
+                content.innerText = `HS01,Nguyễn Văn A,9.0\nHS02,Trần Thị B,7.5`;
+                fileFormat = 'comma';
+                btn.innerHTML = '<i class="fas fa-exchange-alt"></i> Đổi dấu ngăn cách ( , ) thành ( ; )';
+                btn.classList.replace('bg-amber-600', 'bg-slate-600');
+                btn.classList.replace('hover:bg-amber-500', 'hover:bg-slate-500');
+            }
+            
+            // Reset terminal
+            document.getElementById('software-terminal').innerHTML = '<span class="text-gray-500">> Dữ liệu thay đổi. Hãy chạy lại phần mềm...</span>';
+            document.getElementById('software-box').classList.remove('animate-error');
+            document.getElementById('independence-solution').classList.add('hidden');
+        }
+
+        function runSoftware() {
+            const term = document.getElementById('software-terminal');
+            const box = document.getElementById('software-box');
+            
+            term.innerHTML = '<span class="text-blue-400">> Đang đọc tệp data.txt...</span><br>';
+            
+            setTimeout(() => {
+                if(fileFormat === 'comma') {
+                    // Success
+                    term.innerHTML += '<span class="text-green-400">> Đọc thành công!</span><br>';
+                    term.innerHTML += '<span class="text-white">- ID: HS01 | Tên: Nguyễn Văn A | Điểm: 9.0</span><br>';
+                    term.innerHTML += '<span class="text-white">- ID: HS02 | Tên: Trần Thị B | Điểm: 7.5</span>';
+                    box.classList.remove('animate-error');
+                } else {
+                    // Error (Simulating crash because python code expects ',')
+                    term.innerHTML += '<span class="text-red-500">> LỖI NGHIÊM TRỌNG (CRASH)!</span><br>';
+                    term.innerHTML += '<span class="text-red-400">ValueError: not enough values to unpack (expected 3, got 1).</span><br>';
+                    term.innerHTML += '<span class="text-gray-500">Giải thích: Mã lập trình đang tìm dấu phẩy ",", nhưng tệp lại chứa dấu chấm phẩy ";". Do đó phần mềm không thể tách dữ liệu.</span>';
+                    
+                    // Visual error effect
+                    box.classList.remove('animate-error');
+                    void box.offsetWidth; // trigger reflow
+                    box.classList.add('animate-error');
+                    
+                    // Show solution
+                    setTimeout(() => {
+                        document.getElementById('independence-solution').classList.remove('hidden');
+                    }, 1000);
+                }
+                term.scrollTop = term.scrollHeight;
+            }, 500);
+        }
+
+        // ================= QUIZ LOGIC =================
+        const answers = { q1: 'B', q2: 'A', q3: 'A', q4: 'B', q5: 'B' };
+        
+        function checkAnswers() {
+            let score = 0; let total = 5;
+            for(let i=1; i<=total; i++) {
+                let qName = 'q' + i;
+                let selected = document.querySelector(`input[name="${qName}"]:checked`);
+                let options = document.querySelectorAll(`input[name="${qName}"]`);
+                
+                options.forEach(opt => {
+                    opt.parentElement.classList.remove('bg-pastel-green', 'bg-pastel-pink', 'border-green-300', 'border-pink-300');
+                    opt.parentElement.classList.add('border-transparent');
+                });
+
+                if (selected) {
+                    if (selected.value === answers[qName]) {
+                        score++;
+                        selected.parentElement.classList.replace('border-transparent', 'border-green-300');
+                        selected.parentElement.classList.add('bg-pastel-green');
+                    } else {
+                        selected.parentElement.classList.replace('border-transparent', 'border-pink-300');
+                        selected.parentElement.classList.add('bg-pastel-pink');
+                        document.querySelector(`input[name="${qName}"][value="${answers[qName]}"]`).parentElement.classList.add('bg-pastel-green');
+                    }
+                }
+            }
+
+            const resultEl = document.getElementById('quiz-result');
+            resultEl.classList.remove('hidden');
+            if(score === 5) {
+                resultEl.innerHTML = `🎉 Xuất sắc! ${score}/${total} điểm.`;
+                resultEl.className = "mt-4 text-lg font-bold block text-green-700 bg-pastel-green border border-green-200 py-3 px-6 rounded-xl inline-block shadow-sm";
+                fireConfetti();
+            } else {
+                resultEl.innerHTML = `📚 Khá lắm! Đạt ${score}/${total} điểm. Ôn tập thêm nhé.`;
+                resultEl.className = "mt-4 text-lg font-bold block text-yellow-700 bg-pastel-yellow border border-yellow-200 py-3 px-6 rounded-xl inline-block shadow-sm";
+            }
+        }
+
+        function fireConfetti() {
+            const colors = ['#ff8fab', '#8eb3ff', '#73d686', '#f2c75c', '#b78eff'];
+            for(let i=0; i<50; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                confetti.style.top = '-10px';
+                document.body.appendChild(confetti);
+                setTimeout(() => { confetti.remove(); }, 3000);
+            }
+        }
     </script>
 </body>
 </html>

@@ -9,3 +9,5 @@
 *.mkv
 *.wav
 *.flac
+!FPimgs/*
+!images/*

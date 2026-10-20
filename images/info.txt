@@ -13,3 +13,10 @@ dòng đầu tiên trong hình ở giữa, nội dung "Tin Học 12"
 cho nội dung sau (tiêu đề là dòng đầu tiên - Định dạng nội dung thành in hoa):
 
 
+hãy tạo ảnh sử dụng phong cách như hình tham chiếu:
+nội dung thể hiện hoàn toàn bằng tiếng Việt, sử dụng đúng ngữ pháp.
+dòng đầu tiên trong hình ở giữa, nội dung "Tin Học 12"
+cho nội dung sau (tiêu đề là dòng đầu tiên - Định dạng nội dung thành in hoa - giữ lại các ví dụ cơ bản):
+
+
+hãy tóm tắt chi tiết theo các đề mục trong tài liệu (có ví dụ cơ bản), dòng đầu tiên là tên bài học
