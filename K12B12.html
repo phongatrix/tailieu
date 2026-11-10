@@ -191,10 +191,31 @@
                 {/* Cấu trúc chung */}
                 <div className="studygram-card p-6 bg-slate-800 text-white">
                     <h2 className="text-xl font-bold text-yellow-400 mb-4">Cấu trúc chung của Biểu mẫu</h2>
-                    <div className="bg-slate-900 p-4 rounded-lg font-mono text-green-400 text-lg shadow-inner">
-                        <span className="text-pink-400">&lt;form&gt;</span><br/>
+                    <div className="bg-slate-900 p-4 rounded-lg font-mono text-green-400 text-lg shadow-inner mb-6 overflow-x-auto">
+                        <span className="text-pink-400">&lt;form</span> <span className="text-blue-300">action</span>=<span className="text-yellow-300">"xuly.php"</span> <span className="text-blue-300">method</span>=<span className="text-yellow-300">"POST"</span><span className="text-pink-400">&gt;</span><br/>
                         &nbsp;&nbsp;<span className="text-slate-400 italic">/* Các phần tử của biểu mẫu: input, select, textarea... */</span><br/>
                         <span className="text-pink-400">&lt;/form&gt;</span>
+                    </div>
+
+                    <h3 className="font-bold text-blue-300 mb-3 text-base flex items-center gap-2">
+                        <Icons.Code /> Các thuộc tính thường dùng trong thẻ &lt;form&gt;:
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div className="bg-slate-700/60 p-4 rounded-xl border border-slate-600">
+                            <code className="text-yellow-300 font-bold text-base bg-slate-900 px-2 py-0.5 rounded">action="url"</code>
+                            <p className="text-slate-200 mt-2 leading-relaxed">Chỉ định địa chỉ (URL) của trang hoặc chương trình trên máy chủ sẽ nhận và xử lý dữ liệu khi người dùng nhấn gửi (submit).</p>
+                        </div>
+                        <div className="bg-slate-700/60 p-4 rounded-xl border border-slate-600">
+                            <code className="text-yellow-300 font-bold text-base bg-slate-900 px-2 py-0.5 rounded">method="GET | POST"</code>
+                            <p className="text-slate-200 mt-2 leading-relaxed">Phương thức gửi dữ liệu lên máy chủ:<br/>
+                                • <b>GET:</b> Dữ liệu nối vào thanh địa chỉ URL (dùng cho tìm kiếm, dữ liệu không bảo mật).<br/>
+                                • <b>POST:</b> Dữ liệu được gửi ngầm (bảo mật hơn, dùng cho mật khẩu, dữ liệu lớn).
+                            </p>
+                        </div>
+                        <div className="bg-slate-700/60 p-4 rounded-xl border border-slate-600">
+                            <code className="text-yellow-300 font-bold text-base bg-slate-900 px-2 py-0.5 rounded">name / id</code>
+                            <p className="text-slate-200 mt-2 leading-relaxed">Đặt tên hoặc mã định danh cho biểu mẫu để dễ dàng tham chiếu, kiểm tra dữ liệu bằng JavaScript hoặc định dạng bằng CSS.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -340,7 +361,7 @@
         // --- TAB 3: PHÂN TÍCH & SO SÁNH ---
         const TabSoSanh = () => {
             const [activeLabel, setActiveLabel] = React.useState(false);
-            const [showCode, setShowCode] = React.useState({ radio: false, checkbox: false, select: false });
+            const [showCode, setShowCode] = React.useState({ radio: false, checkbox: false });
 
             const toggleCode = (type) => {
                 setShowCode(prev => ({ ...prev, [type]: !prev[type] }));
@@ -393,9 +414,9 @@
 
                     {/* So sánh Lựa chọn */}
                     <div className="studygram-card p-6 border-l-4 border-purple-500">
-                        <h2 className="text-xl font-bold text-purple-800 mb-6">2. Trả lời câu hỏi: Điểm khác biệt giữa radio, checkbox và select?</h2>
+                        <h2 className="text-xl font-bold text-purple-800 mb-6">2. Trả lời câu hỏi: Điểm khác biệt giữa radio và checkbox?</h2>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Radio */}
                             <div 
                                 className="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer text-center flex flex-col items-center group"
@@ -441,33 +462,6 @@
                                     {showCode.checkbox ? '▲ Ẩn mã HTML' : '▼ Click xem mã HTML'}
                                 </div>
                             </div>
-
-                            {/* Select */}
-                            <div 
-                                className="bg-white border border-orange-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer text-center flex flex-col items-center group"
-                                onClick={() => toggleCode('select')}
-                            >
-                                <div className="bg-orange-100 text-orange-700 font-bold py-1.5 px-6 rounded-full inline-block mb-4 text-sm pointer-events-none">Select</div>
-                                <div className="w-full h-20 flex items-center justify-center bg-slate-50/80 rounded-xl mb-4" onClick={e => e.stopPropagation()}>
-                                    <select className="border border-slate-200 rounded-md p-1.5 text-slate-700 bg-white shadow-sm cursor-pointer outline-none focus:border-orange-300">
-                                        <option>Khoa học Tự nhiên</option>
-                                        <option>Khoa học Xã hội</option>
-                                    </select>
-                                </div>
-                                <p className="text-sm text-slate-600 leading-relaxed pointer-events-none">Chọn 1 lựa chọn từ <b>danh sách thả xuống</b> (tiết kiệm không gian).</p>
-
-                                {showCode.select && (
-                                    <div className="w-full mt-4 bg-slate-800 p-3 rounded-xl text-left text-xs font-mono text-green-400 overflow-x-auto shadow-inner cursor-text animate-fade-in" onClick={e => e.stopPropagation()}>
-                                        <span className="text-pink-400">&lt;select</span> <span className="text-blue-300">name</span>=<span className="text-yellow-300">"tohop"</span><span className="text-pink-400">&gt;</span><br/>
-                                        &nbsp;&nbsp;<span className="text-pink-400">&lt;option&gt;</span>Khoa học Tự nhiên<span className="text-pink-400">&lt;/option&gt;</span><br/>
-                                        &nbsp;&nbsp;<span className="text-pink-400">&lt;option&gt;</span>Khoa học Xã hội<span className="text-pink-400">&lt;/option&gt;</span><br/>
-                                        <span className="text-pink-400">&lt;/select&gt;</span>
-                                    </div>
-                                )}
-                                <div className="mt-4 text-[11px] font-semibold text-orange-500 bg-orange-50 px-3 py-1 rounded-full opacity-70 group-hover:opacity-100 transition-opacity">
-                                    {showCode.select ? '▲ Ẩn mã HTML' : '▼ Click xem mã HTML'}
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -492,8 +486,6 @@
 
             return (
                 <div className="space-y-6 animate-fade-in">
-                    <p className="text-slate-600 italic text-center">Dưới đây là mô phỏng 2 nhiệm vụ trong SGK. Bạn có thể tương tác trực tiếp với Form kết quả.</p>
-                    
                     {/* Nhiệm vụ 1 */}
                     <div className="studygram-card border-t-4 border-blue-500 overflow-hidden">
                         <div className="bg-blue-50 p-4 border-b border-blue-100">

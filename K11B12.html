@@ -117,7 +117,7 @@
                 Tin học 11
             </div>
             <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
-                <i class="fas fa-server text-pastel-blue mr-2 animate-float"></i> Hệ QTCSDL & Hệ CSDL
+                <i class="fas fa-server text-pastel-blue mr-2 animate-float"></i> Bài 12: Hệ QTCSDL & Hệ CSDL
             </h1>
         </header>
 
@@ -149,13 +149,29 @@
                 <div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-2">Hệ Quản trị Cơ sở dữ liệu (DBMS) là gì?</h3>
                     <p class="text-[15px] text-gray-600 font-medium leading-relaxed mb-4">
-                        Hệ QTCSDL (Database Management System) là <strong class="text-blue-600 bg-blue-100 px-1 rounded">bộ phần mềm chuyên dụng</strong> được xây dựng để hỗ trợ người dùng làm việc, quản lý và khai thác CSDL. Nó đóng vai trò như một <em>"Người thủ thư"</em> quản lý toàn bộ sách (dữ liệu) trong thư viện, giúp bạn tìm kiếm, thêm mới hoặc bảo vệ sách an toàn.
+                        Hệ QTCSDL (Database Management System) là <strong class="text-blue-600 bg-blue-100 px-1 rounded">bộ phần mềm chuyên dụng</strong> được xây dựng để hỗ trợ người dùng làm việc, quản lý và khai thác CSDL.
                     </p>
-                    <div class="flex flex-wrap gap-2 text-xs font-bold text-slate-500">
-                        <span class="bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm flex items-center"><i class="fas fa-cube text-orange-500 mr-1.5 text-sm"></i> MySQL</span>
-                        <span class="bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm flex items-center"><i class="fas fa-cube text-red-500 mr-1.5 text-sm"></i> Oracle</span>
-                        <span class="bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm flex items-center"><i class="fas fa-cube text-blue-500 mr-1.5 text-sm"></i> SQL Server</span>
-                        <span class="bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm flex items-center"><i class="fas fa-cube text-blue-400 mr-1.5 text-sm"></i> PostgreSQL</span>
+                    <div class="flex flex-wrap gap-4 font-bold text-slate-600 text-sm mt-2">
+                        <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center min-w-[110px] transition hover:shadow-md">
+                            <img src="images/mysql.png" class="w-[89px] h-[57px] mb-1.5 object-contain" alt="MySQL">
+                            <span>MySQL</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center min-w-[110px] transition hover:shadow-md">
+                            <img src="images/oracle.png" class="w-[89px] h-[57px] mb-1.5 object-contain" alt="Oracle">
+                            <span>Oracle</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center min-w-[110px] transition hover:shadow-md">
+                            <img src="images/sqlserver.png" class="w-[89px] h-[57px] mb-1.5 object-contain" alt="SQL Server">
+                            <span>SQL Server</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center min-w-[110px] transition hover:shadow-md">
+                            <img src="images/postgresql.png" class="w-[89px] h-[57px] mb-1.5 object-contain" alt="PostgreSQL">
+                            <span>PostgreSQL</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center min-w-[110px] transition hover:shadow-md">
+                            <img src="images/msaccess.png" class="w-[89px] h-[57px] mb-1.5 object-contain" alt="MS Access">
+                            <span>MS Access</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -368,7 +384,7 @@
                         </div>
                         <h4 class="font-bold text-gray-800 text-lg mb-1">Hệ Quản trị CSDL</h4>
                         <span class="inline-block bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">Thành phần Chủ (Server)</span>
-                        <p class="text-xs text-gray-600 font-medium">Bộ脑 trung tâm. Tiếp nhận yêu cầu, kiểm tra quyền, tối ưu hóa câu lệnh và thực thi việc lấy/ghi dữ liệu.</p>
+                        <p class="text-xs text-gray-600 font-medium">Bộ não trung tâm. Tiếp nhận yêu cầu, kiểm tra quyền, tối ưu hóa câu lệnh và thực thi việc lấy/ghi dữ liệu.</p>
                         
                         <div id="server-status" class="mt-4 text-[10px] font-bold text-gray-400 bg-gray-50 py-1 rounded border border-gray-100">
                             Trạng thái: Đang rảnh...
@@ -397,10 +413,6 @@
                         <p class="text-xs text-gray-600 font-medium">Tập hợp các dữ liệu có liên quan được tổ chức và lưu trữ thực tế trên các ổ đĩa của máy chủ.</p>
                     </div>
 
-                </div>
-                
-                <div class="mt-8 bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-600 text-center font-medium shadow-inner">
-                    <strong class="text-indigo-600">Mô hình Khách - Chủ (Client - Server):</strong> Phân chia công việc rõ ràng. Trạm khách chuyên xử lý giao diện, trạm chủ (máy chủ mạnh mẽ) chuyên xử lý dữ liệu nặng, giúp phục vụ được hàng ngàn người dùng cùng lúc.
                 </div>
             </div>
         </div>

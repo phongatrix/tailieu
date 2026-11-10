@@ -926,6 +926,127 @@
                 resultDiv.innerHTML = `Cố gắng lên! Bạn đạt ${score}/${total} điểm. Hãy đọc lại phần Khái niệm cốt lõi nhé.`;
             }
         }
+
+        // --- 6. Logic Mô phỏng Tương tác (Tab 3) ---
+        function drawArrow(startId, endId, color, markerId) {
+            const svg = document.getElementById('sim-svg-overlay');
+            const startEl = document.getElementById(startId);
+            const endEl = document.getElementById(endId);
+            if (!svg || !startEl || !endEl) return;
+
+            const svgRect = svg.getBoundingClientRect();
+            const startRect = startEl.getBoundingClientRect();
+            const endRect = endEl.getBoundingClientRect();
+
+            // Tọa độ tương đối so với SVG container
+            const startX = startRect.left - svgRect.left + (startRect.width / 2);
+            const startY = startRect.top - svgRect.top + (startRect.height / 2);
+            const endX = endRect.left - svgRect.left + (endRect.width / 2);
+            const endY = endRect.top - svgRect.top + (endRect.height / 2);
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', startX);
+            line.setAttribute('y1', startY);
+            line.setAttribute('x2', endX);
+            line.setAttribute('y2', endY);
+            line.setAttribute('stroke', color);
+            line.setAttribute('stroke-width', '3');
+            line.setAttribute('stroke-dasharray', '5,5');
+            line.setAttribute('marker-end', `url(#${markerId})`);
+            line.classList.add('sim-line'); 
+
+            svg.appendChild(line);
+        }
+
+        function clearSimulation() {
+            // Xóa highlight cũ khỏi các bảng
+            document.querySelectorAll('.sim-table tr, .sim-table td').forEach(el => {
+                el.classList.remove('bg-indigo-100', 'bg-pink-100', 'font-bold', 'text-indigo-700', 'text-pink-700', 'highlight-link');
+            });
+            
+            // Xóa SVG cũ
+            const svg = document.getElementById('sim-svg-overlay');
+            const lines = svg.querySelectorAll('.sim-line');
+            lines.forEach(line => line.remove());
+
+            // Xóa hộp kết quả
+            document.getElementById('sim-result').innerHTML = '';
+        }
+
+        function resetSimulation() {
+            clearSimulation();
+        }
+
+        function runSimulation1() {
+            clearSimulation();
+            
+            // Highlight bảng Bản nhạc
+            const bnRow = document.getElementById('bn-2');
+            const bnAid = document.getElementById('bn-aid-2');
+            bnRow.classList.add('bg-indigo-100');
+            bnAid.classList.add('highlight-link', 'font-bold');
+
+            document.getElementById('sim-result').innerHTML = 'Đang tìm kiếm "Trường ca sông Lô" trong Bảng c) Bản nhạc...';
+
+            setTimeout(() => {
+                // Highlight bảng Nhạc sĩ & Vẽ line
+                const nsRow = document.getElementById('ns-2');
+                const nsAid = document.getElementById('ns-aid-2');
+                const nsTen = document.getElementById('ns-ten-2');
+                
+                nsRow.classList.add('bg-indigo-100');
+                nsAid.classList.add('highlight-link', 'font-bold');
+                nsTen.classList.add('text-indigo-700', 'font-bold');
+                
+                drawArrow('bn-aid-2', 'ns-aid-2', '#6366f1', 'arrowhead-sim1'); 
+                
+                document.getElementById('sim-result').innerHTML = 'Trường ca sông Lô (Aid = 2) <i class="fa-solid fa-arrow-right mx-2 text-indigo-500"></i> Bảng Nhạc sĩ (Aid = 2) <i class="fa-solid fa-arrow-right mx-2 text-indigo-500"></i> Nhạc sĩ <b>Văn Cao</b>.';
+            }, 1000);
+        }
+
+        function runSimulation2() {
+            clearSimulation();
+
+            // Highlight bảng Bản thu âm
+            const btaRow = document.getElementById('bta-0005-tn');
+            const btaSid = document.getElementById('bta-sid-tn');
+            btaRow.classList.add('bg-pink-100');
+            btaSid.classList.add('highlight-link', 'font-bold');
+
+            document.getElementById('sim-result').innerHTML = 'Đang tìm Bản thu âm "0005 TN" trong Bảng d) Bản thu âm...';
+
+            setTimeout(() => {
+                // Highlight bảng Ca sĩ & Vẽ line
+                const csRow = document.getElementById('cs-tn');
+                const csSid = document.getElementById('cs-sid-tn');
+                const csTen = document.getElementById('cs-ten-tn');
+                
+                csRow.classList.add('bg-pink-100');
+                csSid.classList.add('highlight-link', 'font-bold');
+                csTen.classList.add('text-pink-700', 'font-bold');
+                
+                drawArrow('bta-sid-tn', 'cs-sid-tn', '#ec4899', 'arrowhead-sim2'); 
+                
+                document.getElementById('sim-result').innerHTML = 'Bản thu âm 0005 TN (Sid = TN) <i class="fa-solid fa-arrow-right mx-2 text-pink-500"></i> Bảng Ca sĩ (Sid = TN) <i class="fa-solid fa-arrow-right mx-2 text-pink-500"></i> Ca sĩ <b>Tân Nhân</b>.';
+            }, 1000);
+        }
+        
+        // Cập nhật lại đường vẽ SVG khi người dùng thay đổi kích thước trình duyệt
+        window.addEventListener('resize', () => {
+            if (document.getElementById('tab3').classList.contains('active')) {
+                if (document.getElementById('bn-2').classList.contains('bg-indigo-100')) {
+                    const svg = document.getElementById('sim-svg-overlay');
+                    const lines = svg.querySelectorAll('.sim-line');
+                    lines.forEach(line => line.remove());
+                    drawArrow('bn-aid-2', 'ns-aid-2', '#6366f1', 'arrowhead-sim1');
+                } else if (document.getElementById('bta-0005-tn').classList.contains('bg-pink-100')) {
+                    const svg = document.getElementById('sim-svg-overlay');
+                    const lines = svg.querySelectorAll('.sim-line');
+                    lines.forEach(line => line.remove());
+                    drawArrow('bta-sid-tn', 'cs-sid-tn', '#ec4899', 'arrowhead-sim2');
+                }
+            }
+        });
     </script>
 </body>
 </html>

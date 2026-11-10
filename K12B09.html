@@ -426,11 +426,11 @@
                         <div class="flex gap-3">
                             <div class="w-1/2">
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Số Hàng (Rows)</label>
-                                <input type="number" id="tblRows" value="3" min="1" max="5" class="w-full px-3 py-1.5 rounded-lg border outline-none focus:border-blue-500" onchange="buildTable()">
+                                <input type="number" id="tblRows" value="3" min="1" max="5" class="w-full px-3 py-1.5 rounded-lg border outline-none focus:border-blue-500" oninput="buildTable()" onchange="buildTable()">
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Số Cột (Cols)</label>
-                                <input type="number" id="tblCols" value="3" min="1" max="5" class="w-full px-3 py-1.5 rounded-lg border outline-none focus:border-blue-500" onchange="buildTable()">
+                                <input type="number" id="tblCols" value="3" min="1" max="5" class="w-full px-3 py-1.5 rounded-lg border outline-none focus:border-blue-500" oninput="buildTable()" onchange="buildTable()">
                             </div>
                         </div>
                         <div>
@@ -450,16 +450,16 @@
                         <div class="flex gap-3">
                             <div class="w-1/2">
                                 <label class="block text-xs font-bold text-slate-700 mb-1">border</label>
-                                <input type="number" id="tblBorder" value="1" min="0" max="10" class="w-full px-3 py-1.5 rounded-lg border outline-none" onchange="buildTable()">
+                                <input type="number" id="tblBorder" value="1" min="0" max="10" class="w-full px-3 py-1.5 rounded-lg border outline-none" oninput="buildTable()" onchange="buildTable()">
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-xs font-bold text-slate-700 mb-1">cellspacing</label>
-                                <input type="number" id="tblCellspacing" value="2" min="0" max="20" class="w-full px-3 py-1.5 rounded-lg border outline-none" onchange="buildTable()">
+                                <input type="number" id="tblCellspacing" value="2" min="0" max="20" class="w-full px-3 py-1.5 rounded-lg border outline-none" oninput="buildTable()" onchange="buildTable()">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">cellpadding</label>
-                            <input type="number" id="tblCellpadding" value="8" min="0" max="20" class="w-full px-3 py-1.5 rounded-lg border outline-none" onchange="buildTable()">
+                            <input type="number" id="tblCellpadding" value="8" min="0" max="20" class="w-full px-3 py-1.5 rounded-lg border outline-none" oninput="buildTable()" onchange="buildTable()">
                         </div>
                     </div>
 
@@ -468,15 +468,15 @@
                         <h4 class="font-bold text-blue-800 text-[15px] border-b border-blue-200 pb-1">Màu Sắc (HTML Attributes)</h4>
                         <div class="flex items-center justify-between">
                             <label class="text-[13px] font-bold text-slate-700">bordercolor</label>
-                            <input type="color" id="tblBorderColor" value="#ff0000" class="cursor-pointer w-10 h-8 rounded border" onchange="buildTable()">
+                            <input type="color" id="tblBorderColor" value="#ff0000" class="cursor-pointer w-10 h-8 rounded border" oninput="buildTable()" onchange="buildTable()">
                         </div>
                         <div class="flex items-center justify-between">
                             <label class="text-[13px] font-bold text-slate-700">bgcolor (Nền Bảng)</label>
-                            <input type="color" id="tblBgTable" value="#ffffff" class="cursor-pointer w-10 h-8 rounded border" onchange="buildTable()">
+                            <input type="color" id="tblBgTable" value="#ffffff" class="cursor-pointer w-10 h-8 rounded border" oninput="buildTable()" onchange="buildTable()">
                         </div>
                         <div class="flex items-center justify-between">
                             <label class="text-[13px] font-bold text-slate-700">bgcolor (Nền Header)</label>
-                            <input type="color" id="tblBgHeader" value="#cccccc" class="cursor-pointer w-10 h-8 rounded border" onchange="buildTable()">
+                            <input type="color" id="tblBgHeader" value="#cccccc" class="cursor-pointer w-10 h-8 rounded border" oninput="buildTable()" onchange="buildTable()">
                         </div>
                     </div>
                 </div>
@@ -493,7 +493,91 @@
                             <span class="w-2 h-2 rounded-full bg-green-500 inline-block animate-pulse"></span>
                             KẾT QUẢ HIỂN THỊ
                         </h4>
-                        <div id="tableVisualOutput" class="w-full overflow-auto flex justify-center text-slate-700"></div>
+                        <div id="tableVisualOutput" class="w-full overflow-auto text-slate-700"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trình giả lập Gộp Ô: Colspan & Rowspan -->
+            <div class="card mb-8 overflow-hidden">
+                <div class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white p-4 font-bold flex items-center justify-between font-title">
+                    <span>3. Mô Phỏng Gộp Ô Bảng (Colspan & Rowspan)</span>
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+                </div>
+
+                <!-- Bảng điều khiển Colspan & Rowspan -->
+                <div class="p-5 bg-teal-50 border-b border-teal-100 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Chọn kịch bản mẫu hoặc tự chỉnh -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-teal-800 text-[15px] border-b border-teal-200 pb-1">Chế Độ Mô Phỏng</h4>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Chọn mẫu hoặc tùy chỉnh (Bảng 3x3)</label>
+                            <select id="spanPreset" class="w-full px-3 py-1.5 rounded-lg border border-teal-200 outline-none focus:border-teal-500 bg-white cursor-pointer" onchange="applySpanPreset()">
+                                <option value="custom">Tùy chỉnh trên lưới 3x3</option>
+                                <option value="sgk" selected>Mẫu SGK Hình 9.6 (Điểm thi)</option>
+                                <option value="colspan_only">Minh họa gộp ngang (Colspan)</option>
+                                <option value="rowspan_only">Minh họa gộp dọc (Rowspan)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2 pt-1">
+                            <input type="checkbox" id="showOmittedCode" checked onchange="updateSpanSimulation()" class="w-4 h-4 text-teal-600 rounded cursor-pointer">
+                            <label for="showOmittedCode" class="text-xs font-semibold text-slate-700 cursor-pointer">Hiển thị chú thích các thẻ bị lược bỏ</label>
+                        </div>
+                    </div>
+
+                    <!-- Điều chỉnh thuộc tính ô chọn -->
+                    <div id="customSpanControls" class="space-y-3 opacity-50 pointer-events-none transition-opacity">
+                        <h4 class="font-bold text-teal-800 text-[15px] border-b border-teal-200 pb-1">Tùy Chỉnh Ô [Hàng 1, Cột 1]</h4>
+                        <div class="flex gap-3">
+                            <div class="w-1/2">
+                                <label class="block text-xs font-bold text-slate-700 mb-1">colspan (Gộp cột)</label>
+                                <select id="simColspan" class="w-full px-3 py-1.5 rounded-lg border outline-none focus:border-teal-500 bg-white" onchange="updateSpanSimulation()">
+                                    <option value="1">1 (Mặc định)</option>
+                                    <option value="2">2 cột</option>
+                                    <option value="3">3 cột</option>
+                                </select>
+                            </div>
+                            <div class="w-1/2">
+                                <label class="block text-xs font-bold text-slate-700 mb-1">rowspan (Gộp hàng)</label>
+                                <select id="simRowspan" class="w-full px-3 py-1.5 rounded-lg border outline-none focus:border-teal-500 bg-white" onchange="updateSpanSimulation()">
+                                    <option value="1">1 (Mặc định)</option>
+                                    <option value="2">2 hàng</option>
+                                    <option value="3">3 hàng</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Giải thích nguyên tắc -->
+                    <div class="bg-white p-3.5 rounded-xl border border-teal-200 flex flex-col justify-center">
+                        <div class="text-xs font-bold text-teal-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Quy tắc vàng khi gộp ô:
+                        </div>
+                        <p id="spanExplanation" class="text-[13.5px] text-slate-600 leading-snug font-normal">
+                            Khi tăng <strong>colspan</strong> hoặc <strong>rowspan</strong>, tổng số ô thực tế trên hàng đó hoặc các hàng kế tiếp <strong>phải giảm đi tương ứng</strong> để bảng không bị dư ô!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Khu vực hiển thị Code & Kết quả -->
+                <div class="grid grid-cols-1 xl:grid-cols-2">
+                    <!-- HTML Code Display -->
+                    <div class="p-6 bg-slate-900 text-slate-300 font-mono text-sm leading-relaxed border-r border-slate-700 overflow-x-auto min-h-[300px] flex flex-col justify-between">
+                        <div id="spanCodeOutput" class="whitespace-pre"></div>
+                        <div class="mt-4 pt-3 border-t border-slate-700 text-xs font-sans flex flex-wrap gap-4 text-slate-400">
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-500/30 border border-amber-400 inline-block"></span> Thuộc tính gộp ô</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500/30 border border-rose-400 inline-block"></span> Thẻ phải lược bỏ</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Preview -->
+                    <div class="p-6 bg-white flex flex-col items-center justify-center min-h-[300px]">
+                        <h4 class="text-sm font-bold text-slate-400 mb-4 uppercase tracking-wider flex items-center gap-2 font-title w-full">
+                            <span class="w-2 h-2 rounded-full bg-teal-500 inline-block animate-pulse"></span>
+                            KẾT QUẢ HIỂN THỊ TRỰC QUAN
+                        </h4>
+                        <div id="spanVisualOutput" class="w-full overflow-auto flex flex-col items-center justify-center text-slate-700"></div>
                     </div>
                 </div>
             </div>
@@ -662,7 +746,7 @@
             const attrString = tableAttrs.length > 0 ? " " + tableAttrs.join(" ") : "";
 
             let code = `<span class="text-blue-400">&lt;table</span><span class="text-green-400">${attrString}</span><span class="text-blue-400">&gt;</span>\n`;
-            let html = `<table${attrString} style="width: 100%; max-width: 500px;">\n`; 
+            let html = `<table${attrString} style="width: 85%; max-width: 460px;">\n`; 
 
             let trHeaderAttrs = bgHeader !== "#ffffff" && bgHeader !== "" ? ` bgcolor="${bgHeader}"` : "";
             code += `  <span class="text-blue-400">&lt;tr</span><span class="text-green-400">${trHeaderAttrs}</span><span class="text-blue-400">&gt;</span>\n`;
@@ -688,20 +772,174 @@
             code += `<span class="text-blue-400">&lt;/table&gt;</span>`;
             html += `</table>`;
 
-            let previewHtml = html;
-            let borderThickness = parseInt(border) || 0;
+            let borderThickness = parseInt(border);
+            if (isNaN(borderThickness)) borderThickness = 1;
+            let spacingVal = parseInt(cellspacing);
+            if (isNaN(spacingVal)) spacingVal = 2;
+            let paddingVal = parseInt(cellpadding);
+            if (isNaN(paddingVal)) paddingVal = 1;
+
+            let activeBorderColor = (borderColor !== "" && borderColor !== "#000000") ? borderColor : "#000000";
             
-            if (borderThickness > 0) {
-                let activeBorderColor = (borderColor !== "" && borderColor !== "#000000") ? borderColor : "#000000";
-                previewHtml = `<style>
-                    #tableVisualOutput table, #tableVisualOutput th, #tableVisualOutput td { 
-                        border: ${borderThickness}px solid ${activeBorderColor} !important; 
-                    }
-                </style>` + html;
-            }
+            let marginRule = "";
+            if (align === "center") marginRule = "margin-left: auto; margin-right: auto;";
+            else if (align === "left") marginRule = "margin-right: auto; margin-left: 0;";
+            else if (align === "right") marginRule = "margin-left: auto; margin-right: 0;";
+
+            let previewHtml = `<style>
+                #tableVisualOutput table { 
+                    border-collapse: separate !important; 
+                    border-spacing: ${spacingVal}px !important;
+                    border: ${borderThickness}px solid ${activeBorderColor} !important;
+                    ${marginRule}
+                }
+                #tableVisualOutput th, #tableVisualOutput td { 
+                    padding: ${paddingVal}px !important;
+                    border: ${borderThickness > 0 ? 1 : 0}px solid ${activeBorderColor} !important; 
+                }
+            </style>` + html;
 
             document.getElementById('tableCodeOutput').innerHTML = `<pre>${code}</pre>`;
             document.getElementById('tableVisualOutput').innerHTML = previewHtml;
+        }
+
+        function applySpanPreset() {
+            const preset = document.getElementById('spanPreset').value;
+            const customControls = document.getElementById('customSpanControls');
+            const colSelect = document.getElementById('simColspan');
+            const rowSelect = document.getElementById('simRowspan');
+
+            if (preset === 'custom') {
+                customControls.classList.remove('opacity-50', 'pointer-events-none');
+            } else if (preset === 'colspan_only') {
+                customControls.classList.remove('opacity-50', 'pointer-events-none');
+                colSelect.value = "2";
+                rowSelect.value = "1";
+                document.getElementById('spanPreset').value = 'custom';
+            } else if (preset === 'rowspan_only') {
+                customControls.classList.remove('opacity-50', 'pointer-events-none');
+                colSelect.value = "1";
+                rowSelect.value = "2";
+                document.getElementById('spanPreset').value = 'custom';
+            } else {
+                customControls.classList.add('opacity-50', 'pointer-events-none');
+            }
+            updateSpanSimulation();
+        }
+
+        function updateSpanSimulation() {
+            const preset = document.getElementById('spanPreset').value;
+            const showOmitted = document.getElementById('showOmittedCode').checked;
+            const codeContainer = document.getElementById('spanCodeOutput');
+            const visualContainer = document.getElementById('spanVisualOutput');
+            const explanation = document.getElementById('spanExplanation');
+
+            if (preset === 'sgk') {
+                explanation.innerHTML = `<strong>Mẫu SGK (Hình 9.6):</strong> Ô <em>"Họ và tên"</em> dùng <code>rowspan="2"</code> (gộp 2 hàng dọc) và ô <em>"Điểm thi"</em> dùng <code>colspan="3"</code> (gộp 3 cột ngang). Ở hàng thứ 2, ô đầu tiên bị lược bỏ và chỉ cần khai báo 3 môn học.`;
+
+                let code = `<span class="text-blue-400">&lt;table</span> <span class="text-green-400">border="1"</span><span class="text-blue-400">&gt;</span>\n`;
+                code += `  <span class="text-blue-400">&lt;tr&gt;</span>\n`;
+                code += `    <span class="text-blue-400">&lt;th</span> <span class="bg-amber-500/30 text-amber-300 px-1 rounded border border-amber-400/50">rowspan="2"</span><span class="text-blue-400">&gt;</span>Họ và tên<span class="text-blue-400">&lt;/th&gt;</span>\n`;
+                code += `    <span class="text-blue-400">&lt;th</span> <span class="bg-amber-500/30 text-amber-300 px-1 rounded border border-amber-400/50">colspan="3"</span><span class="text-blue-400">&gt;</span>Điểm thi<span class="text-blue-400">&lt;/th&gt;</span>\n`;
+                if (showOmitted) {
+                    code += `    <span class="bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-400/40 text-xs">&lt;!-- Bỏ qua 2 thẻ &lt;th&gt; do colspan="3" --&gt;</span>\n`;
+                }
+                code += `  <span class="text-blue-400">&lt;/tr&gt;</span>\n`;
+                code += `  <span class="text-blue-400">&lt;tr&gt;</span>\n`;
+                if (showOmitted) {
+                    code += `    <span class="bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-400/40 text-xs">&lt;!-- Bỏ qua cột 1 do rowspan="2" ở trên --&gt;</span>\n`;
+                }
+                code += `    <span class="text-blue-400">&lt;td&gt;</span>Toán<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                code += `    <span class="text-blue-400">&lt;td&gt;</span>Vật lí<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                code += `    <span class="text-blue-400">&lt;td&gt;</span>Hoá học<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                code += `  <span class="text-blue-400">&lt;/tr&gt;</span>\n`;
+                code += `  <span class="text-blue-400">&lt;tr&gt;</span>\n`;
+                code += `    <span class="text-blue-400">&lt;td&gt;</span>Nguyễn Văn A<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                code += `    <span class="text-blue-400">&lt;td&gt;</span>9.0<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                code += `    <span class="text-blue-400">&lt;td&gt;</span>8.5<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                code += `    <span class="text-blue-400">&lt;td&gt;</span>9.5<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                code += `  <span class="text-blue-400">&lt;/tr&gt;</span>\n`;
+                code += `<span class="text-blue-400">&lt;/table&gt;</span>`;
+
+                codeContainer.innerHTML = code;
+
+                visualContainer.innerHTML = `
+                    <table class="w-full max-w-[460px] border-collapse border-2 border-slate-400 text-center shadow-sm">
+                        <tr>
+                            <th rowspan="2" class="border-2 border-teal-500 bg-teal-50 text-teal-900 p-3 font-bold relative">
+                                Họ và tên
+                                <span class="block text-[11px] font-mono text-teal-600 font-normal mt-0.5">(rowspan="2")</span>
+                            </th>
+                            <th colspan="3" class="border-2 border-amber-500 bg-amber-50 text-amber-900 p-2.5 font-bold">
+                                Điểm thi <span class="text-[11px] font-mono text-amber-700 font-normal">(colspan="3")</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="border border-slate-300 bg-slate-100 p-2 font-semibold">Toán</td>
+                            <td class="border border-slate-300 bg-slate-100 p-2 font-semibold">Vật lí</td>
+                            <td class="border border-slate-300 bg-slate-100 p-2 font-semibold">Hoá học</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-slate-300 p-2.5 text-left pl-4">Nguyễn Văn A</td>
+                            <td class="border border-slate-300 p-2.5">9.0</td>
+                            <td class="border border-slate-300 p-2.5">8.5</td>
+                            <td class="border border-slate-300 p-2.5">9.5</td>
+                        </tr>
+                    </table>
+                `;
+                return;
+            }
+
+            // Chế độ tùy chỉnh trên lưới 3x3
+            const cs = parseInt(document.getElementById('simColspan').value) || 1;
+            const rs = parseInt(document.getElementById('simRowspan').value) || 1;
+
+            let omittedCount = (cs * rs) - 1;
+            if (omittedCount === 0) {
+                explanation.innerHTML = `<strong>Trạng thái bình thường (1x1):</strong> Không có ô nào được gộp. Bảng 3x3 hiển thị đầy đủ 3 hàng, mỗi hàng gồm 3 thẻ <code>&lt;td&gt;</code>.`;
+            } else {
+                explanation.innerHTML = `Ô <strong>[1,1]</strong> đang chiếm <strong>${cs} cột</strong> &times; <strong>${rs} hàng</strong> (tương đương ${cs * rs} ô đơn). Do đó bạn phải <strong>lược bỏ ${omittedCount} thẻ <code>&lt;td&gt;</code></strong> bị đè lên để bảng không bị vỡ khung!`;
+            }
+
+            let attrParts = [];
+            if (cs > 1) attrParts.push(`colspan="${cs}"`);
+            if (rs > 1) attrParts.push(`rowspan="${rs}"`);
+            let attrCode = attrParts.length > 0 ? ` <span class="bg-amber-500/30 text-amber-300 px-1 rounded border border-amber-400/50">${attrParts.join(" ")}</span>` : "";
+
+            let code = `<span class="text-blue-400">&lt;table</span> <span class="text-green-400">border="1"</span><span class="text-blue-400">&gt;</span>\n`;
+            let html = `<table class="w-full max-w-[440px] border-collapse border-2 border-slate-400 text-center shadow-sm">\n`;
+
+            for (let r = 1; r <= 3; r++) {
+                code += `  <span class="text-blue-400">&lt;tr&gt;</span>\n`;
+                html += `  <tr>\n`;
+
+                for (let c = 1; c <= 3; c++) {
+                    if (r === 1 && c === 1) {
+                        let badge = (cs > 1 || rs > 1) ? `<span class="block text-[11px] font-mono text-teal-700 font-normal mt-0.5">${attrParts.join(' ')}</span>` : "";
+                        let cellClass = (cs > 1 || rs > 1) ? "border-2 border-teal-500 bg-teal-50 text-teal-900 font-bold p-3" : "border border-slate-300 p-3";
+                        code += `    <span class="text-blue-400">&lt;td</span>${attrCode}<span class="text-blue-400">&gt;</span>Ô [1,1]<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                        html += `    <td colspan="${cs}" rowspan="${rs}" class="${cellClass}">Ô [1,1]${badge}</td>\n`;
+                    } else if (r <= rs && c <= cs) {
+                        // Ô này đã bị gộp vào Ô [1,1]
+                        if (showOmitted) {
+                            let reason = (r === 1) ? `colspan="${cs}"` : (c === 1 ? `rowspan="${rs}"` : `gộp ô [1,1]`);
+                            code += `    <span class="bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-400/40 text-xs">&lt;!-- Lược bỏ Ô [${r},${c}] do ${reason} --&gt;</span>\n`;
+                        }
+                    } else {
+                        code += `    <span class="text-blue-400">&lt;td&gt;</span>Ô [${r},${c}]<span class="text-blue-400">&lt;/td&gt;</span>\n`;
+                        html += `    <td class="border border-slate-300 p-3 bg-white">Ô [${r},${c}]</td>\n`;
+                    }
+                }
+
+                code += `  <span class="text-blue-400">&lt;/tr&gt;</span>\n`;
+                html += `  </tr>\n`;
+            }
+
+            code += `<span class="text-blue-400">&lt;/table&gt;</span>`;
+            html += `</table>`;
+
+            codeContainer.innerHTML = code;
+            visualContainer.innerHTML = html;
         }
 
         const questions = [
@@ -815,6 +1053,7 @@
         window.onload = function() {
             updateListSimulation();
             buildTable();
+            updateSpanSimulation();
         };
     </script>
 </body>

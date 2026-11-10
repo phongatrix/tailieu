@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K12B15 - Bài 15: Tạo Màu & Bộ Chọn CSS</title>
+    <title>Bài 15: Tạo màu cho chữ và nền</title>
     
     <!-- Google Fonts: Quicksand -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -476,7 +476,7 @@
                                     <span class="block text-sm text-slate-500 mb-1">Màu chữ (color)</span>
                                     <code class="text-blue-600 font-bold text-base">color: blue;</code>
                                 </div>
-                                <i class="fa-solid fa-toggle-off text-slate-300 text-2xl group-hover:text-blue-400 transition-colors" id="icon-inh-color"></i>
+                                <i class="fa-solid fa-toggle-off text-slate-300 text-2xl group-hover:text-blue-400 transition-colors" id="icon-inh-border"></i>
                             </button>
 
                             <button onclick="toggleInherit('bg')" id="btn-inh-bg" class="pop-click w-full text-left py-2 px-3 rounded-xl border-2 border-slate-200 hover:border-green-400 transition-all flex justify-between items-center group">
@@ -548,34 +548,33 @@
         <section id="bochon" class="tab-content max-w-5xl mx-auto">
             <div class="stagger-1">
                 <h2 class="title-gradient">Bộ Chọn Tổ Hợp Các Phần Tử</h2>
-                <p class="text-slate-600 mb-6 text-lg">Click vào các nút bên dưới để xem sự khác biệt khi CSS chạy dò tìm trên <b>cây cấu trúc (DOM)</b>.</p>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 stagger-2">
                 <!-- Controls -->
                 <div class="lg:col-span-5 space-y-4">
                     <button onclick="applySelector('descendant')" id="btn-descendant" class="selector-btn pop-click w-full text-left p-4 bg-white rounded-xl shadow-sm border-2 border-slate-100 hover:border-blue-400 hover:shadow-md transition-all group">
-                        <div class="font-mono text-xl font-bold text-blue-600 mb-1 group-hover:scale-105 transform origin-left transition-transform">E F <span class="text-sm text-slate-500 font-sans font-normal">(Quan hệ con cháu)</span></div>
-                        <p class="text-xs text-slate-600 mt-2">Áp dụng cho F nếu F là con/cháu (bất kỳ cấp nào) nằm trong E.</p>
-                        <code class="text-xs mt-3 block bg-blue-50 text-blue-800 p-2 rounded">div p { color: blue; }</code>
+                        <div class="font-mono text-xl font-bold text-blue-600 mb-1 group-hover:scale-105 transform origin-left transition-transform">E F <span class="text-base text-slate-500 font-sans font-normal">(Quan hệ con cháu)</span></div>
+                        <p class="text-lg text-slate-600 mt-2 leading-relaxed">Áp dụng cho F nếu F là con/cháu (bất kỳ cấp nào) nằm trong E.</p>
+                        <code class="text-sm mt-3 block bg-blue-50 text-blue-800 p-2 rounded">div p { color: blue; }</code>
                     </button>
                     
                     <button onclick="applySelector('child')" id="btn-child" class="selector-btn pop-click w-full text-left p-4 bg-white rounded-xl shadow-sm border-2 border-slate-100 hover:border-red-400 hover:shadow-md transition-all group">
-                        <div class="font-mono text-xl font-bold text-red-600 mb-1 group-hover:scale-105 transform origin-left transition-transform">E > F <span class="text-sm text-slate-500 font-sans font-normal">(Cha con trực tiếp)</span></div>
-                        <p class="text-xs text-slate-600 mt-2">Chỉ áp dụng cho F nếu F là con trực tiếp (cấp 1) của E.</p>
-                        <code class="text-xs mt-3 block bg-red-50 text-red-800 p-2 rounded">p > em { color: red; }</code>
+                        <div class="font-mono text-xl font-bold text-red-600 mb-1 group-hover:scale-105 transform origin-left transition-transform">E > F <span class="text-base text-slate-500 font-sans font-normal">(Cha con trực tiếp)</span></div>
+                        <p class="text-lg text-slate-600 mt-2 leading-relaxed">Chỉ áp dụng cho F nếu F là con trực tiếp (cấp 1) của E.</p>
+                        <code class="text-sm mt-3 block bg-red-50 text-red-800 p-2 rounded">p > em { color: red; }</code>
                     </button>
 
                     <button onclick="applySelector('adjacent')" id="btn-adjacent" class="selector-btn pop-click w-full text-left p-4 bg-white rounded-xl shadow-sm border-2 border-slate-100 hover:border-green-400 hover:shadow-md transition-all group">
-                        <div class="font-mono text-xl font-bold text-green-600 mb-1 group-hover:scale-105 transform origin-left transition-transform">E + F <span class="text-sm text-slate-500 font-sans font-normal">(Anh em liền kề)</span></div>
-                        <p class="text-xs text-slate-600 mt-2">Áp dụng cho F đứng liền kề ngay sau E (cùng cha).</p>
-                        <code class="text-xs mt-3 block bg-green-50 text-green-800 p-2 rounded">em + strong { color: green; }</code>
+                        <div class="font-mono text-xl font-bold text-green-600 mb-1 group-hover:scale-105 transform origin-left transition-transform">E + F <span class="text-base text-slate-500 font-sans font-normal">(Anh em liền kề)</span></div>
+                        <p class="text-lg text-slate-600 mt-2 leading-relaxed">Áp dụng cho F đứng liền kề ngay sau E (cùng cha).</p>
+                        <code class="text-sm mt-3 block bg-green-50 text-green-800 p-2 rounded">em + strong { color: green; }</code>
                     </button>
 
                     <button onclick="applySelector('general')" id="btn-general" class="selector-btn pop-click w-full text-left p-4 bg-white rounded-xl shadow-sm border-2 border-slate-100 hover:border-purple-400 hover:shadow-md transition-all group">
-                        <div class="font-mono text-xl font-bold text-purple-600 mb-1 group-hover:scale-105 transform origin-left transition-transform">E ~ F <span class="text-sm text-slate-500 font-sans font-normal">(Anh em chung)</span></div>
-                        <p class="text-xs text-slate-600 mt-2">Áp dụng cho mọi F nằm phía sau E (không cần liền kề, cùng cha).</p>
-                        <code class="text-xs mt-3 block bg-purple-50 text-purple-800 p-2 rounded">em ~ strong { color: purple; }</code>
+                        <div class="font-mono text-xl font-bold text-purple-600 mb-1 group-hover:scale-105 transform origin-left transition-transform">E ~ F <span class="text-base text-slate-500 font-sans font-normal">(Anh em chung)</span></div>
+                        <p class="text-lg text-slate-600 mt-2 leading-relaxed">Áp dụng cho mọi F nằm phía sau E (không cần liền kề, cùng cha).</p>
+                        <code class="text-sm mt-3 block bg-purple-50 text-purple-800 p-2 rounded">em ~ strong { color: purple; }</code>
                     </button>
                 </div>
 
@@ -684,6 +683,42 @@
   <span class="hl-tag">&lt;/div&gt;</span></span>
 <span id="code-p2" class="transition-colors duration-300 rounded border border-transparent block">  <span class="hl-tag">&lt;p&gt;</span>Đoạn văn ngoài div<span class="hl-tag">&lt;/p&gt;</span></span>
 <span class="hl-tag">&lt;/body&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MỚI BỔ SUNG: Kết Quả Hiển Thị Trên Trình Duyệt Thực Tế (Browser Render Preview) -->
+            <div class="mt-8 hover-card stagger-4 bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+                <!-- Browser Header Bar -->
+                <div class="bg-slate-100 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-green-400 inline-block"></span>
+                        <span class="ml-3 text-xs font-semibold text-slate-500 flex items-center gap-1.5"><i class="fa-solid fa-globe text-slate-400"></i> Kết Quả Hiển Thị Trên Trình Duyệt Web (Render Output)</span>
+                    </div>
+                    <div id="applied-selector-badge" class="text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600 font-mono font-bold transition-all">
+                        Chưa chọn bộ chọn
+                    </div>
+                </div>
+
+                <!-- Web Content Simulation -->
+                <div class="p-6 md:p-8 bg-white min-h-[190px]">
+                    <div class="border border-slate-200 rounded-xl p-6 bg-slate-50/50 shadow-inner">
+                        <!-- div simulation -->
+                        <div id="render-div" class="transition-all duration-300">
+                            <h1 class="text-2xl font-bold text-slate-800 mb-3">Lịch sử CSS</h1>
+                            <p id="render-p1" class="text-lg leading-relaxed text-slate-700 transition-colors duration-300 mb-4 p-2 rounded">
+                                Ý tưởng của CSS do kĩ sư <span><em id="render-em1" class="font-normal italic transition-all duration-300 px-1 rounded">Håkon Wium Lie</em>, <strong id="render-strong1" class="font-bold transition-all duration-300 px-1 rounded">Tim Berners-Lee</strong></span> tại viện hạt nhân <em id="render-em2" class="font-normal italic transition-all duration-300 px-1 rounded">CERN</em>. <strong id="render-strong2" class="font-bold transition-all duration-300 px-1 rounded">1994</strong>
+                            </p>
+                        </div>
+                        <p id="render-p2" class="text-lg text-slate-700 transition-colors duration-300 pt-3 border-t border-slate-200 p-2 rounded">
+                            Đoạn văn ngoài div
+                        </p>
+                    </div>
+                    <div class="mt-4 flex items-center gap-2 text-xs text-slate-500 italic">
+                        <i class="fa-solid fa-circle-info text-blue-500"></i>
+                        <span>Khi bạn bấm vào từng bộ chọn ở trên, phần tử HTML thỏa mãn điều kiện sẽ được áp dụng CSS và hiển thị màu thực tế ngay tại đây.</span>
                     </div>
                 </div>
             </div>
@@ -875,10 +910,48 @@ ${cssRules}  }
             document.querySelectorAll('.selector-btn').forEach(el => {
                 el.classList.remove('ring-4', 'ring-opacity-50');
             });
+
+            // Reset kết quả hiển thị trên trình duyệt (Browser Render)
+            const p1 = document.getElementById('render-p1');
+            const p2 = document.getElementById('render-p2');
+            const em1 = document.getElementById('render-em1');
+            const strong1 = document.getElementById('render-strong1');
+            const em2 = document.getElementById('render-em2');
+            const strong2 = document.getElementById('render-strong2');
+            const badge = document.getElementById('applied-selector-badge');
+
+            if (p1) {
+                p1.style.color = '';
+                p1.classList.remove('bg-blue-50', 'ring-2', 'ring-blue-300');
+            }
+            if (p2) {
+                p2.style.color = '';
+            }
+            if (em1) {
+                em1.style.color = '';
+                em1.classList.remove('bg-red-100', 'bg-green-100', 'bg-purple-100', 'ring-2', 'ring-red-400', 'ring-green-400', 'ring-purple-400');
+            }
+            if (strong1) {
+                strong1.style.color = '';
+                strong1.classList.remove('bg-green-100', 'bg-purple-100', 'ring-2', 'ring-green-400', 'ring-purple-400');
+            }
+            if (em2) {
+                em2.style.color = '';
+                em2.classList.remove('bg-red-100', 'ring-2', 'ring-red-400');
+            }
+            if (strong2) {
+                strong2.style.color = '';
+                strong2.classList.remove('bg-purple-100', 'ring-2', 'ring-purple-400');
+            }
+            if (badge) {
+                badge.className = 'text-xs px-3 py-1 rounded-full bg-slate-200 text-slate-600 font-mono font-bold transition-all';
+                badge.innerText = 'Chưa chọn bộ chọn';
+            }
         }
 
         function applySelector(type) {
             resetNodes();
+            const badge = document.getElementById('applied-selector-badge');
             
             if(type === 'descendant') {
                 document.getElementById('btn-descendant').classList.add('ring-4', 'ring-blue-300');
@@ -888,6 +961,17 @@ ${cssRules}  }
                 document.getElementById('code-div').classList.add('code-selected'); 
                 document.getElementById('code-p1').classList.add('code-selected-child'); 
                 document.getElementById('css-descendant').classList.add('code-selected'); 
+
+                // Cập nhật hiển thị web thực tế: div p { color: blue; }
+                const p1 = document.getElementById('render-p1');
+                if (p1) {
+                    p1.style.color = '#2563eb';
+                    p1.classList.add('bg-blue-50', 'ring-2', 'ring-blue-300');
+                }
+                if (badge) {
+                    badge.className = 'text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-mono font-bold transition-all';
+                    badge.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Áp dụng: div p { color: blue; }';
+                }
             } 
             else if(type === 'child') {
                 document.getElementById('btn-child').classList.add('ring-4', 'ring-red-300');
@@ -897,6 +981,17 @@ ${cssRules}  }
                 document.getElementById('code-p1').classList.add('code-selected'); 
                 document.getElementById('code-em2').classList.add('code-selected-child'); 
                 document.getElementById('css-child').classList.add('code-selected'); 
+
+                // Cập nhật hiển thị web thực tế: p > em { color: red; } (chỉ em2 - CERN đổi màu đỏ, em1 trong span không bị)
+                const em2 = document.getElementById('render-em2');
+                if (em2) {
+                    em2.style.color = '#dc2626';
+                    em2.classList.add('bg-red-100', 'ring-2', 'ring-red-400');
+                }
+                if (badge) {
+                    badge.className = 'text-xs px-3 py-1 rounded-full bg-red-100 text-red-700 font-mono font-bold transition-all';
+                    badge.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Áp dụng: p &gt; em { color: red; }';
+                }
             }
             else if(type === 'adjacent') {
                 document.getElementById('btn-adjacent').classList.add('ring-4', 'ring-green-300');
@@ -906,6 +1001,17 @@ ${cssRules}  }
                 document.getElementById('code-em1').classList.add('code-selected'); 
                 document.getElementById('code-strong1').classList.add('code-selected-child'); 
                 document.getElementById('css-adjacent').classList.add('code-selected'); 
+
+                // Cập nhật hiển thị web thực tế: em + strong { color: green; } (chỉ strong1 liền kề sau em1)
+                const strong1 = document.getElementById('render-strong1');
+                if (strong1) {
+                    strong1.style.color = '#16a34a';
+                    strong1.classList.add('bg-green-100', 'ring-2', 'ring-green-400');
+                }
+                if (badge) {
+                    badge.className = 'text-xs px-3 py-1 rounded-full bg-green-100 text-green-700 font-mono font-bold transition-all';
+                    badge.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Áp dụng: em + strong { color: green; }';
+                }
             }
             else if(type === 'general') {
                 document.getElementById('btn-general').classList.add('ring-4', 'ring-purple-300');
@@ -917,6 +1023,17 @@ ${cssRules}  }
                 document.getElementById('code-strong1').classList.add('code-selected-child'); 
                 document.getElementById('code-strong2').classList.add('code-selected-child'); 
                 document.getElementById('css-general').classList.add('code-selected'); 
+
+                // Cập nhật hiển thị web thực tế: em ~ strong { color: purple; } (strong1 cùng cha span sau em1)
+                const strong1 = document.getElementById('render-strong1');
+                if (strong1) {
+                    strong1.style.color = '#9333ea';
+                    strong1.classList.add('bg-purple-100', 'ring-2', 'ring-purple-400');
+                }
+                if (badge) {
+                    badge.className = 'text-xs px-3 py-1 rounded-full bg-purple-100 text-purple-700 font-mono font-bold transition-all';
+                    badge.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Áp dụng: em ~ strong { color: purple; }';
+                }
             }
         }
 
